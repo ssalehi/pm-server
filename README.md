@@ -1,0 +1,22 @@
+# Persian Mode Server
+
+* make a .env file in root of project to set local environment variable in development mode
+* Change **INIT_DB** in .env to the database that already exists in your Postgres (e.g. 'postgres' in Windows, and your user name in Linux)
+* If you use windows, in **package.json** change npm/test to:
+
+    _jasmine&jasmine-node server_spec_
+
+* If you do not have jasmine or jasmine-node, install them globally:
+
+    _npm install -g jasmine
+    npm install -g jasmine-node_
+
+* run npm install:
+
+    _npm install_
+
+* at this point you should  be able to run the project:
+_npm start_
+
+* then you should be able to run tests:
+    _npm test_
