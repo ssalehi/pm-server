@@ -38,7 +38,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) 
   };
 
   return (function (req, res) {
-    lib.Person.adminCheck(adminOnly, req.user, req.test)
+    lib.Agent.adminCheck(adminOnly, req.user, req.test)
       .then(rs => {
         if (adminOnly && rs.length < 1)
           return Promise.reject(error.adminOnly);
@@ -116,5 +116,11 @@ router.post('/user/profile', apiResponse('Person', 'setProfile', false, ['user',
 router.get('/user/profile/:pid', apiResponse('Person', 'getPersonInfo', false, ['user.pid', 'params.pid']));
 router.delete('/user/:pid', apiResponse('Person', 'delete', true, ['params.pid']));
 router.put('/user/message', apiResponse('Person', 'socketHandler', false, ['body']));
+
+
+router.put('/addAgent', apiResponse('Agent', 'save', false, ['']));
+
+
+
 
 module.exports = router;
