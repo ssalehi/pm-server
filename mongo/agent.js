@@ -26,8 +26,8 @@ let schema_obj = {
 };
 
 
-let agentSchema = new Schema(schema_obj, {strict: false});
-let agentTestSchema = new TestSchema(schema_obj, {strict: false});
+let agentSchema = new Schema(schema_obj, {strict: true});
+let agentTestSchema = new TestSchema(schema_obj, {strict: true});
 
 preSaveFunction = function(next) {
   let agent = this;
