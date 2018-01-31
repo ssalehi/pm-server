@@ -8,6 +8,7 @@ let schema_obj = {
   },
   street: {
     type: String,
+    required: true,
     trim: true,
   },
   unit: {
