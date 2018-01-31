@@ -5,7 +5,7 @@ const env = require('../env');
 if (env.isDev) {
   mongoose.Promise = global.Promise;
 
-  mongoose.connect(env.db_uri).catch(err => {
+  mongoose.connect(env.db_uri_test).catch(err => {
     console.log('-> ', err);
   });
 
