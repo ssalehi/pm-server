@@ -1,12 +1,14 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const db = require('./index');
+
+const Schema = db.Schema;
+const TestSchema = db.TestSchema;
 const env = require('../env');
 SALT_WORK_FACTOR = 10;
 
 // can save data out of schema using strict: false
 
 let schema_obj = {
-  name: {
+  username: {
     type: String,
     required: true,
     trim: true,
@@ -25,8 +27,9 @@ let schema_obj = {
 
 
 let agentSchema = new Schema(schema_obj, {strict: false});
+let agentTestSchema = new TestSchema(schema_obj, {strict: false});
 
-agentSchema.pre('save', function(next) {
+preSaveFunction = function(next) {
   let agent = this;
   // only hash the secret if it has been modified (or is new)
   if (!agent.isModified('secret')) return next();
@@ -44,15 +47,26 @@ agentSchema.pre('save', function(next) {
       next();
     });
   });
-});
+};
 
-agentSchema.methods.comparePassword = function(candidatePassword, cb) {
+agentSchema.pre('save', preSaveFunction);
+agentTestSchema.pre('save', preSaveFunction);
+
+compareFunction = function(candidatePassword, cb) {
   env.bcrypt.compare(candidatePassword, this.secret, function(err, isMatch) {
     if (err) return cb(err);
     cb(null, isMatch);
   });
 };
 
-let AgentModel = mongoose.model('Agent', agentSchema);
 
-module.exports = AgentModel;
+agentSchema.methods.comparePassword = compareFunction;
+agentTestSchema.methods.comparePassword = compareFunction;
+
+let AgentModel = db.mongoose.model('Agent', agentSchema);
+let AgentModelTest = db.mongoose_test.model('Agent', agentSchema);
+
+module.exports = {
+  AgentModel,
+  AgentModelTest
+};

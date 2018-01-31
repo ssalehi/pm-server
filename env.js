@@ -36,6 +36,7 @@ const port = getEnvValue(process.env.PORT);
 const database = getEnvValue(process.env.DATABASE);
 const database_test = getEnvValue(process.env.DATABASE) + '_test';
 const db_uri = getEnvValue(process.env.DB_URI);
+const db_uri_test = getEnvValue(process.env.DB_URI)+ '_test';
 const mongo_host = getEnvValue(process.env.MONGO_HOST);
 const mongo_port = getEnvValue(process.env.MONGO_PORT);
 
@@ -71,6 +72,7 @@ module.exports = {
   database,
   database_test,
   db_uri,
+  db_uri_test,
   mongo_host,
   mongo_port,
   redisURL,

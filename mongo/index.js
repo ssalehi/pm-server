@@ -1,19 +1,10 @@
-const mongoose = require('mongoose');
-const env = require('../env');
+const prod =  require('./prod.db');
+const test = require('./test.db');
 
-mongoose.Promise = global.Promise;
+module.exports= {
+  mongoose: prod.mongoose,
+  mongoose_test: test.mongoose_test,
+  Schema: prod.Schema,
+  TestSchema: test.Schema
+};
 
-mongoose.connect(env.db_uri).catch(err => {
-  console.log('-> ', err);
-});
-
-mongoose.connection.on('error', error => {
-  console.log('error', 'Mongoose connection error: ' + error);
-});
-
-mongoose.connection.once('open', function () {
-  console.log('-> ', 'Mongoose has been connected!');
-});
-
-
-module.exports = {mongoose};
