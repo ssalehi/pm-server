@@ -1,10 +1,29 @@
-const prod =  require('./prod.db');
-const test = require('./test.db');
+const env = require('../env');
+const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
+
+let testConnection, prodConnection;
+
+prodConnection = mongoose.createConnection(env.db_uri);
+
+prodConnection.on('connected', function () {
+  console.log('-> ', 'Mongoose has been connected!');
+});
+
+if (env.isDev) {
+
+  testConnection = mongoose.createConnection(env.db_uri_test);
+
+  prodConnection.on('connected', function () {
+    console.log('-> ', 'Mongoose test has been connected!');
+  });
+
+}
+
+
 
 module.exports= {
-  mongoose: prod.mongoose,
-  mongoose_test: test.mongoose_test,
-  Schema: prod.Schema,
-  TestSchema: test.Schema
+  prodConnection,
+  testConnection
 };
 

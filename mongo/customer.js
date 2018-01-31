@@ -1,9 +1,10 @@
 const db = require('./index');
+const customerSchema = require('./schema/customer.schema');
 const env = require('../env');
-const agentSchema = require('./schema/agent.schema');
 SALT_WORK_FACTOR = 10;
 
 // can save data out of schema using strict: false
+
 
 
 preSaveFunction = function (next) {
@@ -26,7 +27,7 @@ preSaveFunction = function (next) {
   });
 };
 
-agentSchema.pre('save', preSaveFunction);
+customerSchema.pre('save', preSaveFunction);
 
 compareFunction = function (candidatePassword, cb) {
   env.bcrypt.compare(candidatePassword, this.secret, function (err, isMatch) {
@@ -35,12 +36,13 @@ compareFunction = function (candidatePassword, cb) {
   });
 };
 
-agentSchema.methods.comparePassword = compareFunction;
 
-let AgentModel = db.prodConnection.model('Agent', agentSchema);
-let AgentModelTest = db.testConnection ? db.testConnection.model('Agent', agentSchema) : null;
+customerSchema.methods.comparePassword = compareFunction;
+
+let CustomerModel = db.prodConnection.model('Customer', customerSchema);
+let CustomerModelTest = db.testConnection.model('Customer', customerSchema);
 
 module.exports = {
-  AgentModel,
-  AgentModelTest
+  CustomerModel,
+  CustomerModelTest
 };
