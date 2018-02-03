@@ -11,6 +11,8 @@ describe('Person POST API', () => {
         .then(res => {
           let obj = new lib.Agent(true);
           return obj.save({
+            first_name: 'admin',
+            surname: 'admin',
             username: 'admin',
             secret: '123456',
             access_level: 0
@@ -19,6 +21,8 @@ describe('Person POST API', () => {
         .then(res => {
           let obj = new lib.Agent(true);
           return obj.save({
+            first_name: 's',
+            surname: 'c',
             username: 'shipping-clerk',
             secret: '123456',
             access_level: 1
@@ -27,6 +31,8 @@ describe('Person POST API', () => {
         .then(res => {
           let obj = new lib.Customer(true);
           return obj.save({
+            first_name: 'ali',
+            surname: 'alavi',
             username: 'aa',
             secret: '123456',
             address: [
