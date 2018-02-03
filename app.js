@@ -9,6 +9,10 @@ const index = require('./routes/index');
 const api   = require('./routes/api');
 
 const app = express();
+let isReady = false;
+
+const passport = require('./passport');
+const session = require('./session');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,25 +26,34 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/api', api);
+session.setup(app)
+  .then(() => {
+    isReady = true;
+    passport.setup(app);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  const err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+    app.use('/', index);
+    app.use('/api', api);
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+    // catch 404 and forward to error handler
+    app.use(function(req, res, next) {
+      const err = new Error('Not Found');
+      err.status = 404;
+      next(err);
+    });
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+    // error handler
+    app.use(function(err, req, res, next) {
+      // set locals, only providing error in development
+      res.locals.message = err.message;
+      res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-module.exports = app;
+      // render the error page
+      res.status(err.status || 500);
+      res.render('error');
+    });
+  });
+
+module.exports = {
+  get: () => app,
+  isReady: () => isReady,
+};

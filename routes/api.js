@@ -73,7 +73,7 @@ router.get('/', function (req, res) {
   res.send('respond with a resource');
 });
 // Login API
-router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user']));
+router.post('/login', passport.authenticate('local', {}));
 router.post('/loginCheck', apiResponse('Person', 'loginCheck', false, ['body.username', 'body.password']));
 router.get('/logout', (req, res) => {
   req.logout();
@@ -87,18 +87,8 @@ router.get('/login/google/callback', passport.authenticate('google', {
   successRedirect : '/login/oauth',
   failureRedirect : '/login'
 }));
-router.get('/login/facebook', passport.authenticate('facebook'));
-router.get('/login/client/facebook/callback', passport.authenticate('facebook', {
-  successRedirect : '/login/oauth',
-  failureRedirect : '/login'
-}));
-router.get('/login/linkedin', passport.authenticate('linkedin', {scope: ['r_basicprofile', 'r_emailaddress']}));
-router.get('/login/client/linkedin/callback', passport.authenticate('linkedin', {
-  successRedirect : '/login/oauth',
-  failureRedirect : '/login'
-}));
 
-// Person API
+// Person (Customer/Agent) API
 router.put('/user/register', apiResponse('Person', 'registration', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
 router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));

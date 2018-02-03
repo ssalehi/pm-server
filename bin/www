@@ -4,30 +4,39 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('persian-mode:server');
-var http = require('http');
+const debug = require('debug')('persian-mode:server');
+const http = require('http');
+const env = require('../env');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+let app, server;
+appWaiter = setInterval(() => {
+  if(require('../app').isReady()) {
+    console.log('App is set up');
+    clearInterval(appWaiter);
+    app = require('../app').get();
+    const port = normalizePort(env.port || '3000');
+    app.set('port', port);
 
-/**
- * Create HTTP server.
- */
+    /*
+     * Create Http Server
+     */
+    server = http.createServer(app);
 
-var server = http.createServer(app);
+    /*
+    * Listen on provided port, on all network interface.
+    */
 
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+  } else {
+    console.log('App is being set up ...');
+  }
+}, 100);
 
 /**
  * Normalize a port into a number, string, or false.
