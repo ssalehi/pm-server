@@ -61,14 +61,22 @@ schemas.CustomerSchema.methods.comparePassword = compareFunction;
 
 let models = {};
 
-for (let key in schemas) {
-  if (schemas.hasOwnProperty(key)) {
+db.dbIsReady().then(() => {
 
-    let newKey = key.replace('Schema', '');
-    models[newKey] = db.prodConnection.model(newKey, schemas[key]);
-    models[newKey + 'Test'] = db.testConnection.model(newKey + 'Test', schemas[key]);
 
+  for (let key in schemas) {
+
+    if (schemas.hasOwnProperty(key)) {
+
+      let newKey = key.replace('Schema', '');
+      models[newKey] = db.prodConnection.model(newKey, schemas[key]);
+      models[newKey + 'Test'] = db.testConnection.model(newKey, schemas[key]);
+
+    }
   }
-}
+
+
+});
+
 
 module.exports = models;
