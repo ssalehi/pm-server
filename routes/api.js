@@ -120,7 +120,7 @@ router.put('/user/message', apiResponse('Person', 'socketHandler', false, ['body
 
 router.put('/addAgent', apiResponse('Agent', 'save', false, ['']));
 router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
-router.put('/product', apiResponse('Product', 'save', false, ['']));
+router.put('/product', apiResponse('Product', 'save', false, ['body']));
 
 
 
