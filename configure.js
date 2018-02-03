@@ -10,7 +10,9 @@ db.dbIsReady()
     let admin = new models['Agent']({
       username: 'admin@persianmode.com',
       secret: 'admin@123',
-      access_level: _const.ACCESS_LEVEL.Admin
+      access_level: _const.ACCESS_LEVEL.Admin,
+      first_name: 'Admin',
+      surname: 'Admin',
     });
 
     admin.save()

@@ -73,7 +73,8 @@ router.get('/', function (req, res) {
   res.send('respond with a resource');
 });
 // Login API
-router.post('/login', passport.authenticate('local', {}));
+router.post('/agent/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user', () => true]));
+router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user']));
 router.post('/loginCheck', apiResponse('Person', 'loginCheck', false, ['body.username', 'body.password']));
 router.get('/logout', (req, res) => {
   req.logout();

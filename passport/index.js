@@ -16,12 +16,12 @@ let setup = (app) => {
     lib.Person.passportLocalStrategy
   ));
 
-  // passport.use(new GoogleStrategy({
-  //   clientID: authDetails.googleAuth.clientID,
-  //   clientSecret: authDetails.googleAuth.clientSecret,
-  //   callbackURL: authDetails.googleAuth.callBackURL,
-  //   passReqToCallback: true,
-  // }, lib.Person.passportOAuthStrategy));
+  passport.use(new GoogleStrategy({
+    clientID: authDetails.googleAuth.clientID,
+    clientSecret: authDetails.googleAuth.clientSecret,
+    callbackURL: authDetails.googleAuth.callBackURL,
+    passReqToCallback: true,
+  }, lib.Person.passportOAuthStrategy));
 };
 
 module.exports = {
