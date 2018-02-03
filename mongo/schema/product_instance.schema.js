@@ -19,7 +19,7 @@ inventory_template = {
 
 let schema_obj = {
   product_color_id: Schema.Types.ObjectId,
-  size: Number,
+  size: Number  ,
   price: Number,
   inventory: [inventory_template]
 };
