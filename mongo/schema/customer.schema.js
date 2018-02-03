@@ -4,27 +4,23 @@ const addressSchema = require('./address.schema');
 let schema_obj = {
   first_name: {
     type: String,
-    // required: true,
+    required: true,
     trim: true,
     unique: true
   },
   surname: {
     type: String,
-    // required: true,
+    required: true,
     trim: true,
     unique: true
   },
   username: {
     type: String,
-    // required: true,
+    required: true,
     trim: true,
     unique: true
   },
   secret: {
-    type: String,
-    // required: true
-  },
-  email: {
     type: String,
     // required: true
   },
@@ -42,6 +38,6 @@ let schema_obj = {
 
 };
 
-let customerSchema = new Schema(schema_obj, {strict: false});
+let customerSchema = new Schema(schema_obj, {strict: true});
 
 module.exports = customerSchema;
