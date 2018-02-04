@@ -23,13 +23,18 @@ let schema_obj = {
   base_price: {
     type: Number,
     required: true,
-    default: 0
   },
   desc: String,
   tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
   reviews: [ProductReview],
-  colors: [ProductColor],
-  instances:[ProductInstanceSchema]
+  colors: {
+    type :[ProductColor],
+    required: true
+  },
+  instances:{
+    type :[ProductInstanceSchema],
+    required: true
+  }
 
 };
 
