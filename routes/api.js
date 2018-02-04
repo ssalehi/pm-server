@@ -113,6 +113,9 @@ router.put('/addAgent', apiResponse('Agent', 'save', false, ['']));
 router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
 router.put('/product', apiResponse('Product', 'save', false, ['body']));
 
+router.get('/collection', apiResponse('Collection','getCollection', false, ['']));
+router.put('/collection/new_collection', apiResponse('Collection','save', false, ['body']));
+
 
 
 
