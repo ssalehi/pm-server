@@ -113,8 +113,10 @@ router.put('/addAgent', apiResponse('Agent', 'save', false, ['']));
 router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
 router.put('/product', apiResponse('Product', 'save', false, ['body']));
 
+router.delete('/collection/product/:cid/:pid', apiResponse('Collection','deleteProductFromCollection', false, ['params']));
+router.delete('/collection/:cid', apiResponse('Collection','deleteCollection', false, ['params']));
+router.put('/collection', apiResponse('Collection','createCollection', false, ['body']));
 router.get('/collection', apiResponse('Collection','getCollection', false, ['']));
-router.put('/collection/new_collection', apiResponse('Collection','save', false, ['body']));
 
 
 
