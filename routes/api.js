@@ -113,6 +113,8 @@ router.put('/addAgent', apiResponse('Agent', 'save', false, ['']));
 router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
 
 //product
+router.get('/product', apiResponse('Product', 'getAllProducts', false, ['body']));
+router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
 router.put('/product', apiResponse('Product', 'setProduct', false, ['body']));
 router.post('/product', apiResponse('Product', 'setProduct', false, ['body']));
 router.put('/product/color', apiResponse('Product', 'setColor', false, ['body']));
