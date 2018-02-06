@@ -4,8 +4,9 @@ const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 
-describe("Post Product", () => {
+describe("Post product basics", () => {
 
+  let productId, brandId, typeId;
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
@@ -16,25 +17,14 @@ describe("Post Product", () => {
           brand: mongoose.Types.ObjectId(),
           base_price: 30000,
           desc: 'some description for this product',
-          colors: {
-            _id: mongoose.Types.ObjectId(),
-            color_id: mongoose.Types.ObjectId(),
-            images: [mongoose.Types.ObjectId()]
-          },
-          instances: [{
-            product_color_id: mongoose.Types.ObjectId(),
-            size: 8.5,
-            price: 30000,
-            inventory: [{
-              warehouse_id: mongoose.Types.ObjectId(),
-              count: 5
-            }]
-          }]
         });
         return product.save();
-
       })
-      .then(res =>{
+      .then(res => {
+        typeId = mongoose.Types.ObjectId();
+        brandId = mongoose.Types.ObjectId();
+
+        productId = res._id;
         done();
       })
       .catch(err => {
@@ -44,75 +34,306 @@ describe("Post Product", () => {
   });
 
 
-  it("should update product name, brand, and count of a specific instance in warehouse", function (done) {
+  it("should update basic info of product", function (done) {
 
     this.done = done;
 
-    let productColorId = mongoose.Types.ObjectId();
     rp({
-      method: 'put',
+      method: 'post',
       uri: lib.helpers.apiTestURL(`product`),
       body: {
+        id: productId,
         name: 'changed name',
-        brand: mongoose.Types.ObjectId(),
-        instances: [{
-          product_color_id: productColorId,
-          size: 8.5,
-          price: 30000,
-          inventory: [{
-            warehouse_id: warehouseId,
-            count: 5
-          }]
-        }]
+        product_type: typeId,
+        brand: brandId,
+        base_price: 50000,
+        desc: 'some description for this product',
       },
       json: true,
-      resolveWithFullResponse: true
+      resolveWithFullResponse:
+        true
     }).then(res => {
       expect(res.statusCode).toBe(200);
 
-      return models['ProductTest'].find({})
+      return models['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(1);
-      expect(res[0].colors[0]._id).toEqual(productColorId);
-      expect(res[0].instances[0].product_color_id).toEqual(productColorId);
-      expect(res[0].instances[0]._id).not.toBe(null);
-      expect(res[0].instances[0].product_color_id).toEqual(productColorId);
-      expect(res[0].instances[0].inventory[0]._id).not.toBe(null);
+      expect(res[0].name).toBe('changed name');
+      expect(res[0].base_price).toBe(50000);
       done();
 
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it("expect error when name of product is not defined", function (done) {
+});
+
+describe("Post product colors", () => {
+
+  let productId, productColorId;
+  let colorId = mongoose.Types.ObjectId();
+  let imageId1 = mongoose.Types.ObjectId();
+  let imageId2 = mongoose.Types.ObjectId();
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(res => {
+
+        let product = models['ProductTest']({
+          name: 'sample name',
+          product_type: mongoose.Types.ObjectId(),
+          brand: mongoose.Types.ObjectId(),
+          base_price: 30000,
+          desc: 'some description for this product',
+          colors: [
+            {
+              color_id: colorId,
+              images: [imageId1, imageId2]
+            }
+          ]
+        });
+        return product.save();
+      })
+      .then(res => {
+        productColorId = res.colors[0]._id;
+        productId = res._id;
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+
+  it("should update colors of product", function (done) {
 
     this.done = done;
-
-    let productColorId = mongoose.Types.ObjectId();
+    let newColorId = mongoose.Types.ObjectId();
+    let newImage1Id = mongoose.Types.ObjectId();
     rp({
-      method: 'put',
-      uri: lib.helpers.apiTestURL(`product`),
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`product/color`),
       body: {
-        // name: 'sample name',
-        product_type: typeId,
-        brand: brandId,
-        base_price: 30000,
-        desc: 'some description for this product',
-        colors: {
-          _id: productColorId,
-          color_id: colorId,
-          images: [imageId]
-        },
-        instances: [{
-          product_color_id: productColorId,
-          size: 8.5,
-          price: 30000,
-          inventory: [{
+        id: productId,
+        productColorId,
+        colorId: newColorId,
+        images: [newImage1Id]
+      },
+      json: true,
+      resolveWithFullResponse:
+        true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+
+      return models['ProductTest'].find({}).lean();
+
+    }).then(res => {
+      expect(res.length).toBe(1);
+      expect(res[0].colors.length).toBe(1);
+      expect(res[0].colors[0].color_id).toEqual(newColorId);
+      expect(res[0].colors[0].images.length).toBe(1);
+      expect(res[0].colors[0].images[0]).toEqual(newImage1Id);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+});
+
+describe("Post product instances", () => {
+
+  let productId, productInstanceId;
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(res => {
+
+        let product = models['ProductTest']({
+          name: 'sample name',
+          product_type: mongoose.Types.ObjectId(),
+          brand: mongoose.Types.ObjectId(),
+          base_price: 30000,
+          desc: 'some description for this product',
+          instances:[
+            {
+              product_color_id: mongoose.Types.ObjectId(),
+              size: 8.5,
+              price: 20000
+            }
+
+          ]
+
+        });
+        return product.save();
+      })
+      .then(res => {
+        productInstanceId = res.instances[0]._id;
+        productId = res._id;
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+
+  it("should update basic info of a product instance", function (done) {
+
+    let newProductColorId = mongoose.Types.ObjectId();
+    this.done = done;
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`product/instance`),
+      body: {
+        id: productId,
+        productInstanceId,
+        productColorId: newProductColorId,
+        size: 10,
+        price: 60000
+      },
+      json: true,
+      resolveWithFullResponse:
+        true
+    }).then(res => {
+
+      expect(res.statusCode).toBe(200);
+      return models['ProductTest'].find({}).lean();
+
+    }).then(res => {
+      expect(res.length).toBe(1);
+      expect(res[0].instances.length).toBe(1);
+      expect(res[0].instances[0].product_color_id).toEqual(newProductColorId);
+      expect(res[0].instances[0].size).toBe(10);
+      expect(res[0].instances[0].price).toEqual(60000);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+});
+
+
+describe("Post Product instance inventories", () => {
+
+  let productId, productInstanceId;
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(res => {
+        let product = models['ProductTest']({
+          name: 'sample name',
+          product_type: mongoose.Types.ObjectId(),
+          brand: mongoose.Types.ObjectId(),
+          base_price: 30000,
+          desc: 'some description for this product',
+          instances: [{
+            product_color_id: mongoose.Types.ObjectId(),
+            size: 8.5,
+            price: 3000
+          }]
+        });
+        return product.save();
+
+      })
+      .then(res => {
+        productId = res._id;
+        productInstanceId = res.instances[0]._id;
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+
+  it("should update non existing inventory info for a product instance", function (done) {
+
+    this.done = done;
+    let warehouseId = mongoose.Types.ObjectId();
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`product/instance/inventory`),
+      body: {
+        id: productId,
+        productInstanceId,
+        warehouseId,
+        count: 5
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+
+      return models['ProductTest'].find({}).lean();
+
+    }).then(res => {
+      expect(res.length).toBe(1);
+      expect(res[0].instances.length).toBe(1);
+      expect(res[0].instances[0].inventory.length).toBe(1);
+      expect(res[0].instances[0].inventory[0].warehouse_id).toEqual(warehouseId);
+      expect(res[0].instances[0].inventory[0].count).toEqual(5);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+  it("should update count for current inventory", function (done) {
+
+    this.done = done;
+    let warehouseId = mongoose.Types.ObjectId();
+
+    models['ProductTest'].findOneAndUpdate({_id: productId},
+      {
+        $push: {
+          "instances.0.inventory": {
             warehouse_id: warehouseId,
             count: 5
-          }]
-        }]
+          }
+        }
+      }, {new: true})
+      .then(res => {
+        return rp({
+          method: 'post',
+          uri: lib.helpers.apiTestURL(`product/instance/inventory`),
+          body: {
+            id: productId,
+            productInstanceId,
+            warehouseId,
+            count: 6
+          },
+          json: true,
+          resolveWithFullResponse: true
+        })
+      })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['ProductTest'].find({}).lean();
+      }).then(res => {
+      expect(res.length).toBe(1);
+      expect(res[0].instances.length).toBe(1);
+      expect(res[0].instances[0].inventory.length).toBe(1);
+      expect(res[0].instances[0].inventory[0].warehouse_id).toEqual(warehouseId);
+      expect(res[0].instances[0].inventory[0].count).toEqual(6);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+  it("expect error when product id is not declared in the body", function (done) {
+
+    this.done = done;
+    let warehouseId = mongoose.Types.ObjectId();
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`product/instance/inventory`),
+      body: {
+        // id: productId,
+        productInstanceId,
+        warehouseId,
+        count: 5
       },
       json: true,
       resolveWithFullResponse: true
@@ -121,40 +342,23 @@ describe("Post Product", () => {
       done();
     })
       .catch(err => {
-        expect(err.statusCode).toBe(500);
-        expect(err.error).toBe('Product validation failed: name: Path `name` is required.');
+        expect(err.statusCode).toBe(error.productIdRequired.status);
+        expect(err.error).toBe(error.productIdRequired.message);
         done();
       });
-
   });
-  it("expect error when product type of product is not defined", function (done) {
+  it("expect error when product instance id is not declared in the body", function (done) {
 
     this.done = done;
-
-    let productColorId = mongoose.Types.ObjectId();
+    let warehouseId = mongoose.Types.ObjectId();
     rp({
-      method: 'put',
-      uri: lib.helpers.apiTestURL(`product`),
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`product/instance/inventory`),
       body: {
-        name: 'sample name',
-        // product_type: typeId,
-        brand: brandId,
-        base_price: 30000,
-        desc: 'some description for this product',
-        colors: {
-          _id: productColorId,
-          color_id: colorId,
-          images: [imageId]
-        },
-        instances: [{
-          product_color_id: productColorId,
-          size: 8.5,
-          price: 30000,
-          inventory: [{
-            warehouse_id: warehouseId,
-            count: 5
-          }]
-        }]
+        id: productId,
+        // productInstanceId,
+        warehouseId,
+        count: 5
       },
       json: true,
       resolveWithFullResponse: true
@@ -163,40 +367,23 @@ describe("Post Product", () => {
       done();
     })
       .catch(err => {
-        expect(err.statusCode).toBe(500);
-        expect(err.error).toBe('Product validation failed: product_type: Path `product_type` is required.');
+        expect(err.statusCode).toBe(error.productInstanceIdRequired.status);
+        expect(err.error).toBe(error.productInstanceIdRequired.message);
         done();
       });
-
   });
-  it("expect error when brand of product is not defined", function (done) {
+  it("expect error when product instance count is not declared in the body", function (done) {
 
     this.done = done;
-
-    let productColorId = mongoose.Types.ObjectId();
+    let warehouseId = mongoose.Types.ObjectId();
     rp({
-      method: 'put',
-      uri: lib.helpers.apiTestURL(`product`),
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`product/instance/inventory`),
       body: {
-        name: 'sample name',
-        product_type: typeId,
-        // brand: brandId,
-        base_price: 30000,
-        desc: 'some description for this product',
-        colors: {
-          _id: productColorId,
-          color_id: colorId,
-          images: [imageId]
-        },
-        instances: [{
-          product_color_id: productColorId,
-          size: 8.5,
-          price: 30000,
-          inventory: [{
-            warehouse_id: warehouseId,
-            count: 5
-          }]
-        }]
+        id: productId,
+        productInstanceId,
+        warehouseId,
+        // count: 5
       },
       json: true,
       resolveWithFullResponse: true
@@ -205,41 +392,23 @@ describe("Post Product", () => {
       done();
     })
       .catch(err => {
-        expect(err.statusCode).toBe(500);
-        expect(err.error).toBe('Product validation failed: brand: Path `brand` is required.');
+        expect(err.statusCode).toBe(error.productInstanceCountRequired.status);
+        expect(err.error).toBe(error.productInstanceCountRequired.message);
         done();
       });
-
   });
-
-  it("expect error when base of product is not defined", function (done) {
+  it("expect error when product instance warehouse id is not declared in the body", function (done) {
 
     this.done = done;
-
-    let productColorId = mongoose.Types.ObjectId();
+    let warehouseId = mongoose.Types.ObjectId();
     rp({
-      method: 'put',
-      uri: lib.helpers.apiTestURL(`product`),
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`product/instance/inventory`),
       body: {
-        name: 'sample name',
-        product_type: typeId,
-        brand: brandId,
-        // base_price: 30000,
-        desc: 'some description for this product',
-        colors: {
-          _id: productColorId,
-          color_id: colorId,
-          images: [imageId]
-        },
-        instances: [{
-          product_color_id: productColorId,
-          size: 8.5,
-          price: 30000,
-          inventory: [{
-            warehouse_id: warehouseId,
-            count: 5
-          }]
-        }]
+        id: productId,
+        productInstanceId,
+        // warehouseId,
+        count: 5
       },
       json: true,
       resolveWithFullResponse: true
@@ -248,12 +417,10 @@ describe("Post Product", () => {
       done();
     })
       .catch(err => {
-        expect(err.statusCode).toBe(500);
-        expect(err.error).toBe('Product validation failed: base_price: Path `base_price` is required.');
+        expect(err.statusCode).toBe(error.productInstanceWarehouseIdRequired.status);
+        expect(err.error).toBe(error.productInstanceWarehouseIdRequired.message);
         done();
       });
-
   });
-
 
 });

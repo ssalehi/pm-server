@@ -1,6 +1,7 @@
 const env = require('../env');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
+mongoose.Promise = require('bluebird');
 
 let testConnection, prodConnection;
 

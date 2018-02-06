@@ -33,5 +33,4 @@ let schema_obj = {
 
 
 let ProductSchema = new Schema(schema_obj, {strict: true});
-
 module.exports = ProductSchema;

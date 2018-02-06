@@ -4,19 +4,20 @@ let schema_obj = {
   customer_id: {
     type: Schema.Types.ObjectId,
     required: true,
-    unique: true,
+    // unique: true,
     ref: 'Customer'
   },
   adding_time: {
     type: Date,
     default: new Date()
   },
+  //todo : check weather brand is required or not
   brand: {
     type: Schema.Types.ObjectId,
     ref: 'Brand',
     required: true
   },
-  start_count: {
+  stars_count: {
     type: Number,
     min: 0,
     max: 5

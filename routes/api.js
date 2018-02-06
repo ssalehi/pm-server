@@ -78,7 +78,7 @@ router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 
 router.post('/loginCheck', apiResponse('Person', 'loginCheck', false, ['body.username', 'body.password']));
 router.get('/logout', (req, res) => {
   req.logout();
-  res.status(200).json('')
+res.status(200).json('')
 });
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
@@ -111,7 +111,16 @@ router.put('/user/message', apiResponse('Person', 'socketHandler', false, ['body
 
 router.put('/addAgent', apiResponse('Agent', 'save', false, ['']));
 router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
-router.put('/product', apiResponse('Product', 'save', false, ['body']));
+
+//product
+router.put('/product', apiResponse('Product', 'setProduct', false, ['body']));
+router.post('/product', apiResponse('Product', 'setProduct', false, ['body']));
+router.put('/product/color', apiResponse('Product', 'setColor', false, ['body']));
+router.post('/product/color', apiResponse('Product', 'setColor', false, ['body']));
+router.put('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
+router.post('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
+
+router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', false, ['body']));
 
 
 
