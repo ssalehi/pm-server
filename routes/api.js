@@ -115,6 +115,8 @@ router.put('/product', apiResponse('Product', 'save', false, ['body']));
 
 router.delete('/collection/product/:cid/:pid', apiResponse('Collection','deleteProductFromCollection', false, ['params']));
 router.delete('/collection/:cid', apiResponse('Collection','deleteCollection', false, ['params']));
+router.put('/collection/product/:cid/:pid', apiResponse('Collection','addedProductToCollection', false, ['params']));
+router.post('/collection/products/:cid', apiResponse('Collection','getProductsFromCollection', false, ['params']));
 router.put('/collection', apiResponse('Collection','createCollection', false, ['body']));
 router.get('/collection', apiResponse('Collection','getCollection', false, ['']));
 

@@ -7,7 +7,8 @@ const mongoose = require('mongoose');
 
 describe('Put Collection', () => {
 
-  let imageUrl, productId, parentId, letName;
+  let imageUrl, productId, parentId, letName, collectionId;
+  // let productIds = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
@@ -17,6 +18,13 @@ describe('Put Collection', () => {
         parentId = mongoose.Types.ObjectId();
         letName = 'new collection';
 
+        models['CollectionTest'].create({
+          name: 'test product add to collection',
+          image_url: mongoose.Types.ObjectId(),
+          productIds: [mongoose.Types.ObjectId()]
+        }).then(res => {
+          collectionId = res._id;
+        });
         done();
       })
       .catch(err => {
@@ -41,7 +49,8 @@ describe('Put Collection', () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      console.log(JSON.stringify(res, null, 2));
+      // console.log(JSON.stringify(res, null, 2));
+
       expect(res.statusCode).toBe(200);
       expect(res.body.name).toEqual(letName);
       expect(res.body.productIds[0]).toEqual(productId.toString());
@@ -70,8 +79,65 @@ describe('Put Collection', () => {
       expect(err.error).toBe(error.nameRequired.message);
       done();
     });
+  });
 
 
+  it('should added product to collection', function (done) {
+    this.done = done;
+    productId = mongoose.Types.ObjectId();
+    // You can check this product with result collection
+    // console.log("___", productId);
+    rp({
+      method: 'put',
+      uri: lib.helpers.apiTestURL(`collection/product/${collectionId}/${productId}`),
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['CollectionTest'].findById(collectionId);
+    }).then(res => {
+
+      expect(res.productIds.length).toBe(2);
+      expect(res.productIds).toContain(productId);
+
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('expect error when cid params is not valid', function (done) {
+    this.done = done;
+    productId = mongoose.Types.ObjectId();
+    rp({
+      method: 'put',
+      uri: lib.helpers.apiTestURL(`collection/product/1/${productId}`),
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('error when cid is not defined');
+      done();
+    }).catch(err => {
+      // console.log(err);
+      expect(err.statusCode).toBe(500);
+      done();
+    });
+  });
+
+  it('expect error when pid params is not valid', function (done) {
+    this.done = done;
+    productId = mongoose.Types.ObjectId();
+    rp({
+      method: 'put',
+      uri: lib.helpers.apiTestURL(`collection/product/${collectionId}/1`),
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('error when pid is not defined');
+      done();
+    }).catch(err => {
+      // console.log(err);
+      expect(err.statusCode).toBe(500);
+      done();
+    });
   });
 
 
