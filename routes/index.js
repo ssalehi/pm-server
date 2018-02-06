@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const path = require('path');
 
 // Test request identifier
 router.use(function(req, res, next) {
