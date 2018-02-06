@@ -56,27 +56,17 @@ schemas.AgentSchema.methods.comparePassword = compareFunction;
 schemas.CustomerSchema.pre('save', preSaveFunction);
 schemas.CustomerSchema.methods.comparePassword = compareFunction;
 
-
 // can save data out of schema using strict: false
-
 let models = {};
 
 db.dbIsReady().then(() => {
-
-
   for (let key in schemas) {
-
     if (schemas.hasOwnProperty(key)) {
-
       let newKey = key.replace('Schema', '');
       models[newKey] = db.prodConnection.model(newKey, schemas[key]);
       models[newKey + 'Test'] = db.testConnection.model(newKey, schemas[key]);
-
     }
   }
-
-
 });
-
 
 module.exports = models;

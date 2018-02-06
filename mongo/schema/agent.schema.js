@@ -15,8 +15,15 @@ let schema_obj = {
   access_level: {
     type: Number,
     required: true,
+  },
+  first_name: {
+    type: String,
+    trim: true,
+  },
+  surname: {
+    type: String,
+    trim: true,
   }
-
 };
 
 
