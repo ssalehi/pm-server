@@ -49,6 +49,6 @@ let setup = (app) => {
 };
 
 module.exports = {
-  setup:setup,
+  setup: setup,
   session_config: () => session_config,
 };

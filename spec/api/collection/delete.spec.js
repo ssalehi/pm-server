@@ -52,6 +52,7 @@ describe('DELETE Collection', () => {
 
     }).then(res => {
       collectionIds[0] = res[0]._id;
+      collectionIds[1] = res[1]._id;
       collectionIds[2] = res[2]._id;
       done();
     }).catch(err => {
@@ -84,13 +85,47 @@ describe('DELETE Collection', () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      console.log('ehem', res.body);
-      return models['CollectionTest'].find({_id: collectionIds[2]});
+
+      return models['CollectionTest'].findById(collectionIds[2]);
     }).then(res => {
-      console.log('ohom', res);
+      expect(res.productIds.length).toBe(2);
+      expect(res.productIds[0]).not.toEqual(productIds[0]);
+      expect(res.productIds[0]).toEqual(productIds[1]);
+
+
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
+  });
 
+  it('expect error when params cid is not valid', function (done) {
+    this.done = done;
+    rp({
+      method: 'delete',
+      uri: lib.helpers.apiTestURL(`collection/product/1/${productIds[0]}`)
+    }).then(res => {
+      this.fail('failed when params is not valid');
+
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(500);
+      done();
+    });
+  });
+
+  it('expect error when params pid is not valid', function (done) {
+    this.done = done;
+    rp({
+      method: 'delete',
+      uri: lib.helpers.apiTestURL(`collection/product/${collectionIds[2]}/2`)
+    }).then(res => {
+      this.fail('failed when params is not valid');
+
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(200);
+      done();
+    });
 
   });
+
 });
