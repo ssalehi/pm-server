@@ -6,7 +6,7 @@ let schema_obj = {
     type: String,
     required: true,
     trim: true,
-    // unique: true
+    unique: true
   },
   tag_group_id: Schema.Types.ObjectId
 };

@@ -6,41 +6,48 @@ const mongoose = require('mongoose');
 
 describe("Get products", () => {
 
-  let productId1, productId2;
+  let product1, product2;
   let type1, type2, brand1, brand2;
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
 
-        type1 = mongoose.Types.ObjectId();
-        type2 = mongoose.Types.ObjectId();
-        brand1 = mongoose.Types.ObjectId();
-        brand2 = mongoose.Types.ObjectId();
+        type1 = models['ProductTypeTest']({
+          name: 'Shoe'
+        });
 
-        let product1 = models['ProductTest']({
+        type2 = models['ProductTypeTest']({
+          name: 'Shirt'
+        });
+
+        brand1 = models['BrandTest']({
+          name: 'Nike'
+        });
+
+        brand2 = models['BrandTest']({
+          name: 'Puma'
+        });
+
+        product1 = models['ProductTest']({
           name: 'sample name 1',
-          product_type: type1,
-          brand: brand1,
+          product_type: type1._id,
+          brand: brand1._id,
           base_price: 30000,
           desc: 'some description for this product',
         });
-        return product1.save();
-      })
-      .then(res => {
 
-        productId1 = res._id;
-        let product2 = models['ProductTest']({
+         product2 = models['ProductTest']({
           name: 'sample name 2',
-          product_type: type2,
-          brand: brand2,
+          product_type: type2._id,
+          brand: brand2._id,
           base_price: 50000,
           desc: 'some description for this product',
         });
-        return product2.save();
+
+        return Promise.all([type1.save(), type2.save(), brand1.save(), brand2.save(), product1.save(), product2.save()]);
       })
       .then(res => {
-        productId2 = res._id;
         done();
       })
       .catch(err => {
@@ -50,7 +57,7 @@ describe("Get products", () => {
   });
 
 
-  it("should get all products", function (done) {
+  xit("should get all products", function (done) {
 
     this.done = done;
 
@@ -59,9 +66,16 @@ describe("Get products", () => {
       uri: lib.helpers.apiTestURL(`product`),
       resolveWithFullResponse: true
     }).then(res => {
+
       expect(res.statusCode).toBe(200);
       let result = JSON.parse(res.body);
       expect(result.length).toBe(2);
+      expect(result[0].name).toBe(product1.name);
+      expect(result[0].product_type.name).toBe(type1.name);
+      expect(result[0].brand.name).toBe(brand1.name);
+      expect(result[1].name).toBe(product2.name);
+      expect(result[1].product_type.name).toBe(type2.name);
+      expect(result[1].brand.name).toBe(brand2.name);
       done();
 
     })
@@ -74,12 +88,13 @@ describe("Get products", () => {
 
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`product/${productId1}`),
+      uri: lib.helpers.apiTestURL(`product/${product1._id}`),
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
+      console.log('-> ',res.body);
       let result = JSON.parse(res.body);
-      expect(result._id).toBe(productId1.toString());
+      expect(result[0]._id).toBe(product1._id.toString());
       done();
 
     })

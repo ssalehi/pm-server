@@ -69,6 +69,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) 
   });
 }
 
+
 router.get('/', function (req, res) {
   res.send('respond with a resource');
 });
@@ -121,8 +122,8 @@ router.put('/product/color', apiResponse('Product', 'setColor', false, ['body'])
 router.post('/product/color', apiResponse('Product', 'setColor', false, ['body']));
 router.put('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
 router.post('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
-
 router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', false, ['body']));
+router.post('product/image', upload.array('image'), apiResponse('product', 'upload', false, ['user.pid', 'params.pid', 'file']));
 
 
 

@@ -7,7 +7,13 @@ let schema_obj = {
     // unique: true,
     ref: 'Color'
   },
-  images: [{type: Schema.Types.ObjectId, ref: 'Image'}],
+  images: [{
+    url: {
+      type: String,
+      required: true,
+      trim: true,
+    }
+  }],
 };
 
 

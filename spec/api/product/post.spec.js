@@ -73,8 +73,12 @@ describe("Post product colors", () => {
 
   let productId, productColorId;
   let colorId = mongoose.Types.ObjectId();
-  let imageId1 = mongoose.Types.ObjectId();
-  let imageId2 = mongoose.Types.ObjectId();
+  let image1 = {
+    url: 'image 1 url',
+  };
+  let image2 = {
+    url: 'image 2 url',
+  };
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
@@ -88,7 +92,7 @@ describe("Post product colors", () => {
           colors: [
             {
               color_id: colorId,
-              images: [imageId1, imageId2]
+              images: [image1, image2]
             }
           ]
         });
@@ -110,7 +114,7 @@ describe("Post product colors", () => {
 
     this.done = done;
     let newColorId = mongoose.Types.ObjectId();
-    let newImage1Id = mongoose.Types.ObjectId();
+    let newImageURL= 'new image url';
     rp({
       method: 'post',
       uri: lib.helpers.apiTestURL(`product/color`),
@@ -118,7 +122,7 @@ describe("Post product colors", () => {
         id: productId,
         productColorId,
         colorId: newColorId,
-        images: [newImage1Id]
+        images: [newImageURL]
       },
       json: true,
       resolveWithFullResponse:
@@ -133,7 +137,7 @@ describe("Post product colors", () => {
       expect(res[0].colors.length).toBe(1);
       expect(res[0].colors[0].color_id).toEqual(newColorId);
       expect(res[0].colors[0].images.length).toBe(1);
-      expect(res[0].colors[0].images[0]).toEqual(newImage1Id);
+      expect(res[0].colors[0].images[0].url).toBe(newImageURL);
       done();
 
     })
