@@ -69,6 +69,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) 
   });
 }
 
+
 router.get('/', function (req, res) {
   res.send('respond with a resource');
 });
@@ -78,7 +79,7 @@ router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 
 router.post('/loginCheck', apiResponse('Person', 'loginCheck', false, ['body.username', 'body.password']));
 router.get('/logout', (req, res) => {
   req.logout();
-  res.status(200).json('')
+res.status(200).json('')
 });
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
@@ -111,7 +112,18 @@ router.put('/user/message', apiResponse('Person', 'socketHandler', false, ['body
 
 router.put('/addAgent', apiResponse('Agent', 'save', false, ['']));
 router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
-router.put('/product', apiResponse('Product', 'save', false, ['body']));
+
+//product
+router.get('/product', apiResponse('Product', 'getAllProducts', false, ['body']));
+router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
+router.put('/product', apiResponse('Product', 'setProduct', false, ['body']));
+router.post('/product', apiResponse('Product', 'setProduct', false, ['body']));
+router.put('/product/color', apiResponse('Product', 'setColor', false, ['body']));
+router.post('/product/color', apiResponse('Product', 'setColor', false, ['body']));
+router.put('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
+router.post('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
+router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', false, ['body']));
+router.post('product/image', upload.array('image'), apiResponse('product', 'upload', false, ['user.pid', 'params.pid', 'file']));
 
 
 

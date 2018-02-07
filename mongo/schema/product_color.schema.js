@@ -4,10 +4,16 @@ let schema_obj = {
   color_id: {
     type: Schema.Types.ObjectId,
     required: true,
-    unique: true,
+    // unique: true,
     ref: 'Color'
   },
-  images: [{type: Schema.Types.ObjectId, ref: 'Image'}],
+  images: [{
+    url: {
+      type: String,
+      required: true,
+      trim: true,
+    }
+  }],
 };
 
 

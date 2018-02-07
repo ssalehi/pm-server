@@ -1,6 +1,7 @@
 const env = require('../env');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
+mongoose.Promise = require('bluebird');
 
 let testConnection, prodConnection;
 
@@ -8,7 +9,7 @@ prodConnection = mongoose.createConnection(env.db_uri);
 
 if (env.isDev) {
   testConnection = mongoose.createConnection(env.db_uri_test);
-  // mongoose.set('debug', true);
+  mongoose.set('debug', true);
 }
 
 let dbIsReady= () => {

@@ -5,7 +5,7 @@ inventory_template = {
   warehouse_id: {
     type: Schema.Types.ObjectId,
     require: true,
-    unique: true,
+    // unique: true,
     ref: 'Warehouse'
   },
   count: {
@@ -19,11 +19,13 @@ inventory_template = {
 
 let schema_obj = {
   product_color_id: Schema.Types.ObjectId,
-  size: Number  ,
-  price: Number,
+  size: {
+    type: Number,
+    required: true
+  },
+  price:  Number,
   inventory: [inventory_template]
 };
-
 
 
 let ProductInstanceSchema = new Schema(schema_obj, {strict: true});
