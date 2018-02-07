@@ -77,6 +77,24 @@ describe('DELETE Collection', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
+  it('expect error when cid is not valid', function (done) {
+    this.done = done;
+    rp({
+      method: 'delete',
+      uri: lib.helpers.apiTestURL(`collection/1`),
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('expect error when cid is not valid');
+      done();
+    }).catch(err => {
+      // console.log("@@@!!!!!!", err.error);
+      expect(err.statusCode).toBe(500);
+      expect(err.error).toEqual(`Cast to ObjectId failed for value "{ _id: '1' }" at path "_id" for model "Collection"`);
+      done();
+    });
+  });
+
   it('should product delete from collection', function (done) {
     this.done = done;
     rp({
@@ -85,6 +103,7 @@ describe('DELETE Collection', () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
+      expect(res.statusCode).toBe(200);
 
       return models['CollectionTest'].findById(collectionIds[2]);
     }).then(res => {
@@ -107,7 +126,9 @@ describe('DELETE Collection', () => {
 
       done();
     }).catch(err => {
+      // console.log("Check Error params cid not valid", err.error);
       expect(err.statusCode).toBe(500);
+      expect(err.error).toEqual('Cast to ObjectId failed for value "1" at path "_id" for model "Collection"');
       done();
     });
   });
@@ -122,7 +143,8 @@ describe('DELETE Collection', () => {
 
       done();
     }).catch(err => {
-      expect(err.statusCode).toBe(200);
+      expect(err.statusCode).toBe(500);
+      expect(err.error).toEqual('Cast to ObjectId failed for value "2" at path "productIds"');
       done();
     });
 

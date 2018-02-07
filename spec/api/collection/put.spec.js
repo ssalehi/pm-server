@@ -55,7 +55,13 @@ describe('Put Collection', () => {
       expect(res.body.name).toEqual(letName);
       expect(res.body.productIds[0]).toEqual(productId.toString());
 
+      return models['CollectionTest'].find();
+
+    }).then(res => {
+
+      // console.log("Create new Collection:@@@@",res);
       done();
+
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
@@ -75,8 +81,8 @@ describe('Put Collection', () => {
       this.fail('did not fail when other users are calling api');
       done();
     }).catch(err => {
-      expect(err.statusCode).toBe(error.nameRequired.status);
-      expect(err.error).toBe(error.nameRequired.message);
+      expect(err.statusCode).toBe(500);
+      expect(err.error).toEqual("Collection validation failed: name: Path `name` is required.");
       done();
     });
   });
@@ -96,7 +102,7 @@ describe('Put Collection', () => {
       expect(res.statusCode).toBe(200);
       return models['CollectionTest'].findById(collectionId);
     }).then(res => {
-
+      // console.log("should added product to collection@@@:",res);
       expect(res.productIds.length).toBe(2);
       expect(res.productIds).toContain(productId);
 
@@ -118,6 +124,7 @@ describe('Put Collection', () => {
     }).catch(err => {
       // console.log(err);
       expect(err.statusCode).toBe(500);
+      expect(err.error).toEqual('Cast to ObjectId failed for value "1" at path "_id" for model "Collection"');
       done();
     });
   });
@@ -134,8 +141,8 @@ describe('Put Collection', () => {
       this.fail('error when pid is not defined');
       done();
     }).catch(err => {
-      // console.log(err);
       expect(err.statusCode).toBe(500);
+      expect(err.error).toEqual('Cast to ObjectId failed for value "1" at path "productIds"');
       done();
     });
   });
