@@ -34,20 +34,7 @@ describe('DELETE Collection', () => {
       }, {
         name: 'delete collection test3',
         image_url: imageUrls[2],
-        productIds: [
-          {
-            _id: productIds[0],
-            name: 'product 1'
-          },
-          {
-            _id: productIds[1],
-            name: 'product2'
-          },
-          {
-            _id: productIds[2],
-            name: 'product3'
-          },
-        ]
+        productIds: [productIds[0], productIds[1], productIds[2]]
       }]);
 
     }).then(res => {
