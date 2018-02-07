@@ -56,7 +56,6 @@ describe('DELETE Collection', () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      // console.log(JSON.stringify(res, null, 2));
       expect(res.statusCode).toBe(200);
       expect(res.body._id).toBe(collectionIds[0].toString());
 

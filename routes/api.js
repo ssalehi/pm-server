@@ -111,15 +111,27 @@ router.put('/user/message', apiResponse('Person', 'socketHandler', false, ['body
 
 router.put('/addAgent', apiResponse('Agent', 'save', false, ['']));
 router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
-router.put('/product', apiResponse('Product', 'save', false, ['body']));
+
+//product
+router.get('/product', apiResponse('Product', 'getAllProducts', false, ['body']));
+router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
+router.put('/product', apiResponse('Product', 'setProduct', false, ['body']));
+router.post('/product', apiResponse('Product', 'setProduct', false, ['body']));
+router.put('/product/color', apiResponse('Product', 'setColor', false, ['body']));
+router.post('/product/color', apiResponse('Product', 'setColor', false, ['body']));
+router.put('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
+router.post('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
+router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', false, ['body']));
+router.post('product/image', upload.array('image'), apiResponse('product', 'upload', false, ['user.pid', 'params.pid', 'file']));
 
 router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params']));
 router.put('/collection/product/:cid/:pid', apiResponse('Collection', 'addedProductToCollection', false, ['params']));
+// get
 router.post('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params']));
 router.put('/collection', apiResponse('Collection', 'createCollection', false, ['body']));
-router.get('/collection/:cid', apiResponse('Collection', 'getCollectionById', false, ['params.cid']));
-router.get('/collection', apiResponse('Collection', 'getCollection', false, ['']));
+router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
+router.get('/collection', apiResponse('Collection', 'getAllCollection', false, ['']));
 
 
 module.exports = router;
