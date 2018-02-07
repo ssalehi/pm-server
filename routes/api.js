@@ -78,15 +78,15 @@ router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 
 router.post('/loginCheck', apiResponse('Person', 'loginCheck', false, ['body.username', 'body.password']));
 router.get('/logout', (req, res) => {
   req.logout();
-  res.status(200).json('')
+  res.status(200).json('');
 });
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
 router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
 router.get('/login/google/callback', passport.authenticate('google', {
-  successRedirect : '/login/oauth',
-  failureRedirect : '/login'
+  successRedirect: '/login/oauth',
+  failureRedirect: '/login'
 }));
 
 // Person (Customer/Agent) API
@@ -113,14 +113,13 @@ router.put('/addAgent', apiResponse('Agent', 'save', false, ['']));
 router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
 router.put('/product', apiResponse('Product', 'save', false, ['body']));
 
-router.delete('/collection/product/:cid/:pid', apiResponse('Collection','deleteProductFromCollection', false, ['params']));
-router.delete('/collection/:cid', apiResponse('Collection','deleteCollection', false, ['params']));
-router.put('/collection/product/:cid/:pid', apiResponse('Collection','addedProductToCollection', false, ['params']));
-router.post('/collection/products/:cid', apiResponse('Collection','getProductsFromCollection', false, ['params']));
-router.put('/collection', apiResponse('Collection','createCollection', false, ['body']));
-router.get('/collection', apiResponse('Collection','getCollection', false, ['']));
-
-
+router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));
+router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params']));
+router.put('/collection/product/:cid/:pid', apiResponse('Collection', 'addedProductToCollection', false, ['params']));
+router.post('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params']));
+router.put('/collection', apiResponse('Collection', 'createCollection', false, ['body']));
+router.get('/collection/:cid', apiResponse('Collection', 'getCollectionById', false, ['params.cid']));
+router.get('/collection', apiResponse('Collection', 'getCollection', false, ['']));
 
 
 module.exports = router;

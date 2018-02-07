@@ -24,8 +24,8 @@ describe('Put Collection', () => {
           productIds: [mongoose.Types.ObjectId()]
         }).then(res => {
           collectionId = res._id;
+          done();
         });
-        done();
       })
       .catch(err => {
         console.log(err);
