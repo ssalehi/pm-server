@@ -110,7 +110,40 @@ describe("Post product colors", () => {
   });
 
 
-  it("should update colors of product", function (done) {
+  it("should update images of a colors array of a product", function (done) {
+
+    this.done = done;
+    let newColorId = mongoose.Types.ObjectId();
+    let newImageURL= 'new image url';
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`product/color`),
+      body: {
+        id: productId,
+        productColorId,
+        colorId: colorId,
+        images: [newImageURL]
+      },
+      json: true,
+      resolveWithFullResponse:
+        true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+
+      return models['ProductTest'].find({}).lean();
+
+    }).then(res => {
+      expect(res.length).toBe(1);
+      expect(res[0].colors.length).toBe(1);
+      expect(res[0].colors[0].color_id).toEqual(colorId);
+      expect(res[0].colors[0].images.length).toBe(1);
+      expect(res[0].colors[0].images[0].url).toBe(newImageURL);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+  it("should not update color id in array of colors for a product", function (done) {
 
     this.done = done;
     let newColorId = mongoose.Types.ObjectId();
@@ -133,11 +166,7 @@ describe("Post product colors", () => {
       return models['ProductTest'].find({}).lean();
 
     }).then(res => {
-      expect(res.length).toBe(1);
-      expect(res[0].colors.length).toBe(1);
-      expect(res[0].colors[0].color_id).toEqual(newColorId);
-      expect(res[0].colors[0].images.length).toBe(1);
-      expect(res[0].colors[0].images[0].url).toBe(newImageURL);
+      expect(res[0].colors[0].color_id).toEqual(colorId);
       done();
 
     })
@@ -148,7 +177,8 @@ describe("Post product colors", () => {
 
 describe("Post product instances", () => {
 
-  let productId, productInstanceId;
+  let productId, productInstanceId, productColorId;
+  productColorId = mongoose.Types.ObjectId();
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
@@ -161,7 +191,7 @@ describe("Post product instances", () => {
           desc: 'some description for this product',
           instances:[
             {
-              product_color_id: mongoose.Types.ObjectId(),
+              product_color_id: productColorId,
               size: 8.5,
               price: 20000
             }
@@ -193,7 +223,7 @@ describe("Post product instances", () => {
       body: {
         id: productId,
         productInstanceId,
-        productColorId: newProductColorId,
+        productColorId: productColorId,
         size: 10,
         price: 60000
       },
@@ -208,7 +238,7 @@ describe("Post product instances", () => {
     }).then(res => {
       expect(res.length).toBe(1);
       expect(res[0].instances.length).toBe(1);
-      expect(res[0].instances[0].product_color_id).toEqual(newProductColorId);
+      expect(res[0].instances[0].product_color_id).toEqual(productColorId);
       expect(res[0].instances[0].size).toBe(10);
       expect(res[0].instances[0].price).toEqual(60000);
       done();
@@ -216,7 +246,36 @@ describe("Post product instances", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+  it("should not update product_color_id of a product instance", function (done) {
 
+    let newProductColorId = mongoose.Types.ObjectId();
+    this.done = done;
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`product/instance`),
+      body: {
+        id: productId,
+        productInstanceId,
+        productColorId: newProductColorId,
+        size: 10,
+        price: 60000
+      },
+      json: true,
+      resolveWithFullResponse:
+        true
+    }).then(res => {
+
+      expect(res.statusCode).toBe(200);
+      return models['ProductTest'].find({}).lean();
+
+    }).then(res => {
+      expect(res.length).toBe(1);
+      expect(res[0].instances[0].product_color_id).toEqual(productColorId);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
 });
 
 
