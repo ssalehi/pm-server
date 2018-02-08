@@ -50,6 +50,14 @@ const redisURL = getEnvValue(process.env.REDIS_URL);
 const redisHost = getEnvValue(process.env.REDIS_HOST);
 const redisPass = getEnvValue(process.env.REDIS_PASSWORD);
 
+
+/**
+ * upload files
+ */
+
+uploadPath = "public/documents/product-image";
+
+
 /**
  *  in some cases env var name which is declared in .env file is not compatible with server env var in production mode.
  *  for example in Heroku the name of env var for database connection is DATABASE_URL, but it is declared as pg_connection in .env file
@@ -81,6 +89,7 @@ module.exports = {
   redisURL,
   redisHost,
   redisPass,
+  uploadPath,
   googleAuth: {
     clientID: googleAuth_clientId,
     clientSecret: googleAuth_clientSecret,

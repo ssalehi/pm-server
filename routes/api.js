@@ -2,20 +2,29 @@ const lib = require('../lib');
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const mongo = require('../mongo');
 const error = require('../lib/errors.list');
 const env = require('../env');
 const path = require('path');
 const app = require('../app');
 const multer = require('multer');
+const mongoose = require('mongoose');
 
-var storage = multer.diskStorage({
+let productStorage = multer.diskStorage({
+  destination: env.uploadPath + path.sep,
+  filename: (req, file, cb) => {
+    cb(null, [ [req.params.id, req.params.colorId, new mongoose.Types.ObjectId()].join('-') , file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
+  }
+});
+let proudctUpload = multer({storage: productStorage});
+
+let storage = multer.diskStorage({
   destination: env.uploadPath + path.sep,
   filename: (req, file, cb) => {
     cb(null, [req.params.username || req.user.username, file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
   }
 });
-var upload = multer({storage: storage});
+let upload = multer({storage: storage});
+
 
 function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) {
   let args = Array.prototype.slice.call(arguments, 4);
@@ -123,7 +132,7 @@ router.post('/product/color', apiResponse('Product', 'setColor', false, ['body']
 router.put('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
 router.post('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
 router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', false, ['body']));
-router.post('product/image', upload.array('image'), apiResponse('product', 'upload', false, ['user.pid', 'params.pid', 'file']));
+router.post('/product/image/:id/:colorId', proudctUpload.single('file'), apiResponse('Product', 'uploadImages', false, [ 'params.id', 'params.colorId','file']));
 
 
 

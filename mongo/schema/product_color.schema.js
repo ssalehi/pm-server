@@ -8,11 +8,8 @@ let schema_obj = {
     ref: 'Color'
   },
   images: [{
-    url: {
       type: String,
-      required: true,
       trim: true,
-    }
   }],
 };
 
