@@ -3,6 +3,13 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
+const fs = require('fs');
+const path = require('path');
+const env = require('../../../env');
+const rimraf = require('rimraf');
+const copyFileSync = require('fs-copy-file-sync');
+const shell = require('shelljs');
+
 
 describe("Post product basics", () => {
 
@@ -69,6 +76,146 @@ describe("Post product basics", () => {
 
 });
 
+
+describe("Post product colors & images", () => {
+
+  let productId;
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(res => {
+
+        let product = models['ProductTest']({
+          name: 'sample name',
+          product_type: mongoose.Types.ObjectId(),
+          brand: mongoose.Types.ObjectId(),
+          base_price: 30000,
+          desc: 'some description for this product',
+
+        });
+        return product.save();
+      })
+      .then(res => {
+        productId = res._id;
+
+        return new Promise((resolve, reject) => {
+          rimraf(env.uploadProductImagePath + path.sep + 'test', function () {
+            resolve();
+          });
+
+        });
+
+      })
+      .then(res => {
+        done();
+
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+
+  it("should add a color with its images if color not exist yet", function (done) {
+
+    let colorId = mongoose.Types.ObjectId();
+
+    this.done = done;
+
+    rp.post({
+      url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}`),
+      formData: {
+        file: {
+          value: fs.readFileSync('spec/api/product/test1.jpeg'),
+          options: {
+            filename: 'test1',
+            contentType: 'image/jpeg'
+          }
+        }
+      },
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['ProductTest'].find({}).lean();
+
+    }).then(res => {
+
+      expect(res.length).toBe(1);
+      expect(res[0].colors.length).toBe(1);
+      expect(res[0].colors[0].color_id).toEqual(colorId);
+      expect(res[0].colors[0].images.length).toBe(1);
+      expect(res[0].colors[0].images[0]).toContain(productId);
+      expect(res[0].colors[0].images[0]).toContain(colorId);
+      expect(res[0].colors[0].images[0]).toContain('test1.jpeg');
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should add an new image to existing color", function (done) {
+
+    this.done = done;
+
+    let colorId = mongoose.Types.ObjectId();
+
+    let _path = env.uploadProductImagePath + path.sep + 'test' + path.sep + productId + path.sep + colorId;
+    shell.mkdir('-p', _path);
+    copyFileSync('spec/api/product/test1.jpeg', _path + path.sep + 'test1.jpeg');
+
+    let preColor = {
+
+      color_id: colorId,
+      images: [ _path + path.sep + 'test1.jpeg']
+    };
+    return models['ProductTest'].update({
+        "_id": productId,
+      },
+      {
+        $set: {
+          'colors': [preColor]
+        }
+      })
+      .then(res =>
+
+        rp.post({
+          url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}`),
+          formData: {
+            file: {
+              value: fs.readFileSync('spec/api/product/test2.jpeg'),
+              options: {
+                filename: 'test2',
+                contentType: 'image/jpeg'
+              }
+            }
+          },
+          resolveWithFullResponse: true
+        }))
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['ProductTest'].find({}).lean();
+
+      }).then(res => {
+
+        console.log('-> ', res[0].colors[0].images);
+        expect(res.length).toBe(1);
+        expect(res[0].colors.length).toBe(1);
+        expect(res[0].colors[0].color_id).toEqual(colorId);
+        expect(res[0].colors[0].images.length).toBe(2);
+        expect(res[0].colors[0].images[0]).toContain(productId);
+        expect(res[0].colors[0].images[0]).toContain(colorId);
+        expect(res[0].colors[0].images[1]).toContain(productId);
+        expect(res[0].colors[0].images[1]).toContain(colorId);
+        expect(res[0].colors[0].images[0]).toContain('test1.jpeg');
+        expect(res[0].colors[0].images[1]).toContain('test2.jpeg');
+        done();
+
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+});
+
 describe("Post product instances", () => {
 
   let productId, productInstanceId, productColorId;
@@ -83,7 +230,7 @@ describe("Post product instances", () => {
           brand: mongoose.Types.ObjectId(),
           base_price: 30000,
           desc: 'some description for this product',
-          instances:[
+          instances: [
             {
               product_color_id: productColorId,
               size: 8.5,
@@ -109,7 +256,6 @@ describe("Post product instances", () => {
 
   it("should update basic info of a product instance", function (done) {
 
-    let newProductColorId = mongoose.Types.ObjectId();
     this.done = done;
     rp({
       method: 'post',
@@ -122,8 +268,7 @@ describe("Post product instances", () => {
         price: 60000
       },
       json: true,
-      resolveWithFullResponse:
-        true
+      resolveWithFullResponse: true
     }).then(res => {
 
       expect(res.statusCode).toBe(200);
