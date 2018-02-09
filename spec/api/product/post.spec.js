@@ -14,10 +14,17 @@ const shell = require('shelljs');
 describe("Post product basics", () => {
 
   let productId, brandId, typeId;
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
       .then(res => {
-
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
         let product = models['ProductTest']({
           name: 'sample name',
           product_type: mongoose.Types.ObjectId(),
@@ -56,9 +63,9 @@ describe("Post product basics", () => {
         base_price: 50000,
         desc: 'some description for this product',
       },
+      jar: adminObj.jar,
       json: true,
-      resolveWithFullResponse:
-        true
+      resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
 
@@ -80,10 +87,16 @@ describe("Post product basics", () => {
 describe("Post product colors & images", () => {
 
   let productId;
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
   beforeEach(done => {
     lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
       .then(res => {
-
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
         let product = models['ProductTest']({
           name: 'sample name',
           product_type: mongoose.Types.ObjectId(),
@@ -133,6 +146,7 @@ describe("Post product colors & images", () => {
           }
         }
       },
+      jar: adminObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
@@ -189,6 +203,7 @@ describe("Post product colors & images", () => {
               }
             }
           },
+          jar: adminObj.jar,
           resolveWithFullResponse: true
         }))
       .then(res => {
@@ -220,10 +235,16 @@ describe("Post product instances", () => {
 
   let productId, productInstanceId, productColorId;
   productColorId = mongoose.Types.ObjectId();
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
   beforeEach(done => {
     lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
       .then(res => {
-
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
         let product = models['ProductTest']({
           name: 'sample name',
           product_type: mongoose.Types.ObjectId(),
@@ -267,6 +288,7 @@ describe("Post product instances", () => {
         size: 10,
         price: 60000
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -299,6 +321,7 @@ describe("Post product instances", () => {
         size: 10,
         price: 60000
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse:
         true
@@ -321,9 +344,17 @@ describe("Post product instances", () => {
 describe("Post Product instance inventories", () => {
 
   let productId, productInstanceId;
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
   beforeEach(done => {
     lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
       .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
+
         let product = models['ProductTest']({
           name: 'sample name',
           product_type: mongoose.Types.ObjectId(),
@@ -364,6 +395,7 @@ describe("Post Product instance inventories", () => {
         warehouseId,
         count: 5
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -406,6 +438,7 @@ describe("Post Product instance inventories", () => {
             warehouseId,
             count: 6
           },
+          jar: adminObj.jar,
           json: true,
           resolveWithFullResponse: true
         })
@@ -437,6 +470,7 @@ describe("Post Product instance inventories", () => {
         warehouseId,
         count: 5
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -462,6 +496,7 @@ describe("Post Product instance inventories", () => {
         warehouseId,
         count: 5
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -487,6 +522,7 @@ describe("Post Product instance inventories", () => {
         warehouseId,
         // count: 5
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -512,6 +548,7 @@ describe("Post Product instance inventories", () => {
         // warehouseId,
         count: 5
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
