@@ -134,4 +134,8 @@ router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false,
 router.get('/collection', apiResponse('Collection', 'getAllCollection', false, ['']));
 
 
+// router.get('amin', apiResponse('Collection', 'aminFun', false, ['']));
+
+
+
 module.exports = router;
