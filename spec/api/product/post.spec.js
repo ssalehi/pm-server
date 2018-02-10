@@ -82,8 +82,6 @@ describe("Post product basics", () => {
   });
 
 });
-
-
 describe("Post product colors & images", () => {
 
   let productId;
@@ -230,7 +228,6 @@ describe("Post product colors & images", () => {
   });
 
 });
-
 describe("Post product instances", () => {
 
   let productId, productInstanceId, productColorId;
@@ -339,8 +336,6 @@ describe("Post product instances", () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 });
-
-
 describe("Post Product instance inventories", () => {
 
   let productId, productInstanceId;
