@@ -58,6 +58,45 @@ describe("Put product basics", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+  it("should second product when there is already one", function (done) {
+
+    this.done = done;
+
+    let product = new models['ProductTest']({
+      name: 'sample name 1',
+      product_type: typeId,
+      brand: brandId,
+      base_price: 20000,
+      desc: 'some description for this product',
+    });
+    product.save()
+      .then(res =>
+        rp({
+          method: 'put',
+          uri: lib.helpers.apiTestURL(`product`),
+          body: {
+            name: 'sample name',
+            product_type: typeId,
+            brand: brandId,
+            base_price: 30000,
+            desc: 'some description for this product',
+          },
+          jar: adminObj.jar,
+          json: true,
+          resolveWithFullResponse: true
+        })).then(res => {
+      expect(res.statusCode).toBe(200);
+
+      return models['ProductTest'].find({}).lean();
+
+    }).then(res => {
+      expect(res.length).toBe(2);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
   it("expect error when name of product is not defined", function (done) {
 
     this.done = done;
