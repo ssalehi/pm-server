@@ -178,7 +178,7 @@ describe("Post product colors & images", () => {
     let preColor = {
 
       color_id: colorId,
-      images: [ _path + path.sep + 'test1.jpeg']
+      images: [_path + path.sep + 'test1.jpeg']
     };
     return models['ProductTest'].update({
         "_id": productId,
@@ -555,6 +555,110 @@ describe("Post Product instance inventories", () => {
         expect(err.error).toBe(error.productInstanceWarehouseIdRequired.message);
         done();
       });
+  });
+
+});
+describe("Post Product tags", () => {
+
+  let productId, productInstanceId;
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
+
+        let product = models['ProductTest']({
+          name: 'sample name',
+          product_type: mongoose.Types.ObjectId(),
+          brand: mongoose.Types.ObjectId(),
+          base_price: 30000,
+          desc: 'some description for this product',
+        });
+        return product.save();
+
+      })
+      .then(res => {
+        productId = res._id;
+        productInstanceId = res.instances[0]._id;
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+
+  it("should add new tag for a product", function (done) {
+
+    this.done = done;
+    let tagId = mongoose.Types.ObjectId();
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`product/tag`),
+      body: {
+        id: productId,
+        tagId
+      },
+      jar: adminObj.jar,
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+
+      return models['ProductTest'].find({}).lean();
+
+    }).then(res => {
+      expect(res.length).toBe(1);
+      expect(res[0].tags.length).toBe(1);
+      expect(res[0].tags[0]).toEqual(tagId);
+      done();
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("duplicate tag id must not exist in product tags array", function (done) {
+
+    this.done = done;
+    let tagId = mongoose.Types.ObjectId();
+
+    models['ProductTest'].update({
+        "_id": productId,
+      },
+      {
+        $addToSet: {
+          'tags': tagId
+        }
+      })
+      .then(res =>
+        rp({
+          method: 'post',
+          uri: lib.helpers.apiTestURL(`product/tag`),
+          body: {
+            id: productId,
+            tagId
+          },
+          jar: adminObj.jar,
+          json: true,
+          resolveWithFullResponse: true
+        }))
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['ProductTest'].find({}).lean();
+
+      })
+      .then(res => {
+        expect(res.length).toBe(1);
+        expect(res[0].tags.length).toBe(1);
+        expect(res[0].tags[0]).toEqual(tagId);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this))
   });
 
 });
