@@ -7,30 +7,26 @@ const mongoose = require('mongoose');
 
 describe('Put Collection', () => {
 
-  let imageUrl, productId, parentId, letName, collectionId;
-  // let productIds = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
-
+  let productIdsArr = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
+  let collectionIds = [];
+  let newProduct;
   beforeEach(done => {
-    lib.dbHelpers.dropAll()
-      .then(res => {
-        imageUrl = mongoose.Types.ObjectId();
-        productId = mongoose.Types.ObjectId();
-        parentId = mongoose.Types.ObjectId();
-        letName = 'new collection';
+    lib.dbHelpers.dropAll().then(res => {
+      models['CollectionTest'].create({
+        name: 'collection four',
+        productIds: [
+          productIdsArr[0],
+          productIdsArr[1]
+        ]
+      }).then(res => {
+        collectionIds[0] = res._id;
 
-        models['CollectionTest'].create({
-          name: 'test product add to collection',
-          image_url: mongoose.Types.ObjectId(),
-          productIds: [mongoose.Types.ObjectId()]
-        }).then(res => {
-          collectionId = res._id;
-          done();
-        });
-      })
-      .catch(err => {
-        console.log(err);
         done();
       });
+    }).catch(err => {
+      console.log(err);
+      done();
+    });
   });
 
   it('should add a new collection ', function (done) {
@@ -39,31 +35,63 @@ describe('Put Collection', () => {
       method: 'put',
       uri: lib.helpers.apiTestURL('collection'),
       body: {
-        name: letName,
-        image_url: imageUrl,
+        name: 'collection three',
         productIds: [
-          productId
-        ],
-        parent_Id: productId
+          productIdsArr[0],
+          productIdsArr[1],
+          productIdsArr[2]
+        ]
       },
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      // console.log(JSON.stringify(res, null, 2));
-
       expect(res.statusCode).toBe(200);
-      expect(res.body.name).toEqual(letName);
-      expect(res.body.productIds[0]).toEqual(productId.toString());
 
       return models['CollectionTest'].find();
-
     }).then(res => {
+      // console.log("CollectionPutTest@@", res);
 
-      // console.log("Create new Collection:@@@@",res);
+      expect(res.length).toEqual(2);
+      expect(res[0].productIds.length).toEqual(2);
+      expect(res[0].productIds).toContain(productIdsArr[0]);
+      expect(res[0].productIds).toNotContain(productIdsArr[2]);
+      expect(res[1].productIds.length).toEqual(3);
+
       done();
-
     }).catch(lib.helpers.errorHandler.bind(this));
   });
+
+  it('should update collection productIds ', function (done) {
+    this.done = done;
+    rp({
+      method: 'put',
+      uri: lib.helpers.apiTestURL('collection'),
+      body: {
+        // name same name in collection
+        name: 'collection four',
+        productIds: [
+          productIdsArr[0],
+          productIdsArr[1],
+          productIdsArr[2]
+        ]
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+
+      return models['CollectionTest'].find();
+    }).then(res => {
+      console.log("CollectionPutTest@@", res);
+
+      expect(res.length).toEqual(1);
+      expect(res[0].productIds.length).toEqual(3);
+      expect(res[0].productIds).toContain(productIdsArr[2]);
+
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
 
   it('expect error when name of collection is not defined', function (done) {
     this.done = done;
@@ -72,39 +100,40 @@ describe('Put Collection', () => {
       uri: lib.helpers.apiTestURL(`collection`),
       body: {
         // name: 'second name',
-        image_url: imageUrl,
-        productIds: [productId]
+        productIds: [
+          productIdsArr[0],
+        ]
       },
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      this.fail('did not fail when other users are calling api');
+      this.fail('expect error when name of collection is not defined');
+
       done();
     }).catch(err => {
-      expect(err.statusCode).toBe(500);
-      expect(err.error).toEqual("Collection validation failed: name: Path `name` is required.");
+      expect(err.statusCode).toBe(error.CollectionNameRequired.status);
+      expect(err.error).toBe(error.CollectionNameRequired.message);
       done();
     });
   });
 
-
   it('should added product to collection', function (done) {
     this.done = done;
-    productId = mongoose.Types.ObjectId();
-    // You can check this product with result collection
-    // console.log("___", productId);
+    newProduct = mongoose.Types.ObjectId();
     rp({
       method: 'put',
-      uri: lib.helpers.apiTestURL(`collection/product/${collectionId}/${productId}`),
+      uri: lib.helpers.apiTestURL(`collection/product/${collectionIds[0]}/${newProduct}`),
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['CollectionTest'].findById(collectionId);
+
+      return models['CollectionTest'].findById(collectionIds[0]);
     }).then(res => {
-      // console.log("should added product to collection@@@:",res);
-      expect(res.productIds.length).toBe(2);
-      expect(res.productIds).toContain(productId);
+      console.log("CollectionTest@@", res);
+
+      expect(res.productIds.length).toEqual(3);
+      expect(res.productIds).toContain(newProduct);
 
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
@@ -112,19 +141,19 @@ describe('Put Collection', () => {
 
   it('expect error when cid params is not valid', function (done) {
     this.done = done;
-    productId = mongoose.Types.ObjectId();
+    newProduct = mongoose.Types.ObjectId();
     rp({
       method: 'put',
-      uri: lib.helpers.apiTestURL(`collection/product/1/${productId}`),
+      uri: lib.helpers.apiTestURL(`collection/product/1/${newProduct}`),
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      this.fail('error when cid is not defined');
+      this.fail('expect error when cid params is not valid');
       done();
     }).catch(err => {
       // console.log(err);
-      expect(err.statusCode).toBe(500);
-      expect(err.error).toEqual('Cast to ObjectId failed for value "1" at path "_id" for model "Collection"');
+      expect(err.statusCode).toBe(error.collectionIdIsNotValid.status);
+      expect(err.error).toEqual(error.collectionIdIsNotValid.message);
       done();
     });
   });
@@ -134,18 +163,18 @@ describe('Put Collection', () => {
     productId = mongoose.Types.ObjectId();
     rp({
       method: 'put',
-      uri: lib.helpers.apiTestURL(`collection/product/${collectionId}/1`),
+      uri: lib.helpers.apiTestURL(`collection/product/${collectionIds[0]}/1`),
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
       this.fail('error when pid is not defined');
       done();
     }).catch(err => {
-      expect(err.statusCode).toBe(500);
-      expect(err.error).toEqual('Cast to ObjectId failed for value "1" at path "productIds"');
+      console.log(err);
+      expect(err.statusCode).toBe(error.productIdIsNotValid.status);
+      expect(err.error).toEqual(error.productIdIsNotValid.message);
       done();
     });
   });
-
 
 });

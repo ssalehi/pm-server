@@ -133,17 +133,13 @@ router.post('/product/instance', apiResponse('Product', 'setInstance', false, ['
 router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', false, ['body']));
 router.post('/product/image/:id/:colorId', proudctUpload.single('file'), apiResponse('Product', 'uploadImages', false, [ 'params.id', 'params.colorId','file']));
 
-router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params']));
-router.put('/collection/product/:cid/:pid', apiResponse('Collection', 'addedProductToCollection', false, ['params']));
-// get
+router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));
+router.put('/collection/product/:cid/:pid', apiResponse('Collection', 'setProductToCollection', false, ['params']));
 router.post('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params']));
-router.put('/collection', apiResponse('Collection', 'createCollection', false, ['body']));
+router.put('/collection', apiResponse('Collection', 'setCollection', false, ['body']));
 router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
 router.get('/collection', apiResponse('Collection', 'getAllCollection', false, ['']));
-
-
-// router.get('amin', apiResponse('Collection', 'aminFun', false, ['']));
 
 
 
