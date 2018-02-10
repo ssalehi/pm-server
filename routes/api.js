@@ -119,14 +119,24 @@ router.get('/product', apiResponse('Product', 'getAllProducts', false, ['body'])
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
 router.put('/product', apiResponse('Product', 'setProduct', true, ['body']));
 router.post('/product', apiResponse('Product', 'setProduct', true, ['body']));
+router.delete('/product/:id', apiResponse('Product', 'deleteProduct', true, ['params.id']));
+
 // product tag
 router.post('/product/tag', apiResponse('Product', 'setTag', true, ['body']));
 router.delete('/product/tag/:id/:tagId', apiResponse('Product', 'deleteTag', true, ['params.id', 'params.tagId']));
 
+// product color
 router.post('/product/color', apiResponse('Product', 'setColor', true, ['body']));
+router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId']));
+
+// product instance
 router.put('/product/instance', apiResponse('Product', 'setInstance', true, ['body']));
 router.post('/product/instance', apiResponse('Product', 'setInstance', true, ['body']));
-router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', false, ['body']));
+router.delete('/product/instance/:id/:productColorId', apiResponse('Product', 'deleteInstance', true, ['params.id', 'params.productColorId']));
+router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', true, ['body']));
+router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', apiResponse('Product', 'deleteInventory', true, ['params.id', 'params.productColorId','params.warehouseId']));
+
+// product image
 router.use('/product/image/:id/:colorId', function (req, res, next) {
 
   let destination;
