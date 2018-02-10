@@ -7,9 +7,17 @@ const mongoose = require('mongoose');
 describe("Put product basics", () => {
 
   let brandId, typeId;
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
       .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
         brandId = mongoose.Types.ObjectId();
         typeId = mongoose.Types.ObjectId();
         done();
@@ -35,6 +43,7 @@ describe("Put product basics", () => {
         base_price: 30000,
         desc: 'some description for this product',
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -63,6 +72,7 @@ describe("Put product basics", () => {
         base_price: 30000,
         desc: 'some description for this product',
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -90,6 +100,7 @@ describe("Put product basics", () => {
         base_price: 30000,
         desc: 'some description for this product',
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -117,6 +128,7 @@ describe("Put product basics", () => {
         base_price: 30000,
         desc: 'some description for this product',
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -144,6 +156,7 @@ describe("Put product basics", () => {
         // base_price: 30000,
         desc: 'some description for this product',
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -164,9 +177,18 @@ describe("Put product basics", () => {
 describe("Put product instance basics", () => {
 
   let productId;
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
+
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
       .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
         let product = models['ProductTest']({
           name: 'sample name',
           product_type: mongoose.Types.ObjectId(),
@@ -201,6 +223,7 @@ describe("Put product instance basics", () => {
         size: 8.5,
         price: 3000
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -231,6 +254,7 @@ describe("Put product instance basics", () => {
         size: 8.5,
         price: 3000
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -255,6 +279,7 @@ describe("Put product instance basics", () => {
         size: 8.5,
         price: 3000
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -281,6 +306,7 @@ describe("Put product instance basics", () => {
         // size: 8.5,
         price: 3000
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -296,4 +322,5 @@ describe("Put product instance basics", () => {
   });
 
 });
+
 
