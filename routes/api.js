@@ -88,7 +88,7 @@ router.get('/login/google/callback', passport.authenticate('google', {
   successRedirect : '/login/oauth',
   failureRedirect : '/login'
 }));
-
+router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
 // Person (Customer/Agent) API
 router.put('/user/register', apiResponse('Person', 'registration', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));

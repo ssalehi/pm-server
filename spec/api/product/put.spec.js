@@ -62,10 +62,10 @@ describe("Put Product", () => {
 
     }).then(res => {
       expect(res.length).toBe(1);
-      expect(res[0].colors[0]._id).toEqual(productColorId);
-      expect(res[0].instances[0].product_color_id).toEqual(productColorId);
+      expect(res[0].colors[0]._id.toString()).toEqual(productColorId.toString());
+      expect(res[0].instances[0].product_color_id.toString()).toEqual(productColorId.toString());
       expect(res[0].instances[0]._id).not.toBe(null);
-      expect(res[0].instances[0].product_color_id).toEqual(productColorId);
+      expect(res[0].instances[0].product_color_id.toString()).toEqual(productColorId.toString());
       expect(res[0].instances[0].inventory[0]._id).not.toBe(null);
       done();
 
