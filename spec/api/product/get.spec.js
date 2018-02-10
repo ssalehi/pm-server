@@ -57,7 +57,7 @@ describe("Get products", () => {
   });
 
 
-  xit("should get all products", function (done) {
+  it("should get all products", function (done) {
 
     this.done = done;
 
