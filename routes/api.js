@@ -9,14 +9,6 @@ const app = require('../app');
 const multer = require('multer');
 const mongoose = require('mongoose');
 
-let productStorage = multer.diskStorage({
-  destination: env.uploadPath + path.sep,
-  filename: (req, file, cb) => {
-    cb(null, [ [req.params.id, req.params.colorId, new mongoose.Types.ObjectId()].join('-') , file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
-  }
-});
-let proudctUpload = multer({storage: productStorage});
-
 let storage = multer.diskStorage({
   destination: env.uploadPath + path.sep,
   filename: (req, file, cb) => {
@@ -62,7 +54,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) 
             lib[cn].test = req.test;
 
           let isStaticFunction = typeof lib[className][functionName] === 'function';
-          let model = isStaticFunction ? lib[className] : new lib[className](req.test);
+          let model = isStaticFunction ? lib[className] : new lib[className](req.test)
           return model[functionName].apply(isStaticFunction ? null : model, allArgs);
         }
       })
@@ -88,15 +80,15 @@ router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 
 router.post('/loginCheck', apiResponse('Person', 'loginCheck', false, ['body.username', 'body.password']));
 router.get('/logout', (req, res) => {
   req.logout();
-res.status(200).json('')
+  res.status(200).json('')
 });
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
 router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
 router.get('/login/google/callback', passport.authenticate('google', {
-  successRedirect : '/login/oauth',
-  failureRedirect : '/login'
+  successRedirect: '/login/oauth',
+  failureRedirect: '/login'
 }));
 
 // Person (Customer/Agent) API
@@ -125,16 +117,35 @@ router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
 //product
 router.get('/product', apiResponse('Product', 'getAllProducts', false, ['body']));
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
-router.put('/product', apiResponse('Product', 'setProduct', false, ['body']));
-router.post('/product', apiResponse('Product', 'setProduct', false, ['body']));
-router.put('/product/color', apiResponse('Product', 'setColor', false, ['body']));
-router.post('/product/color', apiResponse('Product', 'setColor', false, ['body']));
-router.put('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
-router.post('/product/instance', apiResponse('Product', 'setInstance', false, ['body']));
+router.put('/product', apiResponse('Product', 'setProduct', true, ['body']));
+router.post('/product', apiResponse('Product', 'setProduct', true, ['body']));
+router.post('/product/color', apiResponse('Product', 'setColor', true, ['body']));
+router.put('/product/instance', apiResponse('Product', 'setInstance', true, ['body']));
+router.post('/product/instance', apiResponse('Product', 'setInstance', true, ['body']));
 router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', false, ['body']));
-router.post('/product/image/:id/:colorId', proudctUpload.single('file'), apiResponse('Product', 'uploadImages', false, [ 'params.id', 'params.colorId','file']));
+router.use('/product/image/:id/:colorId', function (req, res, next) {
 
+  let destination;
+  if (req.test)
+    destination = env.uploadProductImagePath + path.sep + 'test' + path.sep + req.params.id + path.sep + req.params.colorId;
+  else
+    destination = env.uploadProductImagePath + path.sep + req.params.id + path.sep + req.params.colorId;
 
+  let productStorage = multer.diskStorage({
+    destination,
+    filename: (req, file, cb) => {
+      cb(null, [file.originalname, file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
+    }
+  });
+  let productUpload = multer({storage: productStorage});
+
+  productUpload.single('file')(req, res, err => {
+    if (!err)
+      next()
+  });
+
+});
+router.post('/product/image/:id/:colorId', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'file']));
 
 
 module.exports = router;
