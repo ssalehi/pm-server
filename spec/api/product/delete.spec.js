@@ -1,14 +1,7 @@
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
-const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
-const fs = require('fs');
-const path = require('path');
-const env = require('../../../env');
-const rimraf = require('rimraf');
-const copyFileSync = require('fs-copy-file-sync');
-const shell = require('shelljs');
 
 describe("Delete Product tags", () => {
 
@@ -71,7 +64,7 @@ describe("Delete Product tags", () => {
 
 });
 
-xdescribe("Delete Product tags", () => {
+describe("Delete Product tags", () => {
 
   let productId;
   let tagId1, tagId2;
@@ -161,7 +154,7 @@ xdescribe("Delete Product tags", () => {
 
 });
 
-xdescribe("Delete Product colors", () => {
+describe("Delete Product colors", () => {
 
   let productId;
   let colorId1, colorId2, imageURL1, imageURL2, imageURL3, imageURL4;
@@ -258,7 +251,7 @@ xdescribe("Delete Product colors", () => {
 
 });
 
-xdescribe("Delete Product instances and inventory", () => {
+describe("Delete Product instances and inventory", () => {
 
   let productId;
   let productColorId1, productColorId2, warehouseId1, warehouseId2;

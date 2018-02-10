@@ -1,8 +1,6 @@
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
-const error = require('../../../lib/errors.list');
-const mongoose = require('mongoose');
 
 describe("Get products", () => {
 
