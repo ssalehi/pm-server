@@ -7,50 +7,75 @@ const mongoose = require('mongoose');
 describe('GET Collection', () => {
   let productIds = [];
   let collectionIds = [];
-  let productTypeIds = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
-  let brandIds = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
+  let brandNames = [];
+  let productTypes = [];
   beforeEach(done => {
     lib.dbHelpers.dropAll().then(res => {
-      let productArr = [{
-        name: 'product one',
-        product_type: productTypeIds[0],
-        brand: brandIds[0],
-        base_price: 10000,
-        desc: 'some description for this product one',
+
+      let brandArr = [{
+        name: 'NIKE'
       }, {
-        name: 'product two',
-        product_type: productTypeIds[1],
-        brand: brandIds[1],
-        base_price: 20000,
-        desc: 'some description for this product two',
+        name: 'PUMA'
       }, {
-        name: 'product three',
-        product_type: productTypeIds[2],
-        brand: brandIds[2],
-        base_price: 3000,
-        desc: 'some description for this product three',
+        name: 'SONY'
       }];
-      models['ProductTest'].insertMany(productArr).then(res => {
-        productIds[0] = res[0]._id;
-        productIds[1] = res[1]._id;
-        productIds[2] = res[2]._id;
+      let productTypeArr = [{
+        name: 'Shoes'
+      }, {
+        name: 'Socks'
+      }, {
+        name: 'Pants'
+      }];
+      models['ProductTypeTest'].insertMany(productTypeArr).then(res => {
+        productTypes[0] = res[0]._id;
+        productTypes[1] = res[1]._id;
+        productTypes[2] = res[2]._id;
+        models['BrandTest'].insertMany(brandArr).then(res => {
+          brandNames[0] = res[0]._id;
+          brandNames[1] = res[1]._id;
+          brandNames[2] = res[2]._id;
 
-        let collectionArr = [{
-          name: 'collection one ',
-          image_url: 'http://localhost:3000/images/image001.png',
-          productIds: [productIds[0], productIds[1], productIds[2]]
-        }, {
-          name: 'collection two ',
-          image_url: 'http://localhost:3000/images/image002.png',
-          productIds: []
-          // productIds: [productIds[0], productIds[1], productIds[2]]
-        }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
-          collectionIds[0] = res[0]._id;
+          let productArr = [{
+            name: 'product one',
+            product_type: productTypes[0],
+            brand: brandNames[0],
+            base_price: 10000,
+            desc: 'some description for this product one',
+          }, {
+            name: 'product two',
+            product_type: productTypes[1],
+            brand: brandNames[1],
+            base_price: 20000,
+            desc: 'some description for this product two',
+          }, {
+            name: 'product three',
+            product_type: productTypes[2],
+            brand: brandNames[2],
+            base_price: 3000,
+            desc: 'some description for this product three',
+          }];
+          models['ProductTest'].insertMany(productArr).then(res => {
+            productIds[0] = res[0]._id;
+            productIds[1] = res[1]._id;
+            productIds[2] = res[2]._id;
 
-          done();
+            let collectionArr = [{
+              name: 'collection one ',
+              image_url: 'http://localhost:3000/images/image001.png',
+              productIds: [productIds[0], productIds[1], productIds[2]]
+            }, {
+              name: 'collection two ',
+              image_url: 'http://localhost:3000/images/image002.png',
+              productIds: []
+              // productIds: [productIds[0], productIds[1], productIds[2]]
+            }];
+            models['CollectionTest'].insertMany(collectionArr).then(res => {
+              collectionIds[0] = res[0]._id;
+
+              done();
+            });
+          });
         });
-
       });
     }).catch(err => {
       console.log(err);
@@ -67,7 +92,6 @@ describe('GET Collection', () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      // console.log("CollectionTest@@",res.body);
 
       expect(res.statusCode).toBe(200);
       expect(res.body.length).toBe(2);
@@ -86,10 +110,9 @@ describe('GET Collection', () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      // console.log("CollectionTest@@", res.body);.
 
       expect(res.statusCode).toBe(200);
-      expect(res.body.productIds.length).toBe(3);
+      expect(res.body[0].products.length).toBe(3);
 
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
@@ -122,7 +145,6 @@ describe('GET Collection', () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      // console.log(JSON.stringify(res.body));
       expect(res.statusCode).toBe(200);
       expect(res.body.length).toBe(1);
 

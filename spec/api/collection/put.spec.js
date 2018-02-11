@@ -49,7 +49,6 @@ describe('Put Collection', () => {
 
       return models['CollectionTest'].find();
     }).then(res => {
-      // console.log("CollectionPutTest@@", res);
 
       expect(res.length).toEqual(2);
       expect(res[0].productIds.length).toEqual(2);
@@ -82,7 +81,6 @@ describe('Put Collection', () => {
 
       return models['CollectionTest'].find();
     }).then(res => {
-      console.log("CollectionPutTest@@", res);
 
       expect(res.length).toEqual(1);
       expect(res[0].productIds.length).toEqual(3);
@@ -130,7 +128,6 @@ describe('Put Collection', () => {
 
       return models['CollectionTest'].findById(collectionIds[0]);
     }).then(res => {
-      console.log("CollectionTest@@", res);
 
       expect(res.productIds.length).toEqual(3);
       expect(res.productIds).toContain(newProduct);
@@ -151,7 +148,6 @@ describe('Put Collection', () => {
       this.fail('expect error when cid params is not valid');
       done();
     }).catch(err => {
-      // console.log(err);
       expect(err.statusCode).toBe(error.collectionIdIsNotValid.status);
       expect(err.error).toEqual(error.collectionIdIsNotValid.message);
       done();
@@ -170,7 +166,6 @@ describe('Put Collection', () => {
       this.fail('error when pid is not defined');
       done();
     }).catch(err => {
-      console.log(err);
       expect(err.statusCode).toBe(error.productIdIsNotValid.status);
       expect(err.error).toEqual(error.productIdIsNotValid.message);
       done();
