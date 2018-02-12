@@ -209,8 +209,6 @@ describe("Post product colors & images", () => {
         return models['ProductTest'].find({}).lean();
 
       }).then(res => {
-
-        console.log('-> ', res[0].colors[0].images);
         expect(res.length).toBe(1);
         expect(res[0].colors.length).toBe(1);
         expect(res[0].colors[0].color_id).toEqual(colorId);
