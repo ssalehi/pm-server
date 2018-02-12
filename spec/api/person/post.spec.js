@@ -111,7 +111,7 @@ describe('Person POST API', () => {
       resolveWithFullResponse: true,
     })
       .then(res => {
-        this.fail('Normal user loggedin in agent domain');
+        this.fail('Normal user logged in in agent domain');
         done();
       })
       .catch(err => {

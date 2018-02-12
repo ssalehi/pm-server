@@ -27,18 +27,10 @@ let schema_obj = {
   desc: String,
   tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
   reviews: [ProductReview],
-  colors: {
-    type :[ProductColor],
-    required: true
-  },
-  instances:{
-    type :[ProductInstanceSchema],
-    required: true
-  }
-
+  colors:[ProductColor],
+  instances:[ProductInstanceSchema],
 };
 
 
 let ProductSchema = new Schema(schema_obj, {strict: true});
-
 module.exports = ProductSchema;

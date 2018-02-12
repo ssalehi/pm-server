@@ -37,8 +37,6 @@ const database = getEnvValue(process.env.DATABASE);
 const database_test = getEnvValue(process.env.DATABASE) + '_test';
 const db_uri = getEnvValue(process.env.DB_URI);
 const db_uri_test = getEnvValue(process.env.DB_URI)+ '_test';
-const mongo_host = getEnvValue(process.env.MONGO_HOST);
-const mongo_port = getEnvValue(process.env.MONGO_PORT);
 const googleAuth_clientId = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTID);
 const googleAuth_clientSecret = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTSECRET);
 const googleAuth_callbackUrl = getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL);
@@ -49,6 +47,15 @@ const googleAuth_callbackUrl = getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL)
 const redisURL = getEnvValue(process.env.REDIS_URL);
 const redisHost = getEnvValue(process.env.REDIS_HOST);
 const redisPass = getEnvValue(process.env.REDIS_PASSWORD);
+
+
+/**
+ * upload files
+ */
+
+uploadPath = "public/documents";
+uploadProductImagePath = "public/images/product-image";
+
 
 /**
  *  in some cases env var name which is declared in .env file is not compatible with server env var in production mode.
@@ -76,11 +83,11 @@ module.exports = {
   database_test,
   db_uri,
   db_uri_test,
-  mongo_host,
-  mongo_port,
   redisURL,
   redisHost,
   redisPass,
+  uploadPath,
+  uploadProductImagePath,
   googleAuth: {
     clientID: googleAuth_clientId,
     clientSecret: googleAuth_clientSecret,

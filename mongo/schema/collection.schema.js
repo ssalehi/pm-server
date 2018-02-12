@@ -8,8 +8,8 @@ let schema_obj = {
     unique: true
   },
   image_url: {
-    type: Schema.Types.ObjectId,
-    ref: 'Image'
+    type: String,
+    trim: true,
   },
   productIds: [{type: Schema.Types.ObjectId, ref: 'Product'}],
   parent_id: Schema.Types.ObjectId
