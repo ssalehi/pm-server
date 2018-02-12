@@ -82,7 +82,7 @@ router.get('/logout', (req, res) => {
   req.logout();
   res.status(200).json('')
 });
-router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
+router.get('/agent/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
 router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
