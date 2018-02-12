@@ -149,7 +149,7 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
   let productStorage = multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
-      cb(null, [file.originalname, file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
+      cb(null, file.originalname);
     }
   });
   let productUpload = multer({storage: productStorage});
