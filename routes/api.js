@@ -75,14 +75,15 @@ router.get('/', function (req, res) {
   res.send('respond with a resource');
 });
 // Login API
-router.post('/agent/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user', () => 'agent']));
+router.post('/agent/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user', () => true]));
 router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user']));
 router.post('/loginCheck', apiResponse('Person', 'loginCheck', false, ['body.username', 'body.password']));
 router.get('/logout', (req, res) => {
   req.logout();
   res.status(200).json('')
 });
-router.get('/validUser/:personType', apiResponse('Person', 'afterLogin', false, ['user', 'params.personType']));
+router.get('/agent/validUser', apiResponse('Person', 'afterLogin', false, ['user', () => true]));
+router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
 router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
@@ -90,7 +91,7 @@ router.get('/login/google/callback', passport.authenticate('google', {
   successRedirect: '/login/oauth',
   failureRedirect: '/login'
 }));
-
+router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
 // Person (Customer/Agent) API
 router.put('/user/register', apiResponse('Person', 'registration', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
