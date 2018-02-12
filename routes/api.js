@@ -80,6 +80,7 @@ router.get('/logout', (req, res) => {
   req.logout();
   res.status(200).json('')
 });
+router.get('/agent/validUser', apiResponse('Person', 'afterLogin', false, ['user', () => true]));
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
