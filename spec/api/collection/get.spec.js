@@ -71,6 +71,7 @@ describe('GET Collection', () => {
             }];
             models['CollectionTest'].insertMany(collectionArr).then(res => {
               collectionIds[0] = res[0]._id;
+              collectionIds[1] = res[1]._id;
 
               done();
             });
@@ -104,9 +105,10 @@ describe('GET Collection', () => {
 
   it('should return one collection', function (done) {
     this.done = done;
+    console.log("$$@@",collectionIds);
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`collection/${collectionIds[0]}`),
+      uri: lib.helpers.apiTestURL(`collection/${collectionIds[1]}`),
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
