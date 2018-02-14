@@ -127,7 +127,7 @@ describe("Post product colors & images", () => {
   });
 
 
-  it("should add a color with its images if color not exist yet", function (done) {
+  it("should add a color with its images if colors array is empty", function (done) {
 
     let colorId = mongoose.Types.ObjectId();
 
@@ -152,6 +152,7 @@ describe("Post product colors & images", () => {
 
     }).then(res => {
 
+      console.log('-> ', res[0].colors[0]);
       expect(res.length).toBe(1);
       expect(res[0].colors.length).toBe(1);
       expect(res[0].colors[0].color_id).toEqual(colorId);
@@ -164,7 +165,54 @@ describe("Post product colors & images", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+  it("should add a color with its images if colors array already contains color ", function (done) {
 
+    let preColorId = mongoose.Types.ObjectId();
+    let colorId = mongoose.Types.ObjectId();
+
+    this.done = done;
+
+    models['ProductTest'].update({
+      '_id': productId
+    }, {
+      $set: {
+        'colors': [{
+          'color_id': preColorId,
+          'images': ['some url1', 'some url 2', 'some url 3']
+        }],
+      }
+    }).then(res =>
+      rp.post({
+        url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}`),
+        formData: {
+          file: {
+            value: fs.readFileSync('spec/api/product/test1.jpeg'),
+            options: {
+              filename: 'test1',
+              contentType: 'image/jpeg'
+            }
+          }
+        },
+        jar: adminObj.jar,
+        resolveWithFullResponse: true
+      })).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['ProductTest'].find({}).lean();
+
+    }).then(res => {
+
+      console.log('-> ', res[0].colors[0]);
+      expect(res.length).toBe(1);
+      expect(res[0].colors.length).toBe(2);
+      expect(res[0].colors[0].color_id).toEqual(preColorId);
+      expect(res[0].colors[1].color_id).toEqual(colorId);
+      expect(res[0].colors[0].images.length).toBe(3);
+      expect(res[0].colors[1].images.length).toBe(1);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
   it("should add an new image to existing color", function (done) {
 
     this.done = done;
@@ -224,6 +272,7 @@ describe("Post product colors & images", () => {
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
 
 });
 describe("Post product instances", () => {

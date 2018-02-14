@@ -149,7 +149,7 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
   let productStorage = multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
-      cb(null, [file.originalname, file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
+      cb(null, file.originalname);
     }
   });
   let productUpload = multer({storage: productStorage});
@@ -161,6 +161,10 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
 
 });
 router.post('/product/image/:id/:colorId', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'file']));
+
+// Product color
+router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
+
 
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params']));
 router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));
