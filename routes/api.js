@@ -161,12 +161,15 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
 });
 router.post('/product/image/:id/:colorId', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'file']));
 
+router.post('/products/search', apiResponse('Product', 'getSuggestion', false, ['body']));
+
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params.cid']));
 router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));
 router.put('/collection/product/:cid/:pid', apiResponse('Collection', 'setProductToCollection', false, ['params']));
 router.put('/collection', apiResponse('Collection', 'setCollection', false, ['body']));
 router.get('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params.cid']));
 router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
+router.get('/collection', apiResponse('Collection', 'getAllCollection', false, ['']));
 router.get('/collection', apiResponse('Collection', 'getAllCollection', false, ['']));
 
 module.exports = router;

@@ -7,42 +7,52 @@ describe('POST Collection/Products', () => {
 
 
   let productTypeIds = [];
-  let BrandIds = [];
-  let BrandArr = [];
-  let ProductTypeArr;
+  let brandIds = [];
+  let colorIds = [];
 
   beforeEach(done => {
     lib.dbHelpers.dropAll().then(res => {
-      ProductTypeArr = [{
-        name: 'Shoes'
-      }, {
-        name: 'T-shirt'
-      }];
-      models['ProductTypeTest'].insertMany(ProductTypeArr).then(res => {
-        productTypes[0] = res[0]._id;
-        productTypes[1] = res[1]._id;
+      let ProductTypeArr = [{name: 'Shoes'}, {name: 'T-shirt'}];
+      let BrandArr = [{name: 'Nike'}, {name: 'Puma'}];
+      let ColorArr = [{name: 'Blue', color_id: 111111}, {name: 'Red', color_id: 222222}];
+
+      Promise.all([
+        // insert Product Types
+        models['ProductTypeTest'].insertMany(ProductTypeArr).then(res => {
+          productTypeIds[0] = res[0]._id;
+          productTypeIds[1] = res[1]._id;
+        }),
+        // insert Brand
+        models['BrandTest'].insertMany(BrandArr).then(res => {
+          brandIds[0] = res[0]._id;
+          brandIds[1] = res[1]._id;
+        }),
+        // insert Color
+        models['ColorTest'].insertMany(ColorArr).then(res => {
+          colorIds[0] = res[0]._id;
+          colorIds[1] = res[1]._id;
+        }),
+      ]).then(() => {
+        let productsArr = [{
+          name: 'product 001',
+          product_type: productTypeIds[0],
+          brand: brandIds[0],
+          base_price: 1000,
+          desc: 'this is description about product 001',
+          colors: [{color_id: colorIds[0], images: 'image001'}]
+        }, {
+          name: 'product 002',
+          product_type: productTypeIds[1],
+          brand: brandIds[1],
+          base_price: 2000,
+          desc: 'this is description about product 002',
+          colors: [{color_id: colorIds[1], images: 'image002'}]
+        }];
+        models['ProductTest'].insertMany(productsArr).then(res => {
+          console.log("####", res);
+          done();
+        });
       });
-      // insert Product Types
-      models['BrandTest'].insertMany(BrandArr).then(res => {
-        productTypes[0] = res[0]._id;
-        productTypes[1] = res[1]._id;
-      });
-      // insert Brand
-
-
-      let productsArr = [{
-        name: 'product 001',
-        product_type
-      }];
-      models['ProductTest'].insertMany(productsArr).then(res => {
-
-
-        done();
-      }).catch(err => {
-        console.log(err);
-        done();
-      });
-      done();
       // end of insert products
     }).catch(err => {
       console.log(err);
@@ -60,7 +70,6 @@ describe('POST Collection/Products', () => {
 
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
-
   });
 
 
