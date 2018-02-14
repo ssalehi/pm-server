@@ -105,7 +105,6 @@ describe('GET Collection', () => {
 
   it('should return one collection', function (done) {
     this.done = done;
-    console.log("$$@@",collectionIds);
     rp({
       method: 'get',
       uri: lib.helpers.apiTestURL(`collection/${collectionIds[1]}`),
