@@ -162,6 +162,7 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
 router.post('/product/image/:id/:colorId', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'file']));
 
 router.post('/products/search', apiResponse('Product', 'getSuggestion', false, ['body']));
+router.post('/search', apiResponse('Search','searchCollection', false, ['body']));
 
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params.cid']));
 router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));

@@ -111,7 +111,7 @@ describe("Post product suggestion", () => {
 
 
 });
-/*
+
  describe("Post product basics", () => {
 
  let productId, brandId, typeId;
@@ -760,4 +760,3 @@ describe("Post product suggestion", () => {
  });
 
  });
- */
