@@ -96,7 +96,7 @@ describe("Post product suggestion", () => {
     this.done = done;
     rp({
       method: 'POST',
-      uri: lib.helpers.apiTestURL(`/products/search`),
+      uri: lib.helpers.apiTestURL(`/product/suggestion`),
       body: {
         name: 'product 001'
       },

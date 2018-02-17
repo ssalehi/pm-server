@@ -40,21 +40,20 @@ describe('POST Collection/Products', () => {
     this.done = done;
     rp({
       method: "POST",
-      uri: lib.helpers.apiTestURL(`/search`),
+      uri: lib.helpers.apiTestURL(`/collection/search`),
       body: {
-        phrase: '00',
+        phrase: '001',
         options: {
           target: 'Collection',
-          offset: 2,
-          limit: 4
+          offset: 0,
+          limit: 10
         }
       },
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-
       expect(res.statusCode).toBe(200);
-      expect(res.body.length).toEqual(4);
+      expect(res.body.length).toEqual(1);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
