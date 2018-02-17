@@ -82,6 +82,7 @@ router.get('/logout', (req, res) => {
   req.logout();
   res.status(200).json('')
 });
+router.get('/agent/validUser', apiResponse('Person', 'afterLogin', false, ['user', () => true]));
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
@@ -90,7 +91,7 @@ router.get('/login/google/callback', passport.authenticate('google', {
   successRedirect: '/login/oauth',
   failureRedirect: '/login'
 }));
-
+router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
 // Person (Customer/Agent) API
 router.put('/user/register', apiResponse('Person', 'registration', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
@@ -148,7 +149,7 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
   let productStorage = multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
-      cb(null, [file.originalname, file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
+      cb(null, file.originalname);
     }
   });
   let productUpload = multer({storage: productStorage});
@@ -166,6 +167,11 @@ router.post('/product/suggestion', apiResponse('Product', 'getSuggestion', false
 router.post('/collection/search', apiResponse('Collection','searchCollection', false, ['body']));
 
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params.cid']));
+// Product color
+router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
+
+
+router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params']));
 router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));
 router.put('/collection/product/:cid/:pid', apiResponse('Collection', 'setProductToCollection', false, ['params']));
 router.put('/collection', apiResponse('Collection', 'setCollection', false, ['body']));

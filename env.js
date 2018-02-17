@@ -8,8 +8,8 @@ const isDev = env === 'development';
 
 /**
  * read environment variable form env.process
- * in dev or test mode the environment variables are made from .env file
- * .env file must at least contains:
+ * in dev or test mode the environment variables are read from .env file
+ * .env file must at least contain:
  * APP_NAME
  * APP_ADDRESS
  * PORT
@@ -18,6 +18,23 @@ const isDev = env === 'development';
  * MONGO_HOST
  * MONGO_PORT
  * REDIS_HOST
+ *
+ * a .env file that might work for many:
+ ** START **
+ # the values must not be initiated with '!!'
+ APP_NAME=Persian-Mode
+ APP_ADDRESS=http://localhost:3000
+ PORT=3000
+ DATABASE=PersianMode
+ DB_URI=mongodb://127.0.0.1:27017/PersianMode
+ MONGO_HOST=localhost
+ MONGO_PORT=27017
+ REDIS_HOST=127.0.0.1
+ GOOGLE_OAUTH_CLIENTID = 636231560622-k29avsd6knviv7bu7ni9sf6r6okac3bt.apps.googleusercontent.com
+ GOOGLE_OAUTH_CLIENTSECRET = A7cwgIu3p8H37m69VqrjrW2J
+ GOOGLE_OAUTH_CALLBACKURL = http://127.0.0.1:3000/api/login/google/callback
+ # REDIS_PASSWORD=123465
+ ** END **
  */
 if (isDev)
   require('dotenv').config(); // loads env variables inside .env file into process.env
