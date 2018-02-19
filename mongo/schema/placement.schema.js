@@ -1,24 +1,12 @@
 const Schema = require('mongoose').Schema;
-
+const PlacementInfoSchema = require('./placement_info.schema');
 let schema_obj = {
-  url: {
-    type: String,
-    require: true,
-  },
-  placement_name: {
-    type: String,
-    required: true
-  },
-  collection_id: {
-    type: Schema.Types.ObjectId,
-    ref: 'Collection'
-  },
-  product_instance_id: Schema.Types.ObjectId,
+  component_name: String,
+  variable_name: String,
   start_date: Date,
   end_date: Date,
-  content: Schema.Types.Mixed
+  info: PlacementInfoSchema,
 };
-
 
 let PlacementSchema = new Schema(schema_obj, {strict: true});
 
