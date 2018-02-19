@@ -54,7 +54,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) 
             lib[cn].test = req.test;
 
           let isStaticFunction = typeof lib[className][functionName] === 'function';
-          let model = isStaticFunction ? lib[className] : new lib[className](req.test)
+          let model = isStaticFunction ? lib[className] : new lib[className](req.test);
           return model[functionName].apply(isStaticFunction ? null : model, allArgs);
         }
       })
@@ -179,5 +179,14 @@ router.put('/collection', apiResponse('Collection', 'setCollection', false, ['bo
 router.get('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params.cid']));
 router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
 router.get('/collection', apiResponse('Collection', 'getAllCollection', false, ['']));
+
+
+// Page
+router.get('/page/:id', apiResponse('Page', 'getProduct', false, ['params.id']));
+router.get('/page/:offset/:limit', apiResponse('Page', 'getProducts', false, ['params.offset', 'params.limit']));
+router.put('/page', apiResponse('Page', 'setPage', false, ['body']));
+router.post('/page/:id', apiResponse('Page', 'setPage', false, ['body', 'params.id']));
+router.delete('/page/:id', apiResponse('Page', 'deletePage', false, ['params.id']));
+
 
 module.exports = router;
