@@ -18,6 +18,7 @@ let schemas = {
   ReturnSchema: require('./schema/return.schema'),
   TagSchema: require('./schema/tag.schema'),
   TagGroupSchema: require('./schema/tag_group.schema'),
+  PageSchema: require('./schema/page.schema'),
 };
 
 
