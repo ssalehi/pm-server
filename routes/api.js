@@ -129,6 +129,7 @@ router.delete('/product/tag/:id/:tagId', apiResponse('Product', 'deleteTag', tru
 // product color
 router.post('/product/color', apiResponse('Product', 'setColor', true, ['body']));
 router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId']));
+//router.delete('/product/color/:id/:colorId/imageId', apiResponse('Product', 'deleteOneImage', true, ['params.id', 'params.colorId', 'params.imageId']));
 
 // product instance
 router.put('/product/instance', apiResponse('Product', 'setInstance', true, ['body']));
@@ -162,6 +163,11 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
 });
 router.post('/product/image/:id/:colorId', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'file']));
 
+router.post('/product/suggestion', apiResponse('Product', 'getSuggestion', false, ['body']));
+
+router.post('/collection/search', apiResponse('Collection','searchCollection', false, ['body']));
+
+router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params.cid']));
 // Product color
 router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
 
@@ -170,7 +176,7 @@ router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', 
 router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));
 router.put('/collection/product/:cid/:pid', apiResponse('Collection', 'setProductToCollection', false, ['params']));
 router.put('/collection', apiResponse('Collection', 'setCollection', false, ['body']));
-router.get('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params']));
+router.get('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params.cid']));
 router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
 router.get('/collection', apiResponse('Collection', 'getAllCollection', false, ['']));
 
