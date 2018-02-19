@@ -1,5 +1,6 @@
 const Schema = require('mongoose').Schema;
 const PlacementInfoSchema = require('./placement_info.schema');
+
 let schema_obj = {
   component_name: String,
   variable_name: String,
@@ -9,5 +10,4 @@ let schema_obj = {
 };
 
 let PlacementSchema = new Schema(schema_obj, {strict: true});
-
 module.exports = PlacementSchema;
