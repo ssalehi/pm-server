@@ -6,7 +6,7 @@ let schema_obj = {
     ref: 'Collection',
     // unique: true,
   },
-  content: String,
+  content: String, // html content if needed
 };
 
 let PageInfoSchema = new Schema(schema_obj, {strict: true});

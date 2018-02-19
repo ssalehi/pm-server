@@ -1,11 +1,15 @@
 const Schema = require('mongoose').Schema;
 
 let schema_obj = {
+  // menu
   section: String,
   column: Number,
+  row: Number,
   text: String,
-  href: String,
+  href: String, // href is also used for determining which collection is to be shown
   is_header: Boolean,
+
+
   is_panel: Boolean,
   panel_type: String,
   topTitle: {
