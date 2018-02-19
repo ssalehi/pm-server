@@ -11,7 +11,7 @@ const copyFileSync = require('fs-copy-file-sync');
 const shell = require('shelljs');
 
 
-describe("Post product basics", () => {
+xdescribe("Post product basics", () => {
 
   let productId, brandId, typeId;
   let adminObj = {
@@ -139,7 +139,7 @@ describe("Post product colors & images", () => {
         file: {
           value: fs.readFileSync('spec/api/product/test1.jpeg'),
           options: {
-            filename: 'test1',
+            filename: 'test1.jpeg',
             contentType: 'image/jpeg'
           }
         }
@@ -244,7 +244,7 @@ describe("Post product colors & images", () => {
             file: {
               value: fs.readFileSync('spec/api/product/test2.jpeg'),
               options: {
-                filename: 'test2',
+                filename: 'test2.jpeg',
                 contentType: 'image/jpeg'
               }
             }
@@ -275,7 +275,7 @@ describe("Post product colors & images", () => {
 
 
 });
-describe("Post product instances", () => {
+xdescribe("Post product instances", () => {
 
   let productId, productInstanceId, productColorId;
   productColorId = mongoose.Types.ObjectId();
@@ -383,7 +383,7 @@ describe("Post product instances", () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 });
-describe("Post Product instance inventories", () => {
+xdescribe("Post Product instance inventories", () => {
 
   let productId, productInstanceId;
   let adminObj = {
@@ -605,7 +605,7 @@ describe("Post Product instance inventories", () => {
   });
 
 });
-describe("Post Product tags", () => {
+xdescribe("Post Product tags", () => {
 
   let productId, productInstanceId;
   let adminObj = {
