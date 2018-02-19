@@ -53,7 +53,6 @@ describe('DELETE Collection', () => {
 
       return models['CollectionTest'].find();
     }).then(res => {
-      console.log("CollectionDeleteTest@@", res);
 
       expect(res.length).toEqual(2);
       expect(res[0].productIds).toNotContain(productIds[0]);
@@ -93,7 +92,6 @@ describe('DELETE Collection', () => {
 
       return models['CollectionTest'].findById(collectionIds[0]);
     }).then(res => {
-      console.log("CollectionTest@@", res);
 
       expect(res.productIds.length).toBe(2);
       expect(res.productIds).toNotContain(productIds[0]);
@@ -112,7 +110,6 @@ describe('DELETE Collection', () => {
 
       done();
     }).catch(err => {
-      // console.log("Check Error params cid not valid", err.error);
       expect(err.statusCode).toBe(error.collectionIdIsNotValid.status);
       expect(err.error).toBe(error.collectionIdIsNotValid.message);
       done();

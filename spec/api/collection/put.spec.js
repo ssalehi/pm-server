@@ -15,8 +15,8 @@ describe('Put Collection', () => {
       models['CollectionTest'].create({
         name: 'collection four',
         productIds: [
-          productIdsArr[0],
-          productIdsArr[1]
+          productIdsArr[1],
+          productIdsArr[2],
         ]
       }).then(res => {
         collectionIds[0] = res._id;
@@ -35,11 +35,10 @@ describe('Put Collection', () => {
       method: 'put',
       uri: lib.helpers.apiTestURL('collection'),
       body: {
+        // _id: collectionIds[0],
         name: 'collection three',
         productIds: [
           productIdsArr[0],
-          productIdsArr[1],
-          productIdsArr[2]
         ]
       },
       json: true,
@@ -49,30 +48,26 @@ describe('Put Collection', () => {
 
       return models['CollectionTest'].find();
     }).then(res => {
-      // console.log("CollectionPutTest@@", res);
+      console.log("#009", res);
 
       expect(res.length).toEqual(2);
-      expect(res[0].productIds.length).toEqual(2);
-      expect(res[0].productIds).toContain(productIdsArr[0]);
-      expect(res[0].productIds).toNotContain(productIdsArr[2]);
-      expect(res[1].productIds.length).toEqual(3);
+      expect(res[1].productIds).toContain(productIdsArr[0]);
+      expect(res[1].productIds.length).toEqual(1);
 
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should update collection productIds ', function (done) {
+  it('should update collection when body has _id ', function (done) {
     this.done = done;
     rp({
       method: 'put',
       uri: lib.helpers.apiTestURL('collection'),
       body: {
-        // name same name in collection
-        name: 'collection four',
+        _id: collectionIds[0],
+        name: 'collection three',
         productIds: [
           productIdsArr[0],
-          productIdsArr[1],
-          productIdsArr[2]
         ]
       },
       json: true,
@@ -82,11 +77,11 @@ describe('Put Collection', () => {
 
       return models['CollectionTest'].find();
     }).then(res => {
-      console.log("CollectionPutTest@@", res);
+      console.log("#010", res);
 
-      expect(res.length).toEqual(1);
-      expect(res[0].productIds.length).toEqual(3);
-      expect(res[0].productIds).toContain(productIdsArr[2]);
+      expect(res[0]._id).toEqual(collectionIds[0]);
+      expect(res[0].productIds.length).toEqual(1);
+      expect(res[0].name).toEqual('collection three');
 
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
@@ -130,7 +125,6 @@ describe('Put Collection', () => {
 
       return models['CollectionTest'].findById(collectionIds[0]);
     }).then(res => {
-      console.log("CollectionTest@@", res);
 
       expect(res.productIds.length).toEqual(3);
       expect(res.productIds).toContain(newProduct);
@@ -151,7 +145,6 @@ describe('Put Collection', () => {
       this.fail('expect error when cid params is not valid');
       done();
     }).catch(err => {
-      // console.log(err);
       expect(err.statusCode).toBe(error.collectionIdIsNotValid.status);
       expect(err.error).toEqual(error.collectionIdIsNotValid.message);
       done();
@@ -170,7 +163,6 @@ describe('Put Collection', () => {
       this.fail('error when pid is not defined');
       done();
     }).catch(err => {
-      console.log(err);
       expect(err.statusCode).toBe(error.productIdIsNotValid.status);
       expect(err.error).toEqual(error.productIdIsNotValid.message);
       done();
