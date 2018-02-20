@@ -48,7 +48,6 @@ describe('Put Collection', () => {
 
       return models['CollectionTest'].find();
     }).then(res => {
-      console.log("#009", res);
 
       expect(res.length).toEqual(2);
       expect(res[1].productIds).toContain(productIdsArr[0]);
@@ -77,7 +76,6 @@ describe('Put Collection', () => {
 
       return models['CollectionTest'].find();
     }).then(res => {
-      console.log("#010", res);
 
       expect(res[0]._id).toEqual(collectionIds[0]);
       expect(res[0].productIds.length).toEqual(1);

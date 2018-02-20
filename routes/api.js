@@ -179,4 +179,6 @@ router.get('/collection/products/:cid', apiResponse('Collection', 'getProductsFr
 router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
 router.get('/collection', apiResponse('Collection', 'getAllCollection', false, ['']));
 
+router.put('/upload_excel', apiResponse('Upload', 'excel', false, ['body']));
+
 module.exports = router;
