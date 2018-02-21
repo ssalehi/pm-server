@@ -35,27 +35,4 @@ describe('POST Collection/Products', () => {
     });
   });
 
-
-  it('expect return all documents that include this name', function (done) {
-    this.done = done;
-    rp({
-      method: "POST",
-      uri: lib.helpers.apiTestURL(`/collection/search`),
-      body: {
-        phrase: '001',
-        options: {
-          target: 'Collection',
-          offset: 0,
-          limit: 10
-        }
-      },
-      json: true,
-      resolveWithFullResponse: true
-    }).then(res => {
-      expect(res.statusCode).toBe(200);
-      expect(res.body.length).toEqual(1);
-      done();
-    }).catch(lib.helpers.errorHandler.bind(this));
-  });
-
 });
