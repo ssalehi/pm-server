@@ -161,7 +161,6 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
 
 });
 router.post('/product/image/:id/:colorId', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'file']));
-router.post('/product/suggestion', apiResponse('Product', 'getSuggestion', false, ['body']));
 
 // Product color
 router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
@@ -175,7 +174,7 @@ router.post('/collection/tag/:cid/:tid', apiResponse('Collection', 'setTagToColl
 router.put('/collection/detail/:cid', apiResponse('Collection', 'updateDetails', false, ['params.cid', 'body']));
 router.put('/collection', apiResponse('Collection', 'setCollection', false, ['body']));
 //TODO: I think we don't need this :-?
-router.get('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params.cid']));
+// router.get('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params.cid']));
 router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params.cid']));
 
@@ -189,6 +188,7 @@ router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']
 
 // Search
 router.post('/search/:className', apiResponse('Search','search', false, ['params.className','body']));
+router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body']));
 
 
 module.exports = router;
