@@ -2,7 +2,7 @@ const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
-describe("Get products", () => {
+describe("Get Page", () => {
 
   let page1, page2, collection1, collection2;
 
@@ -58,53 +58,6 @@ describe("Get products", () => {
   });
 
 
-  it("should get first 5 pages order by their address", function (done) {
-
-    this.done = done;
-
-    rp({
-      method: 'get',
-      uri: lib.helpers.apiTestURL(`page/0/5`),
-      resolveWithFullResponse: true
-    }).then(res => {
-
-      expect(res.statusCode).toBe(200);
-      let result = JSON.parse(res.body);
-      expect(result.length).toBe(5);
-      let n = 0;
-      while (n < 5) {
-        expect(result[n].address).toBe(`testAddress${n + 1}`);
-        expect(result[n].is_app).toBe(false);
-        n++;
-      }
-      done();
-
-    })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  it("should get 2 pages after offset of 5", function (done) {
-
-    this.done = done;
-
-    rp({
-      method: 'get',
-      uri: lib.helpers.apiTestURL(`page/5/5`),
-      resolveWithFullResponse: true
-    }).then(res => {
-
-      expect(res.statusCode).toBe(200);
-      let result = JSON.parse(res.body);
-      expect(result.length).toBe(2);
-      expect(result[0].address).toBe(`testAddress6`);
-      expect(result[1].address).toBe(`testAddress7`);
-      expect(result[0].collection.name).toBe(`collection1`);
-      expect(result[1].collection.name).toBe(`collection2`);
-      done();
-
-    })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
 
   it("should get specific page by its id", function (done) {
 

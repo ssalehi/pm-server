@@ -7,10 +7,6 @@ let schema_obj = {
     trim: true,
     unique: true
   },
-  image_url: {
-    type: String,
-    trim: true,
-  },
   productIds: [{type: Schema.Types.ObjectId, ref: 'Product'}],
   parent_id: Schema.Types.ObjectId
 };
