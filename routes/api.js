@@ -168,7 +168,6 @@ router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false
 
 
 // Collection
-router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params']));
 router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));
 router.put('/collection/product/:cid/:pid', apiResponse('Collection', 'setProductToCollection', false, ['params']));
 router.put('/collection', apiResponse('Collection', 'setCollection', false, ['body']));
