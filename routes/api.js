@@ -169,8 +169,12 @@ router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false
 
 // Collection
 router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));
-router.put('/collection/product/:cid/:pid', apiResponse('Collection', 'setProductToCollection', false, ['params']));
+router.post('/collection/product/:cid/:pid', apiResponse('Collection', 'setProductToCollection', false, ['params']));
+router.delete('/collection/tag/:cid/:tid', apiResponse('Collection', 'deleteTagFromCollection', false, ['params']));
+router.post('/collection/tag/:cid/:tid', apiResponse('Collection', 'setTagToCollection', false, ['params']));
+router.put('/collection/detail/:cid', apiResponse('Collection', 'updateDetails', false, ['params.cid', 'body']));
 router.put('/collection', apiResponse('Collection', 'setCollection', false, ['body']));
+//TODO: I think we don't need this :-?
 router.get('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params.cid']));
 router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params.cid']));
