@@ -9,7 +9,7 @@ let schema_obj = {
     unique: true
   },
   color_id: {
-    type: Number,
+    type: String,
     required: true,
     unique: true
   },
