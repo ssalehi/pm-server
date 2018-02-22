@@ -26,7 +26,7 @@ describe('Person PUT API', () => {
         first_name: 'Ali',
         surname: 'Alavi',
         dob: '1993-03-02',
-        gender: 'male',
+        gender: 'm',
         mobile_no: '1234567890',
       },
       json: true,
@@ -44,7 +44,7 @@ describe('Person PUT API', () => {
         expect(res.first_name.toLowerCase()).toBe('ali');
         expect(res.surname.toLowerCase()).toBe('alavi');
         expect(moment(res.dob).format('YYYY-MM-DD')).toBe('1993-03-02');
-        expect(res.gender).toBe('male');
+        expect(res.gender).toBe('m');
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -58,7 +58,7 @@ describe('Person PUT API', () => {
         first_name: 'Ali',
         surname: 'Alavi',
         dob: '1993-03-02',
-        gender: 'male',
+        gender: 'm',
         mobile_no: '1234567890',
       },
       json: true,

@@ -30,7 +30,7 @@ let schema_obj = {
   },
   gender: {
     type: String,
-    enum: ['male', 'female'],
+    enum: ['m', 'f'],
     required: true,
   },
   preferred_brands: [{type: Schema.Types.ObjectId, ref: 'Brand'}],
