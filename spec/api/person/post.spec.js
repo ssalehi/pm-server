@@ -141,4 +141,27 @@ describe('Person POST API', () => {
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
+  it('normal user should login from app', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        username: 'aa',
+        password: '123456',
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('app/login'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        expect(res.body.username).toBe('aa');
+        expect(res.body.personType).toBe('customer');
+        expect(res.body.access_level).toBeUndefined();
+        expect(res.body.token).toBeDefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
 });
