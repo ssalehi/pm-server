@@ -9,16 +9,22 @@ describe('POST Search Collection', () => {
     lib.dbHelpers.dropAll().then(res => {
       let collectionArr = [{
         name: 'collection 001',
+        is_smart: false,
       }, {
         name: 'collection 0012',
+        is_smart: false,
       }, {
         name: 'collection 003',
+        is_smart: true,
       }, {
         name: 'collection 004',
+        is_smart: true,
       }, {
         name: 'collection 005',
+        is_smart: true,
       }, {
         name: 'collection 006',
+        is_smart: true,
       }];
       models['CollectionTest'].insertMany(collectionArr).then(res => {
         done();
@@ -70,6 +76,52 @@ describe('POST Search Collection', () => {
       expect(res.statusCode).toBe(200);
       res = res.body.data;
       expect(res.length).toEqual(2);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should get only manual collections', function (done) {
+    this.done = done;
+    rp({
+      method: "POST",
+      uri: lib.helpers.apiTestURL(`search/Collection`),
+      body: {
+        options: {
+          phrase: "",
+          is_smart: false
+        },
+        offset: 0,
+        limit: 10,
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      res = res.body.data;
+      expect(res.length).toBe(2);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should get only smart collections', function (done) {
+    this.done = done;
+    rp({
+      method: "POST",
+      uri: lib.helpers.apiTestURL(`search/Collection`),
+      body: {
+        options: {
+          phrase: "",
+          is_smart: true
+        },
+        offset: 0,
+        limit: 10,
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      res = res.body.data;
+      expect(res.length).toBe(4);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
