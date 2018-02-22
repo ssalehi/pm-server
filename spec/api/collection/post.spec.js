@@ -5,14 +5,34 @@ const mongoose = require('mongoose');
 
 describe('POST Collection/Products', () => {
 
-  beforeEach(done => {
+  beforeEach((done) => {
     lib.dbHelpers.dropAll().then(res => {
+      let collectionArr = [{
+        name: 'collection 001',
+        image_url: 'http://localhost:3000/images/image001'
+      }, {
+        name: 'collection 002',
+        image_url: 'http://localhost:3000/images/image002'
+      }, {
+        name: 'collection 003',
+        image_url: 'http://localhost:3000/images/image003'
+      }, {
+        name: 'collection 004',
+        image_url: 'http://localhost:3000/images/image004'
+      }, {
+        name: 'collection 005',
+        image_url: 'http://localhost:3000/images/image005'
+      }, {
+        name: 'collection 006',
+        image_url: 'http://localhost:3000/images/image006'
+      }];
+      models['CollectionTest'].insertMany(collectionArr);
 
+      done();
     }).catch(err => {
       console.log(err);
       done();
     });
   });
-
 
 });

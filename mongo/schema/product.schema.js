@@ -31,6 +31,5 @@ let schema_obj = {
   instances:[ProductInstanceSchema],
 };
 
-
 let ProductSchema = new Schema(schema_obj, {strict: true});
 module.exports = ProductSchema;

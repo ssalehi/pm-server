@@ -139,7 +139,7 @@ describe("Post product colors & images", () => {
         file: {
           value: fs.readFileSync('spec/api/product/test1.jpeg'),
           options: {
-            filename: 'test1',
+            filename: 'test1.jpeg',
             contentType: 'image/jpeg'
           }
         }
@@ -244,7 +244,7 @@ describe("Post product colors & images", () => {
             file: {
               value: fs.readFileSync('spec/api/product/test2.jpeg'),
               options: {
-                filename: 'test2',
+                filename: 'test2.jpeg',
                 contentType: 'image/jpeg'
               }
             }
