@@ -189,7 +189,7 @@ describe('POST Search Page', () => {
 
 });
 
-describe('POST Suggest', () => {
+describe('POST Suggest Product', () => {
 
   let productTypeIds = [
     mongoose.Types.ObjectId(),
@@ -206,31 +206,31 @@ describe('POST Suggest', () => {
   beforeEach((done) => {
     lib.dbHelpers.dropAll().then(res => {
       let products = [{
-          name: 'shoe2',
-          product_type: productTypeIds[0],
-          brand: brandIds[0],
-          base_price: 1000
+        name: 'shoe2',
+        product_type: productTypeIds[0],
+        brand: brandIds[0],
+        base_price: 1000
       }, {
-          name: 'shoe3',
-          product_type: productTypeIds[1],
-          brand: brandIds[1],
-          base_price: 2000
+        name: 'shoe3',
+        product_type: productTypeIds[1],
+        brand: brandIds[1],
+        base_price: 2000
       }, {
-          name: 'shoe1',
-          product_type: productTypeIds[2],
-          brand: brandIds[2],
-          base_price: 3000
+        name: 'shoe1',
+        product_type: productTypeIds[2],
+        brand: brandIds[2],
+        base_price: 3000
       }, {
-          name: 'sneak',
-          product_type: productTypeIds[3],
-          brand: brandIds[3],
-          base_price: 4000
+        name: 'sneak',
+        product_type: productTypeIds[3],
+        brand: brandIds[3],
+        base_price: 4000
       }];
       let tags = [
-          {name: 'tag2'},
-          {name: 'tag1'},
-          {name: 'tag3'},
-          {name: 'toog'},
+        {name: 'tag2'},
+        {name: 'tag1'},
+        {name: 'tag3'},
+        {name: 'toog'},
       ];
       models['ProductTest'].insertMany(products).then(res => {
         productIds[0] = res[0]._id;
@@ -250,16 +250,16 @@ describe('POST Suggest', () => {
     });
   });
 
-  it('should give suggestion over products', function(done) {
+  it('should give suggestion over products', function (done) {
     this.done = done;
     rp({
-        method: 'POST',
-        uri: lib.helpers.apiTestURL(`/suggest/Product`),
-        body: {
-          phrase: 'sho',
-        },
-        json: true,
-        resolveWithFullResponse: true
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`/suggest/Product`),
+      body: {
+        phrase: 'sho',
+      },
+      json: true,
+      resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
       expect(res.body.length).toEqual(3);
@@ -268,24 +268,72 @@ describe('POST Suggest', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should give suggestion over tags', function(done) {
-      this.done = done;
-      rp({
-          method: 'POST',
-          uri: lib.helpers.apiTestURL(`/suggest/Tag`),
-          body: {
-              phrase: 'tag',
-          },
-          json: true,
-          resolveWithFullResponse: true
-      }).then(res => {
-          expect(res.statusCode).toBe(200);
-          expect(res.body.length).toEqual(3);
-          expect(res.body[0].name).toBe('tag1');
-          expect(res.body[1].name).toBe('tag2');
-          expect(res.body[2].name).toBe('tag3');
-          done();
-      }).catch(lib.helpers.errorHandler.bind(this));
+  it('should give suggestion over tags', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`/suggest/Tag`),
+      body: {
+        phrase: 'tag',
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toEqual(3);
+      expect(res.body[0].name).toBe('tag1');
+      expect(res.body[1].name).toBe('tag2');
+      expect(res.body[2].name).toBe('tag3');
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+});
+
+describe('POST Suggest Collection', () => {
+
+  let collectionIds = [];
+  beforeEach((done) => {
+    lib.dbHelpers.dropAll().then(res => {
+      let collections = [
+        {
+          name: 'col1',
+        }, {
+          name: 'col11',
+        },
+        {
+          name: 'col111',
+        },
+        {
+          name: 'col2',
+        }
+      ];
+      models['CollectionTest'].insertMany(collections).then(res => {
+        collectionIds[0] = res[0]._id;
+        collectionIds[1] = res[1]._id;
+        collectionIds[2] = res[2]._id;
+        collectionIds[3] = res[3]._id;
+        done();
+      })
+    });
+  });
+
+  it('should give suggestion over collections', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`/suggest/Collection`),
+      body: {
+        phrase: 'col1',
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toEqual(3);
+      expect(res.body[0].name).toBe('col1');
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
   });
 
 });
