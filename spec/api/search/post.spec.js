@@ -126,9 +126,7 @@ describe('POST Search Page', () => {
 
 
   it("should get first 5 pages order by their address", function (done) {
-
     this.done = done;
-
     rp({
       method: 'post',
       uri: lib.helpers.apiTestURL(`search/Page`),
@@ -142,7 +140,6 @@ describe('POST Search Page', () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-
       expect(res.statusCode).toBe(200);
       expect(res.body.length).toBe(5);
       let n = 0;
@@ -152,7 +149,6 @@ describe('POST Search Page', () => {
         n++;
       }
       done();
-
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
