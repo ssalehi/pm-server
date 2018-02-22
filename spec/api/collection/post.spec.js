@@ -40,6 +40,26 @@ describe('POST Collection/Products and Tags', () => {
     });
   });
 
+  it('should get error because of not being admin', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`collection/product/${collectionIds[0]}/${newProduct}`),
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail("Only admin should be able to do this!");
+    }).catch(err => {
+      expect(err.statusCode).toBe(403);
+      return models['CollectionTest'].findById(collectionIds[0]);
+    }).then(res => {
+      expect(res.productIds.length).toEqual(3);
+      done();
+    }).catch(err => {
+      this.fail("although not admin, the product was added!");
+    })
+  });
+
   it('should add new product to a collection', function (done) {
     this.done = done;
     rp({
