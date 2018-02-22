@@ -8,6 +8,7 @@ const path = require('path');
 const app = require('../app');
 const multer = require('multer');
 const mongoose = require('mongoose');
+const personModel = require('../lib/person.model');
 
 let storage = multer.diskStorage({
   destination: env.uploadPath + path.sep,
@@ -16,7 +17,6 @@ let storage = multer.diskStorage({
   }
 });
 let upload = multer({storage: storage});
-
 
 function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) {
   let args = Array.prototype.slice.call(arguments, 4);
@@ -39,34 +39,38 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) 
   };
 
   return (function (req, res) {
-    lib.Agent.adminCheck(adminOnly, req.user, req.test)
-      .then(rs => {
-        if (adminOnly && rs.length < 1)
-          return Promise.reject(error.adminOnly);
-        else {
-          let dynamicArgs = [];
-          for (let i in reqFuncs)
-            dynamicArgs.push((typeof reqFuncs[i] === 'function') ? reqFuncs[i](req) : deepFind(req, reqFuncs[i]));
+    (req.jwtToken ?
+      personModel.jwtStrategy(req)
+      :
+      Promise.resolve())
+        .then(() => lib.Agent.adminCheck(adminOnly, req.user, req.test))
+        .then(rs => {
+          if (adminOnly && rs.length < 1)
+            return Promise.reject(error.adminOnly);
+          else {
+            let dynamicArgs = [];
+            for (let i in reqFuncs)
+              dynamicArgs.push((typeof reqFuncs[i] === 'function') ? reqFuncs[i](req) : deepFind(req, reqFuncs[i]));
 
-          let allArgs = dynamicArgs.concat(args);
+            let allArgs = dynamicArgs.concat(args);
 
-          for (cn in lib)
-            lib[cn].test = req.test;
+            for (cn in lib)
+              lib[cn].test = req.test;
 
-          let isStaticFunction = typeof lib[className][functionName] === 'function';
-          let model = isStaticFunction ? lib[className] : new lib[className](req.test)
-          return model[functionName].apply(isStaticFunction ? null : model, allArgs);
-        }
-      })
-      .then(data => {
-        res.status(200)
-          .json(data);
-      })
-      .catch(err => {
-        console.log(`${className}/${functionName}: `, req.app.get('env') === 'development' ? err : err.message);
-        res.status(err.status || 500)
-          .send(err.message || err);
-      });
+            let isStaticFunction = typeof lib[className][functionName] === 'function';
+            let model = isStaticFunction ? lib[className] : new lib[className](req.test);
+            return model[functionName].apply(isStaticFunction ? null : model, allArgs);
+          }
+        })
+        .then(data => {
+          res.status(200)
+            .json(data);
+        })
+        .catch(err => {
+          console.log(`${className}/${functionName}: `, req.app.get('env') === 'development' ? err : err.message);
+          res.status(err.status || 500)
+            .send(err.message || err);
+        });
   });
 }
 
@@ -77,6 +81,7 @@ router.get('/', function (req, res) {
 // Login API
 router.post('/agent/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user', () => true]));
 router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user']));
+router.post('/app/login', apiResponse('Person', 'jwtAuth', false, ['body']));
 router.post('/loginCheck', apiResponse('Person', 'loginCheck', false, ['body.username', 'body.password']));
 router.get('/logout', (req, res) => {
   req.logout();
@@ -135,7 +140,7 @@ router.put('/product/instance', apiResponse('Product', 'setInstance', true, ['bo
 router.post('/product/instance', apiResponse('Product', 'setInstance', true, ['body']));
 router.delete('/product/instance/:id/:productColorId', apiResponse('Product', 'deleteInstance', true, ['params.id', 'params.productColorId']));
 router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', true, ['body']));
-router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', apiResponse('Product', 'deleteInventory', true, ['params.id', 'params.productColorId','params.warehouseId']));
+router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', apiResponse('Product', 'deleteInventory', true, ['params.id', 'params.productColorId', 'params.warehouseId']));
 
 // product image
 router.use('/product/image/:id/:colorId', function (req, res, next) {
