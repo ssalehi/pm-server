@@ -133,7 +133,6 @@ router.delete('/product/tag/:id/:tagId', apiResponse('Product', 'deleteTag', tru
 // product color
 router.post('/product/color', apiResponse('Product', 'setColor', true, ['body']));
 router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId']));
-//router.delete('/product/color/:id/:colorId/imageId', apiResponse('Product', 'deleteOneImage', true, ['params.id', 'params.colorId', 'params.imageId']));
 
 // product instance
 router.put('/product/instance', apiResponse('Product', 'setInstance', true, ['body']));

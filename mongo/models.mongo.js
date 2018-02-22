@@ -11,7 +11,6 @@ let schemas = {
   DeliverySchema: require('./schema/delivery.schema'),
   LoyaltyGroupSchema: require('./schema/loyalty_group.schema'),
   OrderSchema: require('./schema/order.schema'),
-  PlacementSchema: require('./schema/placement.schema'),
   ProductSchema: require('./schema/product.schema'),
   ProductColorSchema: require('./schema/product_color.schema'),
   ProductTypeSchema: require('./schema/product_type.schema'),
@@ -19,6 +18,7 @@ let schemas = {
   TagSchema: require('./schema/tag.schema'),
   TagGroupSchema: require('./schema/tag_group.schema'),
   PageSchema: require('./schema/page.schema'),
+  PlacementSchema: require('./schema/placement.schema'),
 };
 
 
