@@ -26,6 +26,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function (req, res, next) {
+  const tk = req.headers['token'];
+  if(tk) {
+    req.jwtToken = tk;
+  } else {
+    req.jwtToken = null;
+  }
+
+  next();
+});
+
 session.setup(app)
   .then(() => {
     isReady = true;
