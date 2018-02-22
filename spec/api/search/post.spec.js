@@ -188,7 +188,74 @@ describe('POST Search Page', () => {
 
 });
 
-describe('POST Suggest Product', () => {
+describe('POST Search ProductTypes / TagGroups', () => {
+
+  beforeEach((done) => {
+    lib.dbHelpers.dropAll().then(res => {
+      let productTypeArr = [{
+        name: 'Shoes'
+      }, {
+        name: 'Socks'
+      }, {
+        name: 'Pants'
+      }];
+      let tagGroupsArr = [{
+        name: 'taggroup1'
+      }, {
+        name: 'taggroup2'
+      }];
+      models['ProductTypeTest'].insertMany(productTypeArr).then(res => {
+        models['TagGroupTest'].insertMany(tagGroupsArr).then(res => {
+          done();
+        })
+      });
+    });
+  });
+
+  it('should return all product_types when phrase is empty', function (done) {
+    this.done = done;
+    rp({
+      method: "POST",
+      uri: lib.helpers.apiTestURL(`/search/ProductType`),
+      body: {
+        options: {
+          phrase: ''
+        },
+        offset: 0,
+        limit: 10
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toEqual(3);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should return all tag_groups when phrase is empty', function (done) {
+    this.done = done;
+    rp({
+      method: "POST",
+      uri: lib.helpers.apiTestURL(`/search/TagGroup`),
+      body: {
+        options: {
+          phrase: ''
+        },
+        offset: 0,
+        limit: 10
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toEqual(2);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+});
+
+describe('POST Suggest Product / Tag', () => {
 
   let productTypeIds = [
     mongoose.Types.ObjectId(),
@@ -226,9 +293,9 @@ describe('POST Suggest Product', () => {
         base_price: 4000
       }];
       let tags = [
-        {name: 'tag2'},
-        {name: 'tag1'},
-        {name: 'tag3'},
+        {name: 'tag002'},
+        {name: 'tag001'},
+        {name: 'tag003'},
         {name: 'toog'},
       ];
       models['ProductTest'].insertMany(products).then(res => {
@@ -244,8 +311,8 @@ describe('POST Suggest Product', () => {
           tagIds[3] = res[3]._id;
 
           done();
-        })
-      })
+        });
+      });
     });
   });
 
@@ -273,16 +340,16 @@ describe('POST Suggest Product', () => {
       method: 'POST',
       uri: lib.helpers.apiTestURL(`/suggest/Tag`),
       body: {
-        phrase: 'tag',
+        phrase: 'tag00',
       },
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
       expect(res.body.length).toEqual(3);
-      expect(res.body[0].name).toBe('tag1');
-      expect(res.body[1].name).toBe('tag2');
-      expect(res.body[2].name).toBe('tag3');
+      expect(res.body[0].name).toBe('tag001');
+      expect(res.body[1].name).toBe('tag002');
+      expect(res.body[2].name).toBe('tag003');
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
