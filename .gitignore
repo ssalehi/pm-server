@@ -44,3 +44,5 @@ Thumbs.db
 # docker compose file
 docker-compose.yml
 
+# data folder
+/data
