@@ -98,7 +98,7 @@ router.get('/login/google/callback', passport.authenticate('google', {
 }));
 // router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
 // Person (Customer/Agent) API
-router.put('/user/register', apiResponse('Person', 'registration', false, ['body']));
+router.put('/register', apiResponse('Customer', 'registration', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
 router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
 router.post('/user/auth/local/:link', apiResponse('Person', 'completeAuth', false, ['params.link', 'body']));

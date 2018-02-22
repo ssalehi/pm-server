@@ -6,13 +6,11 @@ let schema_obj = {
     type: String,
     required: true,
     trim: true,
-    unique: true
   },
   surname: {
     type: String,
     required: true,
     trim: true,
-    unique: true
   },
   username: {
     type: String,
@@ -29,6 +27,11 @@ let schema_obj = {
   loyalty_points: {
     type: Number,
     default: 0
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female'],
+    required: true,
   },
   preferred_brands: [{type: Schema.Types.ObjectId, ref: 'Brand'}],
   wish_list: [Schema.Types.ObjectId],
