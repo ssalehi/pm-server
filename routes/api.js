@@ -172,7 +172,6 @@ router.put('/collection/product/:cid/:pid', apiResponse('Collection', 'setProduc
 router.put('/collection', apiResponse('Collection', 'setCollection', false, ['body']));
 router.get('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params.cid']));
 router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
-router.get('/collection', apiResponse('Collection', 'getAllCollection', false, ['']));
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params.cid']));
 
 
