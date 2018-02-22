@@ -20,8 +20,9 @@ describe('POST Search Collection', () => {
       }, {
         name: 'collection 006',
       }];
-      models['CollectionTest'].insertMany(collectionArr);
-      done();
+      models['CollectionTest'].insertMany(collectionArr).then(res => {
+        done();
+      });
     }).catch(err => {
       console.log(err);
       done();
@@ -45,10 +46,12 @@ describe('POST Search Collection', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body.length).toEqual(6);
+      res = res.body.data;
+      expect(res.length).toEqual(6);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
+
   it('expect return all collections which contains the phrase name', function (done) {
     this.done = done;
     rp({
@@ -65,7 +68,8 @@ describe('POST Search Collection', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body.length).toEqual(2);
+      res = res.body.data;
+      expect(res.length).toEqual(2);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
@@ -141,11 +145,12 @@ describe('POST Search Page', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body.length).toBe(5);
+      expect(res.body.total).toBe(7);
+      res = res.body.data;
       let n = 0;
       while (n < 5) {
-        expect(res.body[n].address).toBe(`testAddress${n + 1}`);
-        expect(res.body[n].is_app).toBe(false);
+        expect(res[n].address).toBe(`testAddress${n + 1}`);
+        expect(res[n].is_app).toBe(false);
         n++;
       }
       done();
@@ -154,9 +159,7 @@ describe('POST Search Page', () => {
   });
 
   it("should get 2 pages after offset of 5", function (done) {
-
     this.done = done;
-
     rp({
       method: 'post',
       uri: lib.helpers.apiTestURL(`search/Page`),
@@ -172,11 +175,12 @@ describe('POST Search Page', () => {
     }).then(res => {
 
       expect(res.statusCode).toBe(200);
-      expect(res.body.length).toBe(2);
-      expect(res.body[0].address).toBe(`testAddress6`);
-      expect(res.body[1].address).toBe(`testAddress7`);
-      expect(res.body[0].collection.name).toBe(`collection1`);
-      expect(res.body[1].collection.name).toBe(`collection2`);
+      res = res.body.data;
+      expect(res.length).toBe(2);
+      expect(res[0].address).toBe(`testAddress6`);
+      expect(res[1].address).toBe(`testAddress7`);
+      expect(res[0].collection.name).toBe(`collection1`);
+      expect(res[1].collection.name).toBe(`collection2`);
       done();
 
     })
@@ -225,7 +229,9 @@ describe('POST Search ProductTypes / TagGroups', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body.length).toEqual(3);
+      expect(res.body.total).toEqual(3);
+      expect(res.body.data.length).toEqual(3);
+      expect(res.body.data[0].name).toBe('Pants');
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
@@ -246,7 +252,9 @@ describe('POST Search ProductTypes / TagGroups', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body.length).toEqual(2);
+      expect(res.body.total).toEqual(2);
+      expect(res.body.data.length).toEqual(2);
+      expect(res.body.data[0].name).toBe('taggroup1');
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
