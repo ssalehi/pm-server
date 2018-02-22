@@ -17,26 +17,34 @@ describe('PUT Collection', () => {
   let newTagGroupsArr = [];
   newTagGroupsArr[0] = tagGroupsArr[1];
   let collectionIds = [];
-  // let newProduct;
+  let adminObj = {
+    aid: null,
+    jar: null
+  };
   beforeEach(done => {
-    lib.dbHelpers.dropAll().then(res => {
-      let collectionArr = [{
-        name: 'manual',
-        is_smart: false,
-        productIds: productIdsArr
-      }, {
-        name: 'smart',
-        is_smart: true,
-        typeIds: productTypesArr,
-        tagGroupIds: tagGroupsArr,
-      }];
-      models['CollectionTest'].insertMany(collectionArr).then(res => {
-        collectionIds[0] = res[0]._id;
-        collectionIds[1] = res[1]._id;
+    lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
 
-        done();
-      });
-    }).catch(err => {
+        let collectionArr = [{
+          name: 'manual',
+          is_smart: false,
+          productIds: productIdsArr
+        }, {
+          name: 'smart',
+          is_smart: true,
+          typeIds: productTypesArr,
+          tagGroupIds: tagGroupsArr,
+        }];
+        models['CollectionTest'].insertMany(collectionArr).then(res => {
+          collectionIds[0] = res[0]._id;
+          collectionIds[1] = res[1]._id;
+
+          done();
+        });
+      }).catch(err => {
       console.log(err);
       done();
     });
@@ -54,6 +62,7 @@ describe('PUT Collection', () => {
           productIdsArr[0],
         ]
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -80,6 +89,7 @@ describe('PUT Collection', () => {
         name: 'changedName',
         is_smart: true
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -108,6 +118,7 @@ describe('PUT Collection', () => {
           productIdsArr[0],
         ]
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -121,17 +132,18 @@ describe('PUT Collection', () => {
     });
   });
 
-  it('should update tagGroups and types', function(done) {
+  it('should update tagGroups and types', function (done) {
     this.done = done;
     rp({
-        method: 'put',
-        uri: lib.helpers.apiTestURL(`collection/detail/${collectionIds[1]}`),
-        body: {
-          typeIds: newTypesArr,
-          tagGroupIds: newTagGroupsArr
-        },
-        json: true,
-        resolveWithFullResponse: true
+      method: 'put',
+      uri: lib.helpers.apiTestURL(`collection/detail/${collectionIds[1]}`),
+      body: {
+        typeIds: newTypesArr,
+        tagGroupIds: newTagGroupsArr
+      },
+      jar: adminObj.jar,
+      json: true,
+      resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
 

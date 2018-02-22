@@ -10,28 +10,36 @@ describe('DELETE Collection', () => {
   let productIds = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
   let tagIds = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
   let collectionIds = [];
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
   beforeEach(done => {
-    lib.dbHelpers.dropAll().then(res => {
+    lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
 
-      let collectionArr = [{
-        name: 'man1',
-        is_smart: false,
-        productIds: [productIds[0], productIds[1], productIds[2]]
-      }, {
-        name: 'man2',
-        is_smart: true,
-        tagIds: [tagIds[0], tagIds[1]]
-      }];
-      models['CollectionTest'].insertMany(collectionArr).then(res => {
-        collectionIds[0] = res[0]._id;
-        collectionIds[1] = res[1]._id;
+        let collectionArr = [{
+          name: 'man1',
+          is_smart: false,
+          productIds: [productIds[0], productIds[1], productIds[2]]
+        }, {
+          name: 'man2',
+          is_smart: true,
+          tagIds: [tagIds[0], tagIds[1]]
+        }];
+        models['CollectionTest'].insertMany(collectionArr).then(res => {
+          collectionIds[0] = res[0]._id;
+          collectionIds[1] = res[1]._id;
 
-        done();
+          done();
+        }).catch(err => {
+          console.log(err);
+          done();
+        });
       }).catch(err => {
-        console.log(err);
-        done();
-      });
-    }).catch(err => {
       console.log(err);
       done();
     });
@@ -42,6 +50,7 @@ describe('DELETE Collection', () => {
     rp({
       method: 'delete',
       uri: lib.helpers.apiTestURL(`collection/${collectionIds[0]}`),
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -60,6 +69,7 @@ describe('DELETE Collection', () => {
     rp({
       method: 'delete',
       uri: lib.helpers.apiTestURL(`collection/1`),
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -80,6 +90,7 @@ describe('DELETE Collection', () => {
     rp({
       method: 'delete',
       uri: lib.helpers.apiTestURL(`collection/product/${collectionIds[0]}/${productIds[0]}`),
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -96,30 +107,31 @@ describe('DELETE Collection', () => {
   });
 
   it('should delete tag from collection', function (done) {
-      this.done = done;
-      rp({
-          method: 'delete',
-          uri: lib.helpers.apiTestURL(`collection/tag/${collectionIds[1]}/${tagIds[0]}`),
-          json: true,
-          resolveWithFullResponse: true
-      }).then(res => {
-          expect(res.statusCode).toBe(200);
+    this.done = done;
+    rp({
+      method: 'delete',
+      uri: lib.helpers.apiTestURL(`collection/tag/${collectionIds[1]}/${tagIds[0]}`),
+      jar: adminObj.jar,
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
 
-          return models['CollectionTest'].findById(collectionIds[1]);
-      }).then(res => {
-          console.log("@", res);
-          expect(res.tagIds.length).toBe(1);
-          expect(res.tagIds).toNotContain(tagIds[0]);
+      return models['CollectionTest'].findById(collectionIds[1]);
+    }).then(res => {
+      expect(res.tagIds.length).toBe(1);
+      expect(res.tagIds).toNotContain(tagIds[0]);
 
-          done();
-      }).catch(lib.helpers.errorHandler.bind(this));
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
   });
 
   it('expect error when params cid is not valid', function (done) {
     this.done = done;
     rp({
       method: 'delete',
-      uri: lib.helpers.apiTestURL(`collection/product/1/${productIds[0]}`)
+      uri: lib.helpers.apiTestURL(`collection/product/1/${productIds[0]}`),
+      jar: adminObj.jar,
     }).then(res => {
       this.fail('expect error when params cid is not valid');
 
@@ -132,34 +144,36 @@ describe('DELETE Collection', () => {
   });
 
   it('expect error when params pid is not valid', function (done) {
-      this.done = done;
-      rp({
-          method: 'delete',
-          uri: lib.helpers.apiTestURL(`collection/product/${collectionIds[0]}/2`)
-      }).then(res => {
-          this.fail('expect error when params pid is not valid');
+    this.done = done;
+    rp({
+      method: 'delete',
+      uri: lib.helpers.apiTestURL(`collection/product/${collectionIds[0]}/2`),
+      jar: adminObj.jar,
+    }).then(res => {
+      this.fail('expect error when params pid is not valid');
 
-          done();
-      }).catch(err => {
-          expect(err.statusCode).toBe(error.productIdIsNotValid.status);
-          expect(err.error).toEqual(error.productIdIsNotValid.message);
-          done();
-      });
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.productIdIsNotValid.status);
+      expect(err.error).toEqual(error.productIdIsNotValid.message);
+      done();
+    });
   });
 
   it('expect error when params tid is not valid', function (done) {
-      this.done = done;
-      rp({
-          method: 'delete',
-          uri: lib.helpers.apiTestURL(`collection/tag/${collectionIds[1]}/2`)
-      }).then(res => {
-          this.fail('expect error when params tid is not valid');
-          done();
-      }).catch(err => {
-          expect(err.statusCode).toBe(error.TagIdIsNotValid.status);
-          expect(err.error).toEqual(error.TagIdIsNotValid.message);
-          done();
-      });
+    this.done = done;
+    rp({
+      method: 'delete',
+      uri: lib.helpers.apiTestURL(`collection/tag/${collectionIds[1]}/2`),
+      jar: adminObj.jar,
+    }).then(res => {
+      this.fail('expect error when params tid is not valid');
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.TagIdIsNotValid.status);
+      expect(err.error).toEqual(error.TagIdIsNotValid.message);
+      done();
+    });
   });
 
 });
