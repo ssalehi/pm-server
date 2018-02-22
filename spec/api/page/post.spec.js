@@ -32,7 +32,7 @@ describe("Post page basics", () => {
         return basicPage.save();
       })
       .then(res => {
-        basicPageId= res._id;
+        basicPageId = res._id;
         done();
       })
       .catch(err => {

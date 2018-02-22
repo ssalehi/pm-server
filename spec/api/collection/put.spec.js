@@ -5,25 +5,46 @@ const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 
 
-describe('Put Collection', () => {
+describe('PUT Collection', () => {
 
   let productIdsArr = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
+  let productTypesArr = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
+  let newTypesArr = [];
+  newTypesArr[0] = productTypesArr[0];
+  newTypesArr[1] = productTypesArr[1];
+  newTypesArr[2] = mongoose.Types.ObjectId();
+  let tagGroupsArr = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
+  let newTagGroupsArr = [];
+  newTagGroupsArr[0] = tagGroupsArr[1];
   let collectionIds = [];
-  let newProduct;
+  let adminObj = {
+    aid: null,
+    jar: null
+  };
   beforeEach(done => {
-    lib.dbHelpers.dropAll().then(res => {
-      models['CollectionTest'].create({
-        name: 'collection four',
-        productIds: [
-          productIdsArr[1],
-          productIdsArr[2],
-        ]
-      }).then(res => {
-        collectionIds[0] = res._id;
+    lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
 
-        done();
-      });
-    }).catch(err => {
+        let collectionArr = [{
+          name: 'manual',
+          is_smart: false,
+          productIds: productIdsArr
+        }, {
+          name: 'smart',
+          is_smart: true,
+          typeIds: productTypesArr,
+          tagGroupIds: tagGroupsArr,
+        }];
+        models['CollectionTest'].insertMany(collectionArr).then(res => {
+          collectionIds[0] = res[0]._id;
+          collectionIds[1] = res[1]._id;
+
+          done();
+        });
+      }).catch(err => {
       console.log(err);
       done();
     });
@@ -41,6 +62,7 @@ describe('Put Collection', () => {
           productIdsArr[0],
         ]
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -48,11 +70,10 @@ describe('Put Collection', () => {
 
       return models['CollectionTest'].find();
     }).then(res => {
-      console.log("#009", res);
 
-      expect(res.length).toEqual(2);
-      expect(res[1].productIds).toContain(productIdsArr[0]);
-      expect(res[1].productIds.length).toEqual(1);
+      expect(res.length).toEqual(3);
+      expect(res[2].productIds).toContain(productIdsArr[0]);
+      expect(res[2].productIds.length).toEqual(1);
 
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
@@ -65,11 +86,10 @@ describe('Put Collection', () => {
       uri: lib.helpers.apiTestURL('collection'),
       body: {
         _id: collectionIds[0],
-        name: 'collection three',
-        productIds: [
-          productIdsArr[0],
-        ]
+        name: 'changedName',
+        is_smart: true
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -77,18 +97,17 @@ describe('Put Collection', () => {
 
       return models['CollectionTest'].find();
     }).then(res => {
-      console.log("#010", res);
 
+      expect(res.length).toBe(2);
       expect(res[0]._id).toEqual(collectionIds[0]);
-      expect(res[0].productIds.length).toEqual(1);
-      expect(res[0].name).toEqual('collection three');
+      expect(res[0].name).toEqual('changedName');
+      expect(res[0].productIds.length).toEqual(3);
 
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-
-  it('expect error when name of collection is not defined', function (done) {
+  it('should get error when name of collection is not defined', function (done) {
     this.done = done;
     rp({
       method: 'put',
@@ -99,6 +118,7 @@ describe('Put Collection', () => {
           productIdsArr[0],
         ]
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -112,61 +132,32 @@ describe('Put Collection', () => {
     });
   });
 
-  it('should added product to collection', function (done) {
+  it('should update tagGroups and types', function (done) {
     this.done = done;
-    newProduct = mongoose.Types.ObjectId();
     rp({
       method: 'put',
-      uri: lib.helpers.apiTestURL(`collection/product/${collectionIds[0]}/${newProduct}`),
+      uri: lib.helpers.apiTestURL(`collection/detail/${collectionIds[1]}`),
+      body: {
+        typeIds: newTypesArr,
+        tagGroupIds: newTagGroupsArr
+      },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
 
-      return models['CollectionTest'].findById(collectionIds[0]);
+      return models['CollectionTest'].find({_id: collectionIds[1]});
     }).then(res => {
+      res = res[0];
 
-      expect(res.productIds.length).toEqual(3);
-      expect(res.productIds).toContain(newProduct);
+      expect(res.name).toBe('smart');
+      expect(res.typeIds.length).toBe(3);
+      expect(res.tagGroupIds.length).toBe(1);
 
       done();
+
     }).catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  it('expect error when cid params is not valid', function (done) {
-    this.done = done;
-    newProduct = mongoose.Types.ObjectId();
-    rp({
-      method: 'put',
-      uri: lib.helpers.apiTestURL(`collection/product/1/${newProduct}`),
-      json: true,
-      resolveWithFullResponse: true
-    }).then(res => {
-      this.fail('expect error when cid params is not valid');
-      done();
-    }).catch(err => {
-      expect(err.statusCode).toBe(error.collectionIdIsNotValid.status);
-      expect(err.error).toEqual(error.collectionIdIsNotValid.message);
-      done();
-    });
-  });
-
-  it('expect error when pid params is not valid', function (done) {
-    this.done = done;
-    productId = mongoose.Types.ObjectId();
-    rp({
-      method: 'put',
-      uri: lib.helpers.apiTestURL(`collection/product/${collectionIds[0]}/1`),
-      json: true,
-      resolveWithFullResponse: true
-    }).then(res => {
-      this.fail('error when pid is not defined');
-      done();
-    }).catch(err => {
-      expect(err.statusCode).toBe(error.productIdIsNotValid.status);
-      expect(err.error).toEqual(error.productIdIsNotValid.message);
-      done();
-    });
   });
 
 });

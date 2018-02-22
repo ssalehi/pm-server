@@ -133,7 +133,6 @@ router.delete('/product/tag/:id/:tagId', apiResponse('Product', 'deleteTag', tru
 // product color
 router.post('/product/color', apiResponse('Product', 'setColor', true, ['body']));
 router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId']));
-//router.delete('/product/color/:id/:colorId/imageId', apiResponse('Product', 'deleteOneImage', true, ['params.id', 'params.colorId', 'params.imageId']));
 
 // product instance
 router.put('/product/instance', apiResponse('Product', 'setInstance', true, ['body']));
@@ -166,19 +165,20 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
 
 });
 router.post('/product/image/:id/:colorId', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'file']));
-router.post('/product/suggestion', apiResponse('Product', 'getSuggestion', false, ['body']));
 
 // Product color
 router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
 
 
 // Collection
-router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', false, ['params']));
-router.put('/collection/product/:cid/:pid', apiResponse('Collection', 'setProductToCollection', false, ['params']));
-router.put('/collection', apiResponse('Collection', 'setCollection', false, ['body']));
-router.get('/collection/products/:cid', apiResponse('Collection', 'getProductsFromCollection', false, ['params.cid']));
+router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', true, ['params']));
+router.post('/collection/product/:cid/:pid', apiResponse('Collection', 'setProductToCollection', true, ['params']));
+router.delete('/collection/tag/:cid/:tid', apiResponse('Collection', 'deleteTagFromCollection', true, ['params']));
+router.post('/collection/tag/:cid/:tid', apiResponse('Collection', 'setTagToCollection', true, ['params']));
+router.put('/collection/detail/:cid', apiResponse('Collection', 'updateDetails', true, ['params.cid', 'body']));
+router.put('/collection', apiResponse('Collection', 'setCollection', true, ['body']));
 router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
-router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', false, ['params.cid']));
+router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', true, ['params.cid']));
 
 
 // Page
@@ -190,6 +190,7 @@ router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']
 
 // Search
 router.post('/search/:className', apiResponse('Search','search', false, ['params.className','body']));
+router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body']));
 
 
 module.exports = router;
