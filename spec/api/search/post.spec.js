@@ -187,5 +187,4 @@ describe('POST Search Page', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-
 });
