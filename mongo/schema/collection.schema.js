@@ -7,11 +7,14 @@ let schema_obj = {
     trim: true,
     unique: true
   },
-  image_url: {
-    type: String,
-    trim: true,
-  },
   productIds: [{type: Schema.Types.ObjectId, ref: 'Product'}],
+  is_smart: {
+    type: Boolean,
+    default: false
+  },
+  typeIds: [{type: Schema.Types.ObjectId, ref: 'ProductType'}],
+  tagIds: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
+  tagGroupIds: [{type: Schema.Types.ObjectId, ref: 'TagGroup'}],
   parent_id: Schema.Types.ObjectId
 };
 

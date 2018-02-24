@@ -3,6 +3,8 @@ let passport = require('passport');
 let LocalStrategy = require('passport-local');
 let GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const env = require('../env');
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 let setup = (app) => {
   app.use(passport.initialize());
@@ -15,7 +17,6 @@ let setup = (app) => {
     },
     lib.Person.passportLocalStrategy
   ));
-
   passport.use(new GoogleStrategy({
     clientID: env.googleAuth.clientID,
     clientSecret: env.googleAuth.clientSecret,

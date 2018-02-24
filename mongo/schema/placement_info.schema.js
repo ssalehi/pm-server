@@ -34,5 +34,5 @@ let schema_obj = {
   ]
 };
 
-let PageInfoSchema = new Schema(schema_obj, {strict: true});
-module.exports = PageInfoSchema;
+let PlacementInfoSchema = new Schema(schema_obj, {strict: true});
+module.exports = PlacementInfoSchema;
