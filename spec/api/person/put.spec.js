@@ -35,16 +35,19 @@ describe('Person PUT API', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].find({}).lean();
+        return models['RegisterVerificationTest'].find({}).lean();
       })
       .then(res => {
         expect(res.length).toBe(1);
         res = res[0];
+        expect(res.secret).toBeDefined();
+        res = res.customer_data;
         expect(res.username).toBe('aa@gmail.com');
         expect(res.first_name.toLowerCase()).toBe('ali');
         expect(res.surname.toLowerCase()).toBe('alavi');
         expect(moment(res.dob).format('YYYY-MM-DD')).toBe('1993-03-02');
         expect(res.gender).toBe('m');
+        expect(res.secret).toBeUndefined();
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -75,6 +78,4 @@ describe('Person PUT API', () => {
         done();
       });
   });
-
-  // ['username', 'password', 'first_name']
 });

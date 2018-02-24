@@ -2,11 +2,12 @@ const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
+const moment = require('moment');
 
 describe('Person POST API', () => {
   let needSetup = true;
   beforeEach(done => {
-    if (needSetup)
+    // if (needSetup)
       lib.dbHelpers.dropAll()
         .then(res => {
           let obj = new lib.Agent(true);
@@ -15,6 +16,8 @@ describe('Person POST API', () => {
             surname: 'admin',
             username: 'admin',
             secret: '123456',
+            mobile_no: '01256993730',
+            gender: 'm',
             access_level: 0
           });
         })
@@ -25,7 +28,9 @@ describe('Person POST API', () => {
             surname: 'c',
             username: 'shipping-clerk',
             secret: '123456',
-            access_level: 1
+            mobile_no: '09391999852',
+            gender: 'f',
+            access_level: 1,
           });
         })
         .then(res => {
@@ -35,6 +40,8 @@ describe('Person POST API', () => {
             surname: 'alavi',
             username: 'aa',
             secret: '123456',
+            mobile_no: '+989391993730',
+            gender: 'm',
             address: [
               {
                 city: 'Tehran',
@@ -51,117 +58,195 @@ describe('Person POST API', () => {
           console.error('Error in before each: ', err);
           done();
         });
-    else
-      done();
+    // else
+    //   done();
   });
 
-  it('admin should login', function (done) {
+  // it('admin should login', function (done) {
+  //   this.done = done;
+  //   rp({
+  //     method: 'post',
+  //     body: {
+  //       username: 'admin',
+  //       password: '123456',
+  //     },
+  //     json: true,
+  //     uri: lib.helpers.apiTestURL('agent/login'),
+  //     resolveWithFullResponse: true,
+  //   })
+  //     .then(res => {
+  //       expect(res.statusCode).toBe(200);
+  //       expect(res.body.username).toBe('admin');
+  //       expect(res.body.personType).toBe('agent');
+  //       expect(res.body.access_level).toBe(0);
+  //       done();
+  //     })
+  //     .catch(lib.helpers.errorHandler.bind(this));
+  // });
+  //
+  // it('shipping clerk should login', function (done) {
+  //   this.done = done;
+  //   rp({
+  //     method: 'post',
+  //     body: {
+  //       username: 'shipping-clerk',
+  //       password: '123456',
+  //     },
+  //     json: true,
+  //     uri: lib.helpers.apiTestURL('agent/login'),
+  //     resolveWithFullResponse: true,
+  //   })
+  //     .then(res => {
+  //       expect(res.statusCode).toBe(200);
+  //       expect(res.body.username).toBe('shipping-clerk');
+  //       expect(res.body.personType).toBe('agent');
+  //       expect(res.body.access_level).toBe(1);
+  //       done();
+  //     })
+  //     .catch(lib.helpers.errorHandler.bind(this));
+  // });
+  //
+  // it('normal user cannot login in agent domain', function (done) {
+  //   rp({
+  //     method: 'post',
+  //     body: {
+  //       username: 'aa',
+  //       password: '123456',
+  //     },
+  //     json: true,
+  //     uri: lib.helpers.apiTestURL('agent/login'),
+  //     resolveWithFullResponse: true,
+  //   })
+  //     .then(res => {
+  //       this.fail('Normal user logged in in agent domain');
+  //       done();
+  //     })
+  //     .catch(err => {
+  //       expect(err.statusCode).toBe(error.noUser.status);
+  //       done();
+  //     });
+  // });
+  //
+  // it('normal user should login', function (done) {
+  //   this.done = done;
+  //   rp({
+  //     method: 'post',
+  //     body: {
+  //       username: 'aa',
+  //       password: '123456',
+  //     },
+  //     json: true,
+  //     uri: lib.helpers.apiTestURL('login'),
+  //     resolveWithFullResponse: true,
+  //   })
+  //     .then(res => {
+  //       expect(res.statusCode).toBe(200);
+  //       expect(res.body.username).toBe('aa');
+  //       expect(res.body.personType).toBe('customer');
+  //       expect(res.body.access_level).toBeUndefined();
+  //       done();
+  //     })
+  //     .catch(lib.helpers.errorHandler.bind(this));
+  // });
+  //
+  // it('normal user should login from app', function (done) {
+  //   this.done = done;
+  //   rp({
+  //     method: 'post',
+  //     body: {
+  //       username: 'aa',
+  //       password: '123456',
+  //     },
+  //     json: true,
+  //     uri: lib.helpers.apiTestURL('app/login'),
+  //     resolveWithFullResponse: true,
+  //   })
+  //     .then(res => {
+  //       expect(res.statusCode).toBe(200);
+  //       expect(res.body.username).toBe('aa');
+  //       expect(res.body.personType).toBe('customer');
+  //       expect(res.body.access_level).toBeUndefined();
+  //       expect(res.body.token).toBeDefined();
+  //       done();
+  //     })
+  //     .catch(lib.helpers.errorHandler.bind(this));
+  // });
+
+  it('normal user should be able to verify his phone number', function (done) {
     this.done = done;
-    rp({
-      method: 'post',
-      body: {
-        username: 'admin',
-        password: '123456',
+    (new models['RegisterVerificationTest']({
+      code: '123456',
+      customer_data: {
+        first_name: 'ali',
+        surname: 'alavi',
+        username: 'aa@gmail.com',
+        mobile_no: '+98123456789',
+        dob: '1993-03-02',
+        gender: 'm',
       },
-      json: true,
-      uri: lib.helpers.apiTestURL('agent/login'),
-      resolveWithFullResponse: true,
-    })
+      secret: 'adsf@#GFSD21342sdfg-89asdf',
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            code: '123456',
+          },
+          uri: lib.helpers.apiTestURL('register/verify'),
+          json: true,
+          resolveWithFullResponse: true,
+        });
+      })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe('admin');
-        expect(res.body.personType).toBe('agent');
-        expect(res.body.access_level).toBe(0);
+        return models['CustomerTest'].find({}).lean();
+      })
+      .then(res => {
+        expect(res.length).toBe(1);
+        res = res[0];
+        expect(res.username).toBe('aa@gmail.com');
+        expect(res.first_name.toLowerCase()).toBe('ali');
+        expect(res.surname.toLowerCase()).toBe('alavi');
+        expect(moment(res.dob).format('YYYY-MM-DD')).toBe('1993-03-02');
+        expect(res.gender).toBe('m');
+        expect(res.secret).toBeDefined();
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('shipping clerk should login', function (done) {
-    this.done = done;
-    rp({
-      method: 'post',
-      body: {
-        username: 'shipping-clerk',
-        password: '123456',
+  xit("should reject when code not found in registerVerification collection", function (done) {
+    (new models['RegisterVerificationTest']({
+      code: '123456',
+      customer_data: {
+        first_name: 'ali',
+        surname: 'alavi',
+        username: 'aa@gmail.com',
+        mobile_no: '+98123456789',
+        dob: '1993-03-02',
+        gender: 'm',
       },
-      json: true,
-      uri: lib.helpers.apiTestURL('agent/login'),
-      resolveWithFullResponse: true,
-    })
+      secret: 'adsf@#GFSD21342sdfg-89asdf',
+    })).save()
       .then(res => {
-        expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe('shipping-clerk');
-        expect(res.body.personType).toBe('agent');
-        expect(res.body.access_level).toBe(1);
-        done();
+        return rp({
+          method: 'post',
+          body: {
+            code: '123456',
+          },
+          uri: lib.helpers.apiTestURL('register/verify'),
+          json: true,
+          resolveWithFullResponse: true,
+        });
       })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  it('normal user cannot login in agent domain', function (done) {
-    rp({
-      method: 'post',
-      body: {
-        username: 'aa',
-        password: '123456',
-      },
-      json: true,
-      uri: lib.helpers.apiTestURL('agent/login'),
-      resolveWithFullResponse: true,
-    })
       .then(res => {
-        this.fail('Normal user logged in in agent domain');
+        this.fail('Customer can verify with non-exist code');
         done();
       })
       .catch(err => {
-        expect(err.statusCode).toBe(error.noUser.status);
+        expect(err.statusCode).toBe(error.codeNotFound.status);
+        expect(err.error).toBe(error.codeNotFound.message);
         done();
       });
-  });
-
-  it('normal user should login', function (done) {
-    this.done = done;
-    rp({
-      method: 'post',
-      body: {
-        username: 'aa',
-        password: '123456',
-      },
-      json: true,
-      uri: lib.helpers.apiTestURL('login'),
-      resolveWithFullResponse: true,
-    })
-      .then(res => {
-        expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe('aa');
-        expect(res.body.personType).toBe('customer');
-        expect(res.body.access_level).toBeUndefined();
-        done();
-      })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  it('normal user should login from app', function (done) {
-    this.done = done;
-    rp({
-      method: 'post',
-      body: {
-        username: 'aa',
-        password: '123456',
-      },
-      json: true,
-      uri: lib.helpers.apiTestURL('app/login'),
-      resolveWithFullResponse: true,
-    })
-      .then(res => {
-        expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe('aa');
-        expect(res.body.personType).toBe('customer');
-        expect(res.body.access_level).toBeUndefined();
-        expect(res.body.token).toBeDefined();
-        done();
-      })
-      .catch(lib.helpers.errorHandler.bind(this));
   });
 });

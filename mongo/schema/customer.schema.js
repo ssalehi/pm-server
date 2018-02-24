@@ -22,7 +22,9 @@ let schema_obj = {
     type: String,
     // required: true
   },
-  mobile: Number,
+  mobile_no: {
+    type: String,
+  },
   dob: Date,
   loyalty_points: {
     type: Number,
@@ -37,8 +39,7 @@ let schema_obj = {
   wish_list: [Schema.Types.ObjectId],
   preferred_tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
   orders: [{type: Schema.Types.ObjectId, ref: 'Order'}],
-  addresses:[addressSchema]
-
+  addresses:[addressSchema],
 };
 
 let customerSchema = new Schema(schema_obj, {strict: true});

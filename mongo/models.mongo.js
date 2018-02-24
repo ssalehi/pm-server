@@ -19,6 +19,7 @@ let schemas = {
   TagGroupSchema: require('./schema/tag_group.schema'),
   PageSchema: require('./schema/page.schema'),
   PlacementSchema: require('./schema/placement.schema'),
+  RegisterVerificationSchema: require('./schema/register_verification.schema'),
 };
 
 
@@ -26,22 +27,30 @@ SALT_WORK_FACTOR = 10;
 
 preSaveFunction = function (next) {
   let agent = this;
-  // only hash the secret if it has been modified (or is new)
-  if (!agent.isModified('secret')) return next();
 
-  // generate a salt
-  env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
-    if (err) return next(err);
+  // Check mobile_no pattern
+  if(agent.mobile_no && !(new RegExp(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/)).test(agent.mobile_no))
+    return next('Incorrect mobile_no pattern');
 
-    // hash the password using our new salt
-    env.bcrypt.hash(agent.secret, salt, null, function (err, hash) {
+  if(!agent.isMove) {
+    // only hash the secret if it has been modified (or is new)
+    if (!agent.isModified('secret')) return next();
+
+    // generate a salt
+    env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
       if (err) return next(err);
 
-      // override the clear text secret with the hashed one
-      agent.secret = hash;
-      next();
+      // hash the password using our new salt
+      env.bcrypt.hash(agent.secret, salt, null, function (err, hash) {
+        if (err) return next(err);
+
+        // override the clear text secret with the hashed one
+        agent.secret = hash;
+        next();
+      });
     });
-  });
+  } else
+    next();
 };
 
 compareFunction = function (candidatePassword, cb) {
@@ -55,6 +64,7 @@ schemas.AgentSchema.pre('save', preSaveFunction);
 schemas.AgentSchema.methods.comparePassword = compareFunction;
 schemas.CustomerSchema.pre('save', preSaveFunction);
 schemas.CustomerSchema.methods.comparePassword = compareFunction;
+schemas.RegisterVerificationSchema.pre('save', preSaveFunction);
 
 // can save data out of schema using strict: false
 let models = {};
