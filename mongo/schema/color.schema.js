@@ -6,12 +6,12 @@ let schema_obj = {
     type: String,
     required: true,
     trim: true,
-    unique: true
+    // unique: true
   },
   color_id: {
     type: String,
     required: true,
-    unique: true
+    // unique: true
   },
 };
 
