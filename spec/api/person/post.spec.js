@@ -191,6 +191,7 @@ describe('Person POST API', () => {
           method: 'post',
           body: {
             code: '123456',
+            username: 'aa@gmail.com',
           },
           uri: lib.helpers.apiTestURL('register/verify'),
           json: true,
@@ -238,6 +239,7 @@ describe('Person POST API', () => {
           method: 'post',
           body: {
             code: '987612',
+            username: 'aa@gmail.com',
           },
           uri: lib.helpers.apiTestURL('register/verify'),
           json: true,
@@ -251,6 +253,76 @@ describe('Person POST API', () => {
       .catch(err => {
         expect(err.statusCode).toBe(error.codeNotFound.status);
         expect(err.error).toBe(error.codeNotFound.message);
+        done();
+      });
+  });
+
+  it("should get error when username is not defined", function (done) {
+    (new models['RegisterVerificationTest']({
+      code: '123456',
+      customer_data: {
+        first_name: 'ali',
+        surname: 'alavi',
+        username: 'aa@gmail.com',
+        mobile_no: '+98123456789',
+        dob: '1993-03-02',
+        gender: 'm',
+      },
+      secret: 'adsf@#GFSD21342sdfg-89asdf',
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            code: '987612',
+          },
+          uri: lib.helpers.apiTestURL('register/verify'),
+          json: true,
+          resolveWithFullResponse: true,
+        });
+      })
+      .then(res => {
+        this.fail('Customer can verify with non-exist code');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noCodeUsername.status);
+        expect(err.error).toBe(error.noCodeUsername.message);
+        done();
+      });
+  });
+
+  it("should get error when code is not defined", function (done) {
+    (new models['RegisterVerificationTest']({
+      code: '123456',
+      customer_data: {
+        first_name: 'ali',
+        surname: 'alavi',
+        username: 'aa@gmail.com',
+        mobile_no: '+98123456789',
+        dob: '1993-03-02',
+        gender: 'm',
+      },
+      secret: 'adsf@#GFSD21342sdfg-89asdf',
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            username: 'aa@gmail.com',
+          },
+          uri: lib.helpers.apiTestURL('register/verify'),
+          json: true,
+          resolveWithFullResponse: true,
+        });
+      })
+      .then(res => {
+        this.fail('Customer can verify with non-exist code');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noCodeUsername.status);
+        expect(err.error).toBe(error.noCodeUsername.message);
         done();
       });
   });
