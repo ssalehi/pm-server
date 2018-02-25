@@ -111,8 +111,6 @@ describe('Person PUT API', () => {
         done();
       })
       .catch(err => {
-        console.log('asdfasdf=>', err);
-
         expect(err.statusCode).toBe(error.customerExist.status);
         expect(err.error).toBe(error.customerExist.message);
         done();
