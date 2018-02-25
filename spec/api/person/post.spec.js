@@ -326,4 +326,40 @@ describe('Person POST API', () => {
         done();
       });
   });
+
+  it("should apply for new code", function (done) {
+    this.done = done;
+    (new models['RegisterVerificationTest']({
+      code: '123456',
+      customer_data: {
+        first_name: 'ali',
+        surname: 'alavi',
+        username: 'aa@gmail.com',
+        mobile_no: '+98123456789',
+        dob: '1993-03-02',
+        gender: 'm',
+      },
+      secret: 'adsf@#GFSD21342sdfg-89asdf',
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            username: 'aa@gmail.com',
+          },
+          uri: lib.helpers.apiTestURL('register/resend'),
+          json: true,
+          resolveWithFullResponse: true,
+        });
+      })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['RegisterVerificationTest'].find({'customer_data.username': "aa@gmail.com"}).lean();
+      })
+      .then(res => {
+        expect(res.code).not.toBe('123456');
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
 });
