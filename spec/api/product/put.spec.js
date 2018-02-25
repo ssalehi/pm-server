@@ -115,7 +115,7 @@ describe("Put product basics", () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      this.fail('did not failed when other users are calling api');
+      this.fail('did not failed when name of product is not defined');
       done();
     })
       .catch(err => {

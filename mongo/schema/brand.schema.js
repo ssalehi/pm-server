@@ -11,6 +11,6 @@ let schema_obj = {
 };
 
 
-let brandSchema = new Schema(schema_obj, {strict: true});
+let brandSchema = new Schema(schema_obj, {collection: 'brand', strict: true});
 
 module.exports = brandSchema;
