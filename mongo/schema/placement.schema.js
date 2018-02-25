@@ -9,5 +9,5 @@ let schema_obj = {
   info: PlacementInfoSchema,
 };
 
-let PlacementSchema = new Schema(schema_obj, {strict: true});
+let PlacementSchema = new Schema(schema_obj, {collection: 'placement', strict: true});
 module.exports = PlacementSchema;

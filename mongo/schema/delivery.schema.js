@@ -50,6 +50,6 @@ let schema_obj = {
 
 
 
-let DeliverySchema = new Schema(schema_obj, {strict: true});
+let DeliverySchema = new Schema(schema_obj, {collection: 'delivery', strict: true});
 
 module.exports = DeliverySchema;
