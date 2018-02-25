@@ -78,4 +78,82 @@ describe('Person PUT API', () => {
         done();
       });
   });
+
+  it("should get error when username is exist", function (done) {
+    (new models['CustomerTest']({
+      username: 'aa@gmail.com',
+      password: '123456',
+      first_name: 'Ali',
+      surname: 'Alavi',
+      dob: '1993-03-02',
+      gender: 'm',
+      mobile_no: '1234567890',
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'put',
+          body: {
+            username: 'aa@gmail.com',
+            password: '123456',
+            first_name: 'Asghar',
+            surname: 'Asghari',
+            dob: '2000-10-10',
+            gender: 'm',
+            mobile_no: '1234121891',
+          },
+          json: true,
+          uri: lib.helpers.apiTestURL('register'),
+          resolveWithFullResponse: true,
+        })
+      })
+      .then(res => {
+        this.fail('User can register with existing username');
+        done();
+      })
+      .catch(err => {
+        console.log('asdfasdf=>', err);
+
+        expect(err.statusCode).toBe(error.customerExist.status);
+        expect(err.error).toBe(error.customerExist.message);
+        done();
+      });
+  });
+
+  it("should get error when mobile_no is exist", function (done) {
+    (new models['CustomerTest']({
+      username: 'aa@gmail.COM',
+      password: '123456',
+      first_name: 'Ali',
+      surname: 'Alavi',
+      dob: '1993-03-02',
+      gender: 'm',
+      mobile_no: '1234567890',
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'put',
+          body: {
+            username: 'asghar@gmail.COM',
+            password: '123456',
+            first_name: 'Asghar',
+            surname: 'Asghari',
+            dob: '2000-10-10',
+            gender: 'm',
+            mobile_no: '1234567890',
+          },
+          json: true,
+          uri: lib.helpers.apiTestURL('register'),
+          resolveWithFullResponse: true,
+        })
+      })
+      .then(res => {
+        this.fail('User can register with existing mobile number');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.customerExist.status);
+        expect(err.error).toBe(error.customerExist.message);
+        done();
+      });
+  });
 });
