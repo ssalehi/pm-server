@@ -24,6 +24,7 @@ let schemas = {
 
 
 SALT_WORK_FACTOR = 10;
+const preSecret = '--hashed--';
 
 preSaveFunction = function (next) {
   let agent = this;
@@ -32,10 +33,13 @@ preSaveFunction = function (next) {
   if(agent.mobile_no && !(new RegExp(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/)).test(agent.mobile_no))
     return next('Incorrect mobile_no pattern');
 
-  if(!agent.isMove) {
-    // only hash the secret if it has been modified (or is new)
-    if (!agent.isModified('secret')) return next();
+  // only hash the secret if it has been modified (or is new)
+  if (!agent.isModified('secret')) return next();
 
+  if(agent.secret.length > 60 && agent.secret.slice(0, 10) === preSecret) {
+    agent.secret = agent.secret.slice(10, agent.secret.length);
+    next();
+  } else {
     // generate a salt
     env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
       if (err) return next(err);
@@ -46,11 +50,15 @@ preSaveFunction = function (next) {
 
         // override the clear text secret with the hashed one
         agent.secret = hash;
+
+        // Check object should saved into registerVerification collection
+        if(agent.code)
+          agent.secret = preSecret + agent.secret;
+
         next();
       });
     });
-  } else
-    next();
+  }
 };
 
 compareFunction = function (candidatePassword, cb) {
