@@ -13,6 +13,6 @@ let schema_obj = {
 };
 
 
-let ProductColorSchema = new Schema(schema_obj, {strict: true});
+let ProductColorSchema = new Schema(schema_obj, {collection: 'product_color', strict: true});
 
 module.exports = ProductColorSchema;

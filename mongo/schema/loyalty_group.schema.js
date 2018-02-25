@@ -21,6 +21,6 @@ let schema_obj = {
 };
 
 
-let loyaltyGroupSchema = new Schema(schema_obj, {strict: true});
+let loyaltyGroupSchema = new Schema(schema_obj, {collection: 'loyalty_group', strict: true});
 
 module.exports = loyaltyGroupSchema;
