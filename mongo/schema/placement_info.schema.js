@@ -10,7 +10,7 @@ let schema_obj = {
   is_header: Boolean,
 
 
-  is_panel: Boolean,
+  // is_panel: Boolean,
   panel_type: String,
   topTitle: {
     title: String,

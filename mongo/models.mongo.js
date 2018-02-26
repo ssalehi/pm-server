@@ -18,7 +18,6 @@ let schemas = {
   TagSchema: require('./schema/tag.schema'),
   TagGroupSchema: require('./schema/tag_group.schema'),
   PageSchema: require('./schema/page.schema'),
-  PlacementSchema: require('./schema/placement.schema'),
 };
 
 

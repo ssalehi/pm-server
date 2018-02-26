@@ -4,7 +4,7 @@ const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 describe("Get Page", () => {
 
-  let page1, page2, collection1, collection2;
+  let page1, page2, collection1, collection2, page3;
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
@@ -45,7 +45,45 @@ describe("Get Page", () => {
           }
         });
 
-        inserts.push([collection1.save(), collection2.save(), page1.save(), page2.save()]);
+        page3 = models['PageTest']({
+          address: 'testAddress8',
+          is_app: false,
+          page_info: {
+            collection_id: collection2._id,
+            content: 'some html content'
+          },
+          placement: [
+            {
+              component_name: 'main'
+            },
+            {
+              component_name: 'slider'
+            },
+            {
+              component_name: 'menu'
+            },
+            {
+              component_name: 'slider'
+            },
+            {
+              component_name: 'main'
+            },
+            {
+              component_name: 'menu'
+            },
+            {
+              component_name: 'menu'
+            },
+
+
+
+          ]
+        });
+
+
+
+
+        inserts.push([collection1.save(), collection2.save(), page1.save(), page2.save(), page3.save()]);
         return Promise.all(inserts);
       })
       .then(res => {
@@ -90,6 +128,25 @@ describe("Get Page", () => {
       let result = JSON.parse(res.body);
       expect(result[0]._id).toBe(page2._id.toString());
       expect(result[0].page_info.content).toBe(page2.page_info.content);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+  it("should get page placements brief for admin panel with offset and limit", function (done) {
+
+    this.done = done;
+
+    rp({
+      method: 'get',
+      uri: lib.helpers.apiTestURL(`page/placement/${page3._id}/0/5`),
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      let result = JSON.parse(res.body);
+      expect(result.length).toBe(5);
+
+
       done();
 
     })
