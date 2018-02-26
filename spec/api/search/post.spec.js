@@ -460,3 +460,73 @@ describe('POST Suggest Collection', () => {
   });
 
 });
+
+describe('POST Suggest Page', () => {
+
+  let pagesIds = [];
+  beforeEach((done) => {
+    lib.dbHelpers.dropAll().then(res => {
+      let pages = [
+        {
+          address: '/men',
+          is_app: false
+        }, {
+          address: '/women',
+          is_app: false
+        },
+        {
+          address: '/shoes',
+          is_app: true
+        },
+      ];
+      models['PageTest'].insertMany(pages).then(res => {
+        pagesIds[0] = res[0]._id;
+        pagesIds[1] = res[1]._id;
+        pagesIds[2] = res[2]._id;
+        done();
+      })
+    });
+  });
+
+  it('should give suggestion over ALL pages', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`/suggest/Page`),
+      body: {
+        phrase: '/',
+        options: {
+          is_app : false
+        }
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toEqual(2);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+it('should give suggestion over pages', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`/suggest/Page`),
+      body: {
+        phrase: '/me',
+        options: {
+          is_app : false
+        }
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toEqual(1);
+      expect(res.body[0].address).toBe('/men');
+      expect(res.body[0].hasOwnProperty('_id')).toBeTruthy();
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+});
