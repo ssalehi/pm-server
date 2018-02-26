@@ -15,6 +15,6 @@ let schema_obj = {
 };
 
 
-let tagGroupSchema = new Schema(schema_obj, {strict: true});
+let tagGroupSchema = new Schema(schema_obj, {collection: 'tag_group', strict: true});
 
 module.exports = tagGroupSchema;

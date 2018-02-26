@@ -16,6 +16,6 @@ let schema_obj = {
 };
 
 
-let colorSchema = new Schema(schema_obj, {strict: true});
+let colorSchema = new Schema(schema_obj, {collection: 'color', strict: true});
 
 module.exports = colorSchema;

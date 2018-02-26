@@ -27,6 +27,6 @@ let schema_obj = {
 };
 
 
-let agentSchema = new Schema(schema_obj, {strict: true});
+let agentSchema = new Schema(schema_obj, {collection: 'agent', strict: true});
 
 module.exports = agentSchema;
