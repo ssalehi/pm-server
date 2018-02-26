@@ -35,6 +35,14 @@ let schema_obj = {
     enum: ['m', 'f'],
     required: true,
   },
+  verification_code: {
+    type: Number,
+  },
+  is_verified: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   preferred_brands: [{type: Schema.Types.ObjectId, ref: 'Brand'}],
   wish_list: [Schema.Types.ObjectId],
   preferred_tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],

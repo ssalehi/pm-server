@@ -35,19 +35,19 @@ describe('Person PUT API', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['RegisterVerificationTest'].find({}).lean();
+        return models['CustomerTest'].find({}).lean();
       })
       .then(res => {
         expect(res.length).toBe(1);
         res = res[0];
         expect(res.secret).toBeDefined();
-        res = res.customer_data;
         expect(res.username).toBe('aa@gmail.com');
         expect(res.first_name.toLowerCase()).toBe('ali');
         expect(res.surname.toLowerCase()).toBe('alavi');
         expect(moment(res.dob).format('YYYY-MM-DD')).toBe('1993-03-02');
         expect(res.gender).toBe('m');
-        expect(res.secret).toBeUndefined();
+        expect(res.is_verified).toBe(false);
+        expect(res.verification_code).toBeDefined();
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -88,6 +88,7 @@ describe('Person PUT API', () => {
       dob: '1993-03-02',
       gender: 'm',
       mobile_no: '1234567890',
+      is_verified: true,
     })).save()
       .then(res => {
         return rp({
@@ -126,6 +127,7 @@ describe('Person PUT API', () => {
       dob: '1993-03-02',
       gender: 'm',
       mobile_no: '1234567890',
+      is_verified: true,
     })).save()
       .then(res => {
         return rp({

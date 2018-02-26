@@ -5,20 +5,19 @@ const error = require('../../../lib/errors.list');
 const moment = require('moment');
 
 describe('Person POST API', () => {
-  let needSetup = true;
   beforeEach(done => {
-    // if (needSetup)
     lib.dbHelpers.dropAll()
       .then(res => {
         let obj = new lib.Agent(true);
         return obj.save({
           first_name: 'admin',
           surname: 'admin',
-          username: 'admin',
+          username: 'admin@gmail.com',
           secret: '123456',
           mobile_no: '01256993730',
           gender: 'm',
-          access_level: 0
+          access_level: 0,
+          is_verified: true,
         });
       })
       .then(res => {
@@ -26,11 +25,12 @@ describe('Person POST API', () => {
         return obj.save({
           first_name: 's',
           surname: 'c',
-          username: 'shipping-clerk',
+          username: 'sc@gmail.com',
           secret: '123456',
           mobile_no: '09391999852',
           gender: 'f',
           access_level: 1,
+          is_verified: true,
         });
       })
       .then(res => {
@@ -38,28 +38,27 @@ describe('Person POST API', () => {
         return obj.save({
           first_name: 'ali',
           surname: 'alavi',
-          username: 'aa',
+          username: 'aa@gmail.com',
           secret: '123456',
           mobile_no: '+989391993730',
           gender: 'm',
+          dob: '1993-03-02',
           address: [
             {
               city: 'Tehran',
               street: 'beheshti',
             },
           ],
+          is_verified: true,
         });
       })
       .then(res => {
-        needSetup = false;
         done();
       })
       .catch(err => {
         console.error('Error in before each: ', err);
         done();
       });
-    // else
-    //   done();
   });
 
   it('admin should login', function (done) {
@@ -67,7 +66,7 @@ describe('Person POST API', () => {
     rp({
       method: 'post',
       body: {
-        username: 'admin',
+        username: 'admin@gmail.com',
         password: '123456',
       },
       json: true,
@@ -76,7 +75,7 @@ describe('Person POST API', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe('admin');
+        expect(res.body.username).toBe('admin@gmail.com');
         expect(res.body.personType).toBe('agent');
         expect(res.body.access_level).toBe(0);
         done();
@@ -89,7 +88,7 @@ describe('Person POST API', () => {
     rp({
       method: 'post',
       body: {
-        username: 'shipping-clerk',
+        username: 'sc@gmail.com',
         password: '123456',
       },
       json: true,
@@ -98,7 +97,7 @@ describe('Person POST API', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe('shipping-clerk');
+        expect(res.body.username).toBe('sc@gmail.com');
         expect(res.body.personType).toBe('agent');
         expect(res.body.access_level).toBe(1);
         done();
@@ -110,7 +109,7 @@ describe('Person POST API', () => {
     rp({
       method: 'post',
       body: {
-        username: 'aa',
+        username: 'aa@gmail.com',
         password: '123456',
       },
       json: true,
@@ -132,7 +131,7 @@ describe('Person POST API', () => {
     rp({
       method: 'post',
       body: {
-        username: 'aa',
+        username: 'aa@gmail.com',
         password: '123456',
       },
       json: true,
@@ -141,7 +140,7 @@ describe('Person POST API', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe('aa');
+        expect(res.body.username).toBe('aa@gmail.com');
         expect(res.body.personType).toBe('customer');
         expect(res.body.access_level).toBeUndefined();
         done();
@@ -154,7 +153,7 @@ describe('Person POST API', () => {
     rp({
       method: 'post',
       body: {
-        username: 'aa',
+        username: 'aa@gmail.com',
         password: '123456',
       },
       json: true,
@@ -163,7 +162,7 @@ describe('Person POST API', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe('aa');
+        expect(res.body.username).toBe('aa@gmail.com');
         expect(res.body.personType).toBe('customer');
         expect(res.body.access_level).toBeUndefined();
         expect(res.body.token).toBeDefined();
@@ -174,18 +173,7 @@ describe('Person POST API', () => {
 
   it('normal user should be able to verify his phone number', function (done) {
     this.done = done;
-    (new models['RegisterVerificationTest']({
-      code: '123456',
-      customer_data: {
-        first_name: 'ali',
-        surname: 'alavi',
-        username: 'aa@gmail.com',
-        mobile_no: '+98123456789',
-        dob: '1993-03-02',
-        gender: 'm',
-      },
-      secret: 'adsf@#GFSD21342sdfg-89asdf',
-    })).save()
+    (models['CustomerTest'].update({'username': 'aa@gmail.com'}, {$set: {verification_code: '123456', is_verified: false}}))
       .then(res => {
         return rp({
           method: 'post',
@@ -211,29 +199,15 @@ describe('Person POST API', () => {
         expect(moment(res.dob).format('YYYY-MM-DD')).toBe('1993-03-02');
         expect(res.gender).toBe('m');
         expect(res.secret).toBeDefined();
-
-        return models['RegisterVerificationTest'].find({code: '123456'}).lean();
-      })
-      .then(res => {
-        expect(res.length).toBe(0);
+        expect(res.is_verified).toBe(true);
+        expect(res.verification_code).toBeNull();
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it("should reject when code not found in registerVerification collection", function (done) {
-    (new models['RegisterVerificationTest']({
-      code: '123456',
-      customer_data: {
-        first_name: 'ali',
-        surname: 'alavi',
-        username: 'aa@gmail.com',
-        mobile_no: '+98123456789',
-        dob: '1993-03-02',
-        gender: 'm',
-      },
-      secret: 'adsf@#GFSD21342sdfg-89asdf',
-    })).save()
+  it('should reject when code not found in registerVerification collection', function (done) {
+    (models['CustomerTest'].update({'username': 'aa@gmail.com'}, {$set: {verification_code: '123465', is_verified: false}}))
       .then(res => {
         return rp({
           method: 'post',
@@ -257,19 +231,8 @@ describe('Person POST API', () => {
       });
   });
 
-  it("should get error when username is not defined", function (done) {
-    (new models['RegisterVerificationTest']({
-      code: '123456',
-      customer_data: {
-        first_name: 'ali',
-        surname: 'alavi',
-        username: 'aa@gmail.com',
-        mobile_no: '+98123456789',
-        dob: '1993-03-02',
-        gender: 'm',
-      },
-      secret: 'adsf@#GFSD21342sdfg-89asdf',
-    })).save()
+  it('should get error when username is not defined', function (done) {
+    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {$set: {verification_code: '123456', is_verified: false}}))
       .then(res => {
         return rp({
           method: 'post',
@@ -292,19 +255,8 @@ describe('Person POST API', () => {
       });
   });
 
-  it("should get error when code is not defined", function (done) {
-    (new models['RegisterVerificationTest']({
-      code: '123456',
-      customer_data: {
-        first_name: 'ali',
-        surname: 'alavi',
-        username: 'aa@gmail.com',
-        mobile_no: '+98123456789',
-        dob: '1993-03-02',
-        gender: 'm',
-      },
-      secret: 'adsf@#GFSD21342sdfg-89asdf',
-    })).save()
+  it('should get error when code is not defined', function (done) {
+    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {$set: {verification_code: '123465', is_verified: false}}))
       .then(res => {
         return rp({
           method: 'post',
@@ -327,20 +279,9 @@ describe('Person POST API', () => {
       });
   });
 
-  it("should apply for new code", function (done) {
+  it('should apply for new code', function (done) {
     this.done = done;
-    (new models['RegisterVerificationTest']({
-      code: '123456',
-      customer_data: {
-        first_name: 'ali',
-        surname: 'alavi',
-        username: 'aa@gmail.com',
-        mobile_no: '+98123456789',
-        dob: '1993-03-02',
-        gender: 'm',
-      },
-      secret: 'adsf@#GFSD21342sdfg-89asdf',
-    })).save()
+    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {$set: {verification_code: '123456', is_verified: false}}))
       .then(res => {
         return rp({
           method: 'post',
@@ -354,10 +295,10 @@ describe('Person POST API', () => {
       })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['RegisterVerificationTest'].find({'customer_data.username': "aa@gmail.com"}).lean();
+        return models['RegisterVerificationTest'].find({'customer_data.username': 'aa@gmail.com'}).lean();
       })
       .then(res => {
-        expect(res.code).not.toBe('123456');
+        expect(res.verification_code).not.toBe('123456');
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
