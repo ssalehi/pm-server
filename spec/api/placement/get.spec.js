@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const error = require('../../../lib/errors.list');
 describe("Get Page Placement", () => {
 
-  let page1, page2, collection1, collection2, placement1, placement2, placementInfo1, placementInfo2;
+  let page1, page2, collection1, collection2, placement1, placement2;
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
@@ -28,7 +28,7 @@ describe("Get Page Placement", () => {
           name: 'collection2'
         });
 
-        placement1 = models['PlacementTest']({
+        placement1 = {
           component_name: 'main', // menu, main, slider, ...
           variable_name: '', // sub component
           start_date: '', // for scheduling
@@ -49,9 +49,9 @@ describe("Get Page Placement", () => {
                 }
               ]
           },
-        });
+        };
 
-        placement2 = models['PlacementTest']({
+        placement2 = {
           component_name: 'main',
           variable_name: '',
           start_date: '',
@@ -80,12 +80,12 @@ describe("Get Page Placement", () => {
             ,
             areas: []
           },
-        });
+        };
 
         page1 = models['PageTest']({
           address: 'testAddress6',
           is_app: false,
-          placement: [placement1._id, placement2._id],
+          placement: [placement1, placement2],
           page_info: {
             collection_id: collection1._id
           }
@@ -93,14 +93,14 @@ describe("Get Page Placement", () => {
         page2 = models['PageTest']({
           address: 'testAddress7',
           is_app: true,
-          placement: [placement2._id],
+          placement: [placement2],
           page_info: {
             collection_id: collection2._id,
             content: 'some html content'
           }
         });
 
-        inserts.push([collection1.save(), collection2.save(), placement1.save(), placement2.save(), page1.save(), page2.save(), ]);
+        inserts.push([collection1.save(), collection2.save(), page1.save(), page2.save(), ]);
         return Promise.all(inserts);
       })
       .then(res => {
@@ -156,13 +156,14 @@ describe("Get Page Placement", () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      // let result = JSON.parse(res[0].body);
       console.log('res : ', res.body);
       expect(res.statusCode).toBe(200);
-      // expect(res.length).toBe(2);
-      // expect(res[0].component_name).toBe('main');
-      // expect(res[0].info.panel_type).toBe('half-test');
-      // expect(res[0].info.topTitle.title).toBe('تست رنگهای جدید، دلخواه شما');
+      expect(res.body.placement.length).toBe(2);
+      expect(res.body.placement[0].component_name).toBe('main');
+      expect(res.body.placement[0].info.panel_type).toBe('half-test');
+      expect(res.body.placement[0].info.panel_type).toBe('half-test');
+      expect(res.body.is_app).toBe(false);
+
       done();
     }).catch(err => {
         lib.helpers.errorHandler.bind(this)
