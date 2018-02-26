@@ -116,7 +116,7 @@ describe("Get Page Placement", () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`page/placementt/${page1._id}`),
+      uri: lib.helpers.apiTestURL(`page/placementt/testAddress6`),
       resolveWithFullResponse: true
     }).then(res => {
       this.fail('Api is not found');
@@ -129,34 +129,14 @@ describe("Get Page Placement", () => {
     });
   });
 
-  it("should threw an error when calling api with invalid pageId", function (done) {
-    this.done = done;
-    rp({
-      method: 'get',
-      uri: lib.helpers.apiTestURL(`page/placement/1`),
-      resolveWithFullResponse: true
-    }).then(res => {
-      this.fail('Page id should not be null');
-      done();
-    })
-      .catch(err => {
-        expect(err.statusCode).toBe(error.pageIdIsNotValid.status);
-        expect(err.statusCode).toBe(500);
-        // expect(err.message).toEqual(error.pageIdIsNotValid.message);
-        console.log(err.message);
-        done();
-      });
-  });
-
   it('should return placement of page with details', function (done) {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`page/placement/${page1._id}`),
+      uri: lib.helpers.apiTestURL(`page/placement/testAddress6`),
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      console.log('res : ', res.body);
       expect(res.statusCode).toBe(200);
       expect(res.body.placement.length).toBe(2);
       expect(res.body.placement[0].component_name).toBe('main');
