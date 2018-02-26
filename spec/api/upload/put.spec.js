@@ -58,12 +58,8 @@ describe('PUT Upload', () => {
     }).then(excelResult => {
       models['TagGroupTest'].find({}).then(res => {
         let query = res.map(r => r.name);
-
         expect(query.length).toBe(excelResult.length);
-
-
         done();
-
       });
 
     }).catch(lib.helpers.errorHandler.bind(this));
