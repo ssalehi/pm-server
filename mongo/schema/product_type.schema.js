@@ -11,6 +11,6 @@ let schema_obj = {
 };
 
 
-let productTypeSchema = new Schema(schema_obj, {strict: true});
+let productTypeSchema = new Schema(schema_obj, {collection: 'product_type',strict: true});
 
 module.exports = productTypeSchema;
