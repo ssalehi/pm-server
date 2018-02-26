@@ -188,7 +188,8 @@ router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.i
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']));
 
 // Placement
-router.get('/pagePlacement/:id', apiResponse('Page', 'getPageAllPlacements', false, ['params.id']));
+router.get('/page/placement/:address', apiResponse('Page', 'getPageAllPlacement', false, ['params.address']));
+router.get('/page/placement/componentname/:id', apiResponse('Page', 'getPageComponentName', false, ['params.id']));
 
 
 

@@ -116,7 +116,7 @@ describe("Get Page Placement", () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`pagePlacementt/${page1._id}`),
+      uri: lib.helpers.apiTestURL(`page/placementt/${page1._id}`),
       resolveWithFullResponse: true
     }).then(res => {
       this.fail('Api is not found');
@@ -133,7 +133,7 @@ describe("Get Page Placement", () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`pagePlacement/1`),
+      uri: lib.helpers.apiTestURL(`page/placement/1`),
       resolveWithFullResponse: true
     }).then(res => {
       this.fail('Page id should not be null');
@@ -152,7 +152,7 @@ describe("Get Page Placement", () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`pagePlacement/${page1._id}`),
+      uri: lib.helpers.apiTestURL(`page/placement/${page1._id}`),
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
