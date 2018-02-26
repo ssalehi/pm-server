@@ -27,6 +27,6 @@ let schema_obj = {
 };
 
 
-let CampaignSchema = new Schema(schema_obj, {strict: true});
+let CampaignSchema = new Schema(schema_obj, {collection: 'campaign', strict: true});
 
 module.exports = CampaignSchema;

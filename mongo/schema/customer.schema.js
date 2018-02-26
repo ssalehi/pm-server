@@ -38,6 +38,6 @@ let schema_obj = {
 
 };
 
-let customerSchema = new Schema(schema_obj, {strict: true});
+let customerSchema = new Schema(schema_obj, {collection: 'customer', strict: true});
 
 module.exports = customerSchema;

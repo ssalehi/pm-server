@@ -30,6 +30,6 @@ transaction_id: Schema.Types.ObjectId,
 };
 
 
-let OrderSchema = new Schema(schema_obj, {strict: true});
+let OrderSchema = new Schema(schema_obj, {collection: 'order', strict: true});
 
 module.exports = OrderSchema;

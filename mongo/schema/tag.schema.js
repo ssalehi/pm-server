@@ -12,6 +12,6 @@ let schema_obj = {
 };
 
 
-let tagSchema = new Schema(schema_obj, {strict: true});
+let tagSchema = new Schema(schema_obj, {collection: 'tag', strict: true});
 
 module.exports = tagSchema;

@@ -19,6 +19,6 @@ let schema_obj = {
 };
 
 
-let CollectionSchema = new Schema(schema_obj, {strict: true});
+let CollectionSchema = new Schema(schema_obj, {collection: 'collection', strict: true});
 
 module.exports = CollectionSchema;

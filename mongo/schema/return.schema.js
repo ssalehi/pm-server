@@ -33,6 +33,6 @@ let schema_obj = {
 };
 
 
-let ReturnSchema = new Schema(schema_obj, {strict: true});
+let ReturnSchema = new Schema(schema_obj, {collection: 'return', strict: true});
 
 module.exports = ReturnSchema;
