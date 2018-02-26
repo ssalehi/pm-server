@@ -77,6 +77,24 @@ describe("Get Page", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+  it("should get page info of a page its id", function (done) {
+
+    this.done = done;
+
+    rp({
+      method: 'get',
+      uri: lib.helpers.apiTestURL(`page/${page2._id}`),
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      let result = JSON.parse(res.body);
+      expect(result[0]._id).toBe(page2._id.toString());
+      expect(result[0].page_info.content).toBe(page2.page_info.content);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
 
 });
 
