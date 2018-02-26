@@ -164,6 +164,9 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
   });
 
 });
+
+
+
 router.post('/product/image/:id/:colorId', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'file']));
 
 // Product color
@@ -192,7 +195,31 @@ router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']
 router.post('/search/:className', apiResponse('Search','search', false, ['params.className','body']));
 router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body']));
 
+// upload excel
+router.use('/upload_excel', function (req, res, next) {
 
-router.put('/upload_excel', apiResponse('Upload', 'excel', false, ['body']));
+  let destination;
+  let fileName = Date.parse(new Date());
+  if (req.test)
+    destination = env.uploadExcelPath + 'test/' + fileName;
+  else
+    destination = env.uploadExcelPath +  fileName;
+
+  let productStorage = multer.diskStorage({
+    destination,
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    }
+  });
+  let productUpload = multer({storage: productStorage});
+
+  productUpload.single('file')(req, res, err => {
+    if (!err)
+      next()
+  });
+
+});
+
+router.put('/upload_excel', apiResponse('Upload', 'excel', false, ['file']));
 
 module.exports = router;
