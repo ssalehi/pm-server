@@ -13,7 +13,7 @@ let schema_obj = {
     type: Boolean,
     required: true
   },
-  placement: PlacementSchema,
+  placement: [PlacementSchema],
   page_info: PageInfoSchema,
 };
 
