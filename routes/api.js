@@ -199,5 +199,4 @@ router.get('/page/placement/:id/:offset/:limit', apiResponse('Page', 'getPagePla
 router.post('/search/:className', apiResponse('Search','search', false, ['params.className','body']));
 router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body']));
 
-
 module.exports = router;
