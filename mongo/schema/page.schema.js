@@ -13,9 +13,13 @@ let schema_obj = {
     type: Boolean,
     required: true
   },
-  placement: [PlacementSchema],
+  placement: {
+    own: [PlacementSchema],
+    home: [PlacementSchema]
+  },
   page_info: PageInfoSchema,
 };
+
 
 let PageSchema = new Schema(schema_obj, {collection: 'page', strict: true});
 module.exports = PageSchema;

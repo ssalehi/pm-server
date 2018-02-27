@@ -1,17 +1,9 @@
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
-const error = require('../../../lib/errors.list');
-const mongoose = require('mongoose');
-const fs = require('fs');
-const path = require('path');
-const env = require('../../../env');
-const rimraf = require('rimraf');
-const copyFileSync = require('fs-copy-file-sync');
-const shell = require('shelljs');
 
 
-describe("Post page basics", () => {
+xdescribe("Post page basics", () => {
 
   let basicPageId;
   let adminObj = {
@@ -68,5 +60,83 @@ describe("Post page basics", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
+});
+describe("Post page placements", () => {
+
+  let page;
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(res => {
+        let inserts = [];
+
+
+        page = models['PageTest']({
+          address: 'test',
+          is_app: false,
+          placement: {
+            own:
+              [
+                {
+                  component_name: 'main'
+                },
+                {
+                  component_name: 'slider'
+                },
+                {
+                  component_name: 'menu'
+                },
+                {
+                  component_name: 'slider'
+                },
+                {
+                  component_name: 'main'
+                },
+                {
+                  component_name: 'menu'
+                },
+                {
+                  component_name: 'menu'
+                },
+              ]
+          }
+        });
+
+        return page.save()
+
+      })
+      .then(res => {
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+
+  it("should get page placements of a page using its address", function (done) {
+
+    this.done = done;
+
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`page/placement/list`),
+      body: {
+        address: page.address
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      let result = res.body;
+      expect(result.placement.home.length).toBe(0);
+      expect(result.placement.own.length).toBe(7);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
 
 });
