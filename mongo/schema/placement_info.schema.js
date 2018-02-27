@@ -5,10 +5,6 @@ let schema_obj = {
   // menu :
 
 
-
-
-
-
   //****************
   // menu
   section: String,
