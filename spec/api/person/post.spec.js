@@ -295,12 +295,176 @@ describe('Person POST API', () => {
       })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['RegisterVerificationTest'].find({'customer_data.username': 'aa@gmail.com'}).lean();
+        return models['CustomerTest'].find({'username': 'aa@gmail.com'}).lean();
       })
       .then(res => {
         expect(res.verification_code).not.toBe('123456');
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should set mobile number for user who login with google", function (done) {
+    this.done = done;
+    (new models['CustomerTest']({
+      first_name: 'ABC',
+      surname: 'DEF',
+      username: 'ab@ba.com',
+      gender: 'f',
+      dob: '2000-01-01',
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            username: 'ab@ba.com',
+            mobile_no: '98745632109',
+          },
+          uri: lib.helpers.apiTestURL('register/mobile'),
+          json: true,
+          resolveWithFullResponse: true,
+        })
+      })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['CustomerTest'].find({username: 'ab@ba.com'}).lean();
+      })
+      .then(res => {
+        expect(res.length).toBe(1);
+        res = res[0];
+        expect(res.username).toBe('ab@ba.com');
+        expect(res.mobile_no).toBe('98745632109');
+        expect(res.verification_code).toBeDefined();
+        expect(res.is_verified).toBe(false);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should get error when username is not set (in setting mobile number)", function (done) {
+    this.done = done;
+    (new models['CustomerTest']({
+      first_name: 'ABC',
+      surname: 'DEF',
+      username: 'ab@ba.com',
+      gender: 'f',
+      dob: '2000-01-01',
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            mobile_no: '98745632109',
+          },
+          uri: lib.helpers.apiTestURL('register/mobile'),
+          json: true,
+          resolveWithFullResponse: true,
+        })
+      })
+      .then(res => {
+        this.fail('Can set mobile number without pass username');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noUsernameMobileNo.status);
+        expect(err.error).toBe(error.noUsernameMobileNo.message);
+        done();
+      });
+  });
+
+  it("should get error when mobile number is not set (in setting mobile number)", function (done) {
+    this.done = done;
+    (new models['CustomerTest']({
+      first_name: 'ABC',
+      surname: 'DEF',
+      username: 'ab@ba.com',
+      gender: 'f',
+      dob: '2000-01-01',
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            username: 'ab@ba.com',
+          },
+          uri: lib.helpers.apiTestURL('register/mobile'),
+          json: true,
+          resolveWithFullResponse: true,
+        })
+      })
+      .then(res => {
+        this.fail('Can set mobile number without pass mobile number');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noUsernameMobileNo.status);
+        expect(err.error).toBe(error.noUsernameMobileNo.message);
+        done();
+      });
+  });
+
+  it("should get error when user with passed username not found (in setting mobile number)", function (done) {
+    this.done = done;
+    (new models['CustomerTest']({
+      first_name: 'ABC',
+      surname: 'DEF',
+      username: 'ab@ba.com',
+      gender: 'f',
+      dob: '2000-01-01',
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            username: 'a@b.com',
+            mobile_no: '98745632109',
+          },
+          uri: lib.helpers.apiTestURL('register/mobile'),
+          json: true,
+          resolveWithFullResponse: true,
+        })
+      })
+      .then(res => {
+        this.fail('Can set mobile number for incorrect username');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noUser.status);
+        expect(err.error).toBe(error.noUser.message);
+        done();
+      });
+  });
+
+  it("should not able to set mobile number for user who is verified (by registration api)", function (done) {
+    this.done = done;
+    (new models['CustomerTest']({
+      first_name: 'ABC',
+      surname: 'DEF',
+      username: 'ab@ba.com',
+      gender: 'f',
+      dob: '2000-01-01',
+      is_verified: true,
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            username: 'ab@ba.com',
+            mobile_no: '98745632109',
+          },
+          uri: lib.helpers.apiTestURL('register/mobile'),
+          json: true,
+          resolveWithFullResponse: true,
+        })
+      })
+      .then(res => {
+        this.fail('Can set mobile number for incorrect username');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noUser.status);
+        expect(err.error).toBe(error.noUser.message);
+        done();
+      });
   });
 });

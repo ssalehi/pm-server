@@ -33,7 +33,7 @@ let schema_obj = {
   gender: {
     type: String,
     enum: ['m', 'f'],
-    required: true,
+    // required: true,
   },
   verification_code: {
     type: Number,
