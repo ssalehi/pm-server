@@ -25,6 +25,7 @@ let schema_obj = {
     required: true,
   },
   desc: String,
+  details: Schema.Types.Mixed,
   tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
   reviews: [ProductReview],
   colors:[ProductColor],
