@@ -13,12 +13,10 @@ let schema_obj = {
     type: Boolean,
     required: true
   },
-  placement: {
-    own: [PlacementSchema],
-    home: [PlacementSchema]
-  },
+  placement: [PlacementSchema],
   page_info: PageInfoSchema,
 };
+
 
 
 let PageSchema = new Schema(schema_obj, {collection: 'page', strict: true});

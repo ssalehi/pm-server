@@ -74,8 +74,7 @@ describe("Post page placements", () => {
         page = models['PageTest']({
           address: 'test',
           is_app: false,
-          placement: {
-            own:
+          placement:
               [
                 {
                   component_name: 'main'
@@ -99,7 +98,6 @@ describe("Post page placements", () => {
                   component_name: 'menu'
                 },
               ]
-          }
         });
 
         return page.save()
@@ -130,8 +128,7 @@ describe("Post page placements", () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
       let result = res.body;
-      expect(result.placement.home.length).toBe(0);
-      expect(result.placement.own.length).toBe(7);
+      expect(result.placement.length).toBe(7);
       done();
 
     })

@@ -47,7 +47,7 @@ db.dbIsReady()
       update = {
         address: 'home',
         is_app: false,
-        placement
+        placement: placement.home
       },
       options = {upsert: true, new: true, setDefaultsOnInsert: true};
     return models['Page'].findOneAndUpdate(query, update, options);
