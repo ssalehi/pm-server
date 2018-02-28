@@ -11,7 +11,6 @@ let schemas = {
   DeliverySchema: require('./schema/delivery.schema'),
   LoyaltyGroupSchema: require('./schema/loyalty_group.schema'),
   OrderSchema: require('./schema/order.schema'),
-  PlacementSchema: require('./schema/placement.schema'),
   ProductSchema: require('./schema/product.schema'),
   ProductColorSchema: require('./schema/product_color.schema'),
   ProductTypeSchema: require('./schema/product_type.schema'),
@@ -26,6 +25,11 @@ SALT_WORK_FACTOR = 10;
 
 preSaveFunction = function (next) {
   let agent = this;
+
+  // Check mobile_no pattern
+  if (agent.mobile_no && !(new RegExp(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/)).test(agent.mobile_no))
+    return next('Incorrect mobile_no pattern');
+
   // only hash the secret if it has been modified (or is new)
   if (!agent.isModified('secret')) return next();
 
@@ -39,6 +43,11 @@ preSaveFunction = function (next) {
 
       // override the clear text secret with the hashed one
       agent.secret = hash;
+
+      // Check object should saved into registerVerification collection
+      if (agent.code)
+        agent.secret = preSecret + agent.secret;
+
       next();
     });
   });

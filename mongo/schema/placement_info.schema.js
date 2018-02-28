@@ -8,7 +8,6 @@ let schema_obj = {
   text: String, // for both panel and menu
   href: String, // href is also used for determining which collection is to be shown
   is_header: Boolean,
-  is_panel: Boolean,
   panel_type: String,
   topTitle: {
     title: String,

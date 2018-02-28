@@ -43,6 +43,9 @@ describe("Put page basics", () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
 
+      expect(res.body.address).toBe('testAddress');
+      expect(res.body.is_app).toBe(false);
+      expect(mongoose.Types.ObjectId.isValid(res.body._id)).toBeTruthy();
       return models['PageTest'].find({}).lean();
 
     }).then(res => {
