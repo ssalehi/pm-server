@@ -2,17 +2,13 @@ const Schema = require('mongoose').Schema;
 
 let schema_obj = {
   // for app pages
-  // menu :
-
-
-  //****************
-  // menu
   section: String,
   column: Number,
   row: Number, // for both panel and menu
   text: String, // for both panel and menu
   href: String, // href is also used for determining which collection is to be shown
   is_header: Boolean,
+
 
   // is_panel: Boolean,
   panel_type: String,
@@ -34,8 +30,15 @@ let schema_obj = {
       title: String,
       text: String,
       color: String,
+      buttonText: String,
     },
-  ]
+  ],
+  actions: {
+    like: Number,
+    forward : Boolean,
+    comment: Boolean,
+  },
+
 };
 
 let PlacementInfoSchema = new Schema(schema_obj, {strict: true});
