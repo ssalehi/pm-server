@@ -41,7 +41,7 @@ db.dbIsReady()
     console.log('-> ', 'default admin has been added!');
 
     const fs = require('fs');
-    let placement = JSON.parse(fs.readFileSync('public/assets/homePagePlacements.json', 'utf8'));
+    let placement = JSON.parse(fs.readFileSync('homePagePlacements.json', 'utf8'));
 
     let query = {},
       update = {
