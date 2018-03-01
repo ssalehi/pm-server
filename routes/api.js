@@ -94,11 +94,14 @@ router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
 router.get('/login/google/callback', passport.authenticate('google', {
   successRedirect: '/login/oauth',
-  failureRedirect: '/login'
+  failureRedirect: '/login/oauth'
 }));
 // router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
 // Person (Customer/Agent) API
-router.put('/user/register', apiResponse('Person', 'registration', false, ['body']));
+router.put('/register', apiResponse('Customer', 'registration', false, ['body']));
+router.post('/register/verify', apiResponse('Customer', 'verification', false, ['body.code', 'body.username']));
+router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
+router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
 router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
 router.post('/user/auth/local/:link', apiResponse('Person', 'completeAuth', false, ['params.link', 'body']));
@@ -188,9 +191,7 @@ router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.i
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']));
 
 // Placement
-router.get('/page/placement/:address', apiResponse('Page', 'getPageAllPlacement', false, ['params.address']));
-router.get('/page/placement/:id/:offset/:limit', apiResponse('Page', 'getPagePlacementBrief', false, ['params.id','params.offset', 'params.limit']));
-
+router.post('/page/placement/list', apiResponse('Page', 'getPlacements', false, ['body.address']));
 
 
 

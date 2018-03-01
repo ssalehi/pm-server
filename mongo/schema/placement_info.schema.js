@@ -1,16 +1,13 @@
 const Schema = require('mongoose').Schema;
 
 let schema_obj = {
-  // for app pages
+  // menu
   section: String,
   column: Number,
   row: Number, // for both panel and menu
   text: String, // for both panel and menu
   href: String, // href is also used for determining which collection is to be shown
   is_header: Boolean,
-
-
-  // is_panel: Boolean,
   panel_type: String,
   topTitle: {
     title: String,
@@ -33,6 +30,7 @@ let schema_obj = {
       buttonText: String,
     },
   ],
+  style: Schema.Types.Mixed,
   actions: {
     like: Number,
     forward : Boolean,
