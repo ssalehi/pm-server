@@ -133,6 +133,9 @@ router.get('/color', apiResponse('Color', 'getColors', false, []));
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 
+// Brands
+router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
+
 
 
 // product

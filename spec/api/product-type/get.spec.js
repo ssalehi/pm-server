@@ -22,7 +22,7 @@ describe("Get Product Type", () => {
       })
       .then(res => {
 
-        productTypeIds = res.map(p => p._id);
+        productTypeIds = res.map(p => p._id.toString());
         done();
       })
       .catch(err => {
@@ -44,6 +44,9 @@ describe("Get Product Type", () => {
       expect(res.statusCode).toBe(200);
       let result = JSON.parse(res.body);
       expect(result.length).toBe(productTypeIds.length);
+      result.forEach(r => {
+        expect(productTypeIds.includes(r._id.toString())).toBeTruthy();
+      });
       done();
 
     })

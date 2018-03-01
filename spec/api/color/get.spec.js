@@ -22,7 +22,7 @@ describe("Get Color", () => {
       })
       .then(res => {
 
-        colorIds = res.map(p => p._id);
+        colorIds = res.map(p => p._id.toString());
         done();
       })
       .catch(err => {
@@ -44,6 +44,9 @@ describe("Get Color", () => {
       expect(res.statusCode).toBe(200);
       let result = JSON.parse(res.body);
       expect(result.length).toBe(colorIds.length);
+      result.forEach(r => {
+        expect(colorIds.includes(r._id.toString())).toBeTruthy();
+      });
       done();
 
     })

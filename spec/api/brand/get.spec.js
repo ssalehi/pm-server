@@ -22,7 +22,7 @@ describe("Get Brand", () => {
       })
       .then(res => {
 
-        brandIds = res.map(p => p._id);
+        brandIds = res.map(p => p._id.toString());
         done();
       })
       .catch(err => {
@@ -44,6 +44,10 @@ describe("Get Brand", () => {
       expect(res.statusCode).toBe(200);
       let result = JSON.parse(res.body);
       expect(result.length).toBe(brandIds.length);
+
+      result.forEach(r => {
+        expect(brandIds.includes(r._id.toString())).toBeTruthy();
+      });
       done();
 
     })
