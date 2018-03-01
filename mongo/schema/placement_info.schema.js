@@ -31,11 +31,6 @@ let schema_obj = {
     },
   ],
   style: Schema.Types.Mixed,
-  actions: {
-    like: Number,
-    forward : Boolean,
-    comment: Boolean,
-  },
 
 };
 
