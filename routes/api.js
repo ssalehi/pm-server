@@ -130,6 +130,10 @@ router.get('/productType', apiResponse('ProductType', 'getTypes', false, []));
 // Colors
 router.get('/color', apiResponse('Color', 'getColors', false, []));
 
+// Brands
+router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
+
+
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));

@@ -1,28 +1,28 @@
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
-describe("Get Color", () => {
+describe("Get Brand", () => {
 
-  let colorIds = [];
+  let brandIds = [];
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
 
-        let colors = [
-          {name : 'color 1'},
-          {name : 'color 2'},
-          {name : 'color 3'},
-          {name : 'color 4'},
-          {name : 'color 5'},
+        let brands = [
+          {name : 'brand 1'},
+          {name : 'brand 2'},
+          {name : 'brand 3'},
+          {name : 'brand 4'},
+          {name : 'brand 5'},
         ];
 
-        return models['ColorTest'].insertMany(colors);
+        return models['BrandTest'].insertMany(brands);
 
       })
       .then(res => {
 
-        colorIds = res.map(p => p._id);
+        brandIds = res.map(p => p._id);
         done();
       })
       .catch(err => {
@@ -32,18 +32,18 @@ describe("Get Color", () => {
   });
 
 
-  it("should get list of all colors", function (done) {
+  it("should get list of all brands", function (done) {
 
     this.done = done;
 
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`color`),
+      uri: lib.helpers.apiTestURL(`brand`),
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
       let result = JSON.parse(res.body);
-      expect(result.length).toBe(colorIds.length);
+      expect(result.length).toBe(brandIds.length);
       done();
 
     })
