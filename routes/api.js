@@ -219,8 +219,8 @@ router.post('/page/placement/list', apiResponse('Page', 'getPlacements', false, 
 router.post('/search/:className', apiResponse('Search','search', false, ['params.className','body']));
 router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body']));
 
-// upload excel
-router.use('/upload_excel', function (req, res, next) {
+// upload Data
+router.use('/uploadData', function (req, res, next) {
 
   let destination;
   let fileName = Date.parse(new Date());
@@ -244,6 +244,6 @@ router.use('/upload_excel', function (req, res, next) {
 
 });
 
-router.put('/upload_excel', apiResponse('Upload', 'excel', false, ['file']));
+router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file']));
 
 module.exports = router;

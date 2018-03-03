@@ -17,8 +17,8 @@ describe('PUT Upload', () => {
   xit('should error when req.file not valid', function (done) {
     this.done = done;
     rp({
-      method: 'PUT',
-      uri: lib.helpers.apiTestURL(`/upload_excel`),
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`/uploadData`),
       json: true,
       resolveWithFullResponse: true
     }).then((res) => {
@@ -34,8 +34,8 @@ describe('PUT Upload', () => {
     this.done = done;
     let filename = "spec/api/upload/Original File.XLSX";
     rp({
-      method: 'PUT',
-      uri: lib.helpers.apiTestURL(`/upload_excel`),
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`/uploadData`),
       formData: {
         file: {
           value: fs.readFileSync(filename),
