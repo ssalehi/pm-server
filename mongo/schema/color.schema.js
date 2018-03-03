@@ -9,7 +9,7 @@ let schema_obj = {
         unique: true
     },
     hex: {
-        type: string,
+        type: String,
         unique: true,
     },
     color_id: {
