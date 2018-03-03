@@ -65,6 +65,18 @@ db.dbIsReady()
     return models['Page'].findOneAndUpdate(query, update, options);
   })
   .then(res => {
+    let placement = JSON.parse(fs.readFileSync('myShopPagePlacements.json', 'utf8'));
+
+    let query = {address: 'my_shop'},
+      update = {
+        address: 'my_shop',
+        is_app: true,
+        placement: placement.my_shop,
+      },
+      options = {upsert: true, new: true, setDefaultsOnInsert: true};
+    return models['Page'].findOneAndUpdate(query, update, options);
+  })
+  .then(res => {
     console.log('-> ', 'home page and feed page is added');
     process.exit();
   })

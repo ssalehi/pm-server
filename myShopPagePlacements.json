@@ -1,0 +1,204 @@
+{
+  "my_shop" : [
+    {
+      "component_name" : "menu",
+      "variable_name" : "topMenu",
+      "info" : {
+        "text" : "مردانه",
+        "section" : "men",
+        "href" : "collection/men"
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "کفش",
+        "href" : "collection/men/shoes",
+        "section" : "men/shoes",
+        "imgUrl" : "assets/imgs/shoes.png",
+        "is_header" : true
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "تمام کفش ها",
+        "href" : "collection/men/shoes/all",
+        "section" : "men/shoes",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "فوتبال",
+        "href" : "collection/men/shoes/football",
+        "section" : "men/shoes",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "پیاده روی",
+        "href" : "collection/men/shoes/walking",
+        "section" : "men/shoes",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "دو",
+        "href" : "collection/men/shoes/running",
+        "section" : "men/shoes",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "لباس",
+        "href" : "collection/men/shirts",
+        "section" : "men/shirts",
+        "imgUrl" : "assets/imgs/shirts.png",
+        "is_header" : true
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "تازه ها",
+        "href" : "collection/men/shirts/new",
+        "section" : "men/shirts",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "زمستانی",
+        "href" : "collection/men/shirts/winter",
+        "section" : "men/shirts",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "topMenu",
+      "info" : {
+        "text" : "زنانه",
+        "section" : "women",
+        "href" : "collection/women"
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "کفش",
+        "href" : "collection/women/shoes",
+        "section" : "women/shoes",
+        "imgUrl" : "assets/imgs/shoes.png",
+        "is_header" : true
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "تمام کفش ها",
+        "href" : "collection/women/shoes/all",
+        "section" : "women/shoes",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "فوتبال",
+        "href" : "collection/women/shoes/football",
+        "section" : "women/shoes",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "پیاده روی",
+        "href" : "collection/women/shoes/walking",
+        "section" : "women/shoes",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "تازه ها",
+        "href" : "collection/women/shoes/new",
+        "section" : "women/shoes",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "لباس",
+        "href" : "collection/women/shirts",
+        "section" : "women/shirts",
+        "imgUrl" : "assets/imgs/shirts.png",
+        "is_header" : true
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "تازه ها",
+        "href" : "collection/women/shirts/new",
+        "section" : "women/shirts",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "subMenu",
+      "info" : {
+        "text" : "شنا",
+        "href" : "collection/women/shirts/swimming",
+        "section" : "women/shirts",
+        "is_header" : false
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "topMenu",
+      "info" : {
+        "text" : "پسرانه",
+        "section" : "boy",
+        "href" : "collection/boy"
+      }
+    },
+    {
+      "component_name" : "menu",
+      "variable_name" : "topMenu",
+      "info" : {
+        "text" : "دخترانه",
+        "section" : "girl",
+        "href" : "collection/girl"
+      }
+    }
+  ]
+}
