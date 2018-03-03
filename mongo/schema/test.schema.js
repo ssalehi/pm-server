@@ -6,16 +6,15 @@ let schema_obj = {
     type: String,
     required: true,
     trim: true,
-    // unique: true
+    unique: true
   },
-  color_id: {
-    type: String,
-    required: true,
-    // unique: true
+  color: {
+    name: String,
+    code: Number
   },
 };
 
 
-let colorSchema = new Schema(schema_obj, {collection: 'color', strict: true});
+let testSchema = new Schema(schema_obj, {collection: 'test', strict: true});
 
-module.exports = colorSchema;
+module.exports = testSchema;
