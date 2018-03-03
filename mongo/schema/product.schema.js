@@ -8,7 +8,7 @@ let schema_obj = {
     type: String,
     required: true,
     trim: true,
-    unique: true
+    // unique: true
   },
   product_type: {
     type: Schema.Types.ObjectId,
