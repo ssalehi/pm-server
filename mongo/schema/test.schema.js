@@ -2,16 +2,17 @@ const Schema = require('mongoose').Schema;
 
 
 let schema_obj = {
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-    unique: true
-  },
-  color: {
-    name: String,
-    code: Number
-  },
+  data: [
+    {
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+        unique: true
+      }
+    }
+  ],
+
 };
 
 
