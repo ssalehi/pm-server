@@ -19,7 +19,6 @@ let schemas = {
   TagGroupSchema: require('./schema/tag_group.schema'),
   PageSchema: require('./schema/page.schema'),
   WarehouseSchema: require('./schema/warehouse.schema'),
-  TestSchema: require('./schema/test.schema'),
 };
 
 

@@ -30,7 +30,7 @@ describe('PUT Upload', () => {
     });
   });
 
-  xit('should expect tagGroup inserted', function (done) {
+  it('should expect tagGroup inserted', function (done) {
     this.done = done;
     let filename = "spec/api/upload/Original File.XLSX";
     rp({
@@ -54,35 +54,6 @@ describe('PUT Upload', () => {
   }, 20000);
 
 
-  it('should expect tagGroup inserted', function (done) {
-
-    this.done = done;
-
-    let data = [
-      {data: {name: 'test 1'}},
-      {data: {name: 'test 2'}},
-      {data: {name: 'test 3'}},
-      {data: {name: 'test 4'}},
-    ];
-
-    models['TestTest'].insertMany(data)
-      .then(res => {
-        return models['TestTest'].findOneAndUpdate({}, {
-
-          $addToSet: {
-
-            "data": {name: 'test 1'}
-          }
-
-        }, {new: true});
-      })
-      .then(res => {
-
-        console.log('-> ', res);
-        done();
-      })
-      .catch(lib.helpers.errorHandler.bind(this));
-  }, 20000);
-
+  
 
 });
