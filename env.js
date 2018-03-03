@@ -72,6 +72,7 @@ const redisPass = getEnvValue(process.env.REDIS_PASSWORD);
 
 uploadPath = "public/documents";
 uploadProductImagePath = "public/images/product-image";
+uploadExcelPath = "public/excel/";
 
 
 /**
@@ -105,6 +106,7 @@ module.exports = {
   redisPass,
   uploadPath,
   uploadProductImagePath,
+  uploadExcelPath,
   googleAuth: {
     clientID: googleAuth_clientId,
     clientSecret: googleAuth_clientSecret,
