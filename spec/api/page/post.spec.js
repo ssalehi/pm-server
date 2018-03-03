@@ -3,7 +3,7 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 
 
-xdescribe("Post page basics", () => {
+describe("Post page basics", () => {
 
   let basicPageId;
   let adminObj = {

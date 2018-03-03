@@ -123,7 +123,22 @@ router.put('/user/message', apiResponse('Person', 'socketHandler', false, ['body
 router.put('/addAgent', apiResponse('Agent', 'save', false, ['']));
 router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
 
-//product
+
+// Types
+router.get('/productType', apiResponse('ProductType', 'getTypes', false, []));
+
+// Colors
+router.get('/color', apiResponse('Color', 'getColors', false, []));
+
+// Brands
+router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
+
+// Brands
+router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
+
+
+
+// product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
 router.put('/product', apiResponse('Product', 'setProduct', true, ['body']));
 router.post('/product', apiResponse('Product', 'setProduct', true, ['body']));
@@ -171,6 +186,7 @@ router.post('/product/image/:id/:colorId', apiResponse('Product', 'setColor', tr
 
 // Product color
 router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
+
 
 
 // Collection
