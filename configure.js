@@ -5,6 +5,7 @@ const models = require('./mongo/models.mongo');
 const db = require('./mongo/index');
 const _const = require('./lib/const.list');
 const env = require('./env');
+const fs = require('fs');
 
 SALT_WORK_FACTOR = 10;
 
@@ -40,10 +41,9 @@ db.dbIsReady()
   .then(() => {
     console.log('-> ', 'default admin has been added!');
 
-    const fs = require('fs');
     let placement = JSON.parse(fs.readFileSync('homePagePlacements.json', 'utf8'));
 
-    let query = {},
+    let query = {address: 'home'},
       update = {
         address: 'home',
         is_app: false,
@@ -53,7 +53,19 @@ db.dbIsReady()
     return models['Page'].findOneAndUpdate(query, update, options);
   })
   .then(res => {
-    console.log('-> ', 'home page is added');
+    let placement = JSON.parse(fs.readFileSync('app_feed.json', 'utf8'));
+
+    let query = {address: 'feed'},
+      update = {
+        address: 'feed',
+        is_app: true,
+        placement: placement.feed
+      },
+      options = {upsert: true, new: true, setDefaultsOnInsert: true};
+    return models['Page'].findOneAndUpdate(query, update, options);
+  })
+  .then(res => {
+    console.log('-> ', 'home page and feed page is added');
     process.exit();
   })
   .catch(err => {
