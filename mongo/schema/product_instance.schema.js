@@ -20,10 +20,16 @@ inventory_template = {
 let schema_obj = {
   product_color_id: Schema.Types.ObjectId,
   size: {
-    type: Number,
+    type: String,
     required: true
   },
-  price:  Number,
+  price: Number,
+  barcode: {
+    type: String,
+    required: true,
+    unique: true
+  },
+
   inventory: [inventory_template]
 };
 
