@@ -19,7 +19,8 @@
     "express-session": "^1.15.0",
     "jade": "^1.11.0",
     "jalali-moment": "^2.1.8",
-    "jsonwebtoken": "^8.1.1",
+    "jsonwebtoken": "8.1.1",
+    "lodash": "4.17.5",
     "moment": "^2.19.1",
     "moment-timezone": "^0.5.13",
     "mongoose": "^5.0.2",
@@ -42,7 +43,8 @@
     "socket.io": "^2.0.3",
     "socket.io-redis": "^5.1.0",
     "socket.io.session": "^1.0.13",
-    "spider-detector": "^1.0.18"
+    "spider-detector": "^1.0.18",
+    "xlsx": "^0.11.17"
   },
   "devDependencies": {
     "jasmine": "^2.8.0",
