@@ -27,7 +27,6 @@ let schema_obj = {
   barcode: {
     type: String,
     required: true,
-    unique: true
   },
 
   inventory: [inventory_template]
