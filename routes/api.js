@@ -210,7 +210,7 @@ router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.i
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']));
 
 // Placement
-router.post('/page/placement/list', apiResponse('Page', 'getPlacements', false, ['body.address']));
+router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address']));
 
 
 
