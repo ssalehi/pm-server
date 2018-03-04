@@ -5,12 +5,13 @@ const models = require('./mongo/models.mongo');
 const db = require('./mongo/index');
 const _const = require('./lib/const.list');
 const env = require('./env');
+const fs = require('fs');
 
 SALT_WORK_FACTOR = 10;
+PLACEMENTS = null;
 
 db.dbIsReady()
   .then(() => {
-
     return new Promise((resolve, reject) => {
       env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
         if (err) return next(err);
@@ -40,20 +41,43 @@ db.dbIsReady()
   .then(() => {
     console.log('-> ', 'default admin has been added!');
 
-    const fs = require('fs');
-    let placement = JSON.parse(fs.readFileSync('homePagePlacements.json', 'utf8'));
+    PLACEMENTS = JSON.parse(fs.readFileSync('placements.json', 'utf8'));
 
-    let query = {},
+    let query = {address: 'home'},
       update = {
         address: 'home',
         is_app: false,
-        placement: placement.home
+        placement: PLACEMENTS.home
       },
       options = {upsert: true, new: true, setDefaultsOnInsert: true};
     return models['Page'].findOneAndUpdate(query, update, options);
   })
   .then(res => {
     console.log('-> ', 'home page is added');
+
+    let query = {address: 'feed'},
+      update = {
+        address: 'feed',
+        is_app: true,
+        placement: PLACEMENTS.feed
+      },
+      options = {upsert: true, new: true, setDefaultsOnInsert: true};
+    return models['Page'].findOneAndUpdate(query, update, options);
+  })
+  .then(res => {
+    console.log('-> ', 'feed page is added');
+
+    let query = {address: 'my_shop'},
+      update = {
+        address: 'my_shop',
+        is_app: true,
+        placement: PLACEMENTS.my_shop,
+      },
+      options = {upsert: true, new: true, setDefaultsOnInsert: true};
+    return models['Page'].findOneAndUpdate(query, update, options);
+  })
+  .then(res => {
+    console.log('-> ', 'myShop page is added');
     process.exit();
   })
   .catch(err => {
