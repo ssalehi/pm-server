@@ -53,7 +53,7 @@ const port = getEnvValue(process.env.PORT);
 const database = getEnvValue(process.env.DATABASE);
 const database_test = getEnvValue(process.env.DATABASE) + '_test';
 const db_uri = getEnvValue(process.env.DB_URI);
-const db_uri_test = getEnvValue(process.env.DB_URI)+ '_test';
+const db_uri_test = getEnvValue(process.env.DB_URI) + '_test';
 const googleAuth_clientId = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTID);
 const googleAuth_clientSecret = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTSECRET);
 const googleAuth_callbackUrl = getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL);
@@ -113,3 +113,5 @@ module.exports = {
     callBackURL: googleAuth_callbackUrl,
   },
 };
+
+

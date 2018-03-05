@@ -14,7 +14,6 @@ let schema_obj = {
   },
   typeIds: [{type: Schema.Types.ObjectId, ref: 'ProductType'}],
   tagIds: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
-  tagGroupIds: [{type: Schema.Types.ObjectId, ref: 'TagGroup'}],
   parent_id: Schema.Types.ObjectId
 };
 
