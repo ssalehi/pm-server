@@ -1,17 +1,23 @@
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
-const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
-const mongoose = require('mongoose');
 if (typeof require !== 'undefined') XLSX = require('xlsx');
 const fs = require('fs');
 
 describe('PUT Upload', () => {
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
 
   beforeEach(done => {
-    lib.dbHelpers.dropAll().then(() => {
-      done();
-    });
+    lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
+        done();
+      })
   });
 
   xit('should error when req.file not valid', function (done) {
@@ -20,6 +26,7 @@ describe('PUT Upload', () => {
       method: 'POST',
       uri: lib.helpers.apiTestURL(`/uploadData`),
       json: true,
+      jar: adminObj.jar,
       resolveWithFullResponse: true
     }).then((res) => {
       this.fail('should error when req.file not valid');
@@ -45,6 +52,7 @@ describe('PUT Upload', () => {
         }
       },
       json: true,
+      jar: adminObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
@@ -53,7 +61,5 @@ describe('PUT Upload', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   }, 20000);
 
-
-  
 
 });

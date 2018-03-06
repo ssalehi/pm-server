@@ -199,7 +199,7 @@ router.delete('/collection/tag/:cid/:tid', apiResponse('Collection', 'deleteTagF
 router.post('/collection/tag/:cid/:tid', apiResponse('Collection', 'setTagToCollection', true, ['params']));
 router.put('/collection/detail/:cid', apiResponse('Collection', 'updateDetails', true, ['params.cid', 'body']));
 router.put('/collection', apiResponse('Collection', 'setCollection', true, ['body']));
-router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
+router.get('/collection/:cid', apiResponse('Collection', 'getCollectionProducts', false, ['params.cid']));
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', true, ['params.cid']));
 
 
@@ -210,7 +210,7 @@ router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.i
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']));
 
 // Placement
-router.post('/page/placement/list', apiResponse('Page', 'getPlacements', false, ['body.address']));
+router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address']));
 
 
 

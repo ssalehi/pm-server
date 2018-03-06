@@ -1,7 +1,7 @@
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
-
+const mongoose = require('mongoose');
 
 describe("Post page basics", () => {
 
@@ -20,6 +20,7 @@ describe("Post page basics", () => {
         let basicPage = models['PageTest']({
           address: 'sampleAddress',
           is_app: false,
+
         });
         return basicPage.save();
       })
@@ -62,14 +63,14 @@ describe("Post page basics", () => {
   });
 
 });
-describe("Post page placements", () => {
+describe("Post page placements and page info", () => {
 
-  let page;
+  let page, collection_id;
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
         let inserts = [];
-
+        collection_id = new mongoose.Types.ObjectId();
 
         page = models['PageTest']({
           address: 'test',
@@ -97,7 +98,12 @@ describe("Post page placements", () => {
                 {
                   component_name: 'menu'
                 },
-              ]
+              ],
+          page_info: {
+            collection_id: collection_id,
+            content: 'sample content'
+
+          }
         });
 
         return page.save()
@@ -113,13 +119,13 @@ describe("Post page placements", () => {
   });
 
 
-  it("should get page placements of a page using its address", function (done) {
+  it("should get page placements and page info of a page using its address", function (done) {
 
     this.done = done;
 
     rp({
       method: 'post',
-      uri: lib.helpers.apiTestURL(`page/placement/list`),
+      uri: lib.helpers.apiTestURL(`page`),
       body: {
         address: page.address
       },
@@ -129,6 +135,8 @@ describe("Post page placements", () => {
       expect(res.statusCode).toBe(200);
       let result = res.body;
       expect(result.placement.length).toBe(7);
+      expect(result.page_info.collection_id.toString()).toBe(collection_id.toString());
+      expect(result.page_info.content).toBe('sample content');
       done();
 
     })
