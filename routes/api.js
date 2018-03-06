@@ -200,6 +200,7 @@ router.post('/collection/tag/:cid/:tid', apiResponse('Collection', 'setTagToColl
 router.put('/collection/detail/:cid', apiResponse('Collection', 'updateDetails', true, ['params.cid', 'body']));
 router.put('/collection', apiResponse('Collection', 'setCollection', true, ['body']));
 router.get('/collection/:cid', apiResponse('Collection', 'getCollectionProducts', false, ['params.cid']));
+router.post('/collection/app', apiResponse('Collection', 'getProductsByPageAddress', false, ['body.address']));
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', true, ['params.cid']));
 
 
@@ -208,8 +209,6 @@ router.get('/page/:id', apiResponse('Page', 'getPage', false, ['params.id']));
 router.put('/page', apiResponse('Page', 'setPage', true, ['body']));
 router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.id']));
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']));
-
-// Placement
 router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address']));
 
 

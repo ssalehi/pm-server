@@ -119,7 +119,7 @@ describe("Post page placements and page info", () => {
   });
 
 
-  it("should get page placements and page info of a page using its address", function (done) {
+  it("should get page placements and page info of a website page using its address", function (done) {
 
     this.done = done;
 
