@@ -24,12 +24,16 @@ let schema_obj = {
     type: Number,
     required: true,
   },
+  date: {
+    type: Date,
+    default: Date.now
+  },
   desc: String,
   details: Schema.Types.Mixed,
   tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
   reviews: [ProductReview],
-  colors:[ProductColor],
-  instances:[ProductInstanceSchema],
+  colors: [ProductColor],
+  instances: [ProductInstanceSchema],
 };
 
 let ProductSchema = new Schema(schema_obj, {collection: 'product', strict: true});
