@@ -8,10 +8,10 @@ let schema_obj = {
   },
   images: [{
       type: String,
+      is_thumbnail: false,
       trim: true,
   }],
 };
-
 
 let ProductColorSchema = new Schema(schema_obj, {collection: 'product_color', strict: true});
 

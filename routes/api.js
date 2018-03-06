@@ -212,9 +212,6 @@ router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']
 // Placement
 router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address']));
 
-
-
-
 // Search
 router.post('/search/:className', apiResponse('Search','search', false, ['params.className','body']));
 router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body']));
