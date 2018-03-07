@@ -134,7 +134,7 @@ describe("Post product colors & images", () => {
     this.done = done;
 
     rp.post({
-      url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}`),
+      url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/false`),
       formData: {
         file: {
           value: fs.readFileSync('spec/api/product/test1.jpeg'),
@@ -148,23 +148,23 @@ describe("Post product colors & images", () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['ProductTest'].find({}).lean();
+      return models['ProductTest'].find({});
 
     }).then(res => {
 
-      console.log('-> ', res[0].colors[0]);
       expect(res.length).toBe(1);
       expect(res[0].colors.length).toBe(1);
       expect(res[0].colors[0].color_id).toEqual(colorId);
-      expect(res[0].colors[0].images.length).toBe(1);
-      expect(res[0].colors[0].images[0]).toContain(productId);
-      expect(res[0].colors[0].images[0]).toContain(colorId);
-      expect(res[0].colors[0].images[0]).toContain('test1.jpeg');
+      expect(res[0].colors[0].image.angles.length).toBe(1);
+      expect(res[0].colors[0].image.angles[0]).toContain(productId);
+      expect(res[0].colors[0].image.angles[0]).toContain(colorId);
+      expect(res[0].colors[0].image.angles[0]).toContain('test1.jpeg');
       done();
 
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
   it("should add a color with its images if colors array already contains color ", function (done) {
 
     let preColorId = mongoose.Types.ObjectId();
@@ -178,12 +178,14 @@ describe("Post product colors & images", () => {
       $set: {
         'colors': [{
           'color_id': preColorId,
-          'images': ['some url1', 'some url 2', 'some url 3']
+          'image': {
+            'angles': ['some url1', 'some url 2', 'some url 3'],
+          }
         }],
       }
     }).then(res =>
       rp.post({
-        url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}`),
+        url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/false`),
         formData: {
           file: {
             value: fs.readFileSync('spec/api/product/test1.jpeg'),
@@ -201,18 +203,18 @@ describe("Post product colors & images", () => {
 
     }).then(res => {
 
-      console.log('-> ', res[0].colors[0]);
       expect(res.length).toBe(1);
       expect(res[0].colors.length).toBe(2);
       expect(res[0].colors[0].color_id).toEqual(preColorId);
       expect(res[0].colors[1].color_id).toEqual(colorId);
-      expect(res[0].colors[0].images.length).toBe(3);
-      expect(res[0].colors[1].images.length).toBe(1);
+      expect(res[0].colors[0].image.angles.length).toBe(3);
+      expect(res[0].colors[1].image.angles.length).toBe(1);
       done();
 
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
   it("should add an new image to existing color", function (done) {
 
     this.done = done;
@@ -226,7 +228,170 @@ describe("Post product colors & images", () => {
     let preColor = {
 
       color_id: colorId,
-      images: [_path + path.sep + 'test1.jpeg']
+      image: {
+        angles: [_path + path.sep + 'test1.jpeg']
+      }
+    };
+    return models['ProductTest'].update({
+        "_id": productId,
+      },
+      {
+        $set: {
+          'colors': [preColor]
+        }
+      })
+      .then(res => //{
+          // models['ProductTest'].findOne({"_id": productId}).then(res => {
+          //   console.log("ans", res);
+          //   console.log("!", res.colors[0].image);
+          // });
+          // return
+          rp.post({
+            url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/false`),
+            formData: {
+              file: {
+                value: fs.readFileSync('spec/api/product/test2.jpeg'),
+                options: {
+                  filename: 'test2.jpeg',
+                  contentType: 'image/jpeg'
+                }
+              }
+            },
+            jar: adminObj.jar,
+            resolveWithFullResponse: true
+          })
+        // }
+      ).then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['ProductTest'].find({}).lean();
+
+      }).then(res => {
+        // console.log("@", res[0]);
+        // console.log("@@", res[0].colors[0]);
+        // console.log("@@@", res[0].colors[0].image);
+        expect(res.length).toBe(1);
+        expect(res[0].colors.length).toBe(1);
+        expect(res[0].colors[0].color_id).toEqual(colorId);
+        expect(res[0].colors[0].image.angles[0]).toContain(productId);
+        expect(res[0].colors[0].image.angles[0]).toContain(colorId);
+        expect(res[0].colors[0].image.angles[1]).toContain(productId);
+        expect(res[0].colors[0].image.angles[1]).toContain(colorId);
+        expect(res[0].colors[0].image.angles[0]).toContain('test1.jpeg');
+        expect(res[0].colors[0].image.angles[1]).toContain('test2.jpeg');
+        done();
+
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should add a color with its thumbnail if colors array is empty", function (done) {
+
+    let colorId = mongoose.Types.ObjectId();
+
+    this.done = done;
+
+    rp.post({
+      url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/true`),
+      formData: {
+        file: {
+          value: fs.readFileSync('spec/api/product/test1.jpeg'),
+          options: {
+            filename: 'test1.jpeg',
+            contentType: 'image/jpeg'
+          }
+        }
+      },
+      jar: adminObj.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['ProductTest'].find({});
+
+    }).then(res => {
+
+      expect(res.length).toBe(1);
+      expect(res[0].colors.length).toBe(1);
+      expect(res[0].colors[0].color_id).toEqual(colorId);
+      expect(res[0].colors[0].image.thumbnail).toContain(productId);
+      expect(res[0].colors[0].image.thumbnail).toContain(colorId);
+      expect(res[0].colors[0].image.thumbnail).toContain('test1.jpeg');
+      expect(res[0].colors[0].image.angles.length).toBe(0);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should add a color with its thumbnail if colors array already contains color (angles and thumbnails)", function (done) {
+
+    let preColorId = mongoose.Types.ObjectId();
+    let colorId = mongoose.Types.ObjectId();
+
+    this.done = done;
+    let thumbName = 'th url';
+
+    models['ProductTest'].update({
+      '_id': productId
+    }, {
+      $set: {
+        'colors': [{
+          'color_id': preColorId,
+          'image': {
+            'angles': ['some url1', 'some url 2', 'some url 3'],
+            'thumbnail': thumbName
+          }
+        }],
+      }
+    }).then(res =>
+      rp.post({
+        url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/true`),
+        formData: {
+          file: {
+            value: fs.readFileSync('spec/api/product/test1.jpeg'),
+            options: {
+              filename: 'test1',
+              contentType: 'image/jpeg'
+            }
+          }
+        },
+        jar: adminObj.jar,
+        resolveWithFullResponse: true
+      })).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['ProductTest'].find({}).lean();
+
+    }).then(res => {
+
+      expect(res.length).toBe(1);
+      expect(res[0].colors.length).toBe(2);
+      expect(res[0].colors[0].color_id).toEqual(preColorId);
+      expect(res[0].colors[1].color_id).toEqual(colorId);
+      expect(res[0].colors[0].image.angles.length).toBe(3);
+      expect(res[0].colors[0].image.thumbnail).toBe(thumbName);
+      expect(res[0].colors[1].image.angles.length).toBe(0);
+      expect(res[0].colors[1].image.thumbnail).toContain(colorId);
+      expect(res[0].colors[1].image.thumbnail).toContain(productId);
+      done();
+
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should update thumbnail on an existing color with thumbnail", function (done) {
+
+    this.done = done;
+
+    let colorId = mongoose.Types.ObjectId();
+
+    let _path = env.uploadProductImagePath + path.sep + 'test' + path.sep + productId + path.sep + colorId;
+    shell.mkdir('-p', _path);
+    copyFileSync('spec/api/product/test1.jpeg', _path + path.sep + 'test1.jpeg');
+
+    let preColor = {
+      color_id: colorId,
+      image: {
+        thumbnail: _path + path.sep + 'test1.jpeg'
+      }
     };
     return models['ProductTest'].update({
         "_id": productId,
@@ -237,9 +402,8 @@ describe("Post product colors & images", () => {
         }
       })
       .then(res =>
-
         rp.post({
-          url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}`),
+          url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/true`),
           formData: {
             file: {
               value: fs.readFileSync('spec/api/product/test2.jpeg'),
@@ -251,29 +415,100 @@ describe("Post product colors & images", () => {
           },
           jar: adminObj.jar,
           resolveWithFullResponse: true
-        }))
-      .then(res => {
+        })
+      ).then(res => {
         expect(res.statusCode).toBe(200);
         return models['ProductTest'].find({}).lean();
 
       }).then(res => {
+        // console.log("@", res[0]);
+        // console.log("@@", res[0].colors[0]);
+        // console.log("@@@", res[0].colors[0].image);
         expect(res.length).toBe(1);
         expect(res[0].colors.length).toBe(1);
         expect(res[0].colors[0].color_id).toEqual(colorId);
-        expect(res[0].colors[0].images.length).toBe(2);
-        expect(res[0].colors[0].images[0]).toContain(productId);
-        expect(res[0].colors[0].images[0]).toContain(colorId);
-        expect(res[0].colors[0].images[1]).toContain(productId);
-        expect(res[0].colors[0].images[1]).toContain(colorId);
-        expect(res[0].colors[0].images[0]).toContain('test1.jpeg');
-        expect(res[0].colors[0].images[1]).toContain('test2.jpeg');
+        expect(res[0].colors[0].image.thumbnail).toContain(productId);
+        expect(res[0].colors[0].image.thumbnail).toContain(colorId);
+        expect(res[0].colors[0].image.thumbnail).toNotContain('test1.jpeg');
+        expect(res[0].colors[0].image.thumbnail).toContain('test2.jpeg');
         done();
 
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
+  it('should add a thumbnail and two angles on an existing color without thumbnail and with other angles', function (done) {
+    this.done = done;
+    let colorId = mongoose.Types.ObjectId();
 
+    let _path = env.uploadProductImagePath + path.sep + 'test' + path.sep + productId + path.sep + colorId;
+    shell.mkdir('-p', _path);
+    copyFileSync('spec/api/product/test1.jpeg', _path + path.sep + 'test1.jpeg');
+
+    let preColor = {
+      color_id: colorId,
+      image: {
+        angles: [_path + path.sep + 'test1.jpeg'],
+        thumbnail: _path + path.sep + 'test1.jpeg'
+      }
+    };
+    return models['ProductTest'].update({
+      "_id": productId,
+    }, {
+      $set: {
+        'colors': [preColor]
+      }
+    })
+      .then(res =>
+        rp.post({
+          url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/false`),
+          formData: {
+            file: {
+              value: fs.readFileSync('spec/api/product/test2.jpeg'),
+              options: {
+                filename: 'test2.jpeg',
+                contentType: 'image/jpeg'
+              }
+            }
+          },
+          jar: adminObj.jar,
+          resolveWithFullResponse: true
+        })
+      ).then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['ProductTest'].find({}).lean();
+      }).then(res => {
+        expect(res.length).toBe(1);
+        expect(res[0].colors.length).toBe(1);
+        expect(res[0].colors[0].color_id).toEqual(colorId);
+        expect(res[0].colors[0].image.angles.length).toBe(2);
+
+        return rp.post({
+          url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/true`),
+          formData: {
+            file: {
+              value: fs.readFileSync('spec/api/product/test2.jpeg'),
+              options: {
+                filename: 'test2.jpeg',
+                contentType: 'image/jpeg'
+              }
+            }
+          },
+          jar: adminObj.jar,
+          resolveWithFullResponse: true
+        })
+      }).then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['ProductTest'].find({}).lean();
+      }).then(res => {
+        expect(res.length).toBe(1);
+        expect(res[0].colors.length).toBe(1);
+        expect(res[0].colors[0].image.angles.length).toBe(2);
+        expect(res[0].colors[0].image.thumbnail).toContain('test2.jpeg');
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
 });
 describe("Post product instances", () => {
 
