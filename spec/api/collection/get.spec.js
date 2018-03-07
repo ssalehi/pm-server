@@ -339,6 +339,64 @@ describe('GET Collection', () => {
         }).catch(lib.helpers.errorHandler.bind(this));
       });
   });
+  it('should get error when request for products of page which is not defined', function (done) {
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`collection/app`),
+      body: {
+        address: 'testAddress'
+      },
+      jar: adminObj.jar,
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('did not failed when page is not for app');
+
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.pageInfoError.status);
+      expect(err.error).toEqual(error.pageInfoError.message);
+
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+  it('should get error when request for products of page which have no page info collection id', function (done) {
+    this.done = done;
+
+    let appPage = new models['PageTest']({
+
+      address: 'testAddress',
+      is_app: false,
+      page_info: {
+        // collection_id: collectionIds[0]
+      }
+
+    });
+
+    appPage.save()
+      .then(res => {
+
+        rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`collection/app`),
+          body: {
+            address: 'testAddress'
+          },
+          jar: adminObj.jar,
+          json: true,
+          resolveWithFullResponse: true
+        }).then(res => {
+          this.fail('did not failed when page is not for app');
+
+          done();
+        }).catch(err => {
+          expect(err.statusCode).toBe(error.pageInfoError.status);
+          expect(err.error).toEqual(error.pageInfoError.message);
+
+          done();
+        }).catch(lib.helpers.errorHandler.bind(this));
+      });
+  });
 
 
   it('should get error when cid is not valid', function (done) {
