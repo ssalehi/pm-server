@@ -301,7 +301,6 @@ describe('GET Collection', () => {
         }).catch(lib.helpers.errorHandler.bind(this));
       });
   });
-
   it('should get error when request for products of page which is not for app', function (done) {
     this.done = done;
 

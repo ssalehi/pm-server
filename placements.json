@@ -1,347 +1,347 @@
 {
-  "my_shop" : [
+  "my_shop": [
     {
-      "component_name" : "menu",
-      "variable_name" : "topMenu",
-      "info" : {
-        "text" : "مردانه",
-        "section" : "men",
-        "href" : "collection/men"
+      "component_name": "menu",
+      "variable_name": "topMenu",
+      "info": {
+        "text": "مردانه",
+        "section": "men",
+        "href": "collection/men"
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "کفش",
-        "href" : "collection/men/shoes",
-        "section" : "men/shoes",
-        "imgUrl" : "assets/imgs/shoes.png",
-        "is_header" : true
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "کفش",
+        "href": "collection/men/shoes",
+        "section": "men/shoes",
+        "imgUrl": "assets/imgs/shoes.png",
+        "is_header": true
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "تمام کفش ها",
-        "href" : "collection/men/shoes/all",
-        "section" : "men/shoes",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "تمام کفش ها",
+        "href": "collection/men/shoes",
+        "section": "men/shoes",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "فوتبال",
-        "href" : "collection/men/shoes/football",
-        "section" : "men/shoes",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "فوتبال",
+        "href": "collection/men/shoes/football",
+        "section": "men/shoes",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "پیاده روی",
-        "href" : "collection/men/shoes/walking",
-        "section" : "men/shoes",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "پیاده روی",
+        "href": "collection/men/shoes/walking",
+        "section": "men/shoes",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "دو",
-        "href" : "collection/men/shoes/running",
-        "section" : "men/shoes",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "دو",
+        "href": "collection/men/shoes/running",
+        "section": "men/shoes",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "لباس",
-        "href" : "collection/men/shirts",
-        "section" : "men/shirts",
-        "imgUrl" : "assets/imgs/shirts.png",
-        "is_header" : true
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "لباس",
+        "href": "collection/men/shirts",
+        "section": "men/shirts",
+        "imgUrl": "assets/imgs/shirts.png",
+        "is_header": true
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "تازه ها",
-        "href" : "collection/men/shirts/new",
-        "section" : "men/shirts",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "تازه ها",
+        "href": "collection/men/shirts/new",
+        "section": "men/shirts",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "زمستانی",
-        "href" : "collection/men/shirts/winter",
-        "section" : "men/shirts",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "زمستانی",
+        "href": "collection/men/shirts/winter",
+        "section": "men/shirts",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "topMenu",
-      "info" : {
-        "text" : "زنانه",
-        "section" : "women",
-        "href" : "collection/women"
+      "component_name": "menu",
+      "variable_name": "topMenu",
+      "info": {
+        "text": "زنانه",
+        "section": "women",
+        "href": "collection/women"
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "کفش",
-        "href" : "collection/women/shoes",
-        "section" : "women/shoes",
-        "imgUrl" : "assets/imgs/shoes.png",
-        "is_header" : true
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "کفش",
+        "href": "collection/women/shoes",
+        "section": "women/shoes",
+        "imgUrl": "assets/imgs/shoes.png",
+        "is_header": true
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "تمام کفش ها",
-        "href" : "collection/women/shoes/all",
-        "section" : "women/shoes",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "تمام کفش ها",
+        "href": "collection/women/shoes/all",
+        "section": "women/shoes",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "فوتبال",
-        "href" : "collection/women/shoes/football",
-        "section" : "women/shoes",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "فوتبال",
+        "href": "collection/women/shoes/football",
+        "section": "women/shoes",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "پیاده روی",
-        "href" : "collection/women/shoes/walking",
-        "section" : "women/shoes",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "پیاده روی",
+        "href": "collection/women/shoes/walking",
+        "section": "women/shoes",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "تازه ها",
-        "href" : "collection/women/shoes/new",
-        "section" : "women/shoes",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "تازه ها",
+        "href": "collection/women/shoes/new",
+        "section": "women/shoes",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "لباس",
-        "href" : "collection/women/shirts",
-        "section" : "women/shirts",
-        "imgUrl" : "assets/imgs/shirts.png",
-        "is_header" : true
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "لباس",
+        "href": "collection/women/shirts",
+        "section": "women/shirts",
+        "imgUrl": "assets/imgs/shirts.png",
+        "is_header": true
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "تازه ها",
-        "href" : "collection/women/shirts/new",
-        "section" : "women/shirts",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "تازه ها",
+        "href": "collection/women/shirts/new",
+        "section": "women/shirts",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "subMenu",
-      "info" : {
-        "text" : "شنا",
-        "href" : "collection/women/shirts/swimming",
-        "section" : "women/shirts",
-        "is_header" : false
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "text": "شنا",
+        "href": "collection/women/shirts/swimming",
+        "section": "women/shirts",
+        "is_header": false
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "topMenu",
-      "info" : {
-        "text" : "پسرانه",
-        "section" : "boy",
-        "href" : "collection/boy"
+      "component_name": "menu",
+      "variable_name": "topMenu",
+      "info": {
+        "text": "پسرانه",
+        "section": "boy",
+        "href": "collection/boy"
       }
     },
     {
-      "component_name" : "menu",
-      "variable_name" : "topMenu",
-      "info" : {
-        "text" : "دخترانه",
-        "section" : "girl",
-        "href" : "collection/girl"
+      "component_name": "menu",
+      "variable_name": "topMenu",
+      "info": {
+        "text": "دخترانه",
+        "section": "girl",
+        "href": "collection/girl"
       }
     }
   ],
-  "feed" : [
+  "feed": [
     {
-      "component_name" : "main",
-      "variable_name" : "",
-      "start_date" : "",
-      "end_date" : "",
-      "info" : {
-        "panel_type" : "full",
-        "imgUrl" : "http://e1.365dm.com/17/10/16-9/20/skysports-tennis-roger-federer-basel_4137189.jpg?20171024192811",
-        "href" : "#",
-        "topTitle" : {
-          "title" : "تصاویر این هفته",
-          "text" : "",
-          "color" : "black"
+      "component_name": "main",
+      "variable_name": "",
+      "start_date": "",
+      "end_date": "",
+      "info": {
+        "panel_type": "full",
+        "imgUrl": "http://e1.365dm.com/17/10/16-9/20/skysports-tennis-roger-federer-basel_4137189.jpg?20171024192811",
+        "href": "#",
+        "topTitle": {
+          "title": "تصاویر این هفته",
+          "text": "",
+          "color": "black"
         },
-        "areas" : [
+        "areas": [
           {
-            "pos" : "left-center",
-            "title" : "راجر فدرر",
-            "text" : "او تمام مسابقات را برده است"
+            "pos": "left-center",
+            "title": "راجر فدرر",
+            "text": "او تمام مسابقات را برده است"
           },
           {
-            "pos" : "card-button",
-            "text" : "خرید"
+            "pos": "card-button",
+            "text": "خرید"
           },
           {
-            "pos" : "card-icon"
+            "pos": "card-icon"
           }
         ]
       }
     },
     {
-      "component_name" : "main",
-      "variable_name" : "",
-      "start_date" : "",
-      "end_date" : "",
-      "info" : {
-        "panel_type" : "full",
-        "imgUrl" : "http://www.psdgraphics.com/file/orange-light-burst.jpg",
-        "href" : "#",
-        "areas" : [
+      "component_name": "main",
+      "variable_name": "",
+      "start_date": "",
+      "end_date": "",
+      "info": {
+        "panel_type": "full",
+        "imgUrl": "http://www.psdgraphics.com/file/orange-light-burst.jpg",
+        "href": "#",
+        "areas": [
           {
-            "pos" : "right-center",
-            "title" : "بدمینتون کار حرفه ای",
-            "text" : "بیست و یک برد متوالی",
-            "color" : "black"
+            "pos": "right-center",
+            "title": "بدمینتون کار حرفه ای",
+            "text": "بیست و یک برد متوالی",
+            "color": "black"
           },
           {
-            "pos" : "card-button",
-            "text" : "خرید"
+            "pos": "card-button",
+            "text": "خرید"
           },
           {
-            "pos" : "card-icon",
-            "color" : "white"
+            "pos": "card-icon",
+            "color": "white"
           }
         ]
       }
     },
     {
-      "component_name" : "main",
-      "variable_name" : "",
-      "start_date" : "",
-      "end_date" : "",
-      "info" : {
-        "panel_type" : "full",
-        "imgUrl" : "http://e0.365dm.com/17/12/16-9/20/skysports-cristiano-ronaldo-real-madrid_4176213.jpg?20171207091750",
-        "href" : "#",
-        "areas" : [
+      "component_name": "main",
+      "variable_name": "",
+      "start_date": "",
+      "end_date": "",
+      "info": {
+        "panel_type": "full",
+        "imgUrl": "http://e0.365dm.com/17/12/16-9/20/skysports-cristiano-ronaldo-real-madrid_4176213.jpg?20171207091750",
+        "href": "#",
+        "areas": [
           {
-            "pos" : "left-bottom",
-            "title" : "رونالدو",
-            "text" : "بازیکن سال"
+            "pos": "left-bottom",
+            "title": "رونالدو",
+            "text": "بازیکن سال"
           },
           {
-            "pos" : "card-button",
-            "text" : "خرید"
+            "pos": "card-button",
+            "text": "خرید"
           },
           {
-            "pos" : "card-icon",
-            "color" : "white"
+            "pos": "card-icon",
+            "color": "white"
           }
         ]
       }
     },
     {
-      "component_name" : "main",
-      "variable_name" : "",
-      "start_date" : "",
-      "end_date" : "",
-      "info" : {
-        "panel_type" : "full",
-        "imgUrl" : "../../assets/imgs/shoeSample.png",
-        "href" : "#",
-        "topTitle" : {
-          "title" : "داره مد میشه...",
-          "text" : "",
-          "color" : "black"
+      "component_name": "main",
+      "variable_name": "",
+      "start_date": "",
+      "end_date": "",
+      "info": {
+        "panel_type": "full",
+        "imgUrl": "../../assets/imgs/shoeSample.png",
+        "href": "#",
+        "topTitle": {
+          "title": "داره مد میشه...",
+          "text": "",
+          "color": "black"
         },
-        "areas" : [
+        "areas": [
           {
-            "pos" : "left-bottom",
-            "title" : "طوسی بی نظیر",
-            "text" : "زمان درخشیدن توست",
-            "color" : "black"
+            "pos": "left-bottom",
+            "title": "طوسی بی نظیر",
+            "text": "زمان درخشیدن توست",
+            "color": "black"
           },
           {
-            "pos" : "card-button",
-            "text" : "خرید",
-            "color" : "dark"
+            "pos": "card-button",
+            "text": "خرید",
+            "color": "dark"
           },
           {
-            "pos" : "card-icon",
-            "color" : "black"
+            "pos": "card-icon",
+            "color": "black"
           }
         ]
       }
     },
     {
-      "component_name" : "main",
-      "variable_name" : "",
-      "start_date" : "",
-      "end_date" : "",
-      "info" : {
-        "panel_type" : "full",
-        "imgUrl" : "../../assets/imgs/q1.png",
-        "href" : "#",
-        "areas" : [
+      "component_name": "main",
+      "variable_name": "",
+      "start_date": "",
+      "end_date": "",
+      "info": {
+        "panel_type": "full",
+        "imgUrl": "../../assets/imgs/q1.png",
+        "href": "#",
+        "areas": [
           {
-            "pos" : "left-top",
-            "title" : "کفش ورزشی زنانه نایک",
-            "text" : "مدل پگاسوس",
-            "color" : "black"
+            "pos": "left-top",
+            "title": "کفش ورزشی زنانه نایک",
+            "text": "مدل پگاسوس",
+            "color": "black"
           },
           {
-            "pos" : "card-button",
-            "text" : "خرید",
-            "color" : "dark"
+            "pos": "card-button",
+            "text": "خرید",
+            "color": "dark"
           },
           {
-            "pos" : "card-icon",
-            "color" : "black"
+            "pos": "card-icon",
+            "color": "black"
           }
         ]
       }
@@ -1073,6 +1073,29 @@
       "info": {
         "text": "پسرانه",
         "href": "collection/boys"
+      }
+    }
+  ],
+  "men": [
+    {
+      "component_name": "menu",
+      "info": {
+        "text": "همه",
+        "href": "collection/men/shoes/all"
+      }
+    },
+    {
+      "component_name": "menu",
+      "info": {
+        "text": "لایف استایل",
+        "href": "collection/men/shoes/lifestyle"
+      }
+    },
+    {
+      "component_name": "menu",
+      "info": {
+        "text": "دویدن",
+        "href": "collection/men/shoes/running"
       }
     }
   ]
