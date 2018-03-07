@@ -240,13 +240,12 @@ describe("Post product colors & images", () => {
           'colors': [preColor]
         }
       })
-      .then(res => //{
-          // models['ProductTest'].findOne({"_id": productId}).then(res => {
-          //   console.log("ans", res);
-          //   console.log("!", res.colors[0].image);
-          // });
-          // return
-          rp.post({
+      .then(res => {
+          models['ProductTest'].findOne({"_id": productId}).then(res => {
+            console.log("ans", res);
+            console.log("!", res.colors[0].image);
+          });
+          return rp.post({
             url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/false`),
             formData: {
               file: {
@@ -260,7 +259,7 @@ describe("Post product colors & images", () => {
             jar: adminObj.jar,
             resolveWithFullResponse: true
           })
-        // }
+        }
       ).then(res => {
         expect(res.statusCode).toBe(200);
         return models['ProductTest'].find({}).lean();
