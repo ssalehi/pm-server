@@ -351,9 +351,9 @@
     {
       "component_name": "logos",
       "variable_name": "",
-      "column": 1,
       "info": {
-        "title": "Nike",
+        "text": "Nike",
+        "column": 1,
         "imgUrl": "nike.png",
         "style": {
           "width": 60
@@ -363,9 +363,9 @@
     {
       "component_name": "logos",
       "variable_name": "",
-      "column": 2,
       "info": {
-        "title": "Converse",
+        "text": "Converse",
+        "column": 2,
         "imgUrl": "converse.png",
         "style": {
           "width": 77,
@@ -378,9 +378,9 @@
     {
       "component_name": "logos",
       "variable_name": "",
-      "column": 3,
       "info": {
-        "title": "Nike Jordan",
+        "text": "Nike Jordan",
+        "column": 3,
         "imgUrl": "nike-jordan.png",
         "style": {
           "width": 88,
@@ -392,9 +392,9 @@
     {
       "component_name": "logos",
       "variable_name": "",
-      "column": 4,
       "info": {
-        "title": "Hurley",
+        "column": 4,
+        "text": "Hurley",
         "imgUrl": "Hurley.png",
         "style": {
           "height": 45,
@@ -405,9 +405,9 @@
     {
       "component_name": "logos",
       "variable_name": "",
-      "column": 5,
       "info": {
-        "title": "The North Face",
+        "text": "The North Face",
+        "column": 5,
         "imgUrl": "thenorthface.png",
         "style": {
           "width": 76,
@@ -420,9 +420,9 @@
     {
       "component_name": "logos",
       "variable_name": "",
-      "column": 6,
       "info": {
-        "title": "Timberland",
+        "text": "Timberland",
+        "column": 6,
         "imgUrl": "timberland.png",
         "style": {
           "width": 110,
@@ -434,9 +434,9 @@
     {
       "component_name": "logos",
       "variable_name": "",
-      "column": 7,
       "info": {
-        "title": "Polo Ralph Lauren",
+        "text": "Polo Ralph Lauren",
+        "column": 7,
         "imgUrl": "Polo-Ralph-Lauren-Clean.png",
         "style": {
           "width": 38,
@@ -449,9 +449,9 @@
     {
       "component_name": "logos",
       "variable_name": "",
-      "column": 8,
       "info": {
-        "title": "ASICS",
+        "text": "ASICS",
+        "column": 8,
         "imgUrl": "store-logo-asics.png",
         "style": {
           "width": 62,
@@ -463,9 +463,9 @@
     {
       "component_name": "logos",
       "variable_name": "",
-      "column": 9,
       "info": {
-        "title": "Adidas",
+        "text": "Adidas",
+        "column": 9,
         "imgUrl": "adidas.png",
         "style": {
           "width": 45,
@@ -476,18 +476,18 @@
     {
       "component_name": "logos",
       "variable_name": "",
-      "column": 10,
       "info": {
-        "title": "Puma",
+        "text": "Puma",
+        "column": 10,
         "imgUrl": "puma.png"
       }
     },
     {
       "component_name": "logos",
       "variable_name": "",
-      "column": 11,
       "info": {
-        "title": "Tommy Hilfiger",
+        "text": "Tommy Hilfiger",
+        "column": 11,
         "imgUrl": "tommyhilfiger.png",
         "style": {
           "width": 40,
@@ -1073,6 +1073,57 @@
       "info": {
         "text": "پسرانه",
         "href": "collection/boys"
+      }
+    }
+  ],
+  "collection/x": [
+    {
+      "component_name": "main",
+      "info": {
+        "panel_type": "full",
+        "imgUrl": "../../../../assets/pictures/men/react.png",
+        "href": "#",
+        "areas": [
+          {
+            "pos": "left-center",
+            "title": "مجموعه ری‌اکت",
+            "text": "حرکت رو به جلو ...",
+            "color": "darkblue"
+          }
+        ]
+      }
+    },
+    {
+      "component_name": "logos",
+      "variable_name": "",
+      "info": {
+        "text": "Nike",
+        "column": 1,
+        "imgUrl": "nike.png",
+        "style": {
+          "width": 60
+        }
+      }
+    },
+    {
+      "component_name": "menu",
+      "variable_name": "topMenu",
+      "start_date": "",
+      "end_date": "",
+      "info": {
+        "text": "مردانه",
+        "href": "collection/men"
+      }
+    },
+    {
+      "component_name": "menu",
+      "variable_name": "subMenu",
+      "info": {
+        "section": "men/middle",
+        "column": 2,
+        "row": 3,
+        "text": "پیراهن‌های Polo",
+        "href": "#"
       }
     }
   ]

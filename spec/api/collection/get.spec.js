@@ -238,23 +238,108 @@ describe('GET Collection', () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
 
-      expect(res.body.length).toBe(3);
-      let product2 = res.body.filter(x => x._id === productIds[1].toString())[0];
+      expect(res.body.name).toBe('manual1');
+      expect(res.body.products.length).toBe(3);
+      let product2 = res.body.products.filter(x => x._id === productIds[1].toString())[0];
 
-      productIds.forEach(id =>{
-        expect(res.body.map(x => x._id).includes(id.toString())).toBeTruthy();
+      productIds.forEach(id => {
+        expect(res.body.products.map(x => x._id).includes(id.toString())).toBeTruthy();
       });
 
       expect(product2.tags.length).toBe(2);
       expect(product2.tags[0].name).toBe('tag1');
-      expect(product2.tag_groups.length).toBe(2);
-      expect(product2.tag_groups[0]).toBe('Gender');
+      expect(product2.tags[0].tgName).toBe('Gender');
       expect(product2.size.length).toBe(3);
       expect(product2.colors.length).toBe(1);
       expect(product2.count).toBe(4);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
+
+  it('should return app page products', function (done) {
+    this.done = done;
+
+    let appPage = new models['PageTest']({
+
+      address: 'testAddress',
+      is_app: true,
+      page_info: {
+        collection_id: collectionIds[0]
+      }
+
+    });
+
+    appPage.save()
+      .then(res => {
+
+        rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`collection/app`),
+          body: {
+            address: 'testAddress'
+          },
+          jar: adminObj.jar,
+          json: true,
+          resolveWithFullResponse: true
+        }).then(res => {
+          expect(res.statusCode).toBe(200);
+          expect(res.body.name).toBe('manual1');
+          expect(res.body.products.length).toBe(3);
+          let product2 = res.body.products.filter(x => x._id === productIds[1].toString())[0];
+
+          productIds.forEach(id => {
+            expect(res.body.products.map(x => x._id).includes(id.toString())).toBeTruthy();
+          });
+
+          expect(product2.tags.length).toBe(2);
+          expect(product2.tags[0].name).toBe('tag1');
+          expect(product2.tags[0].tgName).toBe('Gender');
+          expect(product2.size.length).toBe(3);
+          expect(product2.colors.length).toBe(1);
+          expect(product2.count).toBe(4);
+          done();
+        }).catch(lib.helpers.errorHandler.bind(this));
+      });
+  });
+
+  it('should get error when request for products of page which is not for app', function (done) {
+    this.done = done;
+
+    let appPage = new models['PageTest']({
+
+      address: 'testAddress',
+      is_app: false,
+      page_info: {
+        collection_id: collectionIds[0]
+      }
+
+    });
+
+    appPage.save()
+      .then(res => {
+
+        rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`collection/app`),
+          body: {
+            address: 'testAddress'
+          },
+          jar: adminObj.jar,
+          json: true,
+          resolveWithFullResponse: true
+        }).then(res => {
+          this.fail('did not failed when page is not for app');
+
+          done();
+        }).catch(err => {
+          expect(err.statusCode).toBe(error.appOnly.status);
+          expect(err.error).toEqual(error.appOnly.message);
+
+          done();
+        }).catch(lib.helpers.errorHandler.bind(this));
+      });
+  });
+
 
   it('should get error when cid is not valid', function (done) {
     this.done = done;
