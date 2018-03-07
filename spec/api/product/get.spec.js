@@ -10,11 +10,9 @@ describe("Get products", () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
-
         type1 = models['ProductTypeTest']({
           name: 'Shoe'
         });
-
         type2 = models['ProductTypeTest']({
           name: 'Shirt'
         });
@@ -22,7 +20,6 @@ describe("Get products", () => {
         brand1 = models['BrandTest']({
           name: 'Nike'
         });
-
         brand2 = models['BrandTest']({
           name: 'Puma'
         });
@@ -102,7 +99,6 @@ describe("Get products", () => {
             }
           ]
         });
-
         product2 = models['ProductTest']({
           name: 'sample name 2',
           product_type: type2._id,
@@ -113,7 +109,7 @@ describe("Get products", () => {
 
         return Promise.all([type1.save(), type2.save(), brand1.save(), brand2.save(), color1.save(), color2.save(), product1.save(), product2.save()]);
       })
-      .then(res => {
+      .then(() => {
         done();
       })
       .catch(err => {
@@ -157,6 +153,7 @@ describe("Get products", () => {
         expect(res.instances.map(i => i.price)).toContain(123);
         expect(res.instances.map(i => i.inventory)[2].map(i => i.count)).toContain(0);
         expect(res.instances.map(i => i.inventory)[2].map(i => i.count)).toContain(1);
+        expect(res.thumbnail).toBe('one thumbnail');
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
