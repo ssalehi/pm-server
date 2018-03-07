@@ -6,6 +6,7 @@ let schema_obj = {
     type: String,
     required: true,
     trim: true,
+    unique: true,
   },
   // hex: String,
   color_id: {
