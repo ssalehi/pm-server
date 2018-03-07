@@ -45,11 +45,17 @@ describe("Get products", () => {
           colors: [
             {
               color_id: color1._id,
-              images: ['some url 11', 'some url 12'],
+              image: {
+                thumbnail: 'one thumbnail',
+                angels: ['some url 11', 'some url 12']
+              }
             },
             {
               color_id: color2._id,
-              images: ['some url 21', 'some url 22', 'some url 23'],
+              image: {
+                thumbnail: 'another thumbnail',
+                angels: ['some url 21', 'some url 22', 'some url 23']
+              }
             }
           ],
           instances: [
