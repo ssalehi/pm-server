@@ -9,6 +9,7 @@ const app = require('../app');
 const multer = require('multer');
 const mongoose = require('mongoose');
 const personModel = require('../lib/person.model');
+const fs = require('fs');
 
 let storage = multer.diskStorage({
   destination: env.uploadPath + path.sep,
@@ -160,7 +161,7 @@ router.post('/product/instance/inventory', apiResponse('Product', 'setInventory'
 router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', apiResponse('Product', 'deleteInventory', true, ['params.id', 'params.productColorId', 'params.warehouseId']));
 
 // product image
-router.use('/product/image/:id/:colorId', function (req, res, next) {
+router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next) {
 
   let destination;
   if (req.test)
@@ -185,7 +186,7 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
 
 
 
-router.post('/product/image/:id/:colorId', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'file']));
+router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file']));
 
 // Product color
 router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
@@ -211,7 +212,11 @@ router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.i
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']));
 router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address']));
 
-
+//Color Dictionary
+router.get('/color/dictionary', (req, res, next) => {
+  const colorData = JSON.parse(fs.readFileSync('./colorDictionary.json'));
+  res.status(200).json(colorData);
+});
 
 
 // Search

@@ -6,10 +6,14 @@ let schema_obj = {
     required: true,
     ref: 'Color'
   },
-  images: [{
-      type: String,
-      trim: true,
-  }],
+  // images: [{
+  //     type: String,
+  //     trim: true,
+  // }],
+  image: {
+    thumbnail: {type: String, trim: true},
+    angles: [{type: String, trim: true}]
+  }
 };
 
 
