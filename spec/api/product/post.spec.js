@@ -127,7 +127,7 @@ describe("Post product colors & images", () => {
   });
 
 
-  it("should add a color with its images if colors array is empty", function (done) {
+  it("should not add a color with its images if colors array is empty and it doesn't have thumbnail", function (done) {
 
     let colorId = mongoose.Types.ObjectId();
 
@@ -146,26 +146,20 @@ describe("Post product colors & images", () => {
       },
       jar: adminObj.jar,
       resolveWithFullResponse: true
-    }).then(res => {
-      expect(res.statusCode).toBe(200);
+    }).catch(res => {
+      expect(res.statusCode).toBe(404);
       return models['ProductTest'].find({});
-
     }).then(res => {
 
       expect(res.length).toBe(1);
-      expect(res[0].colors.length).toBe(1);
-      expect(res[0].colors[0].color_id).toEqual(colorId);
-      expect(res[0].colors[0].image.angles.length).toBe(1);
-      expect(res[0].colors[0].image.angles[0]).toContain(productId);
-      expect(res[0].colors[0].image.angles[0]).toContain(colorId);
-      expect(res[0].colors[0].image.angles[0]).toContain('test1.jpeg');
+      expect(res[0].colors.length).toBe(0);
       done();
 
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it("should add a color with its images if colors array already contains color ", function (done) {
+  it("should add a color with its images if colors array already contains that color and it has thumbnail", function (done) {
 
     let preColorId = mongoose.Types.ObjectId();
     let colorId = mongoose.Types.ObjectId();
@@ -179,13 +173,14 @@ describe("Post product colors & images", () => {
         'colors': [{
           'color_id': preColorId,
           'image': {
+            'thumbnail': 'th',
             'angles': ['some url1', 'some url 2', 'some url 3'],
           }
         }],
       }
     }).then(res =>
       rp.post({
-        url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/false`),
+        url: lib.helpers.apiTestURL(`product/image/${productId}/${preColorId}/false`),
         formData: {
           file: {
             value: fs.readFileSync('spec/api/product/test1.jpeg'),
@@ -204,11 +199,10 @@ describe("Post product colors & images", () => {
     }).then(res => {
 
       expect(res.length).toBe(1);
-      expect(res[0].colors.length).toBe(2);
+      expect(res[0].colors.length).toBe(1);
       expect(res[0].colors[0].color_id).toEqual(preColorId);
-      expect(res[0].colors[1].color_id).toEqual(colorId);
-      expect(res[0].colors[0].image.angles.length).toBe(3);
-      expect(res[0].colors[1].image.angles.length).toBe(1);
+      expect(res[0].colors[0].image.angles.length).toBe(4);
+      expect(res[0].colors[0].image.thumbnail).toContain('th');
       done();
 
     })
