@@ -5,7 +5,7 @@ const error = require('../../../lib/errors.list');
 
 describe("Get products", () => {
   let product1, product2;
-  let type1, type2, brand1, brand2, color1, color2;
+  let type1, type2, brand1, brand2, color1, color2, tagGroup1, tag1, tag2;
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
@@ -31,6 +31,20 @@ describe("Get products", () => {
         color2 = models['ColorTest']({
           name: 'Red',
           color_id: 102
+        });
+
+        tagGroup1 = models['TagGroupTest']({
+          name: 'tag group 1',
+          is_required: false,
+        });
+
+        tag1 = models['TagTest']({
+          name: 'tag 1',
+          tag_group_id: tagGroup1._id,
+        });
+        tag2 = models['TagTest']({
+          name: 'tag 2',
+          tag_group_id: tagGroup1._id,
         });
 
         product1 = models['ProductTest']({
@@ -97,7 +111,8 @@ describe("Get products", () => {
                 count: 2,
               }]
             }
-          ]
+          ],
+          tags: [tag1._id, tag2._id]
         });
         product2 = models['ProductTest']({
           name: 'sample name 2',
@@ -107,7 +122,19 @@ describe("Get products", () => {
           desc: 'some description for this product',
         });
 
-        return Promise.all([type1.save(), type2.save(), brand1.save(), brand2.save(), color1.save(), color2.save(), product1.save(), product2.save()]);
+        return Promise.all([
+          type1.save(),
+          type2.save(),
+          brand1.save(),
+          brand2.save(),
+          color1.save(),
+          color2.save(),
+          tagGroup1.save(),
+          tag1.save(),
+          tag2.save(),
+          product1.save(),
+          product2.save()
+        ]);
       })
       .then(() => {
         done();
@@ -154,6 +181,9 @@ describe("Get products", () => {
         expect(res.instances.map(i => i.inventory)[2].map(i => i.count)).toContain(0);
         expect(res.instances.map(i => i.inventory)[2].map(i => i.count)).toContain(1);
         expect(res.thumbnail).toBe('one thumbnail');
+        expect(res.tags.map(i => i.tag_name)).toContain('tag 1');
+        expect(res.tags.map(i => i.tag_name)).toContain('tag 2');
+        expect(res.tags.map(i => i.tag_group_name)).toContain('tag group 1');
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
