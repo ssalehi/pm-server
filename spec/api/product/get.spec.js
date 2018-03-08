@@ -2,6 +2,7 @@ const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
+const mongoose = require('mongoose');
 
 describe("Get products", () => {
   let product1, product2;
@@ -47,6 +48,9 @@ describe("Get products", () => {
           tag_group_id: tagGroup1._id,
         });
 
+        const colorId1 = new mongoose.Types.ObjectId();
+        const colorId2 = new mongoose.Types.ObjectId();
+
         product1 = models['ProductTest']({
           name: 'sample name 1',
           product_type: type1._id,
@@ -55,6 +59,7 @@ describe("Get products", () => {
           desc: 'some description for this product',
           colors: [
             {
+              _id: colorId1,
               color_id: color1._id,
               image: {
                 thumbnail: 'one thumbnail',
@@ -62,6 +67,7 @@ describe("Get products", () => {
               }
             },
             {
+              _id: colorId2,
               color_id: color2._id,
               image: {
                 thumbnail: 'another thumbnail',
@@ -71,7 +77,7 @@ describe("Get products", () => {
           ],
           instances: [
             {
-              product_color_id: color1._id,
+              product_color_id: colorId1,
               size: '12',
               price: 123,
               barcode: '123456789',
@@ -81,7 +87,7 @@ describe("Get products", () => {
               }]
             },
             {
-              product_color_id: color1._id,
+              product_color_id: colorId1,
               size: '8',
               barcode: '123456780',
               inventory: [{
@@ -90,7 +96,7 @@ describe("Get products", () => {
               }]
             },
             {
-              product_color_id: color1._id,
+              product_color_id: colorId1,
               size: '15',
               barcode: '123456700',
               inventory: [{
@@ -102,7 +108,7 @@ describe("Get products", () => {
               }]
             },
             {
-              product_color_id: color2._id,
+              product_color_id: colorId2,
               size: '12',
               price: '123',
               barcode: '123456789',
@@ -172,6 +178,7 @@ describe("Get products", () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
+
         res = JSON.parse(res.body);
         expect(res.length).toBe(1);
         res = res[0];
