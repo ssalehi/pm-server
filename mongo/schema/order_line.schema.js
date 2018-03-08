@@ -2,6 +2,10 @@ const Schema = require('mongoose').Schema;
 
 let schema_obj = {
   product_instance_id: Schema.Types.ObjectId,
+  product_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'Product',
+  },
   paid_price: {
     type: Number,
     required: true,

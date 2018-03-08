@@ -9,7 +9,6 @@ let schema_obj = {
   transaction_id: Schema.Types.ObjectId,
   address_id: {
     type: Schema.Types.ObjectId,
-    required: true
   },
   total_amount: {
     type: Number,
@@ -25,6 +24,10 @@ let schema_obj = {
   is_collect: {
     type: Boolean,
     default: false
+  },
+  is_cart: {
+    type: Boolean,
+    default: false,
   },
   order_line_ids: [OrderLineSchema],
 };
