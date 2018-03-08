@@ -9,7 +9,6 @@ let schema_obj = {
   transaction_id: Schema.Types.ObjectId,
   address_id: {
     type: Schema.Types.ObjectId,
-    required: true
   },
   total_amount: {
     type: Number,
