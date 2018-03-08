@@ -142,6 +142,7 @@ router.get('/customer/:cid/balance', apiResponse('Customer', 'getBalanceAndPoint
 
 // Order
 router.post('/order', apiResponse('Order', 'addToOrder', true, ['body']));
+router.delete('/order', apiResponse('Order', 'removeFromOrder', true, ['body']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
