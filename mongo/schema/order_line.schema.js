@@ -5,6 +5,7 @@ let schema_obj = {
   paid_price: {
     type: Number,
     required: true,
+
     default: 0
   },
   adding_time: Date,
@@ -17,7 +18,6 @@ let schema_obj = {
     ref: 'Warehouse'
   },
 };
-
 
 let OrderLineSchema = new Schema(schema_obj, {strict: true});
 
