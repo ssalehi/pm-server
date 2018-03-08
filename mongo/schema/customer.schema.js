@@ -30,6 +30,10 @@ let schema_obj = {
     type: Number,
     default: 0
   },
+  balance: {
+    type: Number,
+    default: 0,
+  },
   gender: {
     type: String,
     enum: ['m', 'f'],

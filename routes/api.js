@@ -137,7 +137,8 @@ router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 // Brands
 router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 
-
+// Customer
+router.get('/customer/:cid/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['params.cid']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
