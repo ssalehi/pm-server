@@ -144,6 +144,7 @@ router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.
 router.put('/product', apiResponse('Product', 'setProduct', true, ['body']));
 router.post('/product', apiResponse('Product', 'setProduct', true, ['body']));
 router.delete('/product/:id', apiResponse('Product', 'deleteProduct', true, ['params.id']));
+router.get('/product/color/:product_id/:color_id/', apiResponse('Product', 'getProductByColor', false, ['params.product_id', 'params.color_id']));
 
 // product tag
 router.post('/product/tag', apiResponse('Product', 'setTag', true, ['body']));
