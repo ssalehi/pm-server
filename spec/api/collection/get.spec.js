@@ -136,7 +136,7 @@ describe('GET Collection Types', () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`collection/types/${collectionIds[0]}`),
+      uri: lib.helpers.apiTestURL(`collection/type/${collectionIds[0]}`),
       jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
@@ -153,7 +153,7 @@ describe('GET Collection Types', () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`collection/types/1`),
+      uri: lib.helpers.apiTestURL(`collection/type/1`),
       jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
@@ -172,7 +172,7 @@ describe('GET Collection Types', () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`collection/types/${collectionIds[0]}`),
+      uri: lib.helpers.apiTestURL(`collection/type/${collectionIds[0]}`),
       // jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
@@ -252,7 +252,7 @@ describe('GET Collection Tags', () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`collection/tags/${collectionIds[0]}`),
+      uri: lib.helpers.apiTestURL(`collection/tag/${collectionIds[0]}`),
       jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
@@ -270,7 +270,7 @@ describe('GET Collection Tags', () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`collection/tags/1`),
+      uri: lib.helpers.apiTestURL(`collection/tag/1`),
       jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
@@ -289,7 +289,7 @@ describe('GET Collection Tags', () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`collection/tags/${collectionIds[0]}`),
+      uri: lib.helpers.apiTestURL(`collection/tag/${collectionIds[0]}`),
       // jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
@@ -428,7 +428,7 @@ describe('GET Collection Manual Products', () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`collection/products/manual/${collectionIds[0]}`),
+      uri: lib.helpers.apiTestURL(`collection/product/manual/${collectionIds[0]}`),
       jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
@@ -445,7 +445,7 @@ describe('GET Collection Manual Products', () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`collection/products/manual/1`),
+      uri: lib.helpers.apiTestURL(`collection/product/manual/1`),
       jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
@@ -464,7 +464,7 @@ describe('GET Collection Manual Products', () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`collection/products/manual/${collectionIds[0]}`),
+      uri: lib.helpers.apiTestURL(`collection/product/manual/${collectionIds[0]}`),
       // jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
@@ -722,7 +722,7 @@ describe('GET Collection Products', () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`collection/products/${collectionIds[0]}`),
+      uri: lib.helpers.apiTestURL(`collection/product/${collectionIds[0]}`),
       jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true

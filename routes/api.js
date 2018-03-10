@@ -197,10 +197,10 @@ router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false
 
 // Collection
 router.get('/collection/:cid', apiResponse('Collection', 'getCollection', true, ['params.cid']));
-router.get('/collection/products/manual/:cid', apiResponse('Collection', 'getCollectionManualProducts', true, ['params.cid']));
-router.get('/collection/products/:cid', apiResponse('Collection', 'getCollectionProducts', false, ['params.cid']));
-router.get('/collection/tags/:cid', apiResponse('Collection', 'getCollectionTags', true, ['params.cid']));
-router.get('/collection/types/:cid', apiResponse('Collection', 'getCollectionTypes', true, ['params.cid']));
+router.get('/collection/product/manual/:cid', apiResponse('Collection', 'getCollectionManualProducts', true, ['params.cid']));
+router.get('/collection/product/:cid', apiResponse('Collection', 'getCollectionProducts', false, ['params.cid']));
+router.get('/collection/tag/:cid', apiResponse('Collection', 'getCollectionTags', true, ['params.cid']));
+router.get('/collection/type/:cid', apiResponse('Collection', 'getCollectionTypes', true, ['params.cid']));
 
 router.put('/collection', apiResponse('Collection', 'setCollection', true, ['body']));
 
