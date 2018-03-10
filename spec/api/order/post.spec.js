@@ -191,8 +191,8 @@ describe('POST Order', () => {
 
         campaign1 = models['CampaignTest']({
           name: 'new year sales',
-          discount_ref: 100,
-          collection_ids: [{
+          discount_ref: 10,
+          campaign_collection_ids: [{
             collection_id: collection1._id,
           }],
         });
@@ -201,8 +201,8 @@ describe('POST Order', () => {
           discount_ref: 20,
           start_date: new Date(2000, 10, 10),
           end_date: new Date(2000, 11, 10),
-          collection_ids: [{
-            discount_diff: 30,
+          campaign_collection_ids: [{
+            discount_diff: 3,
             collection_id: collection1._id,
           }],
         });
@@ -317,12 +317,30 @@ describe('POST Order', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit("should get order items (lines) data for not logged in customer", function (done) {
+  it("should get order items (lines) data for not logged in customer", function (done) {
     this.done = done;
     rp({
       method: 'post',
       body: {
-        data: {},
+        data: [
+          {
+            campaign_id: campaign1._id,
+            collection_id: collection1._id,
+            product_id: product1._id,
+            instance_id: instanceId1
+          },
+          {
+            campaign_id: campaign2._id,
+            collection_id: collection1._id,
+            product_id: product1._id,
+            instance_id: instanceId4
+          },
+          {
+            collection_id: collection1._id,
+            product_id: product1._id,
+            instance_id: instanceId1
+          },
+        ],
       },
       json: true,
       uri: lib.helpers.apiTestURL('cart/items'),
@@ -330,6 +348,18 @@ describe('POST Order', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
+        res = res.body;
+        expect(res.length).toBe(3);
+        res = res[0];
+
+        expect(res.instance_id).toBeDefined();
+        expect(res.product_id).toBeDefined();
+        expect(res.color).toBeDefined();
+        expect(res.size).toBeDefined();
+        expect(res.quantity).toBeDefined();
+        expect(res.base_price).toBeDefined();
+        expect(res.tags).toBeDefined();
+        expect(res.thumbnail).toBeDefined();
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
