@@ -140,6 +140,10 @@ router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 // Customer
 router.get('/customer/:cid/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['params.cid']));
 
+// Order
+router.post('/order', apiResponse('Order', 'addToOrder', false, ['body']));
+router.delete('/order', apiResponse('Order', 'removeFromOrder', false, ['body']));
+
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
 router.put('/product', apiResponse('Product', 'setProduct', true, ['body']));

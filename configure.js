@@ -53,6 +53,7 @@ db.dbIsReady()
           is_app: isApp,
           placement: PLACEMENTS[r]
         },
+
         options = {upsert: true, new: true, setDefaultsOnInsert: true};
       return models['Page'].findOneAndUpdate(query, update, options);
     }))
