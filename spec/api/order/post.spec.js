@@ -287,7 +287,6 @@ describe('POST Order', () => {
   });
 
   it("should get non-checkout order lines for logged in customer", function (done) {
-    // done();
     this.done = done;
     rp({
       method: 'post',
@@ -304,43 +303,56 @@ describe('POST Order', () => {
         res = res.body;
         expect(res.length).toBe(4);
         expect(res.map(el => el.quantity)).toContain(2);
+        res = res[0];
+        expect(res.instance_id).toBeDefined();
+        expect(res.product_id).toBeDefined();
+        expect(res.color).toBeDefined();
+        expect(res.size).toBeDefined();
+        expect(res.quantity).toBeDefined();
+        expect(res.base_price).toBeDefined();
+        expect(res.tags).toBeDefined();
+        expect(res.thumbnail).toBeDefined();
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  // it("should get order items (lines) data for not logged in customer", function (done) {
-  //   this.done = done;
-  //   rp({
-  //     method: 'post',
-  //     body: {
-  //       instance_ids: [],
-  //     },
-  //     uri: lib.helpers.apiTestURL('cart/items'),
-  //     resolveWithFullResponse: true,
-  //   })
-  //     .then(res => {
-  //       expect(res.statusCode).toBe(200);
-  //       done();
-  //     })
-  //     .catch(lib.helpers.errorHandler.bind(this));
-  // });
-  //
-  // it("should get error when customer is not logged in and instance_ids is not declared", function (done) {
-  //   rp({
-  //     method: 'post',
-  //     body: {},
-  //     uri: lib.helpers.apiTestURL('cart/items'),
-  //     resolveWithFullResponse: true,
-  //   })
-  //     .then(res => {
-  //       this.fail('Not logged in customer can get cart items without declared instance_ids');
-  //       done();
-  //     })
-  //     .catch(err => {
-  //       expect(err.statusCode).toBe(error.instanceDataRequired.status);
-  //       expect(err.error).toBe(error.instanceDataRequired.message);
-  //       done();
-  //     });
-  // });
+  xit("should get order items (lines) data for not logged in customer", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        data: {},
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('cart/items'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should get error when customer is not logged in and instance_ids is not declared", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        d: {}
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('cart/items'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Not logged in customer can get cart items without declared instance_ids');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.instanceDataRequired.status);
+        expect(err.error).toBe(error.instanceDataRequired.message);
+        done();
+      });
+  });
 });
