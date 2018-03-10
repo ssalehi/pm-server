@@ -4,7 +4,7 @@ const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 
-xdescribe('GET Collection Basics', () => {
+describe('GET Collection Basics', () => {
   let collectionIds = [];
   let adminObj = {
     aid: null,
@@ -90,7 +90,7 @@ xdescribe('GET Collection Basics', () => {
 
 
 });
-xdescribe('GET Collection Types', () => {
+describe('GET Collection Types', () => {
   let collectionIds = [];
   let productTypeIds = [];
   let adminObj = {
@@ -190,7 +190,7 @@ xdescribe('GET Collection Types', () => {
 
 
 });
-xdescribe('GET Collection Tags', () => {
+describe('GET Collection Tags', () => {
   let collectionIds = [];
   let tagIds = [];
   let adminObj = {
@@ -307,7 +307,7 @@ xdescribe('GET Collection Tags', () => {
 
 
 });
-xdescribe('GET Collection Manual Products', () => {
+describe('GET Collection Manual Products', () => {
   let productIds = [];
   let collectionIds = [];
   let colorIds = [];
