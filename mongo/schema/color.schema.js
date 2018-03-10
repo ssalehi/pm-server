@@ -9,10 +9,6 @@ let schema_obj = {
     unique: true,
   },
   // hex: String,
-  color_id: {
-    type: String,
-    required: true,
-  },
 };
 
 

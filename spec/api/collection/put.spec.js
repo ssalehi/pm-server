@@ -7,43 +7,20 @@ const mongoose = require('mongoose');
 
 describe('PUT Collection', () => {
 
-  let productIdsArr = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
-  let productTypesArr = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
-  let newTypesArr = [];
-  newTypesArr[0] = productTypesArr[0];
-  newTypesArr[1] = productTypesArr[1];
-  newTypesArr[2] = mongoose.Types.ObjectId();
-  let tagGroupsArr = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
-  let newTagGroupsArr = [];
-  newTagGroupsArr[0] = tagGroupsArr[1];
-  let collectionIds = [];
   let adminObj = {
     aid: null,
     jar: null
   };
+
+  let collectionId;
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-
-        let collectionArr = [{
-          name: 'manual',
-          is_smart: false,
-          productIds: productIdsArr
-        }, {
-          name: 'smart',
-          is_smart: true,
-          typeIds: productTypesArr,
-          tagGroupIds: tagGroupsArr,
-        }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
-          collectionIds[0] = res[0]._id;
-          collectionIds[1] = res[1]._id;
-
-          done();
-        });
+        done();
       }).catch(err => {
       console.log(err);
       done();
@@ -56,56 +33,23 @@ describe('PUT Collection', () => {
       method: 'put',
       uri: lib.helpers.apiTestURL('collection'),
       body: {
-        // _id: collectionIds[0],
-        name: 'collection three',
-        productIds: [
-          productIdsArr[0],
-        ]
+        name: 'collection test',
       },
       jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
+      collectionId = res.body._id;
       expect(res.statusCode).toBe(200);
-
       return models['CollectionTest'].find();
     }).then(res => {
-
-      expect(res.length).toEqual(3);
-      expect(res[2].productIds).toContain(productIdsArr[0]);
-      expect(res[2].productIds.length).toEqual(1);
+      expect(res.length).toEqual(1);
+      expect(res[0]._id.toString()).toBe(collectionId.toString());
 
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should update collection when body has _id ', function (done) {
-    this.done = done;
-    rp({
-      method: 'put',
-      uri: lib.helpers.apiTestURL('collection'),
-      body: {
-        _id: collectionIds[0],
-        name: 'changedName',
-        is_smart: true
-      },
-      jar: adminObj.jar,
-      json: true,
-      resolveWithFullResponse: true
-    }).then(res => {
-      expect(res.statusCode).toBe(200);
-
-      return models['CollectionTest'].find();
-    }).then(res => {
-
-      expect(res.length).toBe(2);
-      expect(res[0]._id).toEqual(collectionIds[0]);
-      expect(res[0].name).toEqual('changedName');
-      expect(res[0].productIds.length).toEqual(3);
-
-      done();
-    }).catch(lib.helpers.errorHandler.bind(this));
-  });
 
   it('should get error when name of collection is not defined', function (done) {
     this.done = done;
@@ -114,9 +58,6 @@ describe('PUT Collection', () => {
       uri: lib.helpers.apiTestURL(`collection`),
       body: {
         // name: 'second name',
-        productIds: [
-          productIdsArr[0],
-        ]
       },
       jar: adminObj.jar,
       json: true,
@@ -132,32 +73,28 @@ describe('PUT Collection', () => {
     });
   });
 
-  it('should update tagGroups and types', function (done) {
+  it('should get error when admin is not calling the api', function (done) {
     this.done = done;
     rp({
       method: 'put',
-      uri: lib.helpers.apiTestURL(`collection/detail/${collectionIds[1]}`),
+      uri: lib.helpers.apiTestURL(`collection`),
+      // jar: adminObj.jar,
       body: {
-        typeIds: newTypesArr,
-        tagGroupIds: newTagGroupsArr
+        name: 'second name',
       },
-      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      expect(res.statusCode).toBe(200);
-
-      return models['CollectionTest'].find({_id: collectionIds[1]});
-    }).then(res => {
-      res = res[0];
-
-      expect(res.name).toBe('smart');
-      expect(res.typeIds.length).toBe(3);
-      expect(res.tagGroupIds.length).toBe(1);
+      this.fail('did not failed when non admin user is calling the api');
 
       done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.adminOnly.status);
+      expect(err.error).toEqual(error.adminOnly.message);
 
+      done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
+
 
 });

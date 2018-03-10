@@ -95,12 +95,14 @@ db.dbIsReady()
   })
   .then(res => {
     console.log('-> ', 'collection men shoes page is added for app');
-  .then(() => {
-    process.exit();
-  })
-  .catch(err => {
-    console.log('-> ', err);
-    process.exit();
+  .
+    then(() => {
+      process.exit();
+    })
+      .catch(err => {
+        console.log('-> ', err);
+        process.exit();
+      });
   });
 
 
