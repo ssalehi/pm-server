@@ -21,8 +21,8 @@ let schema_obj = {
     type: Number,
     // required: true
   },
-  loc:{
-    type:{
+  loc: {
+    type: {
       long: Number,
       lat: Number
     }
