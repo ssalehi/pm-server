@@ -95,8 +95,7 @@ db.dbIsReady()
   })
   .then(res => {
     console.log('-> ', 'collection men shoes page is added for app');
-  .
-    then(() => {
+  .then(() => {
       process.exit();
     })
       .catch(err => {

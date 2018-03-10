@@ -8,7 +8,6 @@ let schema_obj = {
     type: String,
     required: true,
     trim: true,
-    // unique: true
   },
   product_type: {
     type: Schema.Types.ObjectId,
@@ -37,4 +36,6 @@ let schema_obj = {
 };
 
 let ProductSchema = new Schema(schema_obj, {collection: 'product', strict: true});
+ProductSchema.index({name: 1, product_type: 1}, {unique: true});
+
 module.exports = ProductSchema;
