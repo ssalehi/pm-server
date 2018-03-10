@@ -182,6 +182,8 @@ describe('DELETE Order', () => {
       .then(res => {
         expect(res.length).toEqual(1);
         expect(res[0].order_line_ids.length).toBe(2);
+        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[1]);
 
         done();
       })
@@ -208,9 +210,11 @@ describe('DELETE Order', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
+        expect(res[0].customer_id).toEqual(customerIds[1]);
         expect(res[0].order_line_ids.length).toBe(3);
-        // expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[1]);
-        // expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_line_ids[0].product_instance_id.equals(productInstanceIds[0])).toBe(true);
+        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[0]);
 
         done();
       })

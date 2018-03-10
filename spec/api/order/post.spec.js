@@ -164,6 +164,8 @@ describe('PUT Order', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
+        expect(res[0].customer_id).toEqual(customerIds[0]);
+        expect(res[0].is_cart).toBe(true);
         expect(res[0].order_line_ids.length).toBe(1);
         expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
 
@@ -193,6 +195,8 @@ describe('PUT Order', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
+        expect(res[0].customer_id).toEqual(customerIds[0]);
+        expect(res[0].is_cart).toBe(true);
         expect(res[0].order_line_ids.length).toBe(4);
         expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
         expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[0]);
@@ -224,6 +228,7 @@ describe('PUT Order', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
+        expect(res[0].customer_id).toEqual(customerIds[1]);
         expect(res[0].order_line_ids.length).toBe(2);
         expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
         expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[2]);
@@ -254,6 +259,7 @@ describe('PUT Order', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
+        expect(res[0].customer_id).toEqual(customerIds[1]);
         expect(res[0].order_line_ids.length).toBe(4);
         expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
         expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[2]);
