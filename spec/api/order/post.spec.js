@@ -4,7 +4,7 @@ const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 
-describe('PUT Order', () => {
+describe('POST Order', () => {
 
   let adminObj = {
     aid: null,
@@ -274,7 +274,7 @@ describe('PUT Order', () => {
 });
 
 
-describe('POST Order', () => {
+describe('POST Order (Fetch cart details)', () => {
   let product1, product2;
   let type1, type2, brand1, brand2, color1, color2, tagGroup1, tag1, tag2;
   let order1, order2;
