@@ -16,6 +16,10 @@ let schema_obj = {
     type: Schema.Types.ObjectId,
     ref: 'Campaign'
   },
+  collection_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'Collection'
+  },
   warehouse_id: {
     type: Schema.Types.ObjectId,
     ref: 'Warehouse'

@@ -19,6 +19,16 @@ describe('POST Order', () => {
   const orderId1 = new mongoose.Types.ObjectId();
   const orderId2 = new mongoose.Types.ObjectId();
 
+  const colorId1 = new mongoose.Types.ObjectId();
+  const colorId2 = new mongoose.Types.ObjectId();
+
+  const instanceId1 = new mongoose.Types.ObjectId();
+  const instanceId2 = new mongoose.Types.ObjectId();
+  const instanceId3 = new mongoose.Types.ObjectId();
+  const instanceId4 = new mongoose.Types.ObjectId();
+  const instanceId5 = new mongoose.Types.ObjectId();
+  const instanceId6 = new mongoose.Types.ObjectId();
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
@@ -70,16 +80,6 @@ describe('POST Order', () => {
           name: 'tag 2',
           tag_group_id: tagGroup1._id,
         });
-
-        const colorId1 = new mongoose.Types.ObjectId();
-        const colorId2 = new mongoose.Types.ObjectId();
-
-        const instanceId1 = new mongoose.Types.ObjectId();
-        const instanceId2 = new mongoose.Types.ObjectId();
-        const instanceId3 = new mongoose.Types.ObjectId();
-        const instanceId4 = new mongoose.Types.ObjectId();
-        const instanceId5 = new mongoose.Types.ObjectId();
-        const instanceId6 = new mongoose.Types.ObjectId();
 
         product1 = models['ProductTest']({
           name: 'sample name 1',
@@ -287,23 +287,26 @@ describe('POST Order', () => {
   });
 
   it("should get non-checkout order lines for logged in customer", function (done) {
-    done();
-    // this.done = done;
-    // rp({
-    //   method: 'post',
-    //   body: {
-    //     data: {},
-    //   },
-    //   json: true,
-    //   uri: lib.helpers.apiTestURL('cart/items'),
-    //   jar: customerObj.jar,
-    //   resolveWithFullResponse: true,
-    // })
-    //   .then(res => {
-    //     expect(res.statusCode).toBe(200);
-    //     done();
-    //   })
-    //   .catch(lib.helpers.errorHandler.bind(this));
+    // done();
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        data: {},
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('cart/items'),
+      jar: customerObj.jar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        res = res.body;
+        expect(res.length).toBe(4);
+        expect(res.map(el => el.quantity)).toContain(2);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
   });
 
   // it("should get order items (lines) data for not logged in customer", function (done) {
