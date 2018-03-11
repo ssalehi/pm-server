@@ -137,13 +137,15 @@ router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 // Brands
 router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 
-
+// Customer
+router.get('/customer/:cid/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['params.cid']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
 router.put('/product', apiResponse('Product', 'setProduct', true, ['body']));
 router.post('/product', apiResponse('Product', 'setProduct', true, ['body']));
 router.delete('/product/:id', apiResponse('Product', 'deleteProduct', true, ['params.id']));
+router.get('/product/color/:product_id/:color_id/', apiResponse('Product', 'getProductByColor', false, ['params.product_id', 'params.color_id']));
 
 // product tag
 router.post('/product/tag', apiResponse('Product', 'setTag', true, ['body']));
@@ -161,7 +163,7 @@ router.post('/product/instance/inventory', apiResponse('Product', 'setInventory'
 router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', apiResponse('Product', 'deleteInventory', true, ['params.id', 'params.productColorId', 'params.warehouseId']));
 
 // product image
-router.use('/product/image/:id/:colorId', function (req, res, next) {
+router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next) {
 
   let destination;
   if (req.test)
@@ -186,7 +188,7 @@ router.use('/product/image/:id/:colorId', function (req, res, next) {
 
 
 
-router.post('/product/image/:id/:colorId', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'file']));
+router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file']));
 
 // Product color
 router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));

@@ -6,18 +6,16 @@ let schema_obj = {
     required: true,
     ref: 'Color'
   },
-  images: {
-    thumbnail: {
-      type: String,
-      trim: true,
-    },
-    // hex: String,
-    angles: [{
-      type: String,
-      trim: true,
-    }],
-  },
+  // images: [{
+  //     type: String,
+  //     trim: true,
+  // }],
+  image: {
+    thumbnail: {type: String, trim: true},
+    angles: [{type: String, trim: true}]
+  }
 };
+
 
 let ProductColorSchema = new Schema(schema_obj, {collection: 'product_color', strict: true});
 

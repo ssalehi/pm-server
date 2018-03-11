@@ -184,11 +184,15 @@ describe("Delete Product colors", () => {
           colors: [
             {
               color_id: colorId1,
-              images: [imageURL1, imageURL2]
+              image: {
+                angles: [imageURL1, imageURL2]
+              }
             },
             {
               color_id: colorId2,
-              images: [imageURL3, imageURL4]
+              image: {
+                angles: [imageURL3, imageURL4]
+              }
             }
           ]
 
@@ -225,7 +229,7 @@ describe("Delete Product colors", () => {
     }).then(res => {
       expect(res[0].colors.length).toBe(1);
       expect(res[0].colors[0].color_id).toEqual(colorId2);
-      expect(res[0].colors[0].images.length).toEqual(2);
+      expect(res[0].colors[0].image.angles.length).toEqual(2);
       done();
     })
       .catch(lib.helpers.errorHandler.bind(this));
