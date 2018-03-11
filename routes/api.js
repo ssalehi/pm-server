@@ -200,15 +200,24 @@ router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false
 
 
 // Collection
-router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', true, ['params']));
-router.post('/collection/product/:cid/:pid', apiResponse('Collection', 'setProductToCollection', true, ['params']));
-router.delete('/collection/tag/:cid/:tid', apiResponse('Collection', 'deleteTagFromCollection', true, ['params']));
-router.post('/collection/tag/:cid/:tid', apiResponse('Collection', 'setTagToCollection', true, ['params']));
-router.put('/collection/detail/:cid', apiResponse('Collection', 'updateDetails', true, ['params.cid', 'body']));
+router.get('/collection/:cid', apiResponse('Collection', 'getCollection', true, ['params.cid']));
+router.get('/collection/product/manual/:cid', apiResponse('Collection', 'getCollectionManualProducts', true, ['params.cid']));
+router.get('/collection/product/:cid', apiResponse('Collection', 'getCollectionProducts', false, ['params.cid']));
+router.get('/collection/tag/:cid', apiResponse('Collection', 'getCollectionTags', true, ['params.cid']));
+router.get('/collection/type/:cid', apiResponse('Collection', 'getCollectionTypes', true, ['params.cid']));
+
 router.put('/collection', apiResponse('Collection', 'setCollection', true, ['body']));
-router.get('/collection/:cid', apiResponse('Collection', 'getCollectionProducts', false, ['params.cid']));
-router.post('/collection/app', apiResponse('Collection', 'getProductsByPageAddress', false, ['body.address']));
+
+router.post('/collection/:cid', apiResponse('Collection', 'setCollection', true, ['body', 'params.cid']));
+router.post('/collection/product/:cid', apiResponse('Collection', 'setProductToCollection', true, ['params.cid', 'body.productId']));
+router.post('/collection/tag/:cid', apiResponse('Collection', 'setTagToCollection', true, ['params.cid', 'body.tagId']));
+router.post('/collection/type/:cid', apiResponse('Collection', 'setTypeToCollection', true, ['params.cid','body.typeId']));
+router.post('/collection/app/products', apiResponse('Collection', 'getProductsByPageAddress', false, ['body.address']));
+
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', true, ['params.cid']));
+router.delete('/collection/type/:cid/:tid', apiResponse('Collection', 'deleteTypeFromCollection', true, ['params.cid','params.tid']));
+router.delete('/collection/tag/:cid/:tid', apiResponse('Collection', 'deleteTagFromCollection', true, ['params.cid','params.tid']));
+router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', true, ['params.cid', 'params.pid']));
 
 
 // Page

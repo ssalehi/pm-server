@@ -6,12 +6,13 @@ let schema_obj = {
     type: String,
     required: true,
     trim: true,
-    // unique: true
   },
   tag_group_id: Schema.Types.ObjectId
 };
 
 
 let tagSchema = new Schema(schema_obj, {collection: 'tag', strict: true});
+tagSchema.index({name: 1, tag_group_id: 1}, {unique: true});
+
 
 module.exports = tagSchema;

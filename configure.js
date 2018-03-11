@@ -58,12 +58,51 @@ db.dbIsReady()
       return models['Page'].findOneAndUpdate(query, update, options);
     }))
   })
-  .then(() => {
-    process.exit();
+  .then(res => {
+    console.log('-> ', 'home page is added');
+
+    let query = {address: 'feed'},
+      update = {
+        address: 'feed',
+        is_app: true,
+        placement: PLACEMENTS.feed
+      },
+      options = {upsert: true, new: true, setDefaultsOnInsert: true};
+    return models['Page'].findOneAndUpdate(query, update, options);
   })
-  .catch(err => {
-    console.log('-> ', err);
-    process.exit();
+  .then(res => {
+    console.log('-> ', 'feed page is added');
+
+    let query = {address: 'my_shop'},
+      update = {
+        address: 'my_shop',
+        is_app: true,
+        placement: PLACEMENTS.my_shop,
+      },
+      options = {upsert: true, new: true, setDefaultsOnInsert: true};
+    return models['Page'].findOneAndUpdate(query, update, options);
+  })
+  .then(res => {
+    console.log('-> ', 'myShop page is added');
+
+    let query = {address: 'collection/men/shoes'},
+      update = {
+        address: 'collection/men/shoes',
+        is_app: true,
+        placement: PLACEMENTS.men,
+      },
+      options = {upsert: true, new: true, setDefaultsOnInsert: true};
+    return models['Page'].findOneAndUpdate(query, update, options);
+  })
+  .then(res => {
+    console.log('-> ', 'collection men shoes page is added for app');
+  .then(() => {
+      process.exit();
+    })
+      .catch(err => {
+        console.log('-> ', err);
+        process.exit();
+      });
   });
 
 
