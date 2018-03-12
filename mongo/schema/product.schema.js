@@ -33,6 +33,8 @@ let schema_obj = {
   reviews: [ProductReview],
   colors: [ProductColor],
   instances: [ProductInstanceSchema],
+  campaigns:[{type: Schema.Types.ObjectId, ref: 'Campaign'}]
+
 };
 
 let ProductSchema = new Schema(schema_obj, {collection: 'product', strict: true});
