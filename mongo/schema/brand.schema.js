@@ -1,6 +1,5 @@
 const Schema = require('mongoose').Schema;
 
-
 let schema_obj = {
   name: {
     type: String,
