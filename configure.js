@@ -58,7 +58,18 @@ db.dbIsReady()
       return models['Page'].findOneAndUpdate(query, update, options);
     }))
   })
-  .then(() => {
+  .then(res => {
+    let query = {address: 'collection/men/shoes'},
+      update = {
+        address: 'collection/men/shoes',
+        is_app: true,
+        placement: PLACEMENTS.men,
+      },
+      options = {upsert: true, new: true, setDefaultsOnInsert: true};
+    return models['Page'].findOneAndUpdate(query, update, options);
+  })
+  .then(res => {
+    console.log('-> ', 'collection men shoes page is added for app');
     process.exit();
   })
   .catch(err => {
