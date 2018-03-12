@@ -265,4 +265,7 @@ router.use('/uploadData', function (req, res, next) {
 
 router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file']));
 
+// Cart
+router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 'body']));
+
 module.exports = router;
