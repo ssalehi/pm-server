@@ -18,9 +18,16 @@ describe("Put product basics", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        brandId = mongoose.Types.ObjectId();
-        typeId = mongoose.Types.ObjectId();
+        return models['BrandTest'].insertMany({name: 'Nike'});
+      })
+      .then(res => {
+        brandId = res[0]._id;
+        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+      })
+      .then(res => {
+        typeId = res[0]._id;
         done();
+
       })
       .catch(err => {
         console.log(err);
@@ -64,8 +71,14 @@ describe("Put product basics", () => {
 
     let product = new models['ProductTest']({
       name: 'sample name 1',
-      product_type: typeId,
-      brand: brandId,
+      product_type: {
+        name: 'Shoes',
+        product_type_id: typeId
+      },
+      brand: {
+        name: 'Nike',
+        brand_id: brandId
+      },
       base_price: 20000,
       desc: 'some description for this product',
     });
@@ -96,7 +109,6 @@ describe("Put product basics", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-
   it("expect error when name of product is not defined", function (done) {
 
     this.done = done;
@@ -214,7 +226,7 @@ describe("Put product basics", () => {
 });
 
 describe("Put product instance basics", () => {
-
+  let brandId, typeId;
   let productId;
   let adminObj = {
     aid: null,
@@ -228,10 +240,24 @@ describe("Put product instance basics", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
+        return models['BrandTest'].insertMany({name: 'Nike'});
+      })
+      .then(res => {
+        brandId = res[0]._id;
+        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+      })
+      .then(res => {
+        typeId = res[0]._id;
         let product = models['ProductTest']({
           name: 'sample name',
-          product_type: mongoose.Types.ObjectId(),
-          brand: mongoose.Types.ObjectId(),
+          product_type: {
+            name: 'Shoes',
+            product_type_id: typeId
+          },
+          brand: {
+            name: 'Nike',
+            brand_id: brandId
+          },
           base_price: 30000,
           desc: 'some description for this product',
         });
@@ -255,12 +281,12 @@ describe("Put product instance basics", () => {
     let productColorId = mongoose.Types.ObjectId();
     rp({
       method: 'put',
-      uri: lib.helpers.apiTestURL(`product/instance`),
+      uri: lib.helpers.apiTestURL(`product/instance/${productId}`),
       body: {
-        id: productId,
         productColorId,
         size: 8.5,
-        price: 3000
+        price: 3000,
+        barcode: 10
       },
       jar: adminObj.jar,
       json: true,
@@ -274,49 +300,24 @@ describe("Put product instance basics", () => {
       expect(res.length).toBe(1);
       expect(res[0].instances.length).toBe(1);
       expect(res[0].instances[0].product_color_id).toEqual(productColorId);
-      expect(res[0].instances[0].size).toBe(8.5);
+      expect(res[0].instances[0].size).toBe('8.5');
       expect(res[0].instances[0].price).toBe(3000);
+      expect(res[0].instances[0].barcode).toBe('10');
       done();
 
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-  it("expect error when id of product is not declared in the body", function (done) {
-    let productColorId = mongoose.Types.ObjectId();
-    this.done = done;
-    rp({
-      method: 'put',
-      uri: lib.helpers.apiTestURL(`product/instance`),
-      body: {
-        // id: productId,
-        productColorId,
-        size: 8.5,
-        price: 3000
-      },
-      jar: adminObj.jar,
-      json: true,
-      resolveWithFullResponse: true
-    }).then(res => {
-      this.fail('did not failed when other users are calling api');
-      done();
-    })
-      .catch(err => {
-        expect(err.statusCode).toBe(error.productIdRequired.status);
-        expect(err.error).toBe(error.productIdRequired.message);
-        done();
-      });
-
-  });
   it("expect error when product_id_color of product instance is not declared in the body", function (done) {
     this.done = done;
     rp({
       method: 'put',
-      uri: lib.helpers.apiTestURL(`product/instance`),
+      uri: lib.helpers.apiTestURL(`product/instance/${productId}`),
       body: {
-        id: productId,
         // productColorId,
         size: 8.5,
-        price: 3000
+        price: 3000,
+        barcode: 10
       },
       jar: adminObj.jar,
       json: true,
@@ -338,12 +339,12 @@ describe("Put product instance basics", () => {
 
     rp({
       method: 'put',
-      uri: lib.helpers.apiTestURL(`product/instance`),
+      uri: lib.helpers.apiTestURL(`product/instance/${productId}`),
       body: {
-        id: productId,
         productColorId,
         // size: 8.5,
-        price: 3000
+        price: 3000,
+        barcode: 10
       },
       jar: adminObj.jar,
       json: true,

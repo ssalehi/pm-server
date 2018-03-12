@@ -44,34 +44,34 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) 
       personModel.jwtStrategy(req)
       :
       Promise.resolve())
-        .then(() => lib.Agent.adminCheck(adminOnly, req.user, req.test))
-        .then(rs => {
-          if (adminOnly && rs.length < 1)
-            return Promise.reject(error.adminOnly);
-          else {
-            let dynamicArgs = [];
-            for (let i in reqFuncs)
-              dynamicArgs.push((typeof reqFuncs[i] === 'function') ? reqFuncs[i](req) : deepFind(req, reqFuncs[i]));
+      .then(() => lib.Agent.adminCheck(adminOnly, req.user, req.test))
+      .then(rs => {
+        if (adminOnly && rs.length < 1)
+          return Promise.reject(error.adminOnly);
+        else {
+          let dynamicArgs = [];
+          for (let i in reqFuncs)
+            dynamicArgs.push((typeof reqFuncs[i] === 'function') ? reqFuncs[i](req) : deepFind(req, reqFuncs[i]));
 
-            let allArgs = dynamicArgs.concat(args);
+          let allArgs = dynamicArgs.concat(args);
 
-            for (cn in lib)
-              lib[cn].test = req.test;
+          for (cn in lib)
+            lib[cn].test = req.test;
 
-            let isStaticFunction = typeof lib[className][functionName] === 'function';
-            let model = isStaticFunction ? lib[className] : new lib[className](req.test);
-            return model[functionName].apply(isStaticFunction ? null : model, allArgs);
-          }
-        })
-        .then(data => {
-          res.status(200)
-            .json(data);
-        })
-        .catch(err => {
-          console.log(`${className}/${functionName}: `, req.app.get('env') === 'development' ? err : err.message);
-          res.status(err.status || 500)
-            .send(err.message || err);
-        });
+          let isStaticFunction = typeof lib[className][functionName] === 'function';
+          let model = isStaticFunction ? lib[className] : new lib[className](req.test);
+          return model[functionName].apply(isStaticFunction ? null : model, allArgs);
+        }
+      })
+      .then(data => {
+        res.status(200)
+          .json(data);
+      })
+      .catch(err => {
+        console.log(`${className}/${functionName}: `, req.app.get('env') === 'development' ? err : err.message);
+        res.status(err.status || 500)
+          .send(err.message || err);
+      });
   });
 }
 
@@ -152,7 +152,7 @@ router.delete('/product/:id', apiResponse('Product', 'deleteProduct', true, ['pa
 router.get('/product/color/:product_id/:color_id/', apiResponse('Product', 'getProductByColor', false, ['params.product_id', 'params.color_id']));
 
 // product tag
-router.post('/product/tag', apiResponse('Product', 'setTag', true, ['body']));
+router.post('/product/tag/:id', apiResponse('Product', 'setTag', true, ['params.id', 'body']));
 router.delete('/product/tag/:id/:tagId', apiResponse('Product', 'deleteTag', true, ['params.id', 'params.tagId']));
 
 // product color
@@ -160,8 +160,8 @@ router.post('/product/color', apiResponse('Product', 'setColor', true, ['body'])
 router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId']));
 
 // product instance
-router.put('/product/instance', apiResponse('Product', 'setInstance', true, ['body']));
-router.post('/product/instance', apiResponse('Product', 'setInstance', true, ['body']));
+router.put('/product/instance/:id', apiResponse('Product', 'setInstance', true, ['body', 'params.id']));
+router.post('/product/instance/:id/:pid', apiResponse('Product', 'setInstance', true, ['body', 'params.id', 'params.pid']));
 router.delete('/product/instance/:id/:productColorId', apiResponse('Product', 'deleteInstance', true, ['params.id', 'params.productColorId']));
 router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', true, ['body']));
 router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', apiResponse('Product', 'deleteInventory', true, ['params.id', 'params.productColorId', 'params.warehouseId']));
@@ -191,12 +191,10 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
 });
 
 
-
 router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file']));
 
 // Product color
 router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
-
 
 
 // Collection
@@ -211,12 +209,12 @@ router.put('/collection', apiResponse('Collection', 'setCollection', true, ['bod
 router.post('/collection/:cid', apiResponse('Collection', 'setCollection', true, ['body', 'params.cid']));
 router.post('/collection/product/:cid', apiResponse('Collection', 'setProductToCollection', true, ['params.cid', 'body.productId']));
 router.post('/collection/tag/:cid', apiResponse('Collection', 'setTagToCollection', true, ['params.cid', 'body.tagId']));
-router.post('/collection/type/:cid', apiResponse('Collection', 'setTypeToCollection', true, ['params.cid','body.typeId']));
+router.post('/collection/type/:cid', apiResponse('Collection', 'setTypeToCollection', true, ['params.cid', 'body.typeId']));
 router.post('/collection/app/products', apiResponse('Collection', 'getProductsByPageAddress', false, ['body.address']));
 
 router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', true, ['params.cid']));
-router.delete('/collection/type/:cid/:tid', apiResponse('Collection', 'deleteTypeFromCollection', true, ['params.cid','params.tid']));
-router.delete('/collection/tag/:cid/:tid', apiResponse('Collection', 'deleteTagFromCollection', true, ['params.cid','params.tid']));
+router.delete('/collection/type/:cid/:tid', apiResponse('Collection', 'deleteTypeFromCollection', true, ['params.cid', 'params.tid']));
+router.delete('/collection/tag/:cid/:tid', apiResponse('Collection', 'deleteTagFromCollection', true, ['params.cid', 'params.tid']));
 router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', true, ['params.cid', 'params.pid']));
 
 
@@ -235,7 +233,7 @@ router.get('/color/dictionary', (req, res, next) => {
 
 
 // Search
-router.post('/search/:className', apiResponse('Search','search', false, ['params.className','body']));
+router.post('/search/:className', apiResponse('Search', 'search', false, ['params.className', 'body']));
 router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body']));
 
 // upload Data
@@ -246,7 +244,7 @@ router.use('/uploadData', function (req, res, next) {
   if (req.test)
     destination = env.uploadExcelPath + 'test/' + fileName;
   else
-    destination = env.uploadExcelPath +  fileName;
+    destination = env.uploadExcelPath + fileName;
 
   let productStorage = multer.diskStorage({
     destination,
