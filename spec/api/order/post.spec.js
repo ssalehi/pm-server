@@ -4,7 +4,7 @@ const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 
-xdescribe('POST Order', () => {
+describe('POST Order', () => {
 
   let adminObj = {
     aid: null,
