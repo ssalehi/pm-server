@@ -1,10 +1,14 @@
 const Schema = require('mongoose').Schema;
-
 let schema_obj = {
-  color_id: {
+  color_id:{
     type: Schema.Types.ObjectId,
     required: true,
     ref: 'Color'
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true,
   },
   code: {
     type: String,

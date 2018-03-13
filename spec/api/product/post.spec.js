@@ -25,19 +25,30 @@ describe("Post product basics", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
+        return models['BrandTest'].insertMany({name: 'Nike'});
+      })
+      .then(res => {
+        brandId = res[0]._id;
+        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+      })
+      .then(res => {
+        typeId = res[0]._id;
         let product = models['ProductTest']({
           name: 'sample name',
-          product_type: mongoose.Types.ObjectId(),
-          brand: mongoose.Types.ObjectId(),
+          product_type: {
+            name: 'Shoes',
+            product_type_id: typeId
+          },
+          brand: {
+            name: 'Nike',
+            brand_id: brandId
+          },
           base_price: 30000,
           desc: 'some description for this product',
         });
         return product.save();
       })
       .then(res => {
-        typeId = mongoose.Types.ObjectId();
-        brandId = mongoose.Types.ObjectId();
-
         productId = res._id;
         done();
       })
@@ -84,7 +95,7 @@ describe("Post product basics", () => {
 });
 describe("Post product colors & images", () => {
 
-  let productId;
+  let productId, brandId, typeId;
   let adminObj = {
     aid: null,
     jar: null,
@@ -95,13 +106,26 @@ describe("Post product colors & images", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
+        return models['BrandTest'].insertMany({name: 'Nike'});
+      })
+      .then(res => {
+        brandId = res[0]._id;
+        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+      })
+      .then(res => {
+        typeId = res[0]._id;
         let product = models['ProductTest']({
           name: 'sample name',
-          product_type: mongoose.Types.ObjectId(),
-          brand: mongoose.Types.ObjectId(),
+          product_type: {
+            name: 'Shoes',
+            product_type_id: typeId
+          },
+          brand: {
+            name: 'Nike',
+            brand_id: brandId
+          },
           base_price: 30000,
           desc: 'some description for this product',
-
         });
         return product.save();
       })
@@ -158,7 +182,6 @@ describe("Post product colors & images", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-
   it("should add a color with its images if colors array already contains that color and it has thumbnail", function (done) {
 
     let preColorId = mongoose.Types.ObjectId();
@@ -208,7 +231,6 @@ describe("Post product colors & images", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-
   it("should add an new image to existing color", function (done) {
 
     this.done = done;
@@ -276,7 +298,6 @@ describe("Post product colors & images", () => {
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-
   it("should add a color with its thumbnail if colors array is empty", function (done) {
 
     let colorId = mongoose.Types.ObjectId();
@@ -314,7 +335,6 @@ describe("Post product colors & images", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-
   it("should add a color with its thumbnail if colors array already contains color (angles and thumbnails)", function (done) {
 
     let preColorId = mongoose.Types.ObjectId();
@@ -369,7 +389,6 @@ describe("Post product colors & images", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-
   it("should update thumbnail on an existing color with thumbnail", function (done) {
 
     this.done = done;
@@ -429,7 +448,6 @@ describe("Post product colors & images", () => {
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-
   it('should add a thumbnail and two angles on an existing color without thumbnail and with other angles', function (done) {
     this.done = done;
     let colorId = mongoose.Types.ObjectId();
@@ -504,6 +522,7 @@ describe("Post product colors & images", () => {
   });
 });
 describe("Post product instances", () => {
+  let brandId, typeId;
 
   let productId, productInstanceId, productColorId;
   productColorId = mongoose.Types.ObjectId();
@@ -517,17 +536,32 @@ describe("Post product instances", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
+        return models['BrandTest'].insertMany({name: 'Nike'});
+      })
+      .then(res => {
+        brandId = res[0]._id;
+        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+      })
+      .then(res => {
+        typeId = res[0]._id;
         let product = models['ProductTest']({
           name: 'sample name',
-          product_type: mongoose.Types.ObjectId(),
-          brand: mongoose.Types.ObjectId(),
+          product_type: {
+            name: 'Shoes',
+            product_type_id: typeId
+          },
+          brand: {
+            name: 'Nike',
+            brand_id: brandId
+          },
           base_price: 30000,
           desc: 'some description for this product',
           instances: [
             {
               product_color_id: productColorId,
               size: 8.5,
-              price: 20000
+              price: 20000,
+              barcode: 50
             }
 
           ]
@@ -550,15 +584,15 @@ describe("Post product instances", () => {
   it("should update basic info of a product instance", function (done) {
 
     this.done = done;
+    let newProductColorId = new mongoose.Types.ObjectId();
     rp({
       method: 'post',
-      uri: lib.helpers.apiTestURL(`product/instance`),
+      uri: lib.helpers.apiTestURL(`product/instance/${productId}/${productInstanceId}`),
       body: {
-        id: productId,
-        productInstanceId,
-        productColorId: productColorId,
+        productColorId: newProductColorId,
         size: 10,
-        price: 60000
+        price: 60000,
+        barcode: 1000
       },
       jar: adminObj.jar,
       json: true,
@@ -571,48 +605,20 @@ describe("Post product instances", () => {
     }).then(res => {
       expect(res.length).toBe(1);
       expect(res[0].instances.length).toBe(1);
-      expect(res[0].instances[0].product_color_id).toEqual(productColorId);
-      expect(res[0].instances[0].size).toBe(10);
+      expect(res[0].instances[0].product_color_id.toString()).toBe(newProductColorId.toString());
+      expect(res[0].instances[0].size).toBe('10');
       expect(res[0].instances[0].price).toEqual(60000);
+      expect(res[0].instances[0].barcode).toEqual('1000');
       done();
 
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-  it("should not update product_color_id of a product instance", function (done) {
 
-    let newProductColorId = mongoose.Types.ObjectId();
-    this.done = done;
-    rp({
-      method: 'post',
-      uri: lib.helpers.apiTestURL(`product/instance`),
-      body: {
-        id: productId,
-        productInstanceId,
-        productColorId: newProductColorId,
-        size: 10,
-        price: 60000
-      },
-      jar: adminObj.jar,
-      json: true,
-      resolveWithFullResponse:
-        true
-    }).then(res => {
-
-      expect(res.statusCode).toBe(200);
-      return models['ProductTest'].find({}).lean();
-
-    }).then(res => {
-      expect(res.length).toBe(1);
-      expect(res[0].instances[0].product_color_id).toEqual(productColorId);
-      done();
-
-    })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
 });
 describe("Post Product instance inventories", () => {
 
+  let brandId, typeId;
   let productId, productInstanceId;
   let adminObj = {
     aid: null,
@@ -624,18 +630,37 @@ describe("Post Product instance inventories", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
+        return models['BrandTest'].insertMany({name: 'Nike'});
+      })
+      .then(res => {
+        brandId = res[0]._id;
+        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+      })
+      .then(res => {
+        typeId = res[0]._id;
 
         let product = models['ProductTest']({
           name: 'sample name',
-          product_type: mongoose.Types.ObjectId(),
-          brand: mongoose.Types.ObjectId(),
+          product_type: {
+            name: 'Shoes',
+            product_type_id: typeId
+          },
+          brand: {
+            name: 'Nike',
+            brand_id: brandId
+          },
           base_price: 30000,
           desc: 'some description for this product',
-          instances: [{
-            product_color_id: mongoose.Types.ObjectId(),
-            size: 8.5,
-            price: 3000
-          }]
+          instances: [
+            {
+              product_color_id: new mongoose.Types.ObjectId(),
+              size: 8.5,
+              price: 20000,
+              barcode: 50
+            }
+
+          ]
+
         });
         return product.save();
 
@@ -835,7 +860,8 @@ describe("Post Product instance inventories", () => {
 });
 describe("Post Product tags", () => {
 
-  let productId, productInstanceId;
+  let brandId, typeId, tagIds , tagGroupIds;
+  let productId;
   let adminObj = {
     aid: null,
     jar: null,
@@ -846,11 +872,42 @@ describe("Post Product tags", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
+        return models['BrandTest'].insertMany({name: 'Nike'});
+      })
+      .then(res => {
+        brandId = res[0]._id;
+        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+      })
+      .then(res => {
+        typeId = res[0]._id;
+
+        return models['TagGroupTest'].insertMany([
+          {name: 'tag group 1'},
+          {name: 'tag group 2'}
+        ]);
+
+      })
+      .then(res => {
+        tagGroupIds = res.map(x => x._id);
+        return models['TagTest'].insertMany([
+          {name: 'tag 1', tag_group_id: tagGroupIds[0]},
+          {name: 'tag 2', tag_group_id: tagGroupIds[1]}
+        ]);
+
+      })
+      .then(res => {
+        tagIds = res.map(x => x._id);
 
         let product = models['ProductTest']({
           name: 'sample name',
-          product_type: mongoose.Types.ObjectId(),
-          brand: mongoose.Types.ObjectId(),
+          product_type: {
+            name: 'Shoes',
+            product_type_id: typeId
+          },
+          brand: {
+            name: 'Nike',
+            brand_id: brandId
+          },
           base_price: 30000,
           desc: 'some description for this product',
         });
@@ -859,7 +916,6 @@ describe("Post Product tags", () => {
       })
       .then(res => {
         productId = res._id;
-        productInstanceId = res.instances[0]._id;
         done();
       })
       .catch(err => {
@@ -872,13 +928,11 @@ describe("Post Product tags", () => {
   it("should add new tag for a product", function (done) {
 
     this.done = done;
-    let tagId = mongoose.Types.ObjectId();
     rp({
       method: 'post',
-      uri: lib.helpers.apiTestURL(`product/tag`),
+      uri: lib.helpers.apiTestURL(`product/tag/${productId}`),
       body: {
-        id: productId,
-        tagId
+        tagId: tagIds[0]
       },
       jar: adminObj.jar,
       json: true,
@@ -889,9 +943,10 @@ describe("Post Product tags", () => {
       return models['ProductTest'].find({}).lean();
 
     }).then(res => {
+
       expect(res.length).toBe(1);
       expect(res[0].tags.length).toBe(1);
-      expect(res[0].tags[0]).toEqual(tagId);
+      expect(res[0].tags[0].tag_id.toString()).toBe(tagIds[0].toString());
       done();
     })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -900,23 +955,25 @@ describe("Post Product tags", () => {
   it("duplicate tag id must not exist in product tags array", function (done) {
 
     this.done = done;
-    let tagId = mongoose.Types.ObjectId();
 
     models['ProductTest'].update({
         "_id": productId,
       },
       {
         $addToSet: {
-          'tags': tagId
+          'tags': {
+            'name': 'tag 2',
+            'tg_name': 'tag group 2',
+            'tag_id': tagIds[0]
+          }
         }
       })
       .then(res =>
         rp({
           method: 'post',
-          uri: lib.helpers.apiTestURL(`product/tag`),
+          uri: lib.helpers.apiTestURL(`product/tag/${productId}`),
           body: {
-            id: productId,
-            tagId
+            tagId: tagIds[0]
           },
           jar: adminObj.jar,
           json: true,
@@ -930,7 +987,7 @@ describe("Post Product tags", () => {
       .then(res => {
         expect(res.length).toBe(1);
         expect(res[0].tags.length).toBe(1);
-        expect(res[0].tags[0]).toEqual(tagId);
+        expect(res[0].tags[0].tag_id.toString()).toBe(tagIds[0].toString());
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this))

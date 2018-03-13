@@ -7,6 +7,12 @@ let schema_obj = {
     trim: true,
     unique: true
   },
+  name_fa: {
+    type: String,
+    required: true,
+    trim: true,
+    unique: true
+  },
   productIds: [{type: Schema.Types.ObjectId, ref: 'Product'}],
   typeIds: [{type: Schema.Types.ObjectId, ref: 'ProductType'}],
   tagIds: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
