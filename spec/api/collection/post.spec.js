@@ -19,6 +19,7 @@ describe('POST Collection', () => {
         adminObj.jar = res.rpJar;
         let collectionArr = [{
           name: 'collection 1',
+          name_fa: 'کالکشن 1'
         }];
         models['CollectionTest'].insertMany(collectionArr).then(res => {
           collectionIds[0] = res[0]._id;
@@ -36,7 +37,8 @@ describe('POST Collection', () => {
       method: 'post',
       uri: lib.helpers.apiTestURL(`collection/${collectionIds[0]}`),
       body: {
-        name: 'changed name'
+        name: 'changed name',
+        name_fa: 'تغییر نام'
       },
       jar: adminObj.jar,
       json: true,
@@ -47,6 +49,7 @@ describe('POST Collection', () => {
     }).then(res => {
 
       expect(res.name).toBe('changed name');
+      expect(res.name_fa).toBe('تغییر نام');
 
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
@@ -82,7 +85,8 @@ describe('POST Collection', () => {
       uri: lib.helpers.apiTestURL(`collection/1`),
       jar: adminObj.jar,
       body: {
-        name: 'changed name'
+        name: 'changed name',
+        name_fa: 'تغییر نام'
       },
       json: true,
       resolveWithFullResponse: true
@@ -92,6 +96,53 @@ describe('POST Collection', () => {
     }).catch(err => {
       expect(err.statusCode).toBe(error.collectionIdIsNotValid.status);
       expect(err.error).toEqual(error.collectionIdIsNotValid.message);
+      done();
+    });
+  });
+
+  it('expect error when name of collection is not in body', function (done) {
+    this.done = done;
+    let newTagId = new mongoose.Types.ObjectId();
+
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`collection/${collectionIds[0]}`),
+      jar: adminObj.jar,
+      body: {
+        // name: 'changed name',
+        name_fa: 'تغییر نام'
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('expect error when name of collection is not in body');
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.CollectionNameRequired.status);
+      expect(err.error).toEqual(error.CollectionNameRequired.message);
+      done();
+    });
+  });
+  it('expect error when name fa of collection is not in body', function (done) {
+    this.done = done;
+    let newTagId = new mongoose.Types.ObjectId();
+
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`collection/${collectionIds[0]}`),
+      jar: adminObj.jar,
+      body: {
+        name: 'changed name',
+        // name_fa: 'تغییر نام'
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('expect error when name fa of collection is not in body');
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.CollectionNameRequired.status);
+      expect(err.error).toEqual(error.CollectionNameRequired.message);
       done();
     });
   });
@@ -114,6 +165,7 @@ describe('POST Collection Tag', () => {
         adminObj.jar = res.rpJar;
         let collectionArr = [{
           name: 'man1',
+          name_fa: 'کالکشن 1',
           tagIds
         }];
         models['CollectionTest'].insertMany(collectionArr).then(res => {
@@ -216,6 +268,7 @@ describe('POST Collection Type', () => {
         adminObj.jar = res.rpJar;
         let collectionArr = [{
           name: 'man1',
+          name_fa: 'کالکشن 1',
           typeIds
         }];
         models['CollectionTest'].insertMany(collectionArr).then(res => {
@@ -322,6 +375,7 @@ describe('POST Collection Product', () => {
         adminObj.jar = res.rpJar;
         let collectionArr = [{
           name: 'man1',
+          name_fa: 'کالکشن 1',
           productIds: productIdsArr
         }];
         models['CollectionTest'].insertMany(collectionArr).then(res => {
