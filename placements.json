@@ -1076,7 +1076,7 @@
       }
     }
   ],
-  "collection/x": [
+  "collection/men": [
     {
       "component_name": "main",
       "info": {
@@ -1124,29 +1124,6 @@
         "row": 3,
         "text": "پیراهن‌های Polo",
         "href": "#"
-      }
-    }
-  ],
-  "men": [
-    {
-      "component_name": "menu",
-      "info": {
-        "text": "همه",
-        "href": "collection/men/shoes/all"
-      }
-    },
-    {
-      "component_name": "menu",
-      "info": {
-        "text": "لایف استایل",
-        "href": "collection/men/shoes/lifestyle"
-      }
-    },
-    {
-      "component_name": "menu",
-      "info": {
-        "text": "دویدن",
-        "href": "collection/men/shoes/running"
       }
     }
   ]

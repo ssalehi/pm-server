@@ -4,8 +4,7 @@ const Schema = require('mongoose').Schema;
 let schema_obj = {
   collection_id: {
     type: Schema.Types.ObjectId,
-    ref: 'Collection',
-    unique: true
+    ref: 'Collection'
   },
   discount_diff:Number,
   start_date: Date,

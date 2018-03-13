@@ -29,6 +29,10 @@ let schema_obj = {
     type: Boolean,
     default: false
   },
+  is_cart: {
+    type: Boolean,
+    default: false,
+  },
   order_line_ids: [OrderLineSchema],
 };
 
