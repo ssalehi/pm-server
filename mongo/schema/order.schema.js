@@ -7,10 +7,6 @@ let schema_obj = {
     ref: 'Customer'
   },
   transaction_id: Schema.Types.ObjectId,
-  is_cart: {
-    type: Boolean,
-    default: false
-  },
   address_id: {
     type: Schema.Types.ObjectId,
   },

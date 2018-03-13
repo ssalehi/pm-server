@@ -23,7 +23,7 @@ let schema_obj = {
     type: Schema.Types.ObjectId,
     ref: 'LoyaltyGroup'
   },
-  campaign_collection_ids: [CampaignCollection]
+  // campaign_collection_ids: [CampaignCollection]
 };
 
 

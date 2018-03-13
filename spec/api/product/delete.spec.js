@@ -3,8 +3,9 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 
-describe("Delete Product tags", () => {
+describe("Delete Product", () => {
 
+  let brandId, typeId;
   let productId;
   let adminObj = {
     aid: null,
@@ -16,14 +17,26 @@ describe("Delete Product tags", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-
+        return models['BrandTest'].insertMany({name: 'Nike'});
+      })
+      .then(res => {
+        brandId = res[0]._id;
+        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+      })
+      .then(res => {
+        typeId = res[0]._id;
         let product = models['ProductTest']({
           name: 'sample name',
-          product_type: mongoose.Types.ObjectId(),
-          brand: mongoose.Types.ObjectId(),
+          product_type: {
+            name: 'Shoes',
+            product_type_id: typeId
+          },
+          brand: {
+            name: 'Nike',
+            brand_id: brandId
+          },
           base_price: 30000,
           desc: 'some description for this product',
-
         });
         return product.save();
 
@@ -66,8 +79,8 @@ describe("Delete Product tags", () => {
 
 describe("Delete Product tags", () => {
 
+  let brandId, typeId, tagIds, tagGroupIds;
   let productId;
-  let tagId1, tagId2;
   let adminObj = {
     aid: null,
     jar: null,
@@ -78,17 +91,50 @@ describe("Delete Product tags", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        tagId1 = mongoose.Types.ObjectId();
-        tagId2 = mongoose.Types.ObjectId();
+        return models['BrandTest'].insertMany({name: 'Nike'});
+      })
+      .then(res => {
+        brandId = res[0]._id;
+        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+      })
+      .then(res => {
+        typeId = res[0]._id;
+
+        return models['TagGroupTest'].insertMany([
+          {name: 'tag group 1'},
+          {name: 'tag group 2'}
+        ]);
+
+      })
+      .then(res => {
+        tagGroupIds = res.map(x => x._id);
+        return models['TagTest'].insertMany([
+          {name: 'tag 1', tag_group_id: tagGroupIds[0]},
+          {name: 'tag 2', tag_group_id: tagGroupIds[1]}
+        ]);
+
+      })
+      .then(res => {
+        tagIds = res.map(x => x._id);
 
         let product = models['ProductTest']({
           name: 'sample name',
-          product_type: mongoose.Types.ObjectId(),
-          brand: mongoose.Types.ObjectId(),
+          product_type: {
+            name: 'Shoes',
+            product_type_id: typeId
+          },
+          brand: {
+            name: 'Nike',
+            brand_id: brandId
+          },
+          tags: [
+            {name: 'tag 1', tg_name: 'tag group 1', tag_id: tagIds[0]},
+            {name: 'tag 2', tg_name: 'tag group 2', tag_id: tagIds[1]}
+          ],
+
+
           base_price: 30000,
           desc: 'some description for this product',
-          tags: [tagId1, tagId2]
-
         });
         return product.save();
 
@@ -104,12 +150,12 @@ describe("Delete Product tags", () => {
   });
 
 
-  it("should remove a existing tag from tags array of product", function (done) {
+  it("should remove an existing tag from tags array of product", function (done) {
 
     this.done = done;
     rp({
       method: 'delete',
-      uri: lib.helpers.apiTestURL(`product/tag/${productId}/${tagId1}`),
+      uri: lib.helpers.apiTestURL(`product/tag/${productId}/${tagIds[0]}`),
       jar: adminObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
@@ -120,8 +166,9 @@ describe("Delete Product tags", () => {
       return models['ProductTest'].find({}).lean();
 
     }).then(res => {
+
       expect(res[0].tags.length).toBe(1);
-      expect(res[0].tags[0]).toEqual(tagId2);
+      expect(res[0].tags[0].tag_id.toString()).toBe(tagIds[1].toString());
       done();
     })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -156,7 +203,7 @@ describe("Delete Product tags", () => {
 
 describe("Delete Product colors", () => {
 
-  let productId;
+  let productId, brandId, typeId;
   let colorId1, colorId2, imageURL1, imageURL2, imageURL3, imageURL4;
   let adminObj = {
     aid: null,
@@ -168,6 +215,15 @@ describe("Delete Product colors", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
+        return models['BrandTest'].insertMany({name: 'Nike'});
+      })
+      .then(res => {
+        brandId = res[0]._id;
+        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+      })
+      .then(res => {
+        typeId = res[0]._id;
+
         colorId1 = mongoose.Types.ObjectId();
         colorId2 = mongoose.Types.ObjectId();
         imageURL1 = 'some url 1';
@@ -177,19 +233,29 @@ describe("Delete Product colors", () => {
 
         let product = models['ProductTest']({
           name: 'sample name',
-          product_type: mongoose.Types.ObjectId(),
-          brand: mongoose.Types.ObjectId(),
+          product_type: {
+            name: 'Shoes',
+            product_type_id: typeId
+          },
+          brand: {
+            name: 'Nike',
+            brand_id: brandId
+          },
           base_price: 30000,
           desc: 'some description for this product',
           colors: [
             {
               color_id: colorId1,
+              name: 'green',
+              code: '101',
               image: {
                 angles: [imageURL1, imageURL2]
               }
             },
             {
               color_id: colorId2,
+              name: 'red',
+              code: '205',
               image: {
                 angles: [imageURL3, imageURL4]
               }
@@ -257,6 +323,7 @@ describe("Delete Product colors", () => {
 
 describe("Delete Product instances and inventory", () => {
 
+  let brandId, typeId;
   let productId;
   let productColorId1, productColorId2, warehouseId1, warehouseId2;
   let adminObj = {
@@ -269,6 +336,15 @@ describe("Delete Product instances and inventory", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
+        return models['BrandTest'].insertMany({name: 'Nike'});
+      })
+      .then(res => {
+        brandId = res[0]._id;
+        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+      })
+      .then(res => {
+        typeId = res[0]._id;
+
         productColorId1 = mongoose.Types.ObjectId();
         productColorId2 = mongoose.Types.ObjectId();
         warehouseId1 = mongoose.Types.ObjectId();
@@ -276,8 +352,14 @@ describe("Delete Product instances and inventory", () => {
 
         let product = models['ProductTest']({
           name: 'sample name',
-          product_type: mongoose.Types.ObjectId(),
-          brand: mongoose.Types.ObjectId(),
+          product_type: {
+            name: 'Shoes',
+            product_type_id: typeId
+          },
+          brand: {
+            name: 'Nike',
+            brand_id: brandId
+          },
           base_price: 30000,
           desc: 'some description for this product',
           instances: [
@@ -285,6 +367,7 @@ describe("Delete Product instances and inventory", () => {
               product_color_id: productColorId1,
               size: 10,
               price: 60000,
+              barcode: '1212',
               inventory: [
                 {
                   warehouse_id: warehouseId1,
@@ -300,6 +383,7 @@ describe("Delete Product instances and inventory", () => {
               product_color_id: productColorId2,
               size: 10,
               price: 60000,
+              barcode: '123546',
               inventory: [
                 {
                   warehouse_id: warehouseId1,
