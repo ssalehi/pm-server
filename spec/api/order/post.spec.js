@@ -352,14 +352,22 @@ describe('POST Order (Fetch cart details)', () => {
 
         product1 = models['ProductTest']({
           name: 'sample name 1',
-          product_type: type1._id,
-          brand: brand1._id,
+          product_type: {
+            name: type1.name,
+            product_type_id: type1._id
+          },
+          brand: {
+            name: brand1.name,
+            brand_id: brand1._id,
+          },
           base_price: 30000,
           desc: 'some description for this product',
           colors: [
             {
               _id: colorId1,
               color_id: color1._id,
+              name:  color1.name,
+              code: color1.color_id,
               image: {
                 thumbnail: 'one thumbnail',
                 angels: ['some url 11', 'some url 12']
@@ -368,6 +376,8 @@ describe('POST Order (Fetch cart details)', () => {
             {
               _id: colorId2,
               color_id: color2._id,
+              name: color2.name,
+              code: color2.color_id,
               image: {
                 thumbnail: 'another thumbnail',
                 angels: ['some url 21', 'some url 22', 'some url 23']
@@ -421,12 +431,26 @@ describe('POST Order (Fetch cart details)', () => {
               }]
             }
           ],
-          tags: [tag1._id, tag2._id]
+          tags: [{
+            name: tag1.name,
+            tg_name: tagGroup1.name,
+            tag_id: tag1._id
+          }, {
+            name: tag2.name,
+            tg_name: tagGroup1.name,
+            tag_id: tag2._id
+          }]
         });
         product2 = models['ProductTest']({
           name: 'sample name 2',
-          product_type: type2._id,
-          brand: brand2._id,
+          product_type: {
+            name: type2.name,
+            product_type_id: type2._id
+          },
+          brand: {
+            name: brand2.name,
+            brand_id: brand2._id
+          },
           base_price: 50000,
           desc: 'some description for this product',
           instances: [
@@ -455,6 +479,7 @@ describe('POST Order (Fetch cart details)', () => {
 
         collection1 = models['CollectionTest']({
           name: 'collection 1',
+          name_fa: 'مجموعه 1',
           productIds: [product1._id],
         });
 
@@ -586,26 +611,17 @@ describe('POST Order (Fetch cart details)', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit("should get order items (lines) data for not logged in customer", function (done) {
+  it("should get order items (lines) data for not logged in customer", function (done) {
     this.done = done;
     rp({
       method: 'post',
       body: {
         data: [
           {
-            campaign_id: campaign1._id,
-            collection_id: collection1._id,
-            product_id: product1._id,
-            instance_id: instanceId1
-          },
-          {
-            campaign_id: campaign2._id,
-            collection_id: collection1._id,
             product_id: product1._id,
             instance_id: instanceId4
           },
           {
-            collection_id: collection1._id,
             product_id: product1._id,
             instance_id: instanceId1
           },
@@ -618,7 +634,7 @@ describe('POST Order (Fetch cart details)', () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
         res = res.body;
-        expect(res.length).toBe(3);
+        expect(res.length).toBe(2);
         res = res[0];
 
         expect(res.instance_id).toBeDefined();
@@ -634,7 +650,7 @@ describe('POST Order (Fetch cart details)', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit("should get error when customer is not logged in and instance_ids is not declared", function (done) {
+  it("should get error when customer is not logged in and instance_ids is not declared", function (done) {
     rp({
       method: 'post',
       body: {
