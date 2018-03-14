@@ -151,8 +151,8 @@ describe('DELETE Order', () => {
   it('should remove all orderlines of an instance from an existing order', function (done) {
     this.done = done;
     rp({
-      method: 'delete',
-      uri: lib.helpers.apiTestURL('order'),
+      method: 'post',
+      uri: lib.helpers.apiTestURL('order/delete'),
       body: {
         product_instance_id: productInstanceIds[0],
       },
@@ -178,8 +178,8 @@ describe('DELETE Order', () => {
   it('should remove 2 orderlines of an instance from an existing order', function (done) {
     this.done = done;
     rp({
-      method: 'delete',
-      uri: lib.helpers.apiTestURL('order'),
+      method: 'post',
+      uri: lib.helpers.apiTestURL('order/delete'),
       body: {
         product_instance_id: productInstanceIds[0],
         number: 2
@@ -208,8 +208,8 @@ describe('DELETE Order', () => {
   it('should remove the only orderline of an instance while we give it a number of 2 from an existing order', function (done) {
     this.done = done;
     rp({
-      method: 'delete',
-      uri: lib.helpers.apiTestURL('order'),
+      method: 'post',
+      uri: lib.helpers.apiTestURL('order/delete'),
       body: {
         product_instance_id: productInstanceIds[1],
         number: 2
