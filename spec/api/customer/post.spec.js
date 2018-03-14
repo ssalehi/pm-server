@@ -5,7 +5,7 @@ const error = require('../../../lib/errors.list');
 const moment = require('moment');
 const mongoose = require('mongoose');
 
-describe('Post Address', () => {
+describe('Set Address', () => {
 
   let customerObj = {};
   beforeEach(done => {
@@ -43,7 +43,7 @@ describe('Post Address', () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
       expect(res.body.addresses.length).toBe(1);
-      return models['CustomerTest'].findById(res.body._id)
+      return models['CustomerTest'].findOne({username: 'sa'})
     }).then(res => {
       expect(res.addresses.length).toBe(1);
       expect(res.addresses[0].city).toBe('Tehran');
