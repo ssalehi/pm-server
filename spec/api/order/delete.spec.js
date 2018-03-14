@@ -7,26 +7,9 @@ const mongoose = require('mongoose');
 describe('DELETE Order', () => {
 
   let customerObj = {
-    aid: null,
+    cid: null,
     jar: null
   };
-
-  let customerIds = [];
-  let customerArr = [{
-    first_name: 'a',
-    surname: 'b',
-    username: 'un1',
-    is_verified: true,
-    balance: 20,
-    loyalty_points: 10,
-  }, {
-    first_name: 'c',
-    surname: 'd',
-    username: 'un2',
-    is_verified: true,
-    balance: 100,
-    loyalty_points: 0,
-  }];
 
   let productInstanceIds = [
     mongoose.Types.ObjectId(),
@@ -39,55 +22,6 @@ describe('DELETE Order', () => {
     mongoose.Types.ObjectId()
   ];
   let type1, brand1;
-  // let productArr = [{
-  //   name: 'sample name',
-  //   product_type: mongoose.Types.ObjectId(),
-  //   brand: mongoose.Types.ObjectId(),
-  //   base_price: 30000,
-  //   desc: 'some description for this product',
-  //   instances: [
-  //     {
-  //       inventory: [],
-  //       _id: productInstanceIds[0],
-  //       product_color_id: mongoose.Types.ObjectId(),
-  //       size: "9",
-  //       price: 20,
-  //       barcode: "091201406845"
-  //     },
-  //     {
-  //       inventory: [],
-  //       _id: productInstanceIds[1],
-  //       product_color_id: mongoose.Types.ObjectId(),
-  //       size: "10",
-  //       price: 30,
-  //       barcode: "091201407132"
-  //     },
-  //     {
-  //       inventory: [],
-  //       _id: productInstanceIds[2],
-  //       product_color_id: mongoose.Types.ObjectId(),
-  //       size: "15",
-  //       price: 3000,
-  //       barcode: "091464436843"
-  //     }
-  //   ]
-  // }, {
-  //   name: 'soomple num',
-  //   product_type: mongoose.Types.ObjectId(),
-  //   brand: mongoose.Types.ObjectId(),
-  //   base_price: 40000,
-  //   desc: 'again some more description for another product',
-  //   instances: [
-  //     {
-  //       inventory: [],
-  //       _id: productInstanceIds[3],
-  //       product_color_id: mongoose.Types.ObjectId(),
-  //       size: 20,
-  //       price: 400000,
-  //       barcode: "02940291039"
-  //     }
-  //   ]
-  // }];
   let productArr = [];
   let existingOrderId;
   let existingOrderForSecondCustomer;
@@ -100,7 +34,7 @@ describe('DELETE Order', () => {
         surname: 'surname',
       }))
       .then(res => {
-        customerObj.aid = res.aid;
+        customerObj.cid = res.cid;
         customerObj.jar = res.rpJar;
 
         type1 = models['ProductTypeTest']({
@@ -181,13 +115,8 @@ describe('DELETE Order', () => {
       })
       .then(res => {
 
-        return models['CustomerTest'].insertMany(customerArr);
-      })
-      .then(res => {
-        customerIds = res.map(x => x._id);
-
         existingOrderForSecondCustomer = {
-          customer_id: customerIds[1],
+          customer_id: customerObj.cid,
           total_amount: 0,
           order_time: new Date(),
           is_cart: true,
@@ -219,13 +148,12 @@ describe('DELETE Order', () => {
       })
   });
 
-  it('should remove all orderlines of an instance from an existing order (for second customer)', function (done) {
+  it('should remove all orderlines of an instance from an existing order', function (done) {
     this.done = done;
     rp({
       method: 'delete',
       uri: lib.helpers.apiTestURL('order'),
       body: {
-        customer_id: customerIds[1],
         product_instance_id: productInstanceIds[0],
       },
       jar: customerObj.jar,
@@ -247,13 +175,12 @@ describe('DELETE Order', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should remove 2 orderlines of an instance from an existing order (for second customer)', function (done) {
+  it('should remove 2 orderlines of an instance from an existing order', function (done) {
     this.done = done;
     rp({
       method: 'delete',
       uri: lib.helpers.apiTestURL('order'),
       body: {
-        customer_id: customerIds[1],
         product_instance_id: productInstanceIds[0],
         number: 2
       },
@@ -278,13 +205,12 @@ describe('DELETE Order', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should remove the only orderline of an instance while we give it a number of 2 from an existing order (for second customer)', function (done) {
+  it('should remove the only orderline of an instance while we give it a number of 2 from an existing order', function (done) {
     this.done = done;
     rp({
       method: 'delete',
       uri: lib.helpers.apiTestURL('order'),
       body: {
-        customer_id: customerIds[1],
         product_instance_id: productInstanceIds[1],
         number: 2
       },
@@ -298,7 +224,6 @@ describe('DELETE Order', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].customer_id).toEqual(customerIds[1]);
         expect(res[0].order_line_ids.length).toBe(3);
         expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
         expect(res[0].order_line_ids[1].product_id).toEqual(productIds[0]);

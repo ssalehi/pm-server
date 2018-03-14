@@ -138,11 +138,11 @@ router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 
 // Customer
-router.get('/customer/:cid/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['params.cid']));
+router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
 // Order
-router.post('/order', apiResponse('Order', 'addToOrder', false, ['body']));
-router.delete('/order', apiResponse('Order', 'removeFromOrder', false, ['body']));
+router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
+router.delete('/order', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
