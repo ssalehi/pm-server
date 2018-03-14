@@ -227,7 +227,7 @@ router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.addre
 
 //Color Dictionary
 router.get('/color/dictionary', (req, res, next) => {
-  const colorData = JSON.parse(fs.readFileSync('./colorDictionary.json'));
+  const colorData = JSON.parse(fs.readFileSync('./dictionary.json'));
   res.status(200).json(colorData);
 });
 
