@@ -198,7 +198,7 @@ router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false
 
 
 // Collection
-router.get('/collection/:cid', apiResponse('Collection', 'getCollection', true, ['params.cid']));
+router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
 router.get('/collection/product/manual/:cid', apiResponse('Collection', 'getCollectionManualProducts', true, ['params.cid']));
 router.get('/collection/product/:cid', apiResponse('Collection', 'getCollectionProducts', false, ['params.cid']));
 router.get('/collection/tag/:cid', apiResponse('Collection', 'getCollectionTags', true, ['params.cid']));
