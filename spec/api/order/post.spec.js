@@ -4,98 +4,112 @@ const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 
-describe('POST Order', () => {
+describe('POST Order (New Order)', () => {
 
-  let adminObj = {
-    aid: null,
+  let customerObj = {
+    cid: null,
     jar: null
   };
-
-  let customerIds = [];
-  let customerArr = [{
-    first_name: 'a',
-    surname: 'b',
-    username: 'un1',
-    is_verified: true,
-    balance: 20,
-    loyalty_points: 10,
-  }, {
-    first_name: 'c',
-    surname: 'd',
-    username: 'un2',
-    is_verified: true,
-    balance: 100,
-    loyalty_points: 0,
-  }];
 
   let productInstanceIds = [
     mongoose.Types.ObjectId(),
     mongoose.Types.ObjectId(),
     mongoose.Types.ObjectId()
   ];
-  let productIds = [];
-  let productArr = [{
-    name: 'sample name',
-    product_type: mongoose.Types.ObjectId(),
-    brand: mongoose.Types.ObjectId(),
-    base_price: 30000,
-    desc: 'some description for this product',
-    instances: [
-      {
-        inventory: [],
-        _id: productInstanceIds[0],
-        product_color_id: mongoose.Types.ObjectId(),
-        size: "9",
-        price: 20,
-        barcode: "091201406845"
-      },
-      {
-        inventory: [],
-        _id: productInstanceIds[1],
-        product_color_id: mongoose.Types.ObjectId(),
-        size: "10",
-        price: 30,
-        barcode: "091201407132"
-      }
-    ]
-  }, {
-    name: 'soomple num',
-    product_type: mongoose.Types.ObjectId(),
-    brand: mongoose.Types.ObjectId(),
-    base_price: 40000,
-    desc: 'again some more description for another product',
-    instances: [
-      {
-        inventory: [],
-        _id: productInstanceIds[2],
-        product_color_id: mongoose.Types.ObjectId(),
-        size: 20,
-        price: 400000,
-        barcode: "02940291039"
-      }
-    ]
-  }];
+  let productIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId()
+  ];
+  let type1, brand1;
+  let productArr = [];
   let existingOrderId;
   let existingOrderForSecondCustomer;
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
-      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
+      .then(() => lib.dbHelpers.addAndLoginCustomer('a@a', '123456', {
+        first_name: 'iman',
+        surname: 'toufighi',
+      }))
       .then(res => {
-        adminObj.aid = res.aid;
-        adminObj.jar = res.rpJar;
+        customerObj.cid = res.cid;
+        customerObj.jar = res.rpJar;
 
-        return models['CustomerTest'].insertMany(customerArr);
+        type1 = models['ProductTypeTest']({
+          name: 'myType'
+        });
+        brand1 = models['BrandTest']({
+          name: 'Nike'
+        });
+
+        return Promise.all([type1.save(), brand1.save()]);
       })
       .then(res => {
-        customerIds = res.map(x => x._id);
+        productArr.push(models['ProductTest']({
+          _id: productIds[0],
+          name: 'sample name',
+          product_type: {
+            name: type1.name,
+            product_type_id: type1._id
+          },
+          brand: {
+            name: brand1.name,
+            brand_id: brand1._id
+          },
+          base_price: 30000,
+          desc: 'some description for this product',
+          instances: [
+            {
+              _id: productInstanceIds[0],
+              product_color_id: mongoose.Types.ObjectId(),
+              size: "9",
+              price: 2000,
+              barcode: '0394081341'
+            },
+            {
+              _id: productInstanceIds[1],
+              product_color_id: mongoose.Types.ObjectId(),
+              size: "10",
+              price: 4000,
+              barcode: '19231213123'
+            }
+          ]
+        }));
+        productArr.push(models['ProductTest']({
+          _id: productIds[1],
+          name: 'another simple name',
+          product_type: {
+            name: type1.name,
+            product_type_id: type1._id
+          },
+          brand: {
+            name: brand1.name,
+            brand_id: brand1._id,
+          },
+          base_price: 600000,
+          desc: "some else description for this product",
+          instances: [
+            {
+              _id: productInstanceIds[2],
+              product_color_id: mongoose.Types.ObjectId(),
+              size: "11",
+              price: 50000,
+              barcode: '9303850203',
+            }
+          ]
+        }));
+
+        return Promise.all([productArr[0].save(), productArr[1].save()]);
+      })
+      .then(res => {
 
         existingOrderForSecondCustomer = {
-          customer_id: customerIds[1],
+          customer_id: mongoose.Types.ObjectId(),
           total_amount: 0,
           order_time: new Date(),
           is_cart: true,
           order_line_ids: [{
+            product_id: productIds[0],
             product_instance_id: productInstanceIds[0]
           }]
         };
@@ -104,11 +118,6 @@ describe('POST Order', () => {
       })
       .then(res => {
         existingOrderId = res[0]._id;
-
-        return models['ProductTest'].insertMany(productArr);
-      })
-      .then(res => {
-        productIds = res.map(x => x._id);
 
         done();
       })
@@ -125,15 +134,14 @@ describe('POST Order', () => {
       method: 'post',
       uri: lib.helpers.apiTestURL('order'),
       body: {
-        customer_id: mongoose.Types.ObjectId(),
+        product_id: productIds[0],
         product_instance_id: productInstanceIds[0]
       },
-      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     })
       .catch(res => {
-        expect(res.statusCode).toBe(500);
+        expect(res.statusCode).toBe(404);
         return models['OrderTest'].find({}).lean();
       })
       .then(res => {
@@ -151,10 +159,10 @@ describe('POST Order', () => {
       method: 'post',
       uri: lib.helpers.apiTestURL('order'),
       body: {
-        customer_id: customerIds[0],
+        product_id: productIds[0],
         product_instance_id: productInstanceIds[0]
       },
-      jar: adminObj.jar,
+      jar: customerObj.jar,
       json: true,
       resolveWithFullResponse: true
     })
@@ -164,9 +172,9 @@ describe('POST Order', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].customer_id).toEqual(customerIds[0]);
         expect(res[0].is_cart).toBe(true);
         expect(res[0].order_line_ids.length).toBe(1);
+        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
         expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
 
         done();
@@ -181,11 +189,11 @@ describe('POST Order', () => {
       method: 'post',
       uri: lib.helpers.apiTestURL('order'),
       body: {
-        customer_id: customerIds[0],
+        product_id: productIds[0],
         product_instance_id: productInstanceIds[0],
         number: 4,
       },
-      jar: adminObj.jar,
+      jar: customerObj.jar,
       json: true,
       resolveWithFullResponse: true
     })
@@ -195,9 +203,12 @@ describe('POST Order', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].customer_id).toEqual(customerIds[0]);
         expect(res[0].is_cart).toBe(true);
         expect(res[0].order_line_ids.length).toBe(4);
+        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[0]);
+        expect(res[0].order_line_ids[2].product_id).toEqual(productIds[0]);
+        expect(res[0].order_line_ids[3].product_id).toEqual(productIds[0]);
         expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
         expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[0]);
         expect(res[0].order_line_ids[2].product_instance_id).toEqual(productInstanceIds[0]);
@@ -207,18 +218,142 @@ describe('POST Order', () => {
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+});
 
-  it('should add new orderline to an existing order (for second customer)', function (done) {
+describe('POST Order (Already-exist Order)', () => {
+
+  let customerObj = {
+    cid: null,
+    jar: null
+  };
+
+  let productInstanceIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId()
+  ];
+  let productIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId()
+  ];
+  let type1, brand1;
+  let productArr = [];
+  let existingOrderId;
+  let existingOrderForSecondCustomer;
+
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginCustomer('a@a', '123456', {
+        first_name: 'iman',
+        surname: 'toufighi',
+      }))
+      .then(res => {
+        customerObj.cid = res.cid;
+        customerObj.jar = res.rpJar;
+
+        type1 = models['ProductTypeTest']({
+          name: 'myType'
+        });
+        brand1 = models['BrandTest']({
+          name: 'Nike'
+        });
+
+        return Promise.all([type1.save(), brand1.save()]);
+      })
+      .then(res => {
+        productArr.push(models['ProductTest']({
+          _id: productIds[0],
+          name: 'sample name',
+          product_type: {
+            name: type1.name,
+            product_type_id: type1._id
+          },
+          brand: {
+            name: brand1.name,
+            brand_id: brand1._id
+          },
+          base_price: 30000,
+          desc: 'some description for this product',
+          instances: [
+            {
+              _id: productInstanceIds[0],
+              product_color_id: mongoose.Types.ObjectId(),
+              size: "9",
+              price: 2000,
+              barcode: '0394081341'
+            },
+            {
+              _id: productInstanceIds[1],
+              product_color_id: mongoose.Types.ObjectId(),
+              size: "10",
+              price: 4000,
+              barcode: '19231213123'
+            }
+          ]
+        }));
+        productArr.push(models['ProductTest']({
+          _id: productIds[1],
+          name: 'another simple name',
+          product_type: {
+            name: type1.name,
+            product_type_id: type1._id
+          },
+          brand: {
+            name: brand1.name,
+            brand_id: brand1._id,
+          },
+          base_price: 600000,
+          desc: "some else description for this product",
+          instances: [
+            {
+              _id: productInstanceIds[2],
+              product_color_id: mongoose.Types.ObjectId(),
+              size: "11",
+              price: 50000,
+              barcode: '9303850203',
+            }
+          ]
+        }));
+
+        return Promise.all([productArr[0].save(), productArr[1].save()]);
+      })
+      .then(res => {
+
+        existingOrderForSecondCustomer = {
+          customer_id: customerObj.cid,
+          total_amount: 0,
+          order_time: new Date(),
+          is_cart: true,
+          order_line_ids: [{
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0]
+          }]
+        };
+
+        return models['OrderTest'].insertMany([existingOrderForSecondCustomer]);
+      })
+      .then(res => {
+        existingOrderId = res[0]._id;
+
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      })
+  });
+
+  it('should add new orderline to an existing order', function (done) {
     this.done = done;
 
     rp({
       method: 'post',
       uri: lib.helpers.apiTestURL('order'),
       body: {
-        customer_id: customerIds[1],
+        product_id: productIds[1],
         product_instance_id: productInstanceIds[2]
       },
-      jar: adminObj.jar,
+      jar: customerObj.jar,
       json: true,
       resolveWithFullResponse: true
     })
@@ -228,8 +363,9 @@ describe('POST Order', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].customer_id).toEqual(customerIds[1]);
         expect(res[0].order_line_ids.length).toBe(2);
+        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[1]);
         expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
         expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[2]);
 
@@ -238,18 +374,18 @@ describe('POST Order', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should add multiple orderlines to an existing order (for second customer)', function (done) {
+  it('should add multiple orderlines to an existing order', function (done) {
     this.done = done;
 
     rp({
       method: 'post',
       uri: lib.helpers.apiTestURL('order'),
       body: {
-        customer_id: customerIds[1],
+        product_id: productIds[1],
         product_instance_id: productInstanceIds[2],
         number: 3,
       },
-      jar: adminObj.jar,
+      jar: customerObj.jar,
       json: true,
       resolveWithFullResponse: true
     })
@@ -259,8 +395,11 @@ describe('POST Order', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].customer_id).toEqual(customerIds[1]);
         expect(res[0].order_line_ids.length).toBe(4);
+        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[1]);
+        expect(res[0].order_line_ids[2].product_id).toEqual(productIds[1]);
+        expect(res[0].order_line_ids[3].product_id).toEqual(productIds[1]);
         expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
         expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[2]);
         expect(res[0].order_line_ids[2].product_instance_id).toEqual(productInstanceIds[2]);
@@ -366,7 +505,7 @@ describe('POST Order (Fetch cart details)', () => {
             {
               _id: colorId1,
               color_id: color1._id,
-              name:  color1.name,
+              name: color1.name,
               code: color1.color_id,
               image: {
                 thumbnail: 'one thumbnail',
@@ -669,5 +808,238 @@ describe('POST Order (Fetch cart details)', () => {
         expect(err.error).toBe(error.instanceDataRequired.message);
         done();
       });
+  });
+});
+
+describe('POST Order (Delete Orderlines)', () => {
+
+  let customerObj = {
+    cid: null,
+    jar: null
+  };
+
+  let productInstanceIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+  ];
+  let productIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId()
+  ];
+  let type1, brand1;
+  let productArr = [];
+  let existingOrderId;
+  let existingOrderForSecondCustomer;
+
+
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginCustomer('a@a', '123456', {
+        first_name: "iman",
+        surname: 'surname',
+      }))
+      .then(res => {
+        customerObj.cid = res.cid;
+        customerObj.jar = res.rpJar;
+
+        type1 = models['ProductTypeTest']({
+          name: 'type1',
+        });
+        brand1 = models['BrandTest']({
+          name: 'Nike',
+        });
+
+        return Promise.all([type1.save(), brand1.save()]);
+      })
+      .then(res => {
+        productArr.push(models['ProductTest']({
+          _id: productIds[0],
+          name: 'sample name',
+          product_type: {
+            name: type1.name,
+            product_type_id: type1._id
+          },
+          brand: {
+            name: brand1.name,
+            brand_id: brand1._id,
+          },
+          base_price: 30000,
+          desc: 'some description for this product',
+          instances: [
+            {
+              inventory: [],
+              _id: productInstanceIds[0],
+              product_color_id: mongoose.Types.ObjectId(),
+              size: "9",
+              price: 2000,
+              barcode: '984749202',
+            },
+            {
+              inventory: [],
+              _id: productInstanceIds[1],
+              product_color_id: mongoose.Types.ObjectId(),
+              size: "10",
+              price: 3000,
+              barcode: '928383010'
+            },
+            {
+              inventory: [],
+              _id: productInstanceIds[2],
+              product_color_id: mongoose.Types.ObjectId(),
+              size: "11",
+              price: 70000,
+              barcode: '393038202'
+            }
+          ]
+        }));
+        productArr.push(models['ProductTest']({
+          _id: productIds[1],
+          name: "another simple name",
+          product_type: {
+            name: type1.name,
+            product_type_id: type1._id,
+          },
+          brand: {
+            name: brand1.name,
+            brand_id: brand1._id,
+          },
+          base_price: 60000,
+          desc: 'another else description for this product',
+          instances: [
+            {
+              _id: productInstanceIds[3],
+              product_color_id: mongoose.Types.ObjectId(),
+              size: '11',
+              price: 50000,
+              barcode: '949302838',
+            },
+          ]
+        }));
+
+        return Promise.all([productArr[0].save(), productArr[1].save()]);
+      })
+      .then(res => {
+
+        existingOrderForSecondCustomer = {
+          customer_id: customerObj.cid,
+          total_amount: 0,
+          order_time: new Date(),
+          is_cart: true,
+          order_line_ids: [{
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
+          }, {
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
+          }, {
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
+          }, {
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[1]
+          }]
+        };
+
+        return models['OrderTest'].insertMany([existingOrderForSecondCustomer]);
+      })
+      .then(res => {
+        existingOrderId = res[0]._id;
+
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      })
+  });
+
+  it('should remove all orderlines of an instance from an existing order', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL('order/delete'),
+      body: {
+        product_instance_id: productInstanceIds[0],
+      },
+      jar: customerObj.jar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['OrderTest'].find({}).lean()
+      })
+      .then(res => {
+        expect(res.length).toEqual(1);
+        expect(res[0].order_line_ids.length).toBe(1);
+        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[1]);
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should remove 2 orderlines of an instance from an existing order', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL('order/delete'),
+      body: {
+        product_instance_id: productInstanceIds[0],
+        number: 2
+      },
+      jar: customerObj.jar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['OrderTest'].find({}).lean()
+      })
+      .then(res => {
+        expect(res.length).toEqual(1);
+        expect(res[0].order_line_ids.length).toBe(2);
+        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[0]);
+        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[1]);
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should remove the only orderline of an instance while we give it a number of 2 from an existing order', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL('order/delete'),
+      body: {
+        product_instance_id: productInstanceIds[1],
+        number: 2
+      },
+      jar: customerObj.jar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['OrderTest'].find({}).lean()
+      })
+      .then(res => {
+        expect(res.length).toEqual(1);
+        expect(res[0].order_line_ids.length).toBe(3);
+        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[0]);
+        expect(res[0].order_line_ids[0].product_instance_id.equals(productInstanceIds[0])).toBe(true);
+        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[0]);
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
   });
 });
