@@ -6,13 +6,11 @@ let schema_obj = {
     type: String,
     required: true,
     trim: true,
-    unique: true,
   },
   name: {
     type: String,
     required: true,
     trim: true,
-    unique: true,
   },
   value: {
     type: String,

@@ -99,6 +99,9 @@ db.dbIsReady()
       if (err.name !== 'BulkWriteError') {
         console.log('-> ', err);
       }
+      else{
+        console.log('-> ', 'dictionary is added');
+      }
       process.exit();
     }
   );
