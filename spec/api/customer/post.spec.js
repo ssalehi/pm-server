@@ -48,7 +48,6 @@ describe('Set Address', () => {
       expect(res.addresses.length).toBe(1);
       expect(res.addresses[0].city).toBe('Tehran');
       done();
-
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
@@ -56,7 +55,8 @@ describe('Set Address', () => {
     this.done = done;
     models['CustomerTest'].update({
       username: 'sa',
-      is_verified: true
+      is_verified: true,
+      is_guest: true,
     }, {
       $addToSet: {
         'addresses': {
@@ -99,6 +99,145 @@ describe('Set Address', () => {
 
     }).catch(lib.helpers.errorHandler.bind(this));
   });
+});
+
+//Guest User
+describe('Post Customer Address', () => {
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(res => {
+      done();
+    })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+  it("should get error when email exist", function (done) {
+    this.done = done;
+    (new models['CustomerTest']({
+      username: 'saman@gmail.com',
+      first_name: 'saman',
+      surname: 'vaziri',
+      mobile_no: '0912000000',
+      'addresses': {
+        city: 'tehran',
+        street: 'zartosht'},
+      is_verified: false,
+      is_guest: false
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            username: 'saman@gmail.com',
+            first_name: 'asd',
+            surname: 'ad',
+            mobile_no: '2343424324',
+            city: 'tehran',
+            street: 'zartosht',
+            is_verified: false,
+            is_guest: true
+          },
+          json: true,
+          uri: lib.helpers.apiTestURL('user/guest/address'),
+          resolveWithFullResponse: true,
+        })
+      })
+      .then(res => {
+       this.fail('Email already exists!');
+        done();
+      })
+      .catch(err => {
+       expect(err.statusCode).toBe(error.customerExist.status);
+        expect(err.error).toBe(error.customerExist.message);
+        done();
+      });
+
+  });
+
+  it('should update customer information', function (done) {
+    this.done = done;
+    models['CustomerTest'].update({
+      username: 'saman@gmail.com',
+      is_verified: true,
+      is_guest: true,
+    }, {
+      $set: {
+        first_name: 'saman',
+        surname: 'vaziri',
+        mobile_no: '0912000000',
+        'addresses': {
+          city: 'tehran',
+          street: 'zartosht'},
+      },
+    }).then(res =>
+        rp({
+          method: 'post',
+          body: {
+            username: 'saman@gmail.com',
+            first_name: 'asd',
+            surname: 'ad',
+            mobile_no: '2343424324',
+            city: 'tehran',
+            street: 'zartosht',
+            gender: 'm',
+            is_verified: false,
+            is_guest: true
+          },
+          json: true,
+          uri: lib.helpers.apiTestURL('user/guest/address'),
+          resolveWithFullResponse: true,
+        })
+      )
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['CustomerTest'].find().lean();
+      }).then(res => {
+      expect(res.length).toBe(1);
+      res = res[0];
+      expect(res.username).toBe('saman@gmail.com');
+      expect(res.first_name).toBe('asd');
+      expect(res.surname).toBe('ad');
+      expect(res.gender).toBe('m');
+      expect(res.is_verified).toBe(false);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should add new customer', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        username: 'saman@gmail.com',
+        first_name: 'saman',
+        surname: 'vaziri',
+        mobile_no: '1234567890',
+        gender: 'm',
+        is_verified: false,
+        is_guest: true
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('user/guest/address'),
+      resolveWithFullResponse: true,
+    }).then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['CustomerTest'].find().lean();
+      }).then(res => {
+            expect(res.length).toBe(1);
+            res = res[0];
+            expect(res.username).toBe('saman@gmail.com');
+            expect(res.first_name).toBe('saman');
+            expect(res.surname).toBe('vaziri');
+            expect(res.mobile_no).toBe('1234567890');
+            expect(res.gender).toBe('m');
+            expect(res.is_verified).toBe(false);
+            done();
+          }).catch(lib.helpers.errorHandler.bind(this));
+    })
+
 });
 
 

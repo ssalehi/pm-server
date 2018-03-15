@@ -47,6 +47,11 @@ let schema_obj = {
     required: true,
     default: false,
   },
+  is_guest: {
+    type: Boolean,
+    requires: true,
+    default: true,
+  },
   preferred_brands: [{type: Schema.Types.ObjectId, ref: 'Brand'}],
   wish_list: [Schema.Types.ObjectId],
   preferred_tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
