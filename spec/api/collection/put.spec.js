@@ -2,7 +2,6 @@ const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
-const mongoose = require('mongoose');
 
 
 describe('PUT Collection', () => {
@@ -34,6 +33,7 @@ describe('PUT Collection', () => {
       uri: lib.helpers.apiTestURL('collection'),
       body: {
         name: 'collection test',
+        name_fa: 'کالکشن 1',
       },
       jar: adminObj.jar,
       json: true,
@@ -58,6 +58,30 @@ describe('PUT Collection', () => {
       uri: lib.helpers.apiTestURL(`collection`),
       body: {
         // name: 'second name',
+        name_fa: 'کالکشن 1',
+      },
+      jar: adminObj.jar,
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('expect error when name of collection is not defined');
+
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.CollectionNameRequired.status);
+      expect(err.error).toBe(error.CollectionNameRequired.message);
+      done();
+    });
+  });
+
+  it('should get error when name fa of collection is not defined', function (done) {
+    this.done = done;
+    rp({
+      method: 'put',
+      uri: lib.helpers.apiTestURL(`collection`),
+      body: {
+        name: 'second name',
+        // name_fa: 'کالکشن 1',
       },
       jar: adminObj.jar,
       json: true,
