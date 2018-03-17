@@ -8,7 +8,6 @@ let schema_obj = {
     trim: true,
     unique: true,
   },
-  // hex: String,
 };
 
 
