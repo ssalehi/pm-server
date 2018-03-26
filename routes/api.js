@@ -126,7 +126,7 @@ router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
 
 
 // Types
-router.get('/productType', apiResponse('ProductType', 'getTypes', false, []));
+router.get('/productType', apiResponse('ProductType', 'getTyp es', false, []));
 
 // Colors
 router.get('/color', apiResponse('Color', 'getColors', false, []));
