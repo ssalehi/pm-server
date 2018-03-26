@@ -131,6 +131,9 @@ router.get('/productType', apiResponse('ProductType', 'getTyp es', false, []));
 // Colors
 router.get('/color', apiResponse('Color', 'getColors', false, []));
 
+// Dictionaries
+router.get('/dictionary', apiResponse('Dictionary', 'getDictionaries', false, []));
+
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 
@@ -225,11 +228,6 @@ router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.i
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']));
 router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address']));
 
-//Color Dictionary
-router.get('/color/dictionary', (req, res, next) => {
-  const colorData = JSON.parse(fs.readFileSync('./colorDictionary.json'));
-  res.status(200).json(colorData);
-});
 
 
 // Search

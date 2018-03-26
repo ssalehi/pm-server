@@ -70,11 +70,40 @@ db.dbIsReady()
   })
   .then(res => {
     console.log('-> ', 'collection men shoes page is added for app');
+
+    let dictionary = JSON.parse(fs.readFileSync('dictionary.json', 'utf8'));
+
+    let data = [];
+
+    Object.keys(dictionary).forEach(type => {
+
+      let typeData = dictionary[type];
+
+      data = data.concat(Object.keys(typeData).map(name => {
+        return {
+          type,
+          name,
+          value: typeData[name]
+        }
+      }));
+    });
+
+
+    return models['Dictionary'].insertMany(data, {ordered: false});
+  })
+  .then(res => {
+    console.log('-> ', 'dictionary is added');
     process.exit();
   })
   .catch(err => {
-    console.log('-> ', err);
-    process.exit();
-  });
+      if (err.name !== 'BulkWriteError') {
+        console.log('-> ', err);
+      }
+      else{
+        console.log('-> ', 'dictionary is added');
+      }
+      process.exit();
+    }
+  );
 
 
