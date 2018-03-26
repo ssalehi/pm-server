@@ -1,8 +1,28 @@
 {
   "color": {
-    "ANTHRACITE": "Grey"
+    "UNIVERSITY RED": "darkred",
+    "ANTHRACITE": "silver",
+    "BLACK-ANTHRACITE": "#999999"
   },
   "tag": {
-    "Cap": "کلاه"
+    "PANTS": "شلوار",
+    "BASKETBALL": "بسکتبال",
+    "MENS": "مردانه",
+    "HOLI": "تعطیلات",
+    "BOTTOMS": "باتوم",
+    "FULL LENGTH": "تمام قد",
+    "CAPS": "کلاه کپی",
+    "ACTION SPORTS": "ورزش‌های پرتحرک",
+    "UNISEX": "تک‌جنسه",
+    "HEADWEAR": "سرپوش",
+    "TRAINING": "ترینینگ",
+    "DUFFEL BAGS": "کوله خمره‌ای",
+    "BAGS": "کوله",
+    "RUNNING": "دوندگی",
+    "APPAREL" : "پوشاک",
+    "ACCESSORIES" : "لوازم جانبی",
+    "SOCKS" : "جوراب",
+    "NO SHOW": "بی نما!",
+    "WOMENS": "زنانه"
   }
 }
