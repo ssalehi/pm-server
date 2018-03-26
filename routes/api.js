@@ -141,11 +141,11 @@ router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 
 // Customer
-router.get('/customer/:cid/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['params.cid']));
+router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
 // Order
-router.post('/order', apiResponse('Order', 'addToOrder', false, ['body']));
-router.delete('/order', apiResponse('Order', 'removeFromOrder', false, ['body']));
+router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
+router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
@@ -201,7 +201,7 @@ router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false
 
 
 // Collection
-router.get('/collection/:cid', apiResponse('Collection', 'getCollection', true, ['params.cid']));
+router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
 router.get('/collection/product/manual/:cid', apiResponse('Collection', 'getCollectionManualProducts', true, ['params.cid']));
 router.get('/collection/product/:cid', apiResponse('Collection', 'getCollectionProducts', false, ['params.cid']));
 router.get('/collection/tag/:cid', apiResponse('Collection', 'getCollectionTags', true, ['params.cid']));
