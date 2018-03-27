@@ -9,7 +9,6 @@ describe("Get Page", () => {
     lib.dbHelpers.dropAll()
       .then(res => {
 
-
         let inserts = [];
         let n = 0;
         while (n < 5) {
