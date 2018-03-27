@@ -103,6 +103,8 @@ router.put('/register', apiResponse('Customer', 'registration', false, ['body'])
 router.post('/register/verify', apiResponse('Customer', 'verification', false, ['body.code', 'body.username']));
 router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
+router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user.username','body']));
+router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
 router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
 router.post('/user/auth/local/:link', apiResponse('Person', 'completeAuth', false, ['params.link', 'body']));
@@ -131,6 +133,9 @@ router.get('/productType', apiResponse('ProductType', 'getTypes', false, []));
 // Colors
 router.get('/color', apiResponse('Color', 'getColors', false, []));
 
+// Dictionaries
+router.get('/dictionary', apiResponse('Dictionary', 'getDictionaries', false, []));
+
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 
@@ -138,11 +143,11 @@ router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 
 // Customer
-router.get('/customer/:cid/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['params.cid']));
+router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
 // Order
-router.post('/order', apiResponse('Order', 'addToOrder', false, ['body']));
-router.delete('/order', apiResponse('Order', 'removeFromOrder', false, ['body']));
+router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
+router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
@@ -198,7 +203,7 @@ router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false
 
 
 // Collection
-router.get('/collection/:cid', apiResponse('Collection', 'getCollection', true, ['params.cid']));
+router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
 router.get('/collection/product/manual/:cid', apiResponse('Collection', 'getCollectionManualProducts', true, ['params.cid']));
 router.get('/collection/product/:cid', apiResponse('Collection', 'getCollectionProducts', false, ['params.cid']));
 router.get('/collection/tag/:cid', apiResponse('Collection', 'getCollectionTags', true, ['params.cid']));
@@ -225,11 +230,6 @@ router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.i
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']));
 router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address']));
 
-//Color Dictionary
-router.get('/color/dictionary', (req, res, next) => {
-  const colorData = JSON.parse(fs.readFileSync('./colorDictionary.json'));
-  res.status(200).json(colorData);
-});
 
 
 // Search

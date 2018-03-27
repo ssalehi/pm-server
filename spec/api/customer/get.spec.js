@@ -4,38 +4,23 @@ const models = require('../../../mongo/models.mongo');
 
 describe('GET Customer', () => {
 
-  let adminObj = {
-    aid: null,
+  let customerObj = {
+    cid: null,
     jar: null,
   };
-  let customerIds = [];
-  let customerArr = [{
-    first_name: 'a',
-    surname: 'b',
-    username: 'un1',
-    is_verified: true,
-    balance: 20,
-    loyalty_points: 10,
-  }, {
-    first_name: 'c',
-    surname: 'd',
-    username: 'un2',
-    is_verified: true,
-    balance: 100,
-    loyalty_points: 0,
-  }];
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
-      .then(() => lib.dbHelpers.addAndLoginAgent('admin'))
+      .then(() => lib.dbHelpers.addAndLoginCustomer('cust', 'pass', {
+        first_name: 'c',
+        surname: 'v',
+        balance: 20,
+        loyalty_points: 10,
+      }))
       .then(res => {
-        adminObj.aid = res.aid;
-        adminObj.jar = res.rpJar;
+        customerObj.cid = res.cid;
+        customerObj.jar = res.rpJar;
 
-        return models['CustomerTest'].insertMany(customerArr);
-      })
-      .then(res => {
-        customerIds = res.map(x => x._id);
         done();
       })
       .catch(err => {
@@ -48,13 +33,15 @@ describe('GET Customer', () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`customer/${customerIds[0]}/balance`),
+      uri: lib.helpers.apiTestURL(`customer/balance`),
+      jar: customerObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body.loyalty_points).toBe(customerArr[0].loyalty_points);
-      expect(res.body.balance).toBe(customerArr[0].balance);
+      expect(res.body.balance).toBe(20);
+      expect(res.body.loyalty_points).toBe(10);
+
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
