@@ -6,12 +6,11 @@ const moment = require('moment');
 const mongoose = require('mongoose');
 
 describe('Set Address', () => {
-
   let customerObj = {};
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
-        return lib.dbHelpers.addAndLoginCustomer('sa')
+        return lib.dbHelpers.addAndLoginCustomer('sa', '123', {is_guest: false, first_name: 'test first name', surname: 'test surname'})
       }).then(res => {
       let rpJar = null;
       customerObj.cid = res.cid;
@@ -24,7 +23,7 @@ describe('Set Address', () => {
       });
   });
 
-  it('should customer found', function (done) {
+  it('should add new address for existing valid user', function (done) {
     this.done = done;
     rp({
       method: 'post',
@@ -42,7 +41,6 @@ describe('Set Address', () => {
       resolveWithFullResponse: true,
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body.addresses.length).toBe(1);
       return models['CustomerTest'].findOne({username: 'sa'})
     }).then(res => {
       expect(res.addresses.length).toBe(1);
@@ -56,7 +54,7 @@ describe('Set Address', () => {
     models['CustomerTest'].update({
       username: 'sa',
       is_verified: true,
-      is_guest: true,
+      is_guest: false,
     }, {
       $addToSet: {
         'addresses': {
@@ -102,7 +100,7 @@ describe('Set Address', () => {
 });
 
 //Guest User
-describe('Post Customer Address', () => {
+describe('Post Customer Address in Profile', () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
@@ -124,8 +122,8 @@ describe('Post Customer Address', () => {
       'addresses': {
         city: 'tehran',
         street: 'zartosht'},
-      is_verified: false,
-      is_guest: false
+        is_verified: true,
+        is_guest: false
     })).save()
       .then(res => {
         return rp({
@@ -137,8 +135,8 @@ describe('Post Customer Address', () => {
             mobile_no: '2343424324',
             city: 'tehran',
             street: 'zartosht',
-            is_verified: false,
-            is_guest: true
+            is_verified: true,
+            is_guest: false
           },
           json: true,
           uri: lib.helpers.apiTestURL('user/guest/address'),
@@ -151,18 +149,17 @@ describe('Post Customer Address', () => {
       })
       .catch(err => {
        expect(err.statusCode).toBe(error.customerExist.status);
-        expect(err.error).toBe(error.customerExist.message);
+       expect(err.error).toBe(error.customerExist.message);
         done();
       });
-
   });
 
-  it('should update customer information', function (done) {
+  it('should update customer information that already exist', function (done) {
     this.done = done;
     models['CustomerTest'].update({
       username: 'saman@gmail.com',
       is_verified: true,
-      is_guest: true,
+      is_guest: false,
     }, {
       $set: {
         first_name: 'saman',
@@ -184,7 +181,7 @@ describe('Post Customer Address', () => {
             street: 'zartosht',
             gender: 'm',
             is_verified: false,
-            is_guest: true
+            is_guest: false
           },
           json: true,
           uri: lib.helpers.apiTestURL('user/guest/address'),
@@ -237,7 +234,4 @@ describe('Post Customer Address', () => {
             done();
           }).catch(lib.helpers.errorHandler.bind(this));
     })
-
 });
-
-

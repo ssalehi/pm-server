@@ -49,7 +49,7 @@ let schema_obj = {
   },
   is_guest: {
     type: Boolean,
-    requires: true,
+    required: true,
     default: true,
   },
   preferred_brands: [{type: Schema.Types.ObjectId, ref: 'Brand'}],
