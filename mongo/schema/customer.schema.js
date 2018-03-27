@@ -57,6 +57,9 @@ let schema_obj = {
   preferred_tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
   orders: [{type: Schema.Types.ObjectId, ref: 'Order'}],
   addresses:[addressSchema],
+  national_id: {
+    type: String
+  },
 };
 
 let customerSchema = new Schema(schema_obj, {collection: 'customer', strict: true});

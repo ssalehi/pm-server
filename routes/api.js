@@ -266,4 +266,7 @@ router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file']));
 // Cart
 router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 'body']));
 
+// Customer Address
+router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
+
 module.exports = router;
