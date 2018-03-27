@@ -158,7 +158,7 @@ describe('Guest User', () => {
     models['CustomerTest'].update({
       username: 'saman@gmail.com',
       is_verified: false,
-      is_guest: false,
+      is_guest: true,
     }, {
       $set: {
         first_name: 'saman',
