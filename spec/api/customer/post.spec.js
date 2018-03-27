@@ -153,7 +153,7 @@ describe('Guest User', () => {
       });
   });
 
-  it('should update customer information that already exist', function (done) {
+  it('should update guest information that already exist', function (done) {
     this.done = done;
     models['CustomerTest'].update({
       username: 'saman@gmail.com',
@@ -202,7 +202,7 @@ describe('Guest User', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should add new customer', function (done) {
+  it('should add new guest', function (done) {
     this.done = done;
     rp({
       method: 'post',
