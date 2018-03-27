@@ -10,7 +10,7 @@ describe('Set Address', () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
-        return lib.dbHelpers.addAndLoginCustomer('sa', '123', {is_guest: false, first_name: 'test first name', surname: 'test surname'})
+        return lib.dbHelpers.addAndLoginCustomer('sa', '123', {first_name: 'test first name', surname: 'test surname'})
       }).then(res => {
       let rpJar = null;
       customerObj.cid = res.cid;
@@ -53,8 +53,6 @@ describe('Set Address', () => {
     this.done = done;
     models['CustomerTest'].update({
       username: 'sa',
-      is_verified: true,
-      is_guest: false,
     }, {
       $addToSet: {
         'addresses': {
@@ -86,7 +84,6 @@ describe('Set Address', () => {
       )
       .then(res => {
         expect(res.statusCode).toBe(200);
-        expect(res.body.addresses.length).toBe(2);
         return models['CustomerTest'].findOne({username: 'sa'})
       }).then(res => {
       console.log('->', res);
@@ -100,7 +97,7 @@ describe('Set Address', () => {
 });
 
 //Guest User
-describe('Post Customer Address in Profile', () => {
+describe('Guest User', () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
@@ -158,7 +155,7 @@ describe('Post Customer Address in Profile', () => {
     this.done = done;
     models['CustomerTest'].update({
       username: 'saman@gmail.com',
-      is_verified: true,
+      is_verified: false,
       is_guest: false,
     }, {
       $set: {
