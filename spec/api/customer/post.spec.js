@@ -10,9 +10,11 @@ describe('Set Address', () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
+        //console.log('s1111111', res);
         return lib.dbHelpers.addAndLoginCustomer('sa', '123', {first_name: 'test first name', surname: 'test surname'})
+
       }).then(res => {
-      let rpJar = null;
+        let rpJar = null;
       customerObj.cid = res.cid;
       customerObj.jar = res.rpJar;
       done();
@@ -41,6 +43,7 @@ describe('Set Address', () => {
       resolveWithFullResponse: true,
     }).then(res => {
       expect(res.statusCode).toBe(200);
+      expect(res.body.n).toBe(1);
       return models['CustomerTest'].findOne({username: 'sa'})
     }).then(res => {
       expect(res.addresses.length).toBe(1);
@@ -86,7 +89,6 @@ describe('Set Address', () => {
         expect(res.statusCode).toBe(200);
         return models['CustomerTest'].findOne({username: 'sa'})
       }).then(res => {
-      console.log('->', res);
       expect(res.addresses.length).toBe(2);
       expect(res.addresses[0].city).toBe('Rasht');
       expect(res.addresses[1].city).toBe('Sari');
