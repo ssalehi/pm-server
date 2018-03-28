@@ -4,8 +4,8 @@ const models = require('../../../mongo/models.mongo');
 
 describe('GET Customer', () => {
   const custData = {
-    first_name: 'c',
-    surname: 'v',
+    first_name: 'علی',
+    surname: 'میرجهانی',
     balance: 20,
     loyalty_points: 10,
     addresses: [
