@@ -25,6 +25,7 @@ let schema_obj = {
     type: Boolean,
     default: false
   },
+  coupon_code: String,
   is_cart: {
     type: Boolean,
     default: false,

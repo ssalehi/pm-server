@@ -103,6 +103,8 @@ router.put('/register', apiResponse('Customer', 'registration', false, ['body'])
 router.post('/register/verify', apiResponse('Customer', 'verification', false, ['body.code', 'body.username']));
 router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
+router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user.username','body']));
+router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
 router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
 router.post('/user/auth/local/:link', apiResponse('Person', 'completeAuth', false, ['params.link', 'body']));
@@ -263,5 +265,9 @@ router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file']));
 
 // Cart
 router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 'body']));
+
+// Coupon
+router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', false, ['user', 'body']));
+router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false, ['user', 'body']));
 
 module.exports = router;
