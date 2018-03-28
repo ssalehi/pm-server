@@ -46,7 +46,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) 
       Promise.resolve())
       .then(() => lib.Agent.adminCheck(adminOnly, req.user, req.test))
       .then(rs => {
-        if (adminOnly && rs.length < 1)
+        if (adminOnly && (!rs || rs.length < 1 ))
           return Promise.reject(error.adminOnly);
         else {
           let dynamicArgs = [];
