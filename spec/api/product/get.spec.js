@@ -53,6 +53,7 @@ describe("Get products", () => {
           brand: {name: 'Puma', brand_id: brandIds[1]},
           base_price: 30000,
           desc: 'some description for this product',
+          details: 'some details for this product',
           colors: [
             {
               _id: productColorIds[0],
@@ -127,6 +128,7 @@ describe("Get products", () => {
           brand: {name: 'Puma', brand_id: brandIds[1]},
           base_price: 50000,
           desc: 'some description for this product',
+          details: 'some details for this product',
         };
 
         return models['ProductTest'].insertMany([
