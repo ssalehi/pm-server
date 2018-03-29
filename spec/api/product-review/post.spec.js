@@ -42,7 +42,7 @@ describe('POST / Product Reviews -', () => {
     });
   });
 
-  xit('expect error when product id is not valid', function (done) {
+  it('expect error when product id is not valid', function (done) {
     this.done = done;
     productId = productId + 'A';
 
@@ -67,7 +67,7 @@ describe('POST / Product Reviews -', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('expect error when user Person not found', function (done) {
+  it('expect error when user Person not found', function (done) {
     this.done = done;
 
     rp({
@@ -86,7 +86,7 @@ describe('POST / Product Reviews -', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('expect error when body is empty ', function (done) {
+  it('expect error when body is empty ', function (done) {
     this.done = done;
 
     rp({
@@ -121,8 +121,11 @@ describe('POST / Product Reviews -', () => {
       jar: customerObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
-      expect(res.body._id).toEqual(productId.toString());
-      expect(res.body.reviews.length).toBe(1);
+      expect(res.statusCode).toBe(200);
+      return models['ProductTest'].findById(productId);
+    }).then(res=>{
+      expect(res._id).toEqual(productId);
+      expect(res.reviews.length).toBe(1);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
