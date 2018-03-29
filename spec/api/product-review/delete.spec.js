@@ -19,11 +19,11 @@ describe('POST / Product Reviews -', () => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
       }).then(() => {
-      models['BrandTest'].create({name: 'Nike'})
+      return models['BrandTest'].create({name: 'Nike'})
         .then(res => {
           brandId = res._id;
           //create product
-          models['ProductTest'].create({
+          return models['ProductTest'].create({
             name: 'product test',
             base_price: 1000,
             brand: {
@@ -31,7 +31,7 @@ describe('POST / Product Reviews -', () => {
               brand_id: brandId
             },
           }).then(res => {
-            models['ProductTest'].findOneAndUpdate({
+            return models['ProductTest'].findOneAndUpdate({
               '_id': res._id,
               'reviews.customer_id': {$ne: mongoose.Types.ObjectId(adminObj.aid)}
             }, {
@@ -54,6 +54,9 @@ describe('POST / Product Reviews -', () => {
             done();
           });
         });
+      //last then
+    }).then(() => {
+      done();
     }).catch(err => {
       console.log(err);
       done();
