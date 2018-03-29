@@ -49,6 +49,7 @@ describe("Put product basics", () => {
         brand: brandId,
         base_price: 30000,
         desc: 'some description for this product',
+        details: 'some details for this product',
       },
       jar: adminObj.jar,
       json: true,
@@ -81,6 +82,7 @@ describe("Put product basics", () => {
       },
       base_price: 20000,
       desc: 'some description for this product',
+      details: 'some details for this product',
     });
     product.save()
       .then(res =>
@@ -93,6 +95,7 @@ describe("Put product basics", () => {
             brand: brandId,
             base_price: 30000,
             desc: 'some description for this product',
+            details: 'some details for this product',
           },
           jar: adminObj.jar,
           json: true,
@@ -122,6 +125,7 @@ describe("Put product basics", () => {
         brand: brandId,
         base_price: 30000,
         desc: 'some description for this product',
+        details: 'some details for this product',
       },
       jar: adminObj.jar,
       json: true,
@@ -150,6 +154,7 @@ describe("Put product basics", () => {
         brand: brandId,
         base_price: 30000,
         desc: 'some description for this product',
+        details: 'some details for this product',
       },
       jar: adminObj.jar,
       json: true,
@@ -178,6 +183,7 @@ describe("Put product basics", () => {
         // brand: brandId,
         base_price: 30000,
         desc: 'some description for this product',
+        details: 'some details for this product',
       },
       jar: adminObj.jar,
       json: true,
@@ -206,6 +212,7 @@ describe("Put product basics", () => {
         brand: brandId,
         // base_price: 30000,
         desc: 'some description for this product',
+        details: 'some details for this product',
       },
       jar: adminObj.jar,
       json: true,
@@ -260,6 +267,7 @@ describe("Put product instance basics", () => {
           },
           base_price: 30000,
           desc: 'some description for this product',
+          details: 'some details for this product',
         });
         return product.save();
 

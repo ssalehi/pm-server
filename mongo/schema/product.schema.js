@@ -75,7 +75,7 @@ let schema_obj = {
     default: Date.now
   },
   desc: String,
-  details: Schema.Types.Mixed,
+  details: Schema.Types.string,
   tags: [nestedTagSchema],
   reviews: [ProductReview],
   colors: [ProductColor],

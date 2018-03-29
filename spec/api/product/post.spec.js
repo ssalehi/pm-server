@@ -45,6 +45,8 @@ describe("Post product basics", () => {
           },
           base_price: 30000,
           desc: 'some description for this product',
+          details: 'some details for this product',
+
         });
         return product.save();
       })
@@ -73,6 +75,7 @@ describe("Post product basics", () => {
         brand: brandId,
         base_price: 50000,
         desc: 'some description for this product',
+        details: 'some details for this product',
       },
       jar: adminObj.jar,
       json: true,
@@ -126,6 +129,7 @@ describe("Post product colors & images", () => {
           },
           base_price: 30000,
           desc: 'some description for this product',
+          details: 'some details for this product',
         });
         return product.save();
       })
@@ -556,7 +560,8 @@ describe("Post product instances", () => {
           },
           base_price: 30000,
           desc: 'some description for this product',
-          instances: [
+          details: 'some details for this product',
+            instances: [
             {
               product_color_id: productColorId,
               size: 8.5,
@@ -651,7 +656,8 @@ describe("Post Product instance inventories", () => {
           },
           base_price: 30000,
           desc: 'some description for this product',
-          instances: [
+          details: 'some details for this product',
+            instances: [
             {
               product_color_id: new mongoose.Types.ObjectId(),
               size: 8.5,
@@ -910,6 +916,7 @@ describe("Post Product tags", () => {
           },
           base_price: 30000,
           desc: 'some description for this product',
+          details: 'some details for this product',
         });
         return product.save();
 
