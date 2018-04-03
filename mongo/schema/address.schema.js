@@ -21,10 +21,10 @@ let schema_obj = {
     trim: true,
   },
   unit: {
-    type: Number,
+    type: String,
   },
   no: {
-    type: Number,
+    type: String,
   },
   postal_code: {
     type: Number,
