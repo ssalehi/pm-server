@@ -171,6 +171,11 @@ router.delete('/product/instance/:id/:productColorId', apiResponse('Product', 'd
 router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', true, ['body']));
 router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', apiResponse('Product', 'deleteInventory', true, ['params.id', 'params.productColorId', 'params.warehouseId']));
 
+// product review
+router.put('/product/review/:pid', apiResponse('Product', 'setReview', false, ['body', 'params.pid', 'user']));
+// router.post('/product/review/:pid', apiResponse('Product', 'setReview', false, ['body', 'params.pid', 'user']));
+router.delete('/product/review/:pid/:rid', apiResponse('Product', 'unSetReview', true, ['body', 'params', 'user']));
+
 // product image
 router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next) {
 

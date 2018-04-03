@@ -15,7 +15,7 @@ let schema_obj = {
   brand: {
     type: Schema.Types.ObjectId,
     ref: 'Brand',
-    required: true
+    // required: true
   },
   stars_count: {
     type: Number,
