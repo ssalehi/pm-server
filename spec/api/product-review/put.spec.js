@@ -4,10 +4,11 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 
-describe('POST / Product Reviews -', () => {
+describe('PUT / Product Reviews -', () => {
   let customerObj = {};
   let brandId;
   let productId;
+  let starsCount = 3;
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => lib.dbHelpers.addAndLoginCustomer('farhad', '123456789', {
@@ -33,6 +34,16 @@ describe('POST / Product Reviews -', () => {
           });
       }).then((res) => {
       productId = res._id;
+      return models['ProductTest'].update({'_id': res._id}, {
+        $addToSet: {
+          'reviews': {
+            customer_id: customerObj.cid,
+            stars_count: starsCount,
+            comment: 'this is comment'
+          }
+        }
+      });
+    }).then(() => {
       done();
     }).catch(err => {
       console.log(err);
@@ -40,16 +51,17 @@ describe('POST / Product Reviews -', () => {
     });
   });
 
-  it('expect error when product id is not valid', function (done) {
+
+  it('expect error when product id not valid', function (done) {
     this.done = done;
     productId = productId + 'A';
 
     rp({
-      method: 'POST',
+      method: 'PUT',
       uri: lib.helpers.apiTestURL(`product/review/${productId}`),
       body: {
         brand: brandId,
-        stars_count: 4,
+        stars_count: 5,
         purchased_confirmed: true,
         comment: 'good product!'
       },
@@ -57,61 +69,22 @@ describe('POST / Product Reviews -', () => {
       jar: customerObj.jar,
       resolveWithFullResponse: true
     }).then(() => {
-      this.fail('expect error when product id is not valid');
-      done();
-    }).catch(err => {
-      expect(err.statusCode).toBe(error.invalidId.status);
-      done();
-    }).catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  it('expect error when user Person not found', function (done) {
-    this.done = done;
-
-    rp({
-      method: 'POST',
-      uri: lib.helpers.apiTestURL(`product/review/${productId}`),
-      body: {},
-      json: true,
-      // jar: customerObj.jar,
-      resolveWithFullResponse: true
-    }).then(() => {
-      this.fail('expect error when user Person not found');
-      done();
-    }).catch(err => {
-      expect(err.statusCode).toBe(error.noUser.status);
+      this.fail('expect error when product id not valid');
+    }).catch(res => {
+      expect(res.statusCode).toBe(error.invalidId.status);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('expect error when body is empty ', function (done) {
+  it('expect update some fields same as `stars_count`', function (done) {
     this.done = done;
 
     rp({
-      method: 'POST',
-      uri: lib.helpers.apiTestURL(`product/review/${productId}`),
-      body: {},
-      json: true,
-      jar: customerObj.jar,
-      resolveWithFullResponse: true
-    }).then(() => {
-      this.fail('expect error when body is empty ');
-      done();
-    }).catch(err => {
-      expect(err.statusCode).toBe(error.bodyRequired.status);
-      done();
-    }).catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  it('expect insert product review', function (done) {
-    this.done = done;
-
-    rp({
-      method: 'POST',
+      method: 'PUT',
       uri: lib.helpers.apiTestURL(`product/review/${productId}`),
       body: {
         brand: brandId,
-        stars_count: 4,
+        stars_count: 5,
         purchased_confirmed: true,
         comment: 'good product!'
       },
@@ -123,7 +96,7 @@ describe('POST / Product Reviews -', () => {
       return models['ProductTest'].findById(productId);
     }).then(res => {
       expect(res._id).toEqual(productId);
-      expect(res.reviews.length).toBe(1);
+      expect(res.reviews[0].stars_count).not.toEqual(starsCount);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
