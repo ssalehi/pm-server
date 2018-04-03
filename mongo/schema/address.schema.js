@@ -45,6 +45,10 @@ let schema_obj = {
     type: String,
     trim: true,
   },
+  recipient_surname: {
+    type: String,
+    trim: true,
+  },
   recipient_national_id: {
     type: String,
     required: true,
