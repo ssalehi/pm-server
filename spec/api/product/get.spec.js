@@ -138,7 +138,7 @@ describe("Get products", () => {
       })
       .then(res => {
         productIds = res.map(x => x._id);
-        done();
+          done();
       })
       .catch(err => {
         console.log(err);
@@ -147,19 +147,30 @@ describe("Get products", () => {
   });
 
   it("should get specific product by its id", function (done) {
-
     this.done = done;
-
     rp({
       method: 'get',
       uri: lib.helpers.apiTestURL(`product/${productIds[0]}`),
       resolveWithFullResponse: true
     }).then(res => {
+      let obj = JSON.parse(res.body);
+       //console.log('ssssss',obj.colors);
+        //console.log('ssssss',obj.colors.name);
+     console.log('ssssss',obj.instances[0].inventory);
+
       expect(res.statusCode).toBe(200);
-
-
+      expect(obj.name).toBe('sample name 1');
+      expect(obj.instances.length).toBe(4);
+      expect(obj.instances[0].size).toBe('12');
+      expect(obj.instances[0].price).toEqual(123);
+      expect(obj.instances[0].barcode).toBe('123456789');
+      expect(obj.instances[0].inventory[0].count).toBe(2);
+      expect(obj.colors[0]._id.toString()).toBe(productColorIds[0].toString());
+      expect(obj.colors[0].name).toBe('green');
+      expect(obj.brand.name).toBe('Puma');
+      expect(obj.desc).toBe('some description for this product');
+      expect(obj.details).toBe('some details for this product');
       done();
-
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
