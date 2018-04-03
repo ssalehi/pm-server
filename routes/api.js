@@ -266,6 +266,9 @@ router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file']));
 // Cart
 router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 'body']));
 
+// Customer Address
+router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
+
 // Coupon
 router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', false, ['user', 'body']));
 router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false, ['user', 'body']));
