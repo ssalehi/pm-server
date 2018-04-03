@@ -46,7 +46,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) 
       Promise.resolve())
       .then(() => lib.Agent.adminCheck(adminOnly, req.user, req.test))
       .then(rs => {
-        if (adminOnly && rs.length < 1)
+        if (adminOnly && (!rs || rs.length < 1 ))
           return Promise.reject(error.adminOnly);
         else {
           let dynamicArgs = [];
@@ -171,6 +171,11 @@ router.delete('/product/instance/:id/:productColorId', apiResponse('Product', 'd
 router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', true, ['body']));
 router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', apiResponse('Product', 'deleteInventory', true, ['params.id', 'params.productColorId', 'params.warehouseId']));
 
+// product review
+router.put('/product/review/:pid', apiResponse('Product', 'setReview', false, ['body', 'params.pid', 'user']));
+// router.post('/product/review/:pid', apiResponse('Product', 'setReview', false, ['body', 'params.pid', 'user']));
+router.delete('/product/review/:pid/:rid', apiResponse('Product', 'unSetReview', true, ['body', 'params', 'user']));
+
 // product image
 router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next) {
 
@@ -266,11 +271,11 @@ router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file']));
 // Cart
 router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 'body']));
 
-// Customer Address
-router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
-
 // Coupon
 router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', false, ['user', 'body']));
 router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false, ['user', 'body']));
+
+// Customer Address
+router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
 
 module.exports = router;
