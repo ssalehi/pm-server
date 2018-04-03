@@ -18,44 +18,43 @@ describe('POST / Product Reviews -', () => {
       .then((res) => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-      }).then(() => {
-      return models['BrandTest'].create({name: 'Nike'})
-        .then(res => {
-          brandId = res._id;
-          //create product
-          return models['ProductTest'].create({
-            name: 'product test',
-            base_price: 1000,
-            brand: {
-              name: res.name,
-              brand_id: brandId
-            },
-          }).then(res => {
-            return models['ProductTest'].findOneAndUpdate({
-              '_id': res._id,
-              'reviews.customer_id': {$ne: mongoose.Types.ObjectId(adminObj.aid)}
-            }, {
-              $addToSet: {
-                'reviews': {
-                  'customer_id': mongoose.Types.ObjectId(adminObj.aid),
-                  'comment': 'Hello Comment'
+        return models['BrandTest'].create({name: 'Nike'})
+          .then(res => {
+            brandId = res._id;
+            //create product
+            return models['ProductTest'].create({
+              name: 'product test',
+              base_price: 1000,
+              brand: {
+                name: res.name,
+                brand_id: brandId
+              },
+            }).then(res => {
+              return models['ProductTest'].findOneAndUpdate({
+                '_id': res._id,
+                'reviews.customer_id': {$ne: mongoose.Types.ObjectId(adminObj.aid)}
+              }, {
+                $addToSet: {
+                  'reviews': {
+                    'customer_id': mongoose.Types.ObjectId(adminObj.aid),
+                    'comment': 'Hello Comment'
+                  }
                 }
-              }
-            }, {new: true}).then(res => {
-              reviewId = res.reviews[0]._id;
-              productId = res._id;
-              done();
+              }, {new: true}).then(res => {
+                reviewId = res.reviews[0]._id;
+                productId = res._id;
+                done();
+              }).catch(err => {
+                console.log('err1', err);
+                done();
+              });
             }).catch(err => {
-              console.log('err1', err);
+              console.log('err2', err);
               done();
             });
-          }).catch(err => {
-            console.log('err2', err);
-            done();
           });
-        });
-      //last then
-    }).then(() => {
+        //last then
+      }).then(() => {
       done();
     }).catch(err => {
       console.log(err);

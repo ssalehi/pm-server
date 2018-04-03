@@ -51,7 +51,6 @@ describe('PUT / Product Reviews -', () => {
     });
   });
 
-
   it('expect error when product id not valid', function (done) {
     this.done = done;
     productId = productId + 'A';
@@ -76,7 +75,70 @@ describe('PUT / Product Reviews -', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('expect update some fields same as `stars_count`', function (done) {
+  it('expect error when product id is not valid', function (done) {
+    this.done = done;
+    productId = productId + 'A';
+
+    rp({
+      method: 'PUT',
+      uri: lib.helpers.apiTestURL(`product/review/${productId}`),
+      body: {
+        brand: brandId,
+        stars_count: 4,
+        purchased_confirmed: true,
+        comment: 'good product!'
+      },
+      json: true,
+      jar: customerObj.jar,
+      resolveWithFullResponse: true
+    }).then(() => {
+      this.fail('expect error when product id is not valid');
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.invalidId.status);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('expect error when user Person not found', function (done) {
+    this.done = done;
+
+    rp({
+      method: 'PUT',
+      uri: lib.helpers.apiTestURL(`product/review/${productId}`),
+      body: {},
+      json: true,
+      // jar: customerObj.jar,
+      resolveWithFullResponse: true
+    }).then(() => {
+      this.fail('expect error when user Person not found');
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.noUser.status);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('expect error when body is empty ', function (done) {
+    this.done = done;
+
+    rp({
+      method: 'PUT',
+      uri: lib.helpers.apiTestURL(`product/review/${productId}`),
+      body: {},
+      json: true,
+      jar: customerObj.jar,
+      resolveWithFullResponse: true
+    }).then(() => {
+      this.fail('expect error when body is empty ');
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.bodyRequired.status);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('expect insert product review', function (done) {
     this.done = done;
 
     rp({
@@ -84,9 +146,31 @@ describe('PUT / Product Reviews -', () => {
       uri: lib.helpers.apiTestURL(`product/review/${productId}`),
       body: {
         brand: brandId,
-        stars_count: 5,
+        stars_count: 4,
         purchased_confirmed: true,
         comment: 'good product!'
+      },
+      json: true,
+      jar: customerObj.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['ProductTest'].findById(productId);
+    }).then(res => {
+      expect(res._id).toEqual(productId);
+      expect(res.reviews.length).toBe(1);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('expect update some fields same as `stars_count`', function (done) {
+    this.done = done;
+
+    rp({
+      method: 'PUT',
+      uri: lib.helpers.apiTestURL(`product/review/${productId}`),
+      body: {
+        stars_count: 5,
       },
       json: true,
       jar: customerObj.jar,

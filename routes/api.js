@@ -173,7 +173,7 @@ router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', ap
 
 // product review
 router.put('/product/review/:pid', apiResponse('Product', 'setReview', false, ['body', 'params.pid', 'user']));
-router.post('/product/review/:pid', apiResponse('Product', 'setReview', false, ['body', 'params.pid', 'user']));
+// router.post('/product/review/:pid', apiResponse('Product', 'setReview', false, ['body', 'params.pid', 'user']));
 router.delete('/product/review/:pid/:rid', apiResponse('Product', 'unSetReview', true, ['body', 'params', 'user']));
 
 // product image

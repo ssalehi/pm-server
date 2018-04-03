@@ -128,4 +128,29 @@ describe('POST / Product Reviews -', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
+  it('expect update some fields same as `stars_count`', function (done) {
+    this.done = done;
+
+    rp({
+      method: 'PUT',
+      uri: lib.helpers.apiTestURL(`product/review/${productId}`),
+      body: {
+        brand: brandId,
+        stars_count: 5,
+        purchased_confirmed: true,
+        comment: 'good product!'
+      },
+      json: true,
+      jar: customerObj.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['ProductTest'].findById(productId);
+    }).then(res => {
+      expect(res._id).toEqual(productId);
+      expect(res.reviews[0].stars_count).not.toEqual(starsCount);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
 });
