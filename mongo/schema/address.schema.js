@@ -28,7 +28,6 @@ let schema_obj = {
   },
   postal_code: {
     type: Number,
-    // required: true
   },
   loc: {
     type: {
@@ -42,6 +41,10 @@ let schema_obj = {
   },
   recipient_name: {
     type: String,
+  },
+  recipient_surname: {
+    type: String,
+    trim: true,
   },
   recipient_national_id: {
     type: String,

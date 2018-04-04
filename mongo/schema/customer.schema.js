@@ -64,7 +64,7 @@ let schema_obj = {
   },
   national_id: {
     type: String
-  },
+  }
 };
 
 let customerSchema = new Schema(schema_obj, {collection: 'customer', strict: true});
