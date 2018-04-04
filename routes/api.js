@@ -10,6 +10,8 @@ const multer = require('multer');
 const mongoose = require('mongoose');
 const personModel = require('../lib/person.model');
 const fs = require('fs');
+const _const = require('../lib/const.list');
+
 
 let storage = multer.diskStorage({
   destination: env.uploadPath + path.sep,
@@ -19,8 +21,8 @@ let storage = multer.diskStorage({
 });
 let upload = multer({storage: storage});
 
-function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) {
-  let args = Array.prototype.slice.call(arguments, 4);
+function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], accessLevel) {
+  let args = Array.prototype.slice.call(arguments, 5);
   let deepFind = function (obj, pathStr) {
     let path = pathStr.split('.');
     let len = path.length;
@@ -44,7 +46,12 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) 
       personModel.jwtStrategy(req)
       :
       Promise.resolve())
-      .then(() => lib.Agent.adminCheck(adminOnly, req.user, req.test))
+      .then(() => {
+        if (adminOnly)
+          return lib.Agent.accessCheck(accessLevel, req.user, req.test);
+        else
+          return Promise.resolve();
+      })
       .then(rs => {
         if (adminOnly && (!rs || rs.length < 1 ))
           return Promise.reject(error.adminOnly);
@@ -103,7 +110,7 @@ router.put('/register', apiResponse('Customer', 'registration', false, ['body'])
 router.post('/register/verify', apiResponse('Customer', 'verification', false, ['body.code', 'body.username']));
 router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
-router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user.username','body']));
+router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user.username', 'body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
 router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
@@ -114,12 +121,12 @@ router.post('/profile/image/:username/:pid', upload.single('image'), apiResponse
 router.get('/profile/image/:pid', apiResponse('Person', 'getProfileImage', false, ['params.pid']));
 router.delete('/profile/image/:pid', apiResponse('Person', 'deleteProfileImage', false, ['user.pid', 'params.pid']));
 
-router.put('/user', apiResponse('Person', 'insert', true, ['body']));
-router.get('/user', apiResponse('Person', 'select', true));
+router.put('/user', apiResponse('Person', 'insert', true, ['body'], _const.ACCESS_LEVEL.ContentManager));
+router.get('/user', apiResponse('Person', 'select', true, [], _const.ACCESS_LEVEL.ContentManager));
 // router.post('/user/:pid', apiResponse('Person', 'update', true, ['params.pid','body']));
 router.post('/user/profile', apiResponse('Person', 'setProfile', false, ['user', 'body']));
 router.get('/user/profile/:pid', apiResponse('Person', 'getPersonInfo', false, ['user.pid', 'params.pid']));
-router.delete('/user/:pid', apiResponse('Person', 'delete', true, ['params.pid']));
+router.delete('/user/:pid', apiResponse('Person', 'delete', true, ['params.pid'], _const.ACCESS_LEVEL.ContentManager));
 router.put('/user/message', apiResponse('Person', 'socketHandler', false, ['body']));
 
 
@@ -151,29 +158,28 @@ router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['us
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
-router.put('/product', apiResponse('Product', 'setProduct', true, ['body']));
-router.post('/product', apiResponse('Product', 'setProduct', true, ['body']));
-router.delete('/product/:id', apiResponse('Product', 'deleteProduct', true, ['params.id']));
-router.get('/product/color/:product_id/:color_id/', apiResponse('Product', 'getProductByColor', false, ['params.product_id', 'params.color_id']));
+router.put('/product', apiResponse('Product', 'setProduct', true, ['body'], _const.ACCESS_LEVEL.ContentManager));
+router.post('/product', apiResponse('Product', 'setProduct', true, ['body'], _const.ACCESS_LEVEL.ContentManager));
+router.delete('/product/:id', apiResponse('Product', 'deleteProduct', true, ['params.id'], _const.ACCESS_LEVEL.ContentManager));
+router.get('/product/color/:product_id/:color_id/', apiResponse('Product', 'getProductByColor', false, ['params.product_id', 'params.color_id'], _const.ACCESS_LEVEL.ContentManager));
 
 // product tag
-router.post('/product/tag/:id', apiResponse('Product', 'setTag', true, ['params.id', 'body']));
-router.delete('/product/tag/:id/:tagId', apiResponse('Product', 'deleteTag', true, ['params.id', 'params.tagId']));
+router.post('/product/tag/:id', apiResponse('Product', 'setTag', true, ['params.id', 'body'], _const.ACCESS_LEVEL.ContentManager));
+router.delete('/product/tag/:id/:tagId', apiResponse('Product', 'deleteTag', true, ['params.id', 'params.tagId'], _const.ACCESS_LEVEL.ContentManager));
 
 // product color
-router.post('/product/color', apiResponse('Product', 'setColor', true, ['body']));
-router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId']));
+router.post('/product/color', apiResponse('Product', 'setColor', true, ['body'], _const.ACCESS_LEVEL.ContentManager));
+router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId'], _const.ACCESS_LEVEL.ContentManager));
 
 // product instance
-router.put('/product/instance/:id', apiResponse('Product', 'setInstance', true, ['body', 'params.id']));
-router.post('/product/instance/:id/:pid', apiResponse('Product', 'setInstance', true, ['body', 'params.id', 'params.pid']));
-router.delete('/product/instance/:id/:productColorId', apiResponse('Product', 'deleteInstance', true, ['params.id', 'params.productColorId']));
-router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', true, ['body']));
-router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', apiResponse('Product', 'deleteInventory', true, ['params.id', 'params.productColorId', 'params.warehouseId']));
+router.put('/product/instance/:id', apiResponse('Product', 'setInstance', true, ['body', 'params.id'], _const.ACCESS_LEVEL.ContentManager));
+router.post('/product/instance/:id/:pid', apiResponse('Product', 'setInstance', true, ['body', 'params.id', 'params.pid'], _const.ACCESS_LEVEL.ContentManager));
+router.delete('/product/instance/:id/:productColorId', apiResponse('Product', 'deleteInstance', true, ['params.id', 'params.productColorId'], _const.ACCESS_LEVEL.ContentManager));
+router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', true, ['body'], _const.ACCESS_LEVEL.ContentManager));
+router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', apiResponse('Product', 'deleteInventory', true, ['params.id', 'params.productColorId', 'params.warehouseId'], _const.ACCESS_LEVEL.ContentManager));
 
 // product review
 router.put('/product/review/:pid', apiResponse('Product', 'setReview', false, ['body', 'params.pid', 'user']));
-// router.post('/product/review/:pid', apiResponse('Product', 'setReview', false, ['body', 'params.pid', 'user']));
 router.delete('/product/review/:pid/:rid', apiResponse('Product', 'unSetReview', true, ['body', 'params', 'user']));
 
 // product image
@@ -201,7 +207,7 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
 });
 
 
-router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file']));
+router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], _const.ACCESS_LEVEL.ContentManager));
 
 // Product color
 router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
@@ -209,32 +215,31 @@ router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false
 
 // Collection
 router.get('/collection/:cid', apiResponse('Collection', 'getCollection', false, ['params.cid']));
-router.get('/collection/product/manual/:cid', apiResponse('Collection', 'getCollectionManualProducts', true, ['params.cid']));
+router.get('/collection/product/manual/:cid', apiResponse('Collection', 'getCollectionManualProducts', true, ['params.cid'], _const.ACCESS_LEVEL.ContentManager));
 router.get('/collection/product/:cid', apiResponse('Collection', 'getCollectionProducts', false, ['params.cid']));
-router.get('/collection/tag/:cid', apiResponse('Collection', 'getCollectionTags', true, ['params.cid']));
-router.get('/collection/type/:cid', apiResponse('Collection', 'getCollectionTypes', true, ['params.cid']));
+router.get('/collection/tag/:cid', apiResponse('Collection', 'getCollectionTags', true, ['params.cid'], _const.ACCESS_LEVEL.ContentManager));
+router.get('/collection/type/:cid', apiResponse('Collection', 'getCollectionTypes', true, ['params.cid'], _const.ACCESS_LEVEL.ContentManager));
 
-router.put('/collection', apiResponse('Collection', 'setCollection', true, ['body']));
+router.put('/collection', apiResponse('Collection', 'setCollection', true, ['body'], _const.ACCESS_LEVEL.ContentManager));
 
-router.post('/collection/:cid', apiResponse('Collection', 'setCollection', true, ['body', 'params.cid']));
-router.post('/collection/product/:cid', apiResponse('Collection', 'setProductToCollection', true, ['params.cid', 'body.productId']));
-router.post('/collection/tag/:cid', apiResponse('Collection', 'setTagToCollection', true, ['params.cid', 'body.tagId']));
-router.post('/collection/type/:cid', apiResponse('Collection', 'setTypeToCollection', true, ['params.cid', 'body.typeId']));
+router.post('/collection/:cid', apiResponse('Collection', 'setCollection', true, ['body', 'params.cid'], _const.ACCESS_LEVEL.ContentManager));
+router.post('/collection/product/:cid', apiResponse('Collection', 'setProductToCollection', true, ['params.cid', 'body.productId'], _const.ACCESS_LEVEL.ContentManager));
+router.post('/collection/tag/:cid', apiResponse('Collection', 'setTagToCollection', true, ['params.cid', 'body.tagId'], _const.ACCESS_LEVEL.ContentManager));
+router.post('/collection/type/:cid', apiResponse('Collection', 'setTypeToCollection', true, ['params.cid', 'body.typeId'], _const.ACCESS_LEVEL.ContentManager));
 router.post('/collection/app/products', apiResponse('Collection', 'getProductsByPageAddress', false, ['body.address']));
 
-router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', true, ['params.cid']));
-router.delete('/collection/type/:cid/:tid', apiResponse('Collection', 'deleteTypeFromCollection', true, ['params.cid', 'params.tid']));
-router.delete('/collection/tag/:cid/:tid', apiResponse('Collection', 'deleteTagFromCollection', true, ['params.cid', 'params.tid']));
-router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', true, ['params.cid', 'params.pid']));
+router.delete('/collection/:cid', apiResponse('Collection', 'deleteCollection', true, ['params.cid'], _const.ACCESS_LEVEL.ContentManager));
+router.delete('/collection/type/:cid/:tid', apiResponse('Collection', 'deleteTypeFromCollection', true, ['params.cid', 'params.tid'], _const.ACCESS_LEVEL.ContentManager));
+router.delete('/collection/tag/:cid/:tid', apiResponse('Collection', 'deleteTagFromCollection', true, ['params.cid', 'params.tid'], _const.ACCESS_LEVEL.ContentManager));
+router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', true, ['params.cid', 'params.pid'], _const.ACCESS_LEVEL.ContentManager));
 
 
 // Page
 router.get('/page/:id', apiResponse('Page', 'getPage', false, ['params.id']));
-router.put('/page', apiResponse('Page', 'setPage', true, ['body']));
-router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.id']));
-router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id']));
+router.put('/page', apiResponse('Page', 'setPage', true, ['body'], _const.ACCESS_LEVEL.ContentManager));
+router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.id'], _const.ACCESS_LEVEL.ContentManager));
+router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id'], _const.ACCESS_LEVEL.ContentManager));
 router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address']));
-
 
 
 // Search
@@ -266,7 +271,7 @@ router.use('/uploadData', function (req, res, next) {
 
 });
 
-router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file']));
+router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], _const.ACCESS_LEVEL.ContentManager));
 
 // Cart
 router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 'body']));
