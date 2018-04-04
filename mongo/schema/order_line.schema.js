@@ -9,7 +9,6 @@ let schema_obj = {
   paid_price: {
     type: Number,
     required: true,
-
     default: 0
   },
   adding_time: Date,
