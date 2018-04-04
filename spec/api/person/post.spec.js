@@ -3,6 +3,7 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const moment = require('moment');
+const _const = require('../../../lib/const.list');
 
 describe('Person POST API', () => {
   beforeEach(done => {
@@ -10,26 +11,52 @@ describe('Person POST API', () => {
       .then(res => {
         let obj = new lib.Agent(true);
         return obj.save({
-          first_name: 'admin',
-          surname: 'admin',
-          username: 'admin@gmail.com',
+          first_name: 'cm',
+          surname: 'cm',
+          username: 'cm@gmail.com',
           secret: '123456',
           mobile_no: '01256993730',
           gender: 'm',
-          access_level: 0,
+          access_level: _const.ACCESS_LEVEL.ContentManager,
           is_verified: true,
         });
       })
       .then(res => {
         let obj = new lib.Agent(true);
         return obj.save({
-          first_name: 's',
-          surname: 'c',
+          first_name: 'sm',
+          surname: 'sm',
+          username: 'sm@gmail.com',
+          secret: '123456',
+          mobile_no: '09391999852',
+          gender: 'f',
+          access_level: _const.ACCESS_LEVEL.SalesManager,
+          is_verified: true,
+        });
+      })
+      .then(res => {
+        let obj = new lib.Agent(true);
+        return obj.save({
+          first_name: 'sc',
+          surname: 'sc',
           username: 'sc@gmail.com',
           secret: '123456',
           mobile_no: '09391999852',
           gender: 'f',
-          access_level: 1,
+          access_level: _const.ACCESS_LEVEL.ShopClerk,
+          is_verified: true,
+        });
+      })
+      .then(res => {
+        let obj = new lib.Agent(true);
+        return obj.save({
+          first_name: 'ad',
+          surname: 'da',
+          username: 'da@gmail.com',
+          secret: '123456',
+          mobile_no: '09391999852',
+          gender: 'f',
+          access_level: _const.ACCESS_LEVEL.DeliveryAgent,
           is_verified: true,
         });
       })
@@ -61,13 +88,14 @@ describe('Person POST API', () => {
       });
   });
 
-  it('admin should login', function (done) {
+  it('content manager should login', function (done) {
     this.done = done;
     rp({
       method: 'post',
       body: {
-        username: 'admin@gmail.com',
+        username: 'cm@gmail.com',
         password: '123456',
+        loginType: _const.ACCESS_LEVEL.ContentManager
       },
       json: true,
       uri: lib.helpers.apiTestURL('agent/login'),
@@ -75,21 +103,45 @@ describe('Person POST API', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe('admin@gmail.com');
+        expect(res.body.username).toBe('cm@gmail.com');
         expect(res.body.personType).toBe('agent');
-        expect(res.body.access_level).toBe(0);
+        expect(res.body.access_level).toBe(_const.ACCESS_LEVEL.ContentManager);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('shipping clerk should login', function (done) {
+  it('sales manager should login', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        username: 'sm@gmail.com',
+        password: '123456',
+        loginType: _const.ACCESS_LEVEL.SalesManager
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('agent/login'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        expect(res.body.username).toBe('sm@gmail.com');
+        expect(res.body.personType).toBe('agent');
+        expect(res.body.access_level).toBe(_const.ACCESS_LEVEL.SalesManager);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('shop clerk manager should login', function (done) {
     this.done = done;
     rp({
       method: 'post',
       body: {
         username: 'sc@gmail.com',
         password: '123456',
+        loginType: _const.ACCESS_LEVEL.ShopClerk
       },
       json: true,
       uri: lib.helpers.apiTestURL('agent/login'),
@@ -99,7 +151,30 @@ describe('Person POST API', () => {
         expect(res.statusCode).toBe(200);
         expect(res.body.username).toBe('sc@gmail.com');
         expect(res.body.personType).toBe('agent');
-        expect(res.body.access_level).toBe(1);
+        expect(res.body.access_level).toBe(_const.ACCESS_LEVEL.ShopClerk);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('delivery agent should login', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        username: 'da@gmail.com',
+        password: '123456',
+        loginType: _const.ACCESS_LEVEL.DeliveryAgent
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('agent/login'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        expect(res.body.username).toBe('da@gmail.com');
+        expect(res.body.personType).toBe('agent');
+        expect(res.body.access_level).toBe(_const.ACCESS_LEVEL.DeliveryAgent);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -173,7 +248,12 @@ describe('Person POST API', () => {
 
   it('normal user should be able to verify his phone number', function (done) {
     this.done = done;
-    (models['CustomerTest'].update({'username': 'aa@gmail.com'}, {$set: {verification_code: '123456', is_verified: false}}))
+    (models['CustomerTest'].update({'username': 'aa@gmail.com'}, {
+      $set: {
+        verification_code: '123456',
+        is_verified: false
+      }
+    }))
       .then(res => {
         return rp({
           method: 'post',
@@ -207,7 +287,12 @@ describe('Person POST API', () => {
   });
 
   it('should reject when code not found in registerVerification collection', function (done) {
-    (models['CustomerTest'].update({'username': 'aa@gmail.com'}, {$set: {verification_code: '123465', is_verified: false}}))
+    (models['CustomerTest'].update({'username': 'aa@gmail.com'}, {
+      $set: {
+        verification_code: '123465',
+        is_verified: false
+      }
+    }))
       .then(res => {
         return rp({
           method: 'post',
@@ -232,7 +317,12 @@ describe('Person POST API', () => {
   });
 
   it('should get error when username is not defined', function (done) {
-    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {$set: {verification_code: '123456', is_verified: false}}))
+    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {
+      $set: {
+        verification_code: '123456',
+        is_verified: false
+      }
+    }))
       .then(res => {
         return rp({
           method: 'post',
@@ -256,7 +346,12 @@ describe('Person POST API', () => {
   });
 
   it('should get error when code is not defined', function (done) {
-    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {$set: {verification_code: '123465', is_verified: false}}))
+    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {
+      $set: {
+        verification_code: '123465',
+        is_verified: false
+      }
+    }))
       .then(res => {
         return rp({
           method: 'post',
@@ -281,7 +376,12 @@ describe('Person POST API', () => {
 
   it('should apply for new code', function (done) {
     this.done = done;
-    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {$set: {verification_code: '123456', is_verified: false}}))
+    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {
+      $set: {
+        verification_code: '123456',
+        is_verified: false
+      }
+    }))
       .then(res => {
         return rp({
           method: 'post',
