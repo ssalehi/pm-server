@@ -126,7 +126,7 @@ describe('GET Collection', () => {
       });
   });
 
-  xit('should return collection info', function (done) {
+  it('should return collection info', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -143,7 +143,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should return collection types', function (done) {
+  it('should return collection types', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -160,7 +160,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should return collection tags', function (done) {
+  it('should return collection tags', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -197,7 +197,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should return collection products', function (done) {
+  it('should return collection products', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -224,7 +224,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should return app page products', function (done) {
+  it('should return app page products', function (done) {
     this.done = done;
 
     let appPage = new models['PageTest']({
@@ -270,7 +270,7 @@ describe('GET Collection', () => {
       });
   });
 
-  xit('should get error when request for products of page which is not for app', function (done) {
+  it('should get error when request for products of page which is not for app', function (done) {
     this.done = done;
 
     let appPage = new models['PageTest']({
@@ -307,7 +307,7 @@ describe('GET Collection', () => {
         }).catch(lib.helpers.errorHandler.bind(this));
       });
   });
-  xit('should get error when request for products of page which is not defined', function (done) {
+  it('should get error when request for products of page which is not defined', function (done) {
     rp({
       method: 'POST',
       uri: lib.helpers.apiTestURL(`collection/app/products`),
@@ -328,7 +328,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should get error when request for products of page which have no page info collection id', function (done) {
+  it('should get error when request for products of page which have no page info collection id', function (done) {
     this.done = done;
 
     let appPage = new models['PageTest']({
@@ -365,7 +365,7 @@ describe('GET Collection', () => {
         }).catch(lib.helpers.errorHandler.bind(this));
       });
   });
-  xit('should get error when cid is not valid', function (done) {
+  it('should get error when cid is not valid', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -384,7 +384,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should get error when cid is not valid', function (done) {
+  it('should get error when cid is not valid', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -403,7 +403,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should get error when admin is not calling the api', function (done) {
+  it('should get error when admin is not calling the api', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -422,7 +422,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should get error when cid is not valid', function (done) {
+  it('should get error when cid is not valid', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -441,7 +441,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should get error when admin is not calling the api', function (done) {
+  it('should get error when admin is not calling the api', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -460,7 +460,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should get error when cid is not valid', function (done) {
+  it('should get error when cid is not valid', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -479,7 +479,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should get error when admin is not calling the api', function (done) {
+  it('should get error when admin is not calling the api', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -498,7 +498,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should get error when cid is not valid', function (done) {
+  it('should get error when cid is not valid', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -517,7 +517,7 @@ describe('GET Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-  xit('should get error when admin is not calling the api', function (done) {
+  it('should get error when admin is not calling the api', function (done) {
     this.done = done;
     rp({
       method: 'get',
