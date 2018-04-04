@@ -286,6 +286,30 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
+  it('should get error when sales manager wants to login as content manager', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        username: 'sm@gmail.com',
+        password: '123456',
+        loginType: _const.ACCESS_LEVEL.ContentManager
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('agent/login'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('sales manger logined as content manager');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noUser.status);
+        expect(err.error).toContain(error.noUser.message);
+        done();
+      });
+  });
+
   it('should reject when code not found in registerVerification collection', function (done) {
     (models['CustomerTest'].update({'username': 'aa@gmail.com'}, {
       $set: {
