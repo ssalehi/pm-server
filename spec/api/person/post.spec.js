@@ -83,7 +83,7 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('shipping clerk should login', function (done) {
+  xit('shipping clerk should login', function (done) {
     this.done = done;
     rp({
       method: 'post',
@@ -105,7 +105,7 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('normal user cannot login in agent domain', function (done) {
+  xit('normal user cannot login in agent domain', function (done) {
     rp({
       method: 'post',
       body: {
@@ -126,7 +126,7 @@ describe('Person POST API', () => {
       });
   });
 
-  it('normal user should login', function (done) {
+  xit('normal user should login', function (done) {
     this.done = done;
     rp({
       method: 'post',
@@ -148,7 +148,7 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('normal user should login from app', function (done) {
+  xit('normal user should login from app', function (done) {
     this.done = done;
     rp({
       method: 'post',
@@ -171,7 +171,7 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('normal user should be able to verify his phone number', function (done) {
+  xit('normal user should be able to verify his phone number', function (done) {
     this.done = done;
     (models['CustomerTest'].update({'username': 'aa@gmail.com'}, {$set: {verification_code: '123456', is_verified: false}}))
       .then(res => {
@@ -206,7 +206,7 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should reject when code not found in registerVerification collection', function (done) {
+  xit('should reject when code not found in registerVerification collection', function (done) {
     (models['CustomerTest'].update({'username': 'aa@gmail.com'}, {$set: {verification_code: '123465', is_verified: false}}))
       .then(res => {
         return rp({
@@ -231,7 +231,7 @@ describe('Person POST API', () => {
       });
   });
 
-  it('should get error when username is not defined', function (done) {
+  xit('should get error when username is not defined', function (done) {
     (models['CustomerTest'].update({username: 'aa@gmail.com'}, {$set: {verification_code: '123456', is_verified: false}}))
       .then(res => {
         return rp({
@@ -255,7 +255,7 @@ describe('Person POST API', () => {
       });
   });
 
-  it('should get error when code is not defined', function (done) {
+  xit('should get error when code is not defined', function (done) {
     (models['CustomerTest'].update({username: 'aa@gmail.com'}, {$set: {verification_code: '123465', is_verified: false}}))
       .then(res => {
         return rp({
@@ -279,7 +279,7 @@ describe('Person POST API', () => {
       });
   });
 
-  it('should apply for new code', function (done) {
+  xit('should apply for new code', function (done) {
     this.done = done;
     (models['CustomerTest'].update({username: 'aa@gmail.com'}, {$set: {verification_code: '123456', is_verified: false}}))
       .then(res => {
@@ -304,7 +304,7 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it("should set mobile number for user who login with google", function (done) {
+  xit("should set mobile number for user who login with google", function (done) {
     this.done = done;
     (new models['CustomerTest']({
       first_name: 'ABC',
@@ -341,7 +341,7 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it("should get error when username is not set (in setting mobile number)", function (done) {
+  xit("should get error when username is not set (in setting mobile number)", function (done) {
     this.done = done;
     (new models['CustomerTest']({
       first_name: 'ABC',
@@ -372,7 +372,7 @@ describe('Person POST API', () => {
       });
   });
 
-  it("should get error when mobile number is not set (in setting mobile number)", function (done) {
+  xit("should get error when mobile number is not set (in setting mobile number)", function (done) {
     this.done = done;
     (new models['CustomerTest']({
       first_name: 'ABC',
@@ -403,7 +403,7 @@ describe('Person POST API', () => {
       });
   });
 
-  it("should get error when user with passed username not found (in setting mobile number)", function (done) {
+  xit("should get error when user with passed username not found (in setting mobile number)", function (done) {
     this.done = done;
     (new models['CustomerTest']({
       first_name: 'ABC',
@@ -435,7 +435,7 @@ describe('Person POST API', () => {
       });
   });
 
-  it("should not able to set mobile number for user who is verified (by registration api)", function (done) {
+  xit("should not able to set mobile number for user who is verified (by registration api)", function (done) {
     this.done = done;
     (new models['CustomerTest']({
       first_name: 'ABC',
