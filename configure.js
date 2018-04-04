@@ -41,7 +41,37 @@ db.dbIsReady()
 
   })
   .then(() => {
-    console.log('-> ', 'default admin has been added!');
+    console.log('-> ', 'default content manager has been added!');
+
+    return new Promise((resolve, reject) => {
+      env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
+        if (err) return next(err);
+
+        env.bcrypt.hash('admin@123', salt, null, function (err, hash) {
+          if (err) reject(err);
+
+          resolve(hash)
+        });
+      });
+    })
+  })
+
+  .then(hash => {
+    let query = {},
+      update = {
+        username: 'sm@persianmode.com',
+        secret: hash,
+        access_level: _const.ACCESS_LEVEL.SalesManager,
+        first_name: 'Sales Manager',
+        surname: 'Sales Manager',
+      },
+      options = {upsert: true, new: true, setDefaultsOnInsert: true};
+
+    return models['Agent'].findOneAndUpdate(query, update, options);
+
+  })
+  .then(() => {
+    console.log('-> ', 'default sales manger has been added!');
     PLACEMENTS = JSON.parse(fs.readFileSync('placements.json', 'utf8'));
     pKeys = Object.keys(PLACEMENTS);
     return Promise.all(pKeys.map((r, i) => {

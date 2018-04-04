@@ -1,4 +1,4 @@
-const Schema = require('m ongoose').Schema;
+const Schema = require('mongoose').Schema;
 let schema_obj = {
   warehouse_id: Schema.Types.ObjectId,
   status: Number,
