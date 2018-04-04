@@ -146,7 +146,8 @@ router.get('/dictionary', apiResponse('Dictionary', 'getDictionaries', false, []
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 
-// Brands
+// Warehouses
+router.get('/warehouse/all', apiResponse('Warehouse', 'getAllWarehouses', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 
 // Customer

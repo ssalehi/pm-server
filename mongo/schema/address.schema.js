@@ -21,10 +21,10 @@ let schema_obj = {
     trim: true,
   },
   unit: {
-    type: Number,
+    type: String,
   },
   no: {
-    type: Number,
+    type: String,
   },
   postal_code: {
     type: Number,
@@ -39,20 +39,16 @@ let schema_obj = {
   recipient_title: {
     type: String,
     enum: ['m', 'f'],
-    required: true,
   },
   recipient_name: {
     type: String,
-    trim: true,
   },
   recipient_national_id: {
     type: String,
-    required: true,
     trim: true,
   },
   recipient_mobile_no: {
     type: String,
-    required: true,
     trim: true,
   }
 };
