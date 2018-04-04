@@ -28,7 +28,6 @@ let schema_obj = {
   },
   postal_code: {
     type: Number,
-    // required: true
   },
   loc: {
     type: {
