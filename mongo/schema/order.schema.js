@@ -1,4 +1,4 @@
-const Schema = require('mongoose').Schema;
+ const Schema = require('mongoose').Schema;
 const OrderLineSchema = require('./order_line.schema');
 
 let schema_obj = {
@@ -31,6 +31,11 @@ let schema_obj = {
     default: false,
   },
   order_line_ids: [OrderLineSchema],
+  // process: [
+  //   {
+  //     timestamp:
+  //   }
+  // ]
 };
 
 
