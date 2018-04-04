@@ -89,7 +89,10 @@ describe("Post product basics", () => {
       expect(res.length).toBe(1);
       expect(res[0].name).toBe('changed name');
       expect(res[0].base_price).toBe(50000);
-      done();
+      expect(res[0].desc).toBe('some description for this product');
+      expect(res[0].details).toBe('some details for this product');
+
+        done();
 
     })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -128,9 +131,7 @@ xdescribe("Post product colors & images", () => {
             brand_id: brandId
           },
           base_price: 30000,
-          desc: 'some description for this product',
-          details: 'some details for this product',
-        });
+          });
         return product.save();
       })
       .then(res => {
@@ -595,7 +596,9 @@ describe("Post product instances", () => {
         productColorId: newProductColorId,
         size: 10,
         price: 60000,
-        barcode: 1000
+        barcode: 1000,
+        desc: 'some description for this product',
+        details: 'some details for this product',
       },
       jar: adminObj.jar,
       json: true,
@@ -612,6 +615,8 @@ describe("Post product instances", () => {
       expect(res[0].instances[0].size).toBe('10');
       expect(res[0].instances[0].price).toEqual(60000);
       expect(res[0].instances[0].barcode).toEqual('1000');
+      expect(res[0].desc).toBe('some description for this product');
+      expect(res[0].details).toBe('some details for this product');
       done();
 
     })
