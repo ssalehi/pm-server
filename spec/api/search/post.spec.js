@@ -3,7 +3,6 @@ const lib = require('../../../lib');
 const rp = require('request-promise');
 const mongoose = require('mongoose');
 const _ = require('lodash');
-let forEach = require('async-foreach').forEach;
 
 xdescribe('POST Search Collection', () => {
 
@@ -424,51 +423,80 @@ xdescribe('POST Suggest Collection', () => {
 });
 
 describe('POST Search Order', () => {
-
   let customers = [];
+  let customerIds = [];
+  let orders = [];
+  let products = [];
+  let productIds = [];
+  let _brand = {};
+  let productTypeIdsNames = [];
   let transactionIds = [];
   let addressIds = [];
+  let productTypeArr = [{name: 'Shoes'}, {name: 'Clothes'}];
   beforeEach((done) => {
     lib.dbHelpers
       .dropAll()
       .then(() => {
-        // loop for create customer object, transactions, addresses
-        for (let i = 0; i < 20; i++) {
-          let addressId = mongoose.Types.ObjectId();
-          let transactionId = mongoose.Types.ObjectId();
+        return models['BrandTest'].create({name: 'Nike'});
+      })
+      .then((res) => {
+        _brand = {name: res.name, brand_id: res._id};
+
+        return models['ProductTypeTest'].insertMany(productTypeArr);
+      })
+      .then((res) => {
+        productTypeIdsNames = res.map(x => {
+          return {name: x.name, product_type_id: x._id};
+        });
+
+        // create array customers
+        for (let i = 0; i < 10; i++) {
+          transactionIds.push(mongoose.Types.ObjectId());
+          addressIds.push(mongoose.Types.ObjectId());
           let customer = {
             first_name: Math.random().toString(36).substring(7),
             surname: Math.random().toString(36).substring(7),
             username: Math.random().toString(36).substring(7) + '@yahoo.com',
-            is_verified: _.sample([true, false])
+            is_verified: _.sample([true, false]),
+            addresses: [
+              {city: Math.random().toString(36).substring(7), street: Math.random().toString(36).substring(7)},
+              {city: Math.random().toString(36).substring(7), street: Math.random().toString(36).substring(7)},
+            ]
           };
           customers.push(customer);
-          transactionIds.push(addressId);
-          addressIds.push(transactionId);
         }
-        // loop async for create order with customerId
-        forEach(customers, function (item, index, arr) {
-          let done = this.async();
-          models['CustomerTest'].create(item)
-            .then((customer) => {
-              let cId = customer._id;
-              models['OrderTest'].create({
-                customer_id: cId,
-                transaction_id: Math.random() >= 0.5 ? null : transactionIds[index],
-                address_id: Math.random() >= 0.5 ? null : addressIds[index],
-                total_amount: Math.floor(Math.random() * Math.floor(20)),
-                order_time: new Date(),
-                is_cart: _.sample([false, true])
-              });
-              done();
-              //end customer promise
-            });
-        }, function (notAborted, arr) {
-          if (!notAborted) {
-            console.log("done", notAborted, arr);
-          }
-        });
-        // end foreach
+        return models['CustomerTest'].insertMany(customers);
+      })
+      .then(res => {
+        customerIds = res.map(x => x._id);
+        for (let i = 0; i < 10; i++) {
+          let product = {
+            name: Math.random().toString(36).substring(7),
+            productType: Math.random() >= 0.5 ? productTypeIdsNames[0] :productTypeIdsNames[1],
+            brand: _brand,
+            base_price: Math.floor(Math.random() * Math.floor(5000))
+          };
+          products.push(product);
+        }
+
+
+        return models['ProductTest'].insertMany(products);
+      })
+      .then((res) => {
+        productIds = res.map(x => x._id);
+        for (let i = 0; i < 10; i++) {
+          let order = {
+            customer_id: customerIds[i],
+            transaction_id: Math.random() >= 0.5 ? null : transactionIds[i],
+            total_amount:  Math.floor(Math.random() * Math.floor(20)),
+            address_id: Math.random() >= 0.5 ? null : addressIds[i],
+            order_time: new Date(),
+            is_cart: _.sample([false, true]),
+            order_line_ids: [{product_id: productIds[i], paid_price: Math.floor(Math.random() * Math.floor(5000))}]
+          };
+          orders.push(order);
+        }
+        return models['OrderTest'].insertMany(orders);
       })
       .then(() => {
         done();
@@ -497,8 +525,9 @@ describe('POST Search Order', () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
       oldResult = res.body;
-      return models['OrderTest'].find({$and: [{is_cart: false}, {transaction_id: {$ne: null}}, {address_id: {$ne: null}}]});
+      return models['OrderTest'].find({$and: [{is_cart: false}, {transaction_id: {$ne: null}}, {address_id: {$ne: null}}]}).lean();
     }).then(res => {
+      console.log(oldResult);
       expect(oldResult.total).toBe(res.length);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
