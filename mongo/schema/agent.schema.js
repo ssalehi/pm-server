@@ -23,6 +23,11 @@ let schema_obj = {
   surname: {
     type: String,
     trim: true,
+  },
+  active: { // weather user can system or not
+    type: Boolean,
+    default: true,
+    required: true
   }
 };
 

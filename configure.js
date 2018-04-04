@@ -31,9 +31,9 @@ db.dbIsReady()
       update = {
         username: 'admin@persianmode.com',
         secret: hash,
-        access_level: _const.ACCESS_LEVEL.Admin,
-        first_name: 'Admin',
-        surname: 'Admin',
+        access_level: _const.ACCESS_LEVEL.ContentManager,
+        first_name: 'ContentManager',
+        surname: 'ContentManager',
       },
       options = {upsert: true, new: true, setDefaultsOnInsert: true};
 

@@ -39,7 +39,7 @@ let schema_obj = {
     enum: ['m', 'f'],
     // required: true,
   },
-  verification_code: {
+  verification_code: { // weather user has verification code or not
     type: Number,
   },
   is_verified: {
@@ -57,9 +57,14 @@ let schema_obj = {
   preferred_tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
   orders: [{type: Schema.Types.ObjectId, ref: 'Order'}],
   addresses:[addressSchema],
+  active: { // weather user can system or not
+    type: Boolean,
+    default: true,
+    required: true
+  },
   national_id: {
     type: String
-  },
+  }
 };
 
 let customerSchema = new Schema(schema_obj, {collection: 'customer', strict: true});
