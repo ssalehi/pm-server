@@ -80,7 +80,7 @@ describe('GET Customer', () => {
       expect(res.addresses.length).toBe(1);
       if (res.addresses.length){
         ['recipient_title', 'recipient_name', 'recipient_national_id', 'no', 'unit', 'street', 'postal_code', 'city', 'province'].forEach(r => {
-          expect(res.addresses[0][r]).toBe(custData.addresses[0][r]);
+          expect(res.addresses[0][r]).toBe(custData.addresses[0][r] + '');
         })
 
 

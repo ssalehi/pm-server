@@ -1,5 +1,6 @@
  const Schema = require('mongoose').Schema;
 const OrderLineSchema = require('./order_line.schema');
+const TicketSchema = require('./ticket.schema');
 
 let schema_obj = {
   customer_id: {
@@ -31,11 +32,7 @@ let schema_obj = {
     default: false,
   },
   order_line_ids: [OrderLineSchema],
-  // process: [
-  //   {
-  //     timestamp:
-  //   }
-  // ]
+  tickets: [TicketSchema]
 };
 
 
