@@ -46,7 +46,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = []) 
       Promise.resolve())
       .then(() => lib.Agent.adminCheck(adminOnly, req.user, req.test))
       .then(rs => {
-        if (adminOnly && rs.length < 1)
+        if (adminOnly && (!rs || rs.length < 1 ))
           return Promise.reject(error.adminOnly);
         else {
           let dynamicArgs = [];
@@ -128,7 +128,7 @@ router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
 
 
 // Types
-router.get('/productType', apiResponse('ProductType', 'getTyp es', false, []));
+router.get('/productType', apiResponse('ProductType', 'getTypes', false, []));
 
 // Colors
 router.get('/color', apiResponse('Color', 'getColors', false, []));
@@ -265,6 +265,10 @@ router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file']));
 
 // Cart
 router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 'body']));
+
+// Coupon
+router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', false, ['user', 'body']));
+router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false, ['user', 'body']));
 
 // Customer Address
 router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
