@@ -1046,53 +1046,53 @@ xdescribe('POST Order (Delete Orderlines)', () => {
 
 
 describe('POST Order_Ticket (New Ticket)', () => {
-    let existingOrderId;
-    let customerObj = {
-        cid: null,
+    let adminObj = {
+        aid: null,
         jar: null
     };
     beforeEach(done => {
         lib.dbHelpers.dropAll()
-            .then(() => lib.dbHelpers.addAndLoginCustomer('sa', '123', {
-                first_name: 's',
-                surname: 'v',
+            .then(() => lib.dbHelpers.addAndLoginAgent('admin',  {
+                order_id: 123,
+                address_id: 123,
+                transaction_id: 123,
+                is_cart: false
             }))
             .then(res => {
-                customerObj.cid = res.cid;
-                customerObj.jar = res.rpJar;
-            })
+                adminObj.aid = res.aid;
+                adminObj.jar = res.rpJar;
             })
             .catch(err => {
                 console.log(err);
                 done();
-            })
-
-    it('should create an ticket and add it to a new order (for customer)', function (done) {
-        this.done = done;
-        rp({
-            method: 'post',
-            uri: lib.helpers.apiTestURL('order/ticket'),
-            body: { order_id: '123',
-                    address_id: '321',
-                    transaction_id: '',
-                    is_cart: false
-                  },
-        {   warehouse_id: 1
-            status: 2,
-            desc: 'Order Accepted',
-            is_processed: false
+            });
+        });
+    it('should create a ticket and add it to a new order (for customer)', function (done) {
+      this.done = done;
+      rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL('order/ticket'),
+        body: {
+          order_id: body.order_id,
+          address_id: body.address_id,
+          transaction_id: body.transaction_id,
+          is_cart: false,
+          warehouse_id: 1,
+          status: 2,
+          desc: 'Order Accepted',
+          is_processed: false
         }
-            .then(res => {
-                expect(res.statusCode).toBe(200);
-                return models['OrderTest'].find({_id: res.body._id}).lean();
-            })
-            .then(res => {
-                expect(res.length).toEqual(1);
-                expect(res[0].warehouse_id).toBe(1);
-                expect(res[0]).body.status).toBe(2);
-                expect(res[0].desc).toBe('Order Accepted');
-                expect(res[0].is_processed).toBe(false);
-                done();
-            })
-            .catch(lib.helpers.errorHandler.bind(this));
+      }).then(res => {
+            expect(res.statusCode).toBe(200);
+            return models['OrderTest'].find({_id: res.body._id}).lean();
+          })
+          .then(res => {
+            expect(res.length).toEqual(1);
+            expect(res[0].warehouse_id).toBe(1);
+            expect(res[0].body.status).toBe(2);
+            expect(res[0].desc).toBe('Order Accepted');
+            expect(res[0].is_processed).toBe(false);
+            done();
+          }).catch(lib.helpers.errorHandler.bind(this));
     });
+});
