@@ -146,7 +146,7 @@ router.get('/dictionary', apiResponse('Dictionary', 'getDictionaries', false, []
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 
-// Brands
+// Warehouse
 router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 
 // Customer
@@ -243,8 +243,8 @@ router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.addre
 
 
 // Search
-router.post('/search/:className', apiResponse('Search', 'search', false, ['params.className', 'body']));
-router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body']));
+router.post('/search/:className', apiResponse('Search', 'search', false, ['params.className', 'body', 'user']));
+router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body', 'user']));
 
 // upload Data
 router.use('/uploadData', function (req, res, next) {
