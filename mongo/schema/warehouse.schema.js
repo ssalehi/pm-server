@@ -16,6 +16,10 @@ let schema_obj = {
     type: String,
     required: true,
   },
+  has_customer_pickup: {
+    type: Boolean,
+    default: false,
+  },
   is_center: {
     type: Boolean,
     required: true,
