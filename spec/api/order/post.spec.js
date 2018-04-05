@@ -3,6 +3,7 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
+const _const = require('../../../lib/const.list');
 
 xdescribe('POST Order (New Order)', () => {
 
@@ -1046,45 +1047,54 @@ xdescribe('POST Order (Delete Orderlines)', () => {
 
 
 describe('POST Order_Ticket (New Ticket)', () => {
-    let adminObj = {
+    let salesObj = {
         aid: null,
         jar: null
     };
+    let order;
     beforeEach(done => {
         lib.dbHelpers.dropAll()
-            .then(() => lib.dbHelpers.addAndLoginAgent('admin',  {
-                order_id: 123,
-                address_id: 123,
-                transaction_id: 123,
-                is_cart: false
-            }))
+            .then(() => lib.dbHelpers.addAndLoginAgent('admin', _const.ACCESS_LEVEL.SalesManager))
             .then(res => {
-                adminObj.aid = res.aid;
-                adminObj.jar = res.rpJar;
+                salesObj.aid = res.aid;
+                salesObj.jar = res.rpJar;
+                return models['OrderTest'].update({},{
+                total_amount: 2,
+                order_time: new Date(),
+                transaction_id: mongoose.Types.ObjectId(),
+                is_cart: false,
+                address_id: mongoose.Types.ObjectId()
+              } , {upsert: true, new: true})
             })
+          .then(res =>{
+            order = res;
+            console.log('aaaaa',order);
+            done();
+          })
             .catch(err => {
                 console.log(err);
                 done();
             });
         });
+
     it('should create a ticket and add it to a new order (for customer)', function (done) {
       this.done = done;
       rp({
         method: 'post',
         uri: lib.helpers.apiTestURL('order/ticket'),
         body: {
-          order_id: body.order_id,
-          address_id: body.address_id,
-          transaction_id: body.transaction_id,
-          is_cart: false,
+          order_id: order._id,
           warehouse_id: 1,
           status: 2,
           desc: 'Order Accepted',
-          is_processed: false
-        }
+        },
+        json: true,
+        resolveWithFullResponse: true,
+        jar: salesObj.jar
+
       }).then(res => {
             expect(res.statusCode).toBe(200);
-            return models['OrderTest'].find({_id: res.body._id}).lean();
+           return models['OrderTest'].find({order_id: order._id,}).lean();
           })
           .then(res => {
             expect(res.length).toEqual(1);
