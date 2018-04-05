@@ -14,7 +14,6 @@ let PLACEMENTS = null;
 let pKeys = [];
 let _hash;
 
-let central_warehouse_id = new mongoose.Types.ObjectId();
 
 db.dbIsReady()
   .then(() => {
@@ -44,7 +43,6 @@ db.dbIsReady()
           street: 'مقدس اردبیلی'
         }
       }, {
-        _id: central_warehouse_id,
         name: 'انبار مرکزی',
         phone: 'نا مشخص',
         address: {
