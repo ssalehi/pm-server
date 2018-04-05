@@ -1,5 +1,5 @@
 const Schema = require('mongoose').Schema;
-
+const AddressSchema = require('./address.schema');
 
 let schema_obj = {
   name: {
@@ -9,12 +9,16 @@ let schema_obj = {
     unique: true
   },
   address: {
-    type: String,
+    type: AddressSchema,
     required: true,
   },
   phone: {
     type: String,
     required: true,
+  },
+  has_customer_pickup: {
+    type: Boolean,
+    default: false,
   }
 };
 

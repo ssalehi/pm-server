@@ -27,9 +27,11 @@ let schema_obj = {
       title: String,
       text: String,
       color: String,
+      buttonText: String,
     },
   ],
   style: Schema.Types.Mixed,
+
 };
 
 let PlacementInfoSchema = new Schema(schema_obj, {strict: true});

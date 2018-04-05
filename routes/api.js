@@ -110,7 +110,7 @@ router.put('/register', apiResponse('Customer', 'registration', false, ['body'])
 router.post('/register/verify', apiResponse('Customer', 'verification', false, ['body.code', 'body.username']));
 router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
-router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user.username', 'body']));
+router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user','body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
 router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
@@ -146,7 +146,8 @@ router.get('/dictionary', apiResponse('Dictionary', 'getDictionaries', false, []
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 
-// Brands
+// Warehouses
+router.get('/warehouse/all', apiResponse('Warehouse', 'getAllWarehouses', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 
 // Customer
@@ -279,5 +280,8 @@ router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 
 // Coupon
 router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', false, ['user', 'body']));
 router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false, ['user', 'body']));
+
+// Customer Address
+router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
 
 module.exports = router;

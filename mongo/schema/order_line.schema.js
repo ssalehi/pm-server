@@ -26,7 +26,6 @@ let schema_obj = {
   },
 };
 
-
 let OrderLineSchema = new Schema(schema_obj, {strict: true});
 
 module.exports = OrderLineSchema;

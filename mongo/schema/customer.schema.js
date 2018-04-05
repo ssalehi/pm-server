@@ -61,6 +61,9 @@ let schema_obj = {
     type: Boolean,
     default: true,
     required: true
+  },
+  national_id: {
+    type: String
   }
 };
 
