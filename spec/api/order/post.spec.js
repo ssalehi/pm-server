@@ -1058,17 +1058,16 @@ describe('POST Order_Ticket (New Ticket)', () => {
             .then(res => {
                 salesObj.aid = res.aid;
                 salesObj.jar = res.rpJar;
-                return models['OrderTest'].update({},{
+                return models['OrderTest']({
                 total_amount: 2,
                 order_time: new Date(),
                 transaction_id: mongoose.Types.ObjectId(),
                 is_cart: false,
                 address_id: mongoose.Types.ObjectId()
-              } , {upsert: true, new: true})
+              }).save();
             })
           .then(res =>{
             order = res;
-            console.log('aaaaa',order);
             done();
           })
             .catch(err => {
@@ -1079,12 +1078,13 @@ describe('POST Order_Ticket (New Ticket)', () => {
 
     it('should create a ticket and add it to a new order (for customer)', function (done) {
       this.done = done;
+      const warehouseId = mongoose.Types.ObjectId();
       rp({
-        method: 'post',
+        method: 'put',
         uri: lib.helpers.apiTestURL('order/ticket'),
         body: {
           order_id: order._id,
-          warehouse_id: 1,
+          warehouse_id: warehouseId,
           status: 2,
           desc: 'Order Accepted',
         },
@@ -1094,14 +1094,15 @@ describe('POST Order_Ticket (New Ticket)', () => {
 
       }).then(res => {
             expect(res.statusCode).toBe(200);
-           return models['OrderTest'].find({order_id: order._id,}).lean();
+            return models['OrderTest'].find({_id: order._id}).lean();
           })
           .then(res => {
             expect(res.length).toEqual(1);
-            expect(res[0].warehouse_id).toBe(1);
-            expect(res[0].body.status).toBe(2);
-            expect(res[0].desc).toBe('Order Accepted');
-            expect(res[0].is_processed).toBe(false);
+            res = res[0].tickets[0];
+            expect(res.warehouse_id.toString()).toBe(warehouseId.toString());
+            expect(res.status).toBe(2);
+            expect(res.desc).toBe('Order Accepted');
+            expect(res.is_processed).toBe(false);
             done();
           }).catch(lib.helpers.errorHandler.bind(this));
     });

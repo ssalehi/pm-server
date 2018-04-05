@@ -282,7 +282,7 @@ router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', 
 router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false, ['user', 'body']));
 
 //ticket
-router.put('/order/ticket', apiResponse('Order', 'setTicket', true, ['file'], _const.ACCESS_LEVEL.SalesManager));
+router.put('/order/ticket', apiResponse('Order', 'setTicket', true, ['body'], _const.ACCESS_LEVEL.SalesManager));
 
 // Customer Address
 router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
