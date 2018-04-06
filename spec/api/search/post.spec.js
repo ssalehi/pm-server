@@ -516,7 +516,6 @@ describe('POST Search Order', () => {
 
   it('should give order have transaction_id, address_id, is_card = false', function (done) {
     this.done = done;
-    let oldResult;
     rp({
       method: "POST",
       uri: lib.helpers.apiTestURL(`search/Order`),
@@ -531,11 +530,9 @@ describe('POST Search Order', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      oldResult = res.body;
-      return models['OrderTest'].find({$and: [{is_cart: false}, {transaction_id: {$ne: null}}, {address_id: {$ne: null}}]}).lean();
-    }).then(res => {
-      console.log(oldResult);
-      expect(oldResult.total).toBe(res.length);
+      expect(res.body.data[0].is_cart).toBe(false);
+      expect(res.body.data[0].address_id).not.toBe(null);
+      expect(res.body.data[0].transaction_id).not.toBe(null);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
