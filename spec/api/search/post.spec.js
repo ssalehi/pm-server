@@ -2,35 +2,46 @@ const models = require('../../../mongo/models.mongo');
 const lib = require('../../../lib');
 const rp = require('request-promise');
 const mongoose = require('mongoose');
-const _ = require('lodash');
+const error = require('../../../lib/errors.list');
 
-xdescribe('POST Search Collection', () => {
+describe('POST Search Collection', () => {
+
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
 
   beforeEach((done) => {
-    lib.dbHelpers.dropAll().then(res => {
-      let collectionArr = [{
-        name: 'collection 001',
-        is_smart: false,
-      }, {
-        name: 'collection 0012',
-        is_smart: false,
-      }, {
-        name: 'collection 003',
-        is_smart: true,
-      }, {
-        name: 'collection 004',
-        is_smart: true,
-      }, {
-        name: 'collection 005',
-        is_smart: true,
-      }, {
-        name: 'collection 006',
-        is_smart: true,
-      }];
-      models['CollectionTest'].insertMany(collectionArr).then(res => {
-        done();
-      });
-    }).catch(err => {
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('admin');
+      })
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
+        let collectionArr = [{
+          name: 'collection 001',
+          name_fa: 'کالکشن 1',
+        }, {
+          name: 'collection 0012',
+          name_fa: 'کالکشن 2',
+        }, {
+          name: 'collection 003',
+          name_fa: 'کالکشن 3',
+        }, {
+          name: 'collection 004',
+          name_fa: 'کالکشن 4',
+        }, {
+          name: 'collection 005',
+          name_fa: 'کالکشن 5',
+        }, {
+          name: 'collection 006',
+          name_fa: 'کالکشن 6',
+        }];
+        models['CollectionTest'].insertMany(collectionArr).then(res => {
+          done();
+        });
+      }).catch(err => {
       console.log(err);
       done();
     });
@@ -49,6 +60,7 @@ xdescribe('POST Search Collection', () => {
         offset: 0,
         limit: 10
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -71,6 +83,7 @@ xdescribe('POST Search Collection', () => {
         offset: 0,
         limit: 10
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -81,30 +94,7 @@ xdescribe('POST Search Collection', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should get only manual collections', function (done) {
-    this.done = done;
-    rp({
-      method: "POST",
-      uri: lib.helpers.apiTestURL(`search/Collection`),
-      body: {
-        options: {
-          phrase: "",
-          is_smart: false
-        },
-        offset: 0,
-        limit: 10,
-      },
-      json: true,
-      resolveWithFullResponse: true
-    }).then(res => {
-      expect(res.statusCode).toBe(200);
-      res = res.body.data;
-      expect(res.length).toBe(2);
-      done();
-    }).catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  it('should get only smart collections', function (done) {
+  it('should get error when some one other than content manager is calling api', function (done) {
     this.done = done;
     rp({
       method: "POST",
@@ -118,62 +108,76 @@ xdescribe('POST Search Collection', () => {
         limit: 10,
       },
       json: true,
+      // jar: adminObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
-      expect(res.statusCode).toBe(200);
-      res = res.body.data;
-      expect(res.length).toBe(4);
+      this.fail('some one other than content manager could call api');
       done();
-    }).catch(lib.helpers.errorHandler.bind(this));
+    })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noAccess.status);
+        expect(err.error).toBe(error.noAccess.message);
+        done();
+      });
   });
 
 });
 
-xdescribe('POST Search Page', () => {
+describe('POST Search Page', () => {
 
   let page1, page2, collection1, collection2;
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
 
   beforeEach((done) => {
-    lib.dbHelpers.dropAll().then(res => {
-      let inserts = [];
-      let n = 0;
-      while (n < 5) {
-        let newPage = models['PageTest']({
-          address: `testAddress${n + 1}`,
-          is_app: false,
-        });
-        inserts.push(newPage.save());
-        n++;
-      }
-
-      collection1 = models['CollectionTest']({
-        name: 'collection1'
-      });
-      collection2 = models['CollectionTest']({
-        name: 'collection2'
-      });
-
-      page1 = models['PageTest']({
-        address: 'testAddress6',
-        is_app: false,
-        page_info: {
-          collection_id: collection1._id
-        }
-      });
-      page2 = models['PageTest']({
-        address: 'testAddress7',
-        is_app: true,
-        page_info: {
-          collection_id: collection2._id,
-          content: 'some html content'
-        }
-      });
-
-      inserts.push([collection1.save(), collection2.save(), page1.save(), page2.save()]);
-      return Promise.all(inserts);
-    })
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('admin');
+      })
       .then(res => {
-        done();
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
+        let inserts = [];
+        let n = 0;
+        while (n < 5) {
+          let newPage = models['PageTest']({
+            address: `testAddress${n + 1}`,
+            is_app: false,
+          });
+          inserts.push(newPage.save());
+          n++;
+        }
+
+        collection1 = models['CollectionTest']({
+          name: 'collection1', name_fa: 'کالکشن 1'
+        });
+        collection2 = models['CollectionTest']({
+          name: 'collection2', name_fa: 'کالکشن 2'
+        });
+
+        page1 = models['PageTest']({
+          address: 'testAddress6',
+          is_app: false,
+          page_info: {
+            collection_id: collection1._id
+          }
+        });
+        page2 = models['PageTest']({
+          address: 'testAddress7',
+          is_app: true,
+          page_info: {
+            collection_id: collection2._id,
+            content: 'some html content'
+          }
+        });
+
+        inserts.push([collection1.save(), collection2.save(), page1.save(), page2.save()]);
+        return Promise.all(inserts);
+      })
+      .then(res => {
+        done()
       })
       .catch(err => {
         console.log(err);
@@ -195,6 +199,7 @@ xdescribe('POST Search Page', () => {
         limit: 5
       },
       json: true,
+      jar: adminObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
@@ -223,6 +228,7 @@ xdescribe('POST Search Page', () => {
         offset: 5,
         limit: 5
       },
+      jar: adminObj.jar,
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
@@ -240,9 +246,36 @@ xdescribe('POST Search Page', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
+  it('should get error when some one other than content manager is calling api', function (done) {
+    this.done = done;
+    rp({
+      method: "POST",
+      uri: lib.helpers.apiTestURL(`search/Page`),
+      body: {
+        options: {
+          phrase: "",
+          is_smart: true
+        },
+        offset: 0,
+        limit: 10,
+      },
+      json: true,
+      // jar: adminObj.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('some one other than content manager could call api');
+      done();
+    })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noAccess.status);
+        expect(err.error).toBe(error.noAccess.message);
+        done();
+      });
+  });
+
 });
 
-xdescribe('POST Suggest Product / Tag / Color', () => {
+describe('POST Suggest Product / Tag / Color', () => {
 
   let productTypeIds = [
     mongoose.Types.ObjectId(),
@@ -254,65 +287,80 @@ xdescribe('POST Suggest Product / Tag / Color', () => {
     mongoose.Types.ObjectId(),
     mongoose.Types.ObjectId(),
     mongoose.Types.ObjectId()];
+  let tgIds = [mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId()];
   let productIds = [];
   let tagIds = [];
   let colorIds = [];
+
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
   beforeEach((done) => {
-    lib.dbHelpers.dropAll().then(res => {
-      let products = [{
-        name: 'shoe2',
-        product_type: productTypeIds[0],
-        brand: brandIds[0],
-        base_price: 1000
-      }, {
-        name: 'shoe3',
-        product_type: productTypeIds[1],
-        brand: brandIds[1],
-        base_price: 2000
-      }, {
-        name: 'shoe1',
-        product_type: productTypeIds[2],
-        brand: brandIds[2],
-        base_price: 3000
-      }, {
-        name: 'sneak',
-        product_type: productTypeIds[3],
-        brand: brandIds[3],
-        base_price: 4000
-      }];
-      let tags = [
-        {name: 'tag002'},
-        {name: 'tag001'},
-        {name: 'tag003'},
-        {name: 'toog'},
-      ];
-      let colors = [
-        {name: 'col1', color_id: '1'},
-        {name: 'col2', color_id: '2'},
-        {name: 'roloc3', color_id: '3'}
-      ];
-      models['ProductTest'].insertMany(products).then(res => {
-        productIds[0] = res[0]._id;
-        productIds[1] = res[1]._id;
-        productIds[2] = res[2]._id;
-        productIds[3] = res[3]._id;
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('admin');
+      })
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
+        let products = [{
+          name: 'shoe2',
+          product_type: {name: 'type 1', product_type_id: productTypeIds[0]},
+          brand: {name: 'type 1', brand_id: brandIds[0]},
+          base_price: 1000
+        }, {
+          name: 'shoe3',
+          product_type: {name: 'type 2', product_type_id: productTypeIds[1]},
+          brand: {name: 'type 2', brand_id: brandIds[1]},
+          base_price: 2000
+        }, {
+          name: 'shoe1',
+          product_type: {name: 'type 3', product_type_id: productTypeIds[2]},
+          brand: {name: 'type 3', brand_id: brandIds[2]},
+          base_price: 3000
+        }, {
+          name: 'sneak',
+          product_type: {name: 'type 4', product_type_id: productTypeIds[3]},
+          brand: {name: 'type 4', brand_id: brandIds[3]},
+          base_price: 4000
+        }];
+        let tags = [
+          {name: 'tag002', tg_id: tgIds[0]},
+          {name: 'tag001', tg_id: tgIds[1]},
+          {name: 'tag003', tg_id: tgIds[2]},
+          {name: 'toog', tg_id: tgIds[3]},
+        ];
+        let colors = [
+          {name: 'col1'},
+          {name: 'col2'},
+          {name: 'roloc3'}
+        ];
+        models['ProductTest'].insertMany(products).then(res => {
+          productIds[0] = res[0]._id;
+          productIds[1] = res[1]._id;
+          productIds[2] = res[2]._id;
+          productIds[3] = res[3]._id;
 
-        models['TagTest'].insertMany(tags).then(res => {
-          tagIds[0] = res[0]._id;
-          tagIds[1] = res[1]._id;
-          tagIds[2] = res[2]._id;
-          tagIds[3] = res[3]._id;
+          models['TagTest'].insertMany(tags).then(res => {
+            tagIds[0] = res[0]._id;
+            tagIds[1] = res[1]._id;
+            tagIds[2] = res[2]._id;
+            tagIds[3] = res[3]._id;
 
-          models['ColorTest'].insertMany(colors).then(res => {
-            colorIds[0] = res[0]._id;
-            colorIds[1] = res[1]._id;
-            colorIds[2] = res[2]._id;
+            models['ColorTest'].insertMany(colors).then(res => {
+              colorIds[0] = res[0]._id;
+              colorIds[1] = res[1]._id;
+              colorIds[2] = res[2]._id;
 
-            done();
+              done();
+            });
           });
         });
       });
-    });
   });
 
   it('should give suggestion over products', function (done) {
@@ -324,6 +372,7 @@ xdescribe('POST Suggest Product / Tag / Color', () => {
         phrase: 'sho',
       },
       json: true,
+      jar: adminObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
@@ -342,6 +391,8 @@ xdescribe('POST Suggest Product / Tag / Color', () => {
         phrase: 'tag00',
       },
       json: true,
+      jar: adminObj.jar,
+
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
@@ -362,6 +413,7 @@ xdescribe('POST Suggest Product / Tag / Color', () => {
         phrase: 'col',
       },
       json: true,
+      jar: adminObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
@@ -372,33 +424,76 @@ xdescribe('POST Suggest Product / Tag / Color', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-});
-
-xdescribe('POST Suggest Collection', () => {
-
-  let collectionIds = [];
-  beforeEach((done) => {
-    lib.dbHelpers.dropAll().then(res => {
-      let collections = [
-        {
-          name: 'col1',
-        }, {
-          name: 'col11',
+  it('should get error when some one other than content manager is calling api', function (done) {
+    this.done = done;
+    rp({
+      method: "POST",
+      uri: lib.helpers.apiTestURL(`search/Color`),
+      body: {
+        options: {
+          phrase: "",
+          is_smart: true
         },
-        {
-          name: 'col111',
-        },
-        {
-          name: 'col2',
-        }
-      ];
-      models['CollectionTest'].insertMany(collections).then(res => {
-        collectionIds[0] = res[0]._id;
-        collectionIds[1] = res[1]._id;
-        collectionIds[2] = res[2]._id;
-        collectionIds[3] = res[3]._id;
+        offset: 0,
+        limit: 10,
+      },
+      json: true,
+      // jar: adminObj.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('some one other than content manager could call api');
+      done();
+    })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noAccess.status);
+        expect(err.error).toBe(error.noAccess.message);
         done();
       });
+  });
+
+
+});
+
+describe('POST Suggest Collection', () => {
+
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
+
+  beforeEach((done) => {
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('admin');
+      })
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
+        let collectionArr = [{
+          name: 'col1',
+          name_fa: 'کالکشن 1',
+        }, {
+          name: 'col12',
+          name_fa: 'کالکشن 2',
+        }, {
+          name: 'col13',
+          name_fa: 'کالکشن 3',
+        }, {
+          name: 'collection 004',
+          name_fa: 'کالکشن 4',
+        }, {
+          name: 'collection 005',
+          name_fa: 'کالکشن 5',
+        }, {
+          name: 'collection 006',
+          name_fa: 'کالکشن 6',
+        }];
+        models['CollectionTest'].insertMany(collectionArr).then(res => {
+          done();
+        });
+      }).catch(err => {
+      console.log(err);
+      done();
     });
   });
 
@@ -411,6 +506,7 @@ xdescribe('POST Suggest Collection', () => {
         phrase: 'col1',
       },
       json: true,
+      jar: adminObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
@@ -419,117 +515,31 @@ xdescribe('POST Suggest Collection', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-
-});
-
-describe('POST Search Order', () => {
-  let customers = [];
-  let customerIds = [];
-  let orders = [];
-  let products = [];
-  let productIds = [];
-  let _brand = {};
-  let productTypeIdsNames = [];
-  let transactionIds = [];
-  let addressIds = [];
-  let productTypeArr = [{name: 'Shoes'}, {name: 'Clothes'}];
-  beforeEach((done) => {
-    lib.dbHelpers
-      .dropAll()
-      .then(() => {
-        return models['BrandTest'].create({name: 'Nike'});
-      })
-      .then((res) => {
-        _brand = {name: res.name, brand_id: res._id};
-
-        return models['ProductTypeTest'].insertMany(productTypeArr);
-      })
-      .then((res) => {
-        productTypeIdsNames = res.map(x => {
-          return {name: x.name, product_type_id: x._id};
-        });
-
-        // create array customers
-        for (let i = 0; i < 10; i++) {
-          transactionIds.push(mongoose.Types.ObjectId());
-          addressIds.push(mongoose.Types.ObjectId());
-          let customer = {
-            first_name: Math.random().toString(36).substring(7),
-            surname: Math.random().toString(36).substring(7),
-            username: Math.random().toString(36).substring(7) + '@yahoo.com',
-            is_verified: _.sample([true, false]),
-            addresses: [
-              {city: Math.random().toString(36).substring(7), street: Math.random().toString(36).substring(7)},
-              {city: Math.random().toString(36).substring(7), street: Math.random().toString(36).substring(7)},
-            ]
-          };
-          customers.push(customer);
-        }
-        return models['CustomerTest'].insertMany(customers);
-      })
-      .then(res => {
-        customerIds = res.map(x => x._id);
-        for (let i = 0; i < 10; i++) {
-          let product = {
-            name: Math.random().toString(36).substring(7),
-            productType: Math.random() >= 0.5 ? productTypeIdsNames[0] :productTypeIdsNames[1],
-            brand: _brand,
-            base_price: Math.floor(Math.random() * Math.floor(5000))
-          };
-          products.push(product);
-        }
-
-
-        return models['ProductTest'].insertMany(products);
-      })
-      .then((res) => {
-        productIds = res.map(x => x._id);
-        for (let i = 0; i < 10; i++) {
-          let order = {
-            customer_id: customerIds[i],
-            transaction_id: Math.random() >= 0.5 ? null : transactionIds[i],
-            total_amount:  Math.floor(Math.random() * Math.floor(20)),
-            address_id: Math.random() >= 0.5 ? null : addressIds[i],
-            order_time: new Date(),
-            is_cart: _.sample([false, true]),
-            order_line_ids: [{product_id: productIds[i], paid_price: Math.floor(Math.random() * Math.floor(5000))}]
-          };
-          orders.push(order);
-        }
-        return models['OrderTest'].insertMany(orders);
-      })
-      .then(() => {
-        done();
-      })
+  it('should get error when some one other than content manager is calling api', function (done) {
+    this.done = done;
+    rp({
+      method: "POST",
+      uri: lib.helpers.apiTestURL(`search/Collection`),
+      body: {
+        options: {
+          phrase: "",
+          is_smart: true
+        },
+        offset: 0,
+        limit: 10,
+      },
+      json: true,
+      // jar: adminObj.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('some one other than content manager could call api');
+      done();
+    })
       .catch(err => {
-        console.log(err);
+        expect(err.statusCode).toBe(error.noAccess.status);
+        expect(err.error).toBe(error.noAccess.message);
         done();
       });
   });
 
-  it('should give order have transaction_id, address_id, is_card = false', function (done) {
-    this.done = done;
-    let oldResult;
-    rp({
-      method: "POST",
-      uri: lib.helpers.apiTestURL(`search/Order`),
-      body: {
-        options: {
-          phrase: "",
-        },
-        offset: 0,
-        limit: 10
-      },
-      json: true,
-      resolveWithFullResponse: true
-    }).then(res => {
-      expect(res.statusCode).toBe(200);
-      oldResult = res.body;
-      return models['OrderTest'].find({$and: [{is_cart: false}, {transaction_id: {$ne: null}}, {address_id: {$ne: null}}]}).lean();
-    }).then(res => {
-      console.log(oldResult);
-      expect(oldResult.total).toBe(res.length);
-      done();
-    }).catch(lib.helpers.errorHandler.bind(this));
-  });
 });
