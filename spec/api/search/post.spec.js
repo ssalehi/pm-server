@@ -431,11 +431,25 @@ describe('POST Search Order', () => {
   let productTypeIdsNames = [];
   let transactionIds = [];
   let addressIds = [];
+  let addressWarehouseId;
   let productTypeArr = [{name: 'Shoes'}, {name: 'Clothes'}];
   beforeEach((done) => {
     lib.dbHelpers
       .dropAll()
-      .then(() => {
+      .then(()=>{
+        return models['WarehouseTest'].create({
+          name:'name warehouse',
+          address: {
+            city: Math.random().toString(36).substring(7),
+            street: Math.random().toString(36).substring(7),
+            province: Math.random().toString(36).substring(7)
+          },
+          phone: '001002003'
+        })
+      })
+      .then((warehouse) => {
+        addressWarehouseId = warehouse._id;
+
         return models['BrandTest'].create({name: 'Nike'});
       })
       .then((res) => {
@@ -494,12 +508,13 @@ describe('POST Search Order', () => {
         for (let i = 0; i < 10; i++) {
           let order = {
             customer_id: customerIds[i],
-            transaction_id: i % 2 === 0 ? null : transactionIds[i],
+            transaction_id: i % 2 === 0 ? transactionIds[i] : null,
             total_amount: Math.floor(Math.random() * Math.floor(20)),
-            address_id: i % 2 === 0 ? null : addressIds[i],
+            address_id: i % 2 === 0 ? i === 0 ? addressWarehouseId : addressIds[i] : null,
             order_time: new Date(),
-            is_cart: i % 2 === 0 ? !!1 : !!0,
-            order_line_ids: [{product_id: productIds[i], paid_price: Math.floor(Math.random() * Math.floor(5000))}]
+            is_cart: i % 2 === 0 ? !!0 : !!1,
+            order_line_ids: [{product_id: productIds[i], paid_price: Math.floor(Math.random() * Math.floor(5000))}],
+            is_collect: i === 0 ? !!1 : !!0
           };
           orders.push(order);
         }
