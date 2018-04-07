@@ -27,8 +27,7 @@ let schema_obj = {
     type: String,
   },
   postal_code: {
-    type: Number,
-    // required: true
+    type: String,
   },
   loc: {
     type: {
@@ -39,26 +38,26 @@ let schema_obj = {
   recipient_title: {
     type: String,
     enum: ['m', 'f'],
-    required: true,
   },
   recipient_name: {
+    type: String,
+  },
+  recipient_surname: {
     type: String,
     trim: true,
   },
   recipient_national_id: {
     type: String,
-    required: true,
     trim: true,
   },
   recipient_mobile_no: {
     type: String,
-    required: true,
     trim: true,
   }
 };
 
 
-let addressSchema = new Schema(schema_obj, {collection: 'address', strict: true});
+let addressSchema = new Schema(schema_obj, {strict: true});
 
 
 module.exports = addressSchema;

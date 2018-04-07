@@ -7,13 +7,58 @@ const _const = require('./lib/const.list');
 const env = require('./env');
 const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
+const mongoose = require('mongoose');
 
 SALT_WORK_FACTOR = 10;
 let PLACEMENTS = null;
 let pKeys = [];
+let _hash;
+
 
 db.dbIsReady()
   .then(() => {
+    return models['Warehouse'].find().lean();
+  })
+  .then(res => {
+    if (!res || res.length === 0) {
+      let warehouses = [{
+        name: 'سانا',
+        phone: '021 7443 8111',
+        address: {
+          city: 'تهران',
+          street: 'اندرزگو'
+        }
+      }, {
+        name: 'ایران مال',
+        phone: 'نا مشخص',
+        address: {
+          city: 'تهران',
+          street: 'اتوبان خرازی'
+        }
+      }, {
+        name: 'پالادیوم',
+        phone: ' 021 2201 0600',
+        address: {
+          city: 'تهران',
+          street: 'مقدس اردبیلی'
+        }
+      }, {
+        name: 'انبار مرکزی',
+        phone: 'نا مشخص',
+        address: {
+          city: 'تهران',
+          street: 'نامشخص'
+        },
+        is_center: true
+      }];
+
+      return models['Warehouse'].insertMany(warehouses);
+    }
+    else
+      return Promise.resolve();
+  })
+  .then(() => {
+
     return new Promise((resolve, reject) => {
       env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
         if (err) return next(err);
@@ -27,21 +72,32 @@ db.dbIsReady()
     })
   })
   .then(hash => {
-    let query = {},
-      update = {
-        username: 'admin@persianmode.com',
-        secret: hash,
-        access_level: _const.ACCESS_LEVEL.Admin,
-        first_name: 'Admin',
-        surname: 'Admin',
-      },
-      options = {upsert: true, new: true, setDefaultsOnInsert: true};
-
-    return models['Agent'].findOneAndUpdate(query, update, options);
+    _hash = hash;
+    return models['Agent'].find().lean();
 
   })
+  .then(res => {
+    if (!res || res.length === 0) {
+      let agents = [{
+        username: 'admin@persianmode.com',
+        secret: _hash,
+        access_level: _const.ACCESS_LEVEL.ContentManager,
+        first_name: 'ContentManager',
+        surname: 'ContentManager',
+      }, {
+        username: 'sm@persianmode.com',
+        secret: _hash,
+        access_level: _const.ACCESS_LEVEL.SalesManager,
+        first_name: 'Sales Manager',
+        surname: 'Sales Manager',
+      }];
+
+      return models['Agent'].insertMany(agents);
+    } else
+      return Promise.resolve()
+  })
   .then(() => {
-    console.log('-> ', 'default admin has been added!');
+    console.log('-> ', 'default agents has been added!');
     PLACEMENTS = JSON.parse(fs.readFileSync('placements.json', 'utf8'));
     pKeys = Object.keys(PLACEMENTS);
     return Promise.all(pKeys.map((r, i) => {
@@ -99,7 +155,7 @@ db.dbIsReady()
       if (err.name !== 'BulkWriteError') {
         console.log('-> ', err);
       }
-      else{
+      else {
         console.log('-> ', 'dictionary is added');
       }
       process.exit();
