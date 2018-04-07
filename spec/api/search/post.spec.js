@@ -432,23 +432,29 @@ describe('POST Search Order', () => {
   let transactionIds = [];
   let addressIds = [];
   let addressWarehouseId;
+  let warehouses = [];
   let productTypeArr = [{name: 'Shoes'}, {name: 'Clothes'}];
   beforeEach((done) => {
     lib.dbHelpers
       .dropAll()
       .then(()=>{
-        return models['WarehouseTest'].create({
-          name:'name warehouse',
-          address: {
-            city: Math.random().toString(36).substring(7),
-            street: Math.random().toString(36).substring(7),
-            province: Math.random().toString(36).substring(7)
-          },
-          phone: '001002003'
-        })
+        for (let i = 0; i < 5; i++) {
+          let warehouse = {
+            name: 'name warehouse' + i,
+            address: {
+              city: Math.random().toString(36).substring(7),
+              street: Math.random().toString(36).substring(7),
+              province: Math.random().toString(36).substring(7)
+            },
+            phone: '001002003' + i,
+            is_center: _.sample([true,false])
+          };
+          warehouses.push(warehouse);
+        }
+        return models['WarehouseTest'].insertMany(warehouses);
       })
       .then((warehouse) => {
-        addressWarehouseId = warehouse._id;
+        addressWarehouseId = warehouse[0]._id;
 
         return models['BrandTest'].create({name: 'Nike'});
       })
