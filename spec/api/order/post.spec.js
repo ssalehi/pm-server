@@ -1047,63 +1047,114 @@ xdescribe('POST Order (Delete Orderlines)', () => {
 
 
 describe('POST Order_Ticket (New Ticket)', () => {
-    let salesObj = {
-        aid: null,
-        jar: null
-    };
-    let order;
-    beforeEach(done => {
-        lib.dbHelpers.dropAll()
-            .then(() => lib.dbHelpers.addAndLoginAgent('admin', _const.ACCESS_LEVEL.SalesManager))
-            .then(res => {
-                salesObj.aid = res.aid;
-                salesObj.jar = res.rpJar;
-                return models['OrderTest']({
-                total_amount: 2,
-                order_time: new Date(),
-                transaction_id: mongoose.Types.ObjectId(),
-                is_cart: false,
-                address_id: mongoose.Types.ObjectId()
-              }).save();
-            })
-          .then(res =>{
-            order = res;
-            done();
-          })
-            .catch(err => {
-                console.log(err);
-                done();
-            });
-        });
+  let salesObj = {
+    aid: null,
+    jar: null
+  };
+  let order;
+  let newOrderId;
+  let warehouseId;
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('admin', _const.ACCESS_LEVEL.SalesManager))
+      .then(res => {
+        salesObj.aid = res.aid;
+        salesObj.jar = res.rpJar;
+        return models['OrderTest']({
+          total_amount: 2,
+          order_time: new Date(),
+          transaction_id: mongoose.Types.ObjectId(),
+          is_cart: false,
+          address_id: mongoose.Types.ObjectId()
+        }).save();
+      })
+      .then((res) => {
+          order = res;
+       warehouseId = mongoose.Types.ObjectId();
 
-    it('should create a ticket and add it to a new order (for customer)', function (done) {
-      this.done = done;
-      const warehouseId = mongoose.Types.ObjectId();
-      rp({
-        method: 'put',
-        uri: lib.helpers.apiTestURL('order/ticket'),
-        body: {
-          order_id: order._id,
+        return models['OrderTest'].create(
+          {
+            order_id: order._id,
+            order_time: new Date(),
+            transaction_id: mongoose.Types.ObjectId(),
+            address_id: mongoose.Types.ObjectId(),
+            tickets: [{
+                warehouse_id: warehouseId,
+                status: 2,
+                desc: 'Order Accepted',
+                is_processed: true
+              }]
+          })
+      })
+      .then(res => {
+        newOrderId = res._id;
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+  xit('should create a ticket and add it to a new order (for customer)', function (done) {
+    this.done = done;
+    const warehouseId = mongoose.Types.ObjectId();
+    rp({
+      method: 'put',
+      uri: lib.helpers.apiTestURL('order/ticket'),
+      body: {
+        order_id: order._id,
+        warehouse_id: warehouseId,
+        status: 2,
+        desc: 'Order Accepted',
+        is_processed: false
+      },
+      json: true,
+      resolveWithFullResponse: true,
+      jar: salesObj.jar
+
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['OrderTest'].find({_id: order._id}).lean();
+    })
+      .then(res => {
+        expect(res.length).toEqual(1);
+        // console.log('aaaa', res);
+        res = res[0].tickets[0];
+        expect(res.warehouse_id.toString()).toBe(warehouseId.toString());
+        expect(res.status).toBe(2);
+        expect(res.desc).toBe('Order Accepted');
+        expect(res.is_processed).toBe(false);
+        done();
+      }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should not create a ticket when ticket is not closed (for customer)', function (done) {
+    this.done = done;
+    rp({
+      method: 'put',
+      uri: lib.helpers.apiTestURL('order/ticket'),
+      body: {
+        order_id: newOrderId,
+        tickets:[{
           warehouse_id: warehouseId,
           status: 2,
-          desc: 'Order Accepted',
-        },
-        json: true,
-        resolveWithFullResponse: true,
-        jar: salesObj.jar
-
-      }).then(res => {
-            expect(res.statusCode).toBe(200);
-            return models['OrderTest'].find({_id: order._id}).lean();
-          })
-          .then(res => {
-            expect(res.length).toEqual(1);
-            res = res[0].tickets[0];
-            expect(res.warehouse_id.toString()).toBe(warehouseId.toString());
-            expect(res.status).toBe(2);
-            expect(res.desc).toBe('Order Accepted');
-            expect(res.is_processed).toBe(false);
-            done();
-          }).catch(lib.helpers.errorHandler.bind(this));
-    });
+          desc: 'Order not Accepted',
+          is_processed: false
+        }]
+      },
+      json: true,
+      resolveWithFullResponse: true,
+      jar: salesObj.jar
+    })
+      .then(() => {
+        this.fail('could not add new ticket when one of them is open');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.ActiveTicketExist.status);
+        expect(err.error).toBe(error.ActiveTicketExist.message);
+        done();
+      })
+  });
 });
