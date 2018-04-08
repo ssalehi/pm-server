@@ -245,7 +245,7 @@ describe('POST Coupon', () => {
           _id: orderId1,
           customer_id: customerObj.cid,
           order_time: new Date(),
-          order_line_ids: [{
+          order_lines: [{
             product_instance_id: instanceId1,
             product_id: product1._id,
             adding_time: new Date(),
@@ -273,7 +273,7 @@ describe('POST Coupon', () => {
           customer_id: customerObj.cid,
           transaction_id: new mongoose.Types.ObjectId(),
           order_time: new Date(),
-          order_line_ids: [{
+          order_lines: [{
             product_instance_id: instanceId5,
             product_id: product2._id,
             adding_time: new Date(),
