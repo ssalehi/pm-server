@@ -284,4 +284,7 @@ router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false,
 // Customer Address
 router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
 
+// Placement
+// router.post('/placement', apiResponse('Customer', 'getA'))
+
 module.exports = router;

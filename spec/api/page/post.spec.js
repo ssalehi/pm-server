@@ -3,7 +3,7 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 
-describe("Post page basics", () => {
+describe('Post page basics', () => {
 
   let basicPageId;
   let adminObj = {
@@ -34,8 +34,7 @@ describe("Post page basics", () => {
       });
   });
 
-
-  it("should update basic info of page", function (done) {
+  it('should update basic info of page', function (done) {
 
     this.done = done;
     let collectionId = new mongoose.Types.ObjectId();
@@ -56,7 +55,7 @@ describe("Post page basics", () => {
       return models['PageTest'].find({}).lean();
 
     }).then(res => {
-      console.log('-> ',res);
+      console.log('-> ', res);
       expect(res[0].address).toBe('changedAddress');
       expect(res[0].is_app).toBe(true);
       expect(res[0].page_info.collection_id.toString()).toBe(collectionId.toString());
@@ -65,10 +64,9 @@ describe("Post page basics", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-
 });
-xdescribe("Post page placements and page info", () => {
 
+describe('Post page placements and page info', () => {
   let page, collection_id;
   beforeEach(done => {
     lib.dbHelpers.dropAll()
@@ -79,30 +77,29 @@ xdescribe("Post page placements and page info", () => {
         page = models['PageTest']({
           address: 'test',
           is_app: false,
-          placement:
-            [
-              {
-                component_name: 'main'
-              },
-              {
-                component_name: 'slider'
-              },
-              {
-                component_name: 'menu'
-              },
-              {
-                component_name: 'slider'
-              },
-              {
-                component_name: 'main'
-              },
-              {
-                component_name: 'menu'
-              },
-              {
-                component_name: 'menu'
-              },
-            ],
+          placement: [
+            {
+              component_name: 'main'
+            },
+            {
+              component_name: 'slider'
+            },
+            {
+              component_name: 'menu'
+            },
+            {
+              component_name: 'slider'
+            },
+            {
+              component_name: 'main'
+            },
+            {
+              component_name: 'menu'
+            },
+            {
+              component_name: 'menu'
+            },
+          ],
           page_info: {
             collection_id: collection_id,
             content: 'sample content'
@@ -122,9 +119,7 @@ xdescribe("Post page placements and page info", () => {
       });
   });
 
-
-  it("should get page placements and page info of a website page using its address", function (done) {
-
+  it('should get page placements and page info of a website page using its address', function (done) {
     this.done = done;
 
     rp({
@@ -148,4 +143,74 @@ xdescribe("Post page placements and page info", () => {
   });
 
 
+});
+
+describe('POST placement (top menu)', () => {
+  let page, collection_id;
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(res => {
+        let inserts = [];
+        collection_id = new mongoose.Types.ObjectId();
+
+        page = models['PageTest']({
+          address: 'test',
+          is_app: false,
+          placement: [
+            {
+              component_name: 'main'
+            },
+            {
+              component_name: 'slider'
+            },
+            {
+              component_name: 'menu'
+            },
+            {
+              component_name: 'slider'
+            },
+            {
+              component_name: 'main'
+            },
+            {
+              component_name: 'menu'
+            },
+            {
+              component_name: 'menu'
+            },
+          ],
+          page_info: {
+            collection_id: collection_id,
+            content: 'sample content'
+
+          }
+        });
+
+        return page.save()
+
+      })
+      .then(res => {
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+  it('should add new placement to page', function (done) {
+
+  });
+
+  it('should get error when adding a placement without specified page id', function (done) {
+
+  });
+
+  it('should apply reordering to the top menu items', function (done) {
+
+  });
+
+  it('should update the placement details', function (done) {
+
+  });
 });

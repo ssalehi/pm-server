@@ -710,6 +710,7 @@
       "start_date": "",
       "end_date": "",
       "info": {
+        "order": "0",
         "text": "مردانه",
         "href": "collection/men"
       }
@@ -1051,6 +1052,7 @@
       "start_date": "",
       "end_date": "",
       "info": {
+        "order": "1",
         "text": "زنانه",
         "href": "collection/women"
       }
@@ -1061,6 +1063,7 @@
       "start_date": "",
       "end_date": "",
       "info": {
+        "order": "2",
         "text": "دخترانه",
         "href": "collection/girls"
       }
@@ -1071,6 +1074,7 @@
       "start_date": "",
       "end_date": "",
       "info": {
+        "order": "3",
         "text": "پسرانه",
         "href": "collection/boys"
       }
