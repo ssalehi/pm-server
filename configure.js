@@ -24,6 +24,7 @@ db.dbIsReady()
       let warehouses = [{
         name: 'سانا',
         phone: '021 7443 8111',
+        has_customer_pickup: true,
         address: {
           city: 'تهران',
           street: 'اندرزگو'
@@ -31,6 +32,7 @@ db.dbIsReady()
       }, {
         name: 'ایران مال',
         phone: 'نا مشخص',
+        has_customer_pickup: true,
         address: {
           city: 'تهران',
           street: 'اتوبان خرازی'
@@ -38,6 +40,7 @@ db.dbIsReady()
       }, {
         name: 'پالادیوم',
         phone: ' 021 2201 0600',
+        has_customer_pickup: true,
         address: {
           city: 'تهران',
           street: 'مقدس اردبیلی'
