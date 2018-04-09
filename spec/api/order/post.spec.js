@@ -5,7 +5,7 @@ const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 
-describe('POST Order (New Order)', () => {
+xdescribe('POST Order (New Order)', () => {
 
   let customerObj = {
     cid: null,
@@ -221,7 +221,7 @@ describe('POST Order (New Order)', () => {
   });
 });
 
-describe('POST Order (Already-exist Order)', () => {
+xdescribe('POST Order (Already-exist Order)', () => {
 
   let customerObj = {
     cid: null,
@@ -413,7 +413,7 @@ describe('POST Order (Already-exist Order)', () => {
 
 });
 
-describe('POST Order (Fetch cart details)', () => {
+xdescribe('POST Order (Fetch cart details)', () => {
   let product1, product2;
   let type1, type2, brand1, brand2, color1, color2, tagGroup1, tag1, tag2;
   let order1, order2;
@@ -812,7 +812,7 @@ describe('POST Order (Fetch cart details)', () => {
   });
 });
 
-describe('POST Order (Delete Order lines)', () => {
+xdescribe('POST Order (Delete Order lines)', () => {
 
   let customerObj = {
     cid: null,
@@ -1044,3 +1044,232 @@ describe('POST Order (Delete Order lines)', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 });
+
+describe('POST Order_Ticket (New Ticket)', () => {
+  let salesObj = {
+    aid: null,
+    jar: null
+  };
+  let order;
+  let _warehouseId;
+  let _orderId;
+  let _customerId;
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return models['WarehouseTest'].create({
+          name: 'warehouse 001',
+          address: {
+            province: 'تهران',
+            city: 'تهران',
+            street: 'اندرزگو',
+            province: 'تهران'
+          },
+          phone: '02177665544',
+          is_center: true
+        });
+      })
+      .then((warehouse) => {
+        _warehouseId = warehouse._id;
+        return lib.dbHelpers.addAndLoginAgent('admin', _const.ACCESS_LEVEL.SalesManager, warehouse._id)
+      })
+      .then(res => {
+        salesObj.aid = res.aid;
+        salesObj.jar = res.rpJar;
+        return new models['OrderTest']({
+          order_id: mongoose.Types.ObjectId(),
+          total_amount: 3,
+          order_time: new Date(),
+          transaction_id: mongoose.Types.ObjectId(),
+          is_cart: false,
+          address_id: mongoose.Types.ObjectId()
+        }).save();
+      })
+      .then((res) => {
+        order = res;
+      })
+      .then(() => {
+        return models['CustomerTest'].create({
+          first_name: 'mohammadali',
+          surname: 'farhad',
+          username: 'farhad@yahoo.com',
+          is_verified: true,
+          is_guest: false,
+          addresses: [
+            {
+              province: 'تهران',
+              city: 'تهران',
+              street: 'شهید مدنی',
+              province: 'تهران' 
+            }
+          ]
+        });
+      })
+      .then((customerRes) => {
+        _customerId = customerRes._id;
+        return models['ProductTest'].create({
+          name: "product 001",
+          product_type: {name: 'product type 001', product_type_id: mongoose.Types.ObjectId()},
+          brand: {name: 'brand 001', brand_id: mongoose.Types.ObjectId()},
+          base_price: 2000
+        });
+      })
+      .then((productRes) => {
+        _orderId = mongoose.Types.ObjectId();
+        return models['OrderTest'].create({
+          _id: _orderId,
+          total_amount: 3,
+          customer_id: _customerId,
+          order_time: new Date(),
+          transaction_id: mongoose.Types.ObjectId(),
+          is_cart: false,
+          address_id: mongoose.Types.ObjectId(),
+          order_lines: [
+            {
+              product_instance_id: mongoose.Types.ObjectId(),
+              product_id: productRes._id,
+              paid_price: 2000,
+              adding_time: new Date(),
+              tickets: [
+                {
+                  warehouse_id: _warehouseId,
+                  status: 2,
+                  desc: 'Order Accepted 001',
+                  is_processed: true
+                },
+                {
+                  status: 3,
+                  desc: 'Order Accepted 002',
+                  is_processed: false
+                }
+              ]
+            },
+            {
+              product_instance_id: mongoose.Types.ObjectId(),
+              product_id: productRes._id,
+              paid_price: 3000,
+              adding_time: new Date(),
+              tickets: [
+                {
+                  status: 2,
+                  desc: 'Order Accepted 003',
+                  is_processed: false
+                },
+                {
+                  status: 3,
+                  desc: 'Order Accepted 004',
+                  is_processed: false
+                }
+              ]
+            }
+          ]
+        })
+      })
+      .then(() => {
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+  xit('should create a ticket and add it to a new order (for customer)', function (done) {
+    this.done = done;
+    const warehouseId = mongoose.Types.ObjectId();
+    rp({
+      method: 'put',
+      uri: lib.helpers.apiTestURL('order/ticket'),
+      body: {
+        order_id: order._id,
+        warehouse_id: warehouseId,
+        status: 2,
+        desc: 'Order Accepted',
+        is_processed: false
+      },
+      json: true,
+      resolveWithFullResponse: true,
+      jar: salesObj.jar
+
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['OrderTest'].find({_id: order._id}).lean();
+    })
+      .then(res => {
+        expect(res.length).toEqual(1);
+        res = res[0].tickets[0];
+        expect(res.warehouse_id.toString()).toBe(warehouseId.toString());
+        expect(res.status).toBe(2);
+        expect(res.desc).toBe('Order Accepted');
+        expect(res.is_processed).toBe(false);
+        done();
+      }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  xit('should not create a ticket when ticket is not closed (for customer)', function (done) {
+    this.done = done;
+    return models['OrderTest'].update({
+      _id: order._id,
+    }, {
+      $addToSet: {
+        tickets: {
+          warehouse_id: warehouseId,
+          status: 2,
+          desc: 'Ticket Is Open',
+          is_processed: true
+        }
+      }
+    }).then(res => {
+      return Promise.resolve(rp({
+          method: 'put',
+          body: {
+            order_id: order._id,
+            warehouse_id: warehouseId,
+            status: 2,
+            desc: 'Order Accepted',
+          },
+          uri: lib.helpers.apiTestURL('order/ticket'),
+          jar: salesObj.jar,
+          json: true,
+          resolveWithFullResponse: true,
+        })
+      )
+
+    }).then(res => {
+      this.fail('could not add new ticket when one of them is open');
+      done();
+
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.ActiveTicketExist.status);
+      expect(err.error).toBe(error.ActiveTicketExist.message);
+      done();
+    })
+  });
+
+  it('should not create a ticket when ticket is not closed (for customer)', function (done) {
+    this.done = done;
+
+    rp({
+      method: 'put',
+      uri: lib.helpers.apiTestURL('order/ticket'),
+      body: {
+        order_id: _orderId,
+        warehouse_id: _warehouseId,
+        status: 2,
+        desc: 'Order Accepted',
+      },
+      jar: salesObj.jar,
+      json: true,
+      resolveWithFullResponse: true,
+    })
+    .then(() => {
+      this.fail('could not add new ticket when one of them is open');
+      done();
+    })
+    .catch(err => {
+      expect(err.statusCode).toBe(error.ActiveTicketExist.status);
+      expect(err.error).toBe(error.ActiveTicketExist.message);
+      done();
+    });
+  });
+}); 
