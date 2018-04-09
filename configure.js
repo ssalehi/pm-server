@@ -26,28 +26,32 @@ db.dbIsReady()
         phone: '021 7443 8111',
         address: {
           city: 'تهران',
-          street: 'اندرزگو'
+          street: 'اندرزگو',
+          province: 'تهران'
         }
       }, {
         name: 'ایران مال',
         phone: 'نا مشخص',
         address: {
           city: 'تهران',
-          street: 'اتوبان خرازی'
+          street: 'اتوبان خرازی',
+          province: 'تهران'          
         }
       }, {
         name: 'پالادیوم',
         phone: ' 021 2201 0600',
         address: {
           city: 'تهران',
-          street: 'مقدس اردبیلی'
+          street: 'مقدس اردبیلی',
+          province: 'تهران'          
         }
       }, {
         name: 'انبار مرکزی',
         phone: 'نا مشخص',
         address: {
           city: 'تهران',
-          street: 'نامشخص'
+          street: 'نامشخص',
+          province: 'تهران'          
         },
         is_center: true
       }];
