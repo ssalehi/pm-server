@@ -242,6 +242,21 @@ describe('Guest User', () => {
           is_guest: true,
           first_name: 'Sareh',
           surname: 'Salehi',
+          addresses: [{
+            city: 'Tehran',
+            street: 'Zartosht',
+            province: 'Tehran',
+            recipient_title: 'f',
+            recipient_name: 'Sima',
+            recipient_surname: 'Salehi',
+            recipient_national_id: '123321',
+            recipient_mobile_no: '091212121212',
+            district: '',
+            unit: 13,
+            no: 18,
+            postal_code: 13445,
+            loc: {long: 2345, lat: 3445},
+          }],
         });
       })
       .then(res => {
@@ -272,18 +287,21 @@ describe('Guest User', () => {
             first_name: 'asd',
             surname: 'ad',
             mobile_no: '2343424324',
-            city: 'tehran',
-            street: 'zartosht',
-            province: 'Tehran',
-            recipient_title: 'm',
-            recipient_name: 'Sasan',
-            recipient_surname: 'Vaziri',
-            recipient_national_id: '123321',
-            recipient_mobile_no: '091212121212',
-            unit: 13,
-            no: 18,
-            postal_code: 13445,
-            loc: {long: 2345, lat: 3445},
+            addresses: [{
+              province: 'Tehran',
+              city: 'tehran',
+              street: 'zartosht',
+              recipient_title: 'm',
+              recipient_name: 'Sasan',
+              recipient_surname: 'Vaziri',
+              recipient_national_id: '123321',
+              recipient_mobile_no: '091212121212',
+              unit: 13,
+              no: 18,
+              postal_code: 13445,
+              loc: {long: 2345, lat: 3445},
+            }
+            ],
             is_verified: true,
             is_guest: false
           },
@@ -309,28 +327,30 @@ describe('Guest User', () => {
       username: 'sareh@gmail.com',
       is_verified: false,
       is_guest: true,
-    }, {
-      $set: {
-        first_name: 'Sareh',
-        surname: 'Salehi',
-        mobile_no: '0912000000',
-        addresses: [{
-          city: 'tehran',
-          street: 'zartosht',
-          province: 'Tehran',
-          recipient_title: 'f',
-          recipient_name: 'Sima',
-          recipient_surname: 'Salehi',
-          recipient_national_id: '123321',
-          recipient_mobile_no: '091212121212',
-          district: '',
-          unit: 13,
-          no: 18,
-          postal_code: 13445,
-          loc: {long: 2345, lat: 3445},
-        }],
-      },
-    }).then(res => {
+    }
+    //   {
+    //   $set: {
+    //     first_name: 'Sareh',
+    //     surname: 'Salehi',
+    //     mobile_no: '0912000000',
+    //     addresses: [{
+    //       city: 'Tehran',
+    //       street: 'Zartosht',
+    //       province: 'Tehran',
+    //       recipient_title: 'f',
+    //       recipient_name: 'Sima',
+    //       recipient_surname: 'Salehi',
+    //       recipient_national_id: '123321',
+    //       recipient_mobile_no: '091212121212',
+    //       district: '',
+    //       unit: 13,
+    //       no: 18,
+    //       postal_code: 13445,
+    //       loc: {long: 2345, lat: 3445},
+    //     }],
+    //   },
+    // }
+    ).then(res => {
         console.log(res);
         return rp({
           method: 'post',
@@ -339,11 +359,22 @@ describe('Guest User', () => {
             first_name: 'asd',
             surname: 'ad',
             mobile_no: '2343424324',
-            city: 'tehran',
-            street: 'zartosht',
+            addresses: [{
+              city: 'Tehran',
+              street: 'Zartosht Gharbi',
+              province: 'Tehran',
+              recipient_title: 'f',
+              recipient_name: 'Sahar',
+              recipient_surname: 'Salehi',
+              recipient_national_id: '123321',
+              recipient_mobile_no: '09112233333',
+              district: '',
+              unit: 13,
+              no: 18,
+              postal_code: 13445,
+              loc: {long: 2345, lat: 3445},
+            }],
             gender: 'f',
-            is_verified: false,
-            is_guest: false
           },
           json: true,
           uri: lib.helpers.apiTestURL('user/guest/address'),
@@ -366,7 +397,7 @@ describe('Guest User', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should add new guest', function (done) {
+  xit('should add new guest', function (done) {
     this.done = done;
     rp({
       method: 'post',
@@ -377,6 +408,36 @@ describe('Guest User', () => {
         mobile_no: '1234567890',
         gender: 'm',
         is_verified: false,
+        addresses : [
+          {
+            province : 'Tehran',
+            city : 'Tajrish',
+            street : 'emam',
+            recipient_title: 'f',
+            recipient_name: 'Zahra',
+            recipient_surname: 'Salehi',
+            recipient_national_id: '558822',
+            recipient_mobile_no: '0912111111',
+            unit: 4,
+            no: 20,
+            postal_code: 3715976155,
+            loc: {long: 1245, lat: 3478}
+          },
+          {
+            province : 'Qom',
+            city : 'Qom',
+            street : 'Honarestan',
+            recipient_title: 'm',
+            recipient_name: 'Ali',
+            recipient_surname: 'Salehi',
+            recipient_national_id: '55881111',
+            recipient_mobile_no: '0912111111',
+            unit: 3,
+            no: 13,
+            postal_code: 3715976155,
+            loc: {long: 1245, lat: 3478}
+          }
+        ],
         is_guest: true
       },
       json: true,
@@ -395,5 +456,11 @@ describe('Guest User', () => {
       expect(res[1].is_verified).toBe(false);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  xit('should add address to a exist guest user',function (done){
+    this.done = done;
+
+
   })
 });
