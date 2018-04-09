@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "jasmine-node --verbose spec/api --forceexit --captureExceptions"
+    "test": "jasmine spec/model & jasmine-node --verbose spec/api --forceexit --captureExceptions"
+    "model_test": "jasmine"
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
