@@ -1,4 +1,6 @@
 const Schema = require('mongoose').Schema;
+const TicketSchema = require('./ticket.schema');
+
 
 let schema_obj = {
   product_instance_id: Schema.Types.ObjectId,
@@ -24,6 +26,7 @@ let schema_obj = {
     type: Schema.Types.ObjectId,
     ref: 'Warehouse'
   },
+  tickets: [TicketSchema]
 };
 
 let OrderLineSchema = new Schema(schema_obj, {strict: true});
