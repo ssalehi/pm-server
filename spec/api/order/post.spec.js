@@ -1054,6 +1054,7 @@ describe('POST Order_Ticket (New Ticket)', () => {
   let _warehouseId;
   let _orderId;
   let _customerId;
+  let _orderLines = [];
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
@@ -1135,7 +1136,7 @@ describe('POST Order_Ticket (New Ticket)', () => {
                   warehouse_id: _warehouseId,
                   status: 2,
                   desc: 'Order Accepted 001',
-                  is_processed: true
+                  is_processed: false
                 },
                 {
                   status: 3,
@@ -1153,7 +1154,7 @@ describe('POST Order_Ticket (New Ticket)', () => {
                 {
                   status: 2,
                   desc: 'Order Accepted 003',
-                  is_processed: false
+                  is_processed: true
                 },
                 {
                   status: 3,
@@ -1165,7 +1166,9 @@ describe('POST Order_Ticket (New Ticket)', () => {
           ]
         })
       })
-      .then(() => {
+      .then((res) => {
+        _orderLines[0] = res.order_lines[0]._id;
+        _orderLines[1] = res.order_lines[1]._id;
         done();
       })
       .catch(err => {
@@ -1174,18 +1177,19 @@ describe('POST Order_Ticket (New Ticket)', () => {
       });
   });
 
-  xit('should create a ticket and add it to a new order (for customer)', function (done) {
+  it('should create a ticket and add it to a new order (for customer)', function (done) {
     this.done = done;
-    const warehouseId = mongoose.Types.ObjectId();
+    // const warehouseId = mongoose.Types.ObjectId();
+    
     rp({
       method: 'put',
       uri: lib.helpers.apiTestURL('order/ticket'),
       body: {
-        order_id: order._id,
-        warehouse_id: warehouseId,
+        order_id: _orderId,
+        order_line_id: _orderLines[0],
+        warehouse_id: _warehouseId,
         status: 2,
         desc: 'Order Accepted',
-        is_processed: false
       },
       json: true,
       resolveWithFullResponse: true,
@@ -1193,57 +1197,15 @@ describe('POST Order_Ticket (New Ticket)', () => {
 
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['OrderTest'].find({_id: order._id}).lean();
+      return models['OrderTest'].find({_id: _orderId}).lean();
     })
       .then(res => {
-        expect(res.length).toEqual(1);
-        res = res[0].tickets[0];
-        expect(res.warehouse_id.toString()).toBe(warehouseId.toString());
-        expect(res.status).toBe(2);
-        expect(res.desc).toBe('Order Accepted');
-        expect(res.is_processed).toBe(false);
+        res = res[0].order_lines[0];
+        expect(res.tickets.length).toBe(3);
+        expect(res.tickets[2].status).toBe(2);
+        expect(res.tickets[2].is_processed).toBe(false);
         done();
       }).catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  xit('should not create a ticket when ticket is not closed (for customer)', function (done) {
-    this.done = done;
-    return models['OrderTest'].update({
-      _id: order._id,
-    }, {
-      $addToSet: {
-        tickets: {
-          warehouse_id: warehouseId,
-          status: 2,
-          desc: 'Ticket Is Open',
-          is_processed: true
-        }
-      }
-    }).then(res => {
-      return Promise.resolve(rp({
-          method: 'put',
-          body: {
-            order_id: order._id,
-            warehouse_id: warehouseId,
-            status: 2,
-            desc: 'Order Accepted',
-          },
-          uri: lib.helpers.apiTestURL('order/ticket'),
-          jar: salesObj.jar,
-          json: true,
-          resolveWithFullResponse: true,
-        })
-      )
-
-    }).then(res => {
-      this.fail('could not add new ticket when one of them is open');
-      done();
-
-    }).catch(err => {
-      expect(err.statusCode).toBe(error.ActiveTicketExist.status);
-      expect(err.error).toBe(error.ActiveTicketExist.message);
-      done();
-    })
   });
 
   it('should not create a ticket when ticket is not closed (for customer)', function (done) {
@@ -1254,6 +1216,7 @@ describe('POST Order_Ticket (New Ticket)', () => {
       uri: lib.helpers.apiTestURL('order/ticket'),
       body: {
         order_id: _orderId,
+        order_line_id: _orderLines[1],
         warehouse_id: _warehouseId,
         status: 2,
         desc: 'Order Accepted',
