@@ -240,7 +240,8 @@ router.get('/page/:id', apiResponse('Page', 'getPage', false, ['params.id']));
 router.put('/page', apiResponse('Page', 'setPage', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id'], [_const.ACCESS_LEVEL.ContentManager]));
-router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address']));
+router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address', () => false]));
+router.post('/page/cm/preview', apiResponse('Page', 'getPageByAddress', true, ['body.address', () => true], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 // Search

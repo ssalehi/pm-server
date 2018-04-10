@@ -68,10 +68,24 @@ describe('Post page basics', () => {
 
 describe('Post page placements and page info', () => {
   let page, collection_id;
+  let contentManager;
+
+  const placementId1 = new mongoose.Types.ObjectId();
+  const placementId2 = new mongoose.Types.ObjectId();
+  const placementId3 = new mongoose.Types.ObjectId();
+  const placementId4 = new mongoose.Types.ObjectId();
+  const placementId5 = new mongoose.Types.ObjectId();
+  const placementId6 = new mongoose.Types.ObjectId();
+  const placementId7 = new mongoose.Types.ObjectId();
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('cm');
+      })
       .then(res => {
-        let inserts = [];
+        contentManager = res;
+
         collection_id = new mongoose.Types.ObjectId();
 
         page = models['PageTest']({
@@ -79,31 +93,110 @@ describe('Post page placements and page info', () => {
           is_app: false,
           placement: [
             {
-              component_name: 'main'
+              "_id": placementId1,
+              "component_name": "main",
+              "variable_name": "",
+              "info": {
+                "panel_type": "quarter",
+                "imgUrl": "../../../../assets/pictures/nike-first-page-pic/q4.png",
+                "href": "#",
+                "subTitle": {
+                  "title": "کفش پیاده روی زنانه نایک، مدل پگاسوس",
+                  "text": "کفش پیاده روی زنانه",
+                  "color": "black",
+                  "textColor": "gray"
+                },
+              },
+              ref_newest_id: placementId5,
+              is_finalized: true,
             },
             {
-              component_name: 'slider'
+              "_id": placementId2,
+              "component_name": "slider",
+              "variable_name": "پس گرفتن جنس خریداری شده تا ۳۰ روز",
+              "info": {
+                "column": 1,
+                "imgUrl": "assets/cliparts/return.png",
+                "href": "#",
+                "style": {
+                  "imgWidth": 30,
+                  "imgMarginLeft": 5
+                }
+              },
+              is_finalized: true,
             },
             {
-              component_name: 'menu'
+              "_id": placementId3,
+              "component_name": "menu",
+              "variable_name": "topMenu",
+              "info": {
+                "column": "0",
+                "text": "مردانه",
+                "section": "men",
+                "href": "collection/men"
+              },
+              is_finalized: true,
             },
             {
-              component_name: 'slider'
+              "_id": placementId4,
+              "component_name": "slider",
+              "variable_name": "ارسال رایگان در تهران و حومه",
+              "info": {
+                "column": 0,
+                "imgUrl": "assets/cliparts/delivery.png",
+                "href": "#"
+              },
+              is_finalized: false,
             },
             {
-              component_name: 'main'
+              "_id": placementId5,
+              "component_name": "main",
+              "variable_name": "",
+              "info": {
+                "panel_type": "quarter",
+                "imgUrl": "../../../../assets/pictures/nike-first-page-pic/q3.png",
+                "href": "#",
+                "subTitle": {
+                  "title": "کفش ورزشی زنانه نایک، سری نایک پلاس",
+                  "text": "کفش ورزشی زنانه",
+                  "color": "black",
+                  "textColor": "gray"
+                },
+                "areas": []
+              },
+              is_finalized: false,
             },
             {
-              component_name: 'menu'
+              "_id": placementId6,
+              "component_name": "menu",
+              "variable_name": "subMenu",
+              "info": {
+                "section": "men/header",
+                "column": 1,
+                "row": 1,
+                "text": "تازه‌ها",
+                "href": "collection/x"
+              },
+              is_finalized: true,
+              ref_newest_id: placementId7,
             },
             {
-              component_name: 'menu'
+              "_id": placementId7,
+              "component_name": "menu",
+              "variable_name": "subMenu",
+              "info": {
+                "section": "men/header",
+                "column": 1,
+                "row": 2,
+                "text": "پرفروش‌ها",
+                "href": "#"
+              },
+              is_finalized: false,
             },
           ],
           page_info: {
             collection_id: collection_id,
             content: 'sample content'
-
           }
         });
 
@@ -133,19 +226,39 @@ describe('Post page placements and page info', () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
       let result = res.body;
-      expect(result.placement.length).toBe(7);
+      expect(result.placement.length).toBe(4);
       expect(result.page_info.collection_id.toString()).toBe(collection_id.toString());
       expect(result.page_info.content).toBe('sample content');
       done();
-
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-
+  it("should get page placements and override not finalized placements (based on content manager request)", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        address: page.address
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('page/cm/preview'),
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        res = res.body;
+        expect(res.placement.length).toBe(5);
+        expect(res.placement.find(el => el._id.toString() === placementId6.toString())).toBeUndefined();
+        expect(res.placement.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
 });
 
-describe('POST placement (top menu)', () => {
+xdescribe('POST placement (top menu)', () => {
   let page, collection_id, contentManager;
   const placementId1 = new mongoose.Types.ObjectId();
   const placementId2 = new mongoose.Types.ObjectId();
