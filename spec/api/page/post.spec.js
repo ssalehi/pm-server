@@ -175,6 +175,7 @@ describe('POST placement (top menu)', () => {
               "info": {
                 "column": "0",
                 "text": "مردانه",
+                "section": "men",
                 "href": "collection/men"
               }
             },
@@ -213,6 +214,7 @@ describe('POST placement (top menu)', () => {
               "info": {
                 "column": "1",
                 "text": "زنانه",
+                "section": "women",
                 "href": "collection/women"
               }
             },
@@ -223,6 +225,7 @@ describe('POST placement (top menu)', () => {
               "info": {
                 "column": "2",
                 "text": "دخترانه",
+                "section": "girls",
                 "href": "collection/girls"
               }
             },
@@ -233,6 +236,7 @@ describe('POST placement (top menu)', () => {
               "info": {
                 "column": "3",
                 "text": "پسرانه",
+                "section": "boys",
                 "href": "collection/boys"
               }
             }
@@ -292,7 +296,8 @@ describe('POST placement (top menu)', () => {
             "info": {
               "column": "2",
               "text": "پسرانه",
-              "href": "collection/boys"
+              "href": "collection/boys",
+              "section": 'bad_boys',
             }
           }]
       },
@@ -311,6 +316,7 @@ describe('POST placement (top menu)', () => {
         expect(res.find(el => el.info.href === 'collection/girls').info.column).toBe(0);
         expect(res.find(el => el.info.href === 'collection/women').info.column).toBe(1);
         expect(res.find(el => el.info.href === 'collection/boys').info.column).toBe(2);
+        expect(res.find(el => el.info.href === 'collection/boys').info.section).toBe('boys');
         expect(res.find(el => el.info.href === 'collection/men').info.column).toBe(3);
         done();
       })
