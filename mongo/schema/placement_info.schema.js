@@ -7,7 +7,6 @@ let schema_obj = {
   row: Number, // for both panel and menu
   text: String, // for both panel and menu
   href: String, // href is also used for determining which collection is to be shown
-  order: Number, // order between elements with same section
   is_header: Boolean,
   panel_type: String,
   topTitle: {

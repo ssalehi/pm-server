@@ -219,7 +219,7 @@ describe("Put Placement Api", () => {
               "component_name": "menu",
               "variable_name": "topMenu",
               "info": {
-                "order": "0",
+                "column": "0",
                 "text": "مردانه",
                 "href": "collection/men"
               }
@@ -250,7 +250,7 @@ describe("Put Placement Api", () => {
               "component_name": "menu",
               "variable_name": "topMenu",
               "info": {
-                "order": "1",
+                "column": "1",
                 "text": "زنانه",
                 "href": "collection/women"
               }
@@ -259,7 +259,7 @@ describe("Put Placement Api", () => {
               "component_name": "menu",
               "variable_name": "topMenu",
               "info": {
-                "order": "2",
+                "column": "2",
                 "text": "دخترانه",
                 "href": "collection/girls"
               }
@@ -268,7 +268,7 @@ describe("Put Placement Api", () => {
               "component_name": "menu",
               "variable_name": "topMenu",
               "info": {
-                "order": "3",
+                "column": "3",
                 "text": "پسرانه",
                 "href": "collection/boys"
               }
@@ -293,7 +293,7 @@ describe("Put Placement Api", () => {
       });
   });
 
-  it('should add new placement to page (add placement without setting order)', function (done) {
+  it('should add new placement to page (add placement without setting column)', function (done) {
     this.done = done;
     rp({
       method: 'put',
@@ -305,7 +305,7 @@ describe("Put Placement Api", () => {
           info: {
             text: 'بچه سال',
             href: 'kids',
-            order: 4,
+            column: 4,
           },
         }
       },
@@ -326,7 +326,7 @@ describe("Put Placement Api", () => {
         expect(res.length).toBe(5);
         res = res.find(el => el.info.href === 'kids');
         expect(res.info.text).toBe('بچه سال');
-        expect(res.info.order).toBe(4);
+        expect(res.info.column).toBe(4);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -401,7 +401,7 @@ describe("Put Placement Api", () => {
           "info": {
             "text": "دخترانه",
             "href": "collection/girls",
-            "order": 5,
+            "column": 5,
           },
         }
       },

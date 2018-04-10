@@ -173,7 +173,7 @@ describe('POST placement (top menu)', () => {
               "component_name": "menu",
               "variable_name": "topMenu",
               "info": {
-                "order": "0",
+                "column": "0",
                 "text": "مردانه",
                 "href": "collection/men"
               }
@@ -211,7 +211,7 @@ describe('POST placement (top menu)', () => {
               "component_name": "menu",
               "variable_name": "topMenu",
               "info": {
-                "order": "1",
+                "column": "1",
                 "text": "زنانه",
                 "href": "collection/women"
               }
@@ -221,7 +221,7 @@ describe('POST placement (top menu)', () => {
               "component_name": "menu",
               "variable_name": "topMenu",
               "info": {
-                "order": "2",
+                "column": "2",
                 "text": "دخترانه",
                 "href": "collection/girls"
               }
@@ -231,7 +231,7 @@ describe('POST placement (top menu)', () => {
               "component_name": "menu",
               "variable_name": "topMenu",
               "info": {
-                "order": "3",
+                "column": "3",
                 "text": "پسرانه",
                 "href": "collection/boys"
               }
@@ -266,7 +266,7 @@ describe('POST placement (top menu)', () => {
           {
             "_id": placementId1,
             "info": {
-              "order": "3",
+              "column": "3",
               "text": "مردانه - جدید",
               "href": "collection/men"
             }
@@ -274,7 +274,7 @@ describe('POST placement (top menu)', () => {
           {
             "_id": placementId4,
             "info": {
-              "order": "1",
+              "column": "1",
               "text": "زنانه",
               "href": "collection/women"
             }
@@ -282,7 +282,7 @@ describe('POST placement (top menu)', () => {
           {
             "_id": placementId5,
             "info": {
-              "order": "0",
+              "column": "0",
               "text": "دخترانه",
               "href": "collection/girls"
             }
@@ -290,7 +290,7 @@ describe('POST placement (top menu)', () => {
           {
             "_id": placementId6,
             "info": {
-              "order": "2",
+              "column": "2",
               "text": "پسرانه",
               "href": "collection/boys"
             }
@@ -308,10 +308,10 @@ describe('POST placement (top menu)', () => {
       .then(res => {
         res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
         expect(res.length).toBe(4);
-        expect(res.find(el => el.info.href === 'collection/girls').info.order).toBe(0);
-        expect(res.find(el => el.info.href === 'collection/women').info.order).toBe(1);
-        expect(res.find(el => el.info.href === 'collection/boys').info.order).toBe(2);
-        expect(res.find(el => el.info.href === 'collection/men').info.order).toBe(3);
+        expect(res.find(el => el.info.href === 'collection/girls').info.column).toBe(0);
+        expect(res.find(el => el.info.href === 'collection/women').info.column).toBe(1);
+        expect(res.find(el => el.info.href === 'collection/boys').info.column).toBe(2);
+        expect(res.find(el => el.info.href === 'collection/men').info.column).toBe(3);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -328,7 +328,7 @@ describe('POST placement (top menu)', () => {
             "component_name": "menu",
             "variable_name": "topMenu",
             "info": {
-              "order": "3",
+              "column": "3",
               "text": "مردانه - جدید",
               "href": "collection/men"
             }
@@ -337,7 +337,7 @@ describe('POST placement (top menu)', () => {
             "component_name": "menu",
             "variable_name": "topMenu",
             "info": {
-              "order": "1",
+              "column": "1",
               "text": "زنانه",
               "href": "collection/women"
             }
@@ -370,7 +370,7 @@ describe('POST placement (top menu)', () => {
             "component_name": "menu",
             "variable_name": "topMenu",
             "info": {
-              "order": "3",
+              "column": "3",
               "text": "مردانه - جدید",
               "href": "collection/men"
             }
@@ -380,7 +380,7 @@ describe('POST placement (top menu)', () => {
             "component_name": "menu",
             "variable_name": "topMenu",
             "info": {
-              "order": "1",
+              "column": "1",
               "text": "زنانه",
               "href": "collection/women"
             }
