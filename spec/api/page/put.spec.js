@@ -221,6 +221,7 @@ describe("Put Placement Api", () => {
               "info": {
                 "column": "0",
                 "text": "مردانه",
+                "section": "men",
                 "href": "collection/men"
               }
             },
@@ -252,6 +253,7 @@ describe("Put Placement Api", () => {
               "info": {
                 "column": "1",
                 "text": "زنانه",
+                "section": "women",
                 "href": "collection/women"
               }
             },
@@ -261,6 +263,7 @@ describe("Put Placement Api", () => {
               "info": {
                 "column": "2",
                 "text": "دخترانه",
+                "section": "girls",
                 "href": "collection/girls"
               }
             },
@@ -270,6 +273,7 @@ describe("Put Placement Api", () => {
               "info": {
                 "column": "3",
                 "text": "پسرانه",
+                "section": "boys",
                 "href": "collection/boys"
               }
             }
@@ -304,7 +308,8 @@ describe("Put Placement Api", () => {
           variable_name: 'topMenu',
           info: {
             text: 'بچه سال',
-            href: 'kids',
+            href: 'collection/kids',
+            section: 'kids',
             column: 4,
           },
         }
@@ -324,8 +329,9 @@ describe("Put Placement Api", () => {
         expect(res.length).toBe(1);
         res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
         expect(res.length).toBe(5);
-        res = res.find(el => el.info.href === 'kids');
+        res = res.find(el => el.info.href === 'collection/kids');
         expect(res.info.text).toBe('بچه سال');
+        expect(res.info.section).toBe('kids');
         expect(res.info.column).toBe(4);
         done();
       })
@@ -401,6 +407,7 @@ describe("Put Placement Api", () => {
           "info": {
             "text": "دخترانه",
             "href": "collection/girls",
+            "section": "girls",
             "column": 5,
           },
         }
