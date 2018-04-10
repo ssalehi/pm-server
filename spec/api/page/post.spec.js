@@ -30,7 +30,7 @@ describe('Post page basics', () => {
         done();
       })
       .catch(err => {
-        console.log(err);
+        console.error(err);
         done();
       });
   });
@@ -56,7 +56,6 @@ describe('Post page basics', () => {
       return models['PageTest'].find({}).lean();
 
     }).then(res => {
-      console.log('-> ', res);
       expect(res[0].address).toBe('changedAddress');
       expect(res[0].is_app).toBe(true);
       expect(res[0].page_info.collection_id.toString()).toBe(collectionId.toString());
@@ -115,7 +114,7 @@ describe('Post page placements and page info', () => {
         done();
       })
       .catch(err => {
-        console.log(err);
+        console.error(err);
         done();
       });
   });
@@ -252,7 +251,7 @@ describe('POST placement (top menu)', () => {
         done();
       })
       .catch(err => {
-        console.log(err);
+        console.error(err);
         done();
       });
   });
@@ -263,7 +262,7 @@ describe('POST placement (top menu)', () => {
       method: 'post',
       body: {
         page_id: page._id,
-        placement: [
+        placements: [
           {
             "_id": placementId1,
             "component_name": "menu",
@@ -315,12 +314,12 @@ describe('POST placement (top menu)', () => {
         return models['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
-        res = res.placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
+        res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
         expect(res.length).toBe(4);
-        expect(res.find(el => el.info.href === 'collection/girls').order).toBe(0);
-        expect(res.find(el => el.info.href === 'collection/women').order).toBe(1);
-        expect(res.find(el => el.info.href === 'collection/boys').order).toBe(2);
-        expect(res.find(el => el.info.href === 'collection/men').order).toBe(3);
+        expect(res.find(el => el.info.href === 'collection/girls').info.order).toBe(0);
+        expect(res.find(el => el.info.href === 'collection/women').info.order).toBe(1);
+        expect(res.find(el => el.info.href === 'collection/boys').info.order).toBe(2);
+        expect(res.find(el => el.info.href === 'collection/men').info.order).toBe(3);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -331,7 +330,7 @@ describe('POST placement (top menu)', () => {
       method: 'post',
       body: {
         page_id: page._id,
-        placement: [
+        placements: [
           {
             "_id": placementId1,
             "component_name": "menu",
@@ -369,7 +368,50 @@ describe('POST placement (top menu)', () => {
       });
   });
 
-  it("content manager should delete placement", function (done) {
+  it("should get error when page is not is specified", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        placements: [
+          {
+            "_id": placementId1,
+            "component_name": "menu",
+            "variable_name": "topMenu",
+            "info": {
+              "order": "3",
+              "text": "مردانه - جدید",
+              "href": "collection/men"
+            }
+          },
+          {
+            "_id": placementId2,
+            "component_name": "menu",
+            "variable_name": "topMenu",
+            "info": {
+              "order": "1",
+              "text": "زنانه",
+              "href": "collection/women"
+            }
+          }
+        ]
+      },
+      json: true,
+      jar: contentManager.rpJar,
+      uri: lib.helpers.apiTestURL('placement'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail("Content manager can delete a placement without specified page id");
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.pageIdRequired.status);
+        expect(err.error).toBe(errors.pageIdRequired.message);
+        done();
+      });
+  });
+
+  it("content manager should delete placement (delete placement)", function (done) {
     this.done = done;
     rp({
       method: 'post',
@@ -387,7 +429,7 @@ describe('POST placement (top menu)', () => {
         return models['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
-        res = res.placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
+        res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
         expect(res.length).toBe(3);
         expect(res.find(el => el._id.toString() === placementId1.toString())).toBeUndefined();
         done();
@@ -395,7 +437,7 @@ describe('POST placement (top menu)', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it("should get error when no page's id is not specified", function (done) {
+  it("should get error when no page's id is not specified (delete placement)", function (done) {
     rp({
       method: 'post',
       body: {
@@ -417,7 +459,7 @@ describe('POST placement (top menu)', () => {
       });
   });
 
-  it("should get error when placement id is not passed", function (done) {
+  it("should get error when placement id is not passed (delete placement)", function (done) {
     rp({
       method: 'post',
       body: {

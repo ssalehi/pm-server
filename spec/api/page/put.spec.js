@@ -19,7 +19,7 @@ describe("Put page basics", () => {
         done();
       })
       .catch(err => {
-        console.log(err);
+        console.error(err);
         done();
       });
   });
@@ -288,7 +288,7 @@ describe("Put Placement Api", () => {
         done();
       })
       .catch(err => {
-        console.log(err);
+        console.err(err);
         done();
       });
   });
@@ -305,6 +305,7 @@ describe("Put Placement Api", () => {
           info: {
             text: 'بچه سال',
             href: 'kids',
+            order: 4,
           },
         }
       },
@@ -321,9 +322,9 @@ describe("Put Placement Api", () => {
       })
       .then(res => {
         expect(res.length).toBe(1);
-        res = res.placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
+        res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
         expect(res.length).toBe(5);
-        res = res.filter(el => el.info.href === 'kids');
+        res = res.find(el => el.info.href === 'kids');
         expect(res.info.text).toBe('بچه سال');
         expect(res.info.order).toBe(4);
         done();
@@ -393,12 +394,16 @@ describe("Put Placement Api", () => {
     rp({
       method: 'put',
       body: {
-        "component_name": "menu",
-        "variable_name": "topMenu",
-        "info": {
-          "text": "دخترانه",
-          "href": "collection/girls"
-        },
+        page_id: page._id,
+        placement: {
+          "component_name": "menu",
+          "variable_name": "topMenu",
+          "info": {
+            "text": "دخترانه",
+            "href": "collection/girls",
+            "order": 5,
+          },
+        }
       },
       jar: contentManager.rpJar,
       json: true,
