@@ -265,8 +265,6 @@ describe('POST placement (top menu)', () => {
         placements: [
           {
             "_id": placementId1,
-            "component_name": "menu",
-            "variable_name": "topMenu",
             "info": {
               "order": "3",
               "text": "مردانه - جدید",
@@ -275,8 +273,6 @@ describe('POST placement (top menu)', () => {
           },
           {
             "_id": placementId4,
-            "component_name": "menu",
-            "variable_name": "topMenu",
             "info": {
               "order": "1",
               "text": "زنانه",
@@ -285,8 +281,6 @@ describe('POST placement (top menu)', () => {
           },
           {
             "_id": placementId5,
-            "component_name": "menu",
-            "variable_name": "topMenu",
             "info": {
               "order": "0",
               "text": "دخترانه",
@@ -295,8 +289,6 @@ describe('POST placement (top menu)', () => {
           },
           {
             "_id": placementId6,
-            "component_name": "menu",
-            "variable_name": "topMenu",
             "info": {
               "order": "2",
               "text": "پسرانه",
