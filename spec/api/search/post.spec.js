@@ -3,6 +3,7 @@ const lib = require('../../../lib');
 const rp = require('request-promise');
 const mongoose = require('mongoose');
 const error = require('../../../lib/errors.list');
+const _const = require('../../../lib/const.list');
 
 describe('POST Search Collection', () => {
 
@@ -264,6 +265,360 @@ describe('POST Search Page', () => {
       resolveWithFullResponse: true
     }).then(res => {
       this.fail('some one other than content manager could call api');
+      done();
+    })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noAccess.status);
+        expect(err.error).toBe(error.noAccess.message);
+        done();
+      });
+  });
+
+});
+
+describe('POST Order - Search over order lines by tickets', () => {
+
+  let customer1 = {
+    cid: null,
+    jar: null
+  };
+  let customer2 = {
+    cid: null,
+    jar: null
+  };
+  let SMAgent = {
+    cid: null,
+    jar: null
+  };
+  let SCAgent = {
+    cid: null,
+    jar: null
+  };
+  let CMAgent = {
+    cid: null,
+    jar: null
+  };
+
+  let productInstanceIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId()
+  ];
+  let colorIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId()
+  ];
+  let productIds = [];
+  let orderIds = [];
+  let warehouses = [{
+    _id: mongoose.Types.ObjectId(),
+    name: 'سانا',
+    phone: '021 7443 8111',
+    has_customer_pickup: true,
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'اندرزگو'
+    }
+  }, {
+    _id: mongoose.Types.ObjectId(),
+    name: 'ایران مال',
+    phone: 'نا مشخص',
+    has_customer_pickup: true,
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'اتوبان خرازی'
+    }
+  }, {
+    _id: mongoose.Types.ObjectId(),
+    name: 'پالادیوم',
+    phone: ' 021 2201 0600',
+    has_customer_pickup: true,
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'مقدس اردبیلی'
+    }
+  }, {
+    _id: mongoose.Types.ObjectId(),
+    name: 'انبار مرکزی',
+    phone: 'نا مشخص',
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'نامشخص'
+    },
+    is_center: true
+  }];
+
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return models['WarehouseTest'].insertMany(warehouses)
+      })
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
+      })
+      .then(res => {
+        SMAgent.cid = res.cid;
+        SMAgent.jar = res.rpJar;
+        return lib.dbHelpers.addAndLoginAgent('sc', _const.ACCESS_LEVEL.ShopClerk, warehouses.find(x => x.name === 'سانا')._id)
+      })
+      .then(res => {
+        SCAgent.cid = res.cid;
+        SCAgent.jar = res.rpJar;
+        return lib.dbHelpers.addAndLoginAgent('cm')
+      })
+      .then(res => {
+        CMAgent.cid = res.cid;
+        CMAgent.jar = res.rpJar;
+        return lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
+          first_name: 'test 1',
+          surname: 'test 1',
+        })
+      })
+      .then(res => {
+        customer1.cid = res.cid;
+        customer1.jar = res.rpJar;
+        return lib.dbHelpers.addAndLoginCustomer('customer2', '123456', {
+          first_name: 'test 2',
+          surname: 'test 2',
+        })
+      })
+      .then(res => {
+        customer2.cid = res.cid;
+        customer2.jar = res.rpJar;
+        let products = [{
+          _id: productIds[0],
+          name: 'sample 1',
+          product_type: {
+            name: 'sample type',
+            product_type_id: mongoose.Types.ObjectId()
+          },
+          brand: {
+            name: 'sample brand',
+            brand_id: mongoose.Types.ObjectId()
+          },
+          base_price: 30000,
+          desc: 'some description for this product',
+          colors: [
+            {
+              color_id: colorIds[0],
+              name: 'green'
+            },
+            {
+              color_id: colorIds[1],
+              name: 'yellow'
+            },
+            {
+              color_id: colorIds[2],
+              name: 'red'
+            }
+          ],
+          instances: [
+            {
+              _id: productInstanceIds[0],
+              product_color_id: colorIds[0],
+              size: "9",
+              price: 2000,
+              barcode: '0394081341'
+            },
+            {
+              _id: productInstanceIds[1],
+              product_color_id: colorIds[1],
+              size: "10",
+              price: 4000,
+              barcode: '19231213123'
+            }
+          ]
+        },
+          {
+            _id: productIds[1],
+            name: 'simple 2',
+            product_type: {
+              name: 'sample type',
+              product_type_id: mongoose.Types.ObjectId()
+            },
+            brand: {
+              name: 'sample brand',
+              brand_id: mongoose.Types.ObjectId()
+            },
+            base_price: 600000,
+            desc: "some else description for this product",
+            colors: [
+              {
+                color_id: colorIds[2],
+                name: 'red'
+              }, {
+                color_id: colorIds[3],
+                name: 'purple'
+              },
+            ],
+            instances: [
+              {
+                _id: productInstanceIds[2],
+                product_color_id: colorIds[2],
+                size: "11",
+                price: 50000,
+                barcode: '9303850203',
+                tickets: [
+                  {}
+                ]
+              },
+              {
+                _id: productInstanceIds[3],
+                product_color_id: colorIds[3],
+                size: "11",
+                price: 50000,
+                barcode: '9303850203',
+              }
+            ]
+          }];
+        return models['ProductTest'].insertMany(products);
+      })
+      .then(res => {
+
+        productIds = res.map(x => x._id);
+
+        let orders = [{
+          customer_id: customer1.cid,
+          total_amount: 2,
+          order_time: new Date(),
+          is_cart: false,
+          address_id: mongoose.Types.ObjectId(),
+          transaction_id: mongoose.Types.ObjectId(),
+          order_lines: [{
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
+            tickets: [ // sales manager ticket
+              {
+                warehouse_id: warehouses.find(x => x.is_center)._id,
+                status: _const.ORDER_STATUS.default
+              }
+            ]
+          }, { // shop clerk ticket
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[1],
+            tickets: [
+              {
+                warehouse_id: warehouses.find(x => x.is_center)._id,
+                status: _const.ORDER_STATUS.default,
+                is_processed: true,
+                agent_id: SMAgent.cid
+              },
+              {
+                warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
+                referral_advice: _const.REFERRAL_ADVICE.SendToCustomer
+              }
+            ]
+          }]
+        }, {
+          customer_id: customer2.cid,
+          total_amount: 1,
+          order_time: new Date(),
+          is_cart: false,
+          address_id: mongoose.Types.ObjectId(),
+          transaction_id: mongoose.Types.ObjectId(),
+          order_lines: [{
+            product_id: productIds[1],
+            product_instance_id: productInstanceIds[2],
+            tickets: [ // sales manager ticket
+              {
+                warehouse_id: warehouses.find(x => x.is_center)._id,
+                status: _const.ORDER_STATUS.default,
+                is_processed: true,
+                agent_id: SMAgent.cid
+              },
+              {
+                warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
+                referral_advice: _const.REFERRAL_ADVICE.SendToCentral,
+                is_processed: true,
+                agent_id: SCAgent.cid
+              }, {
+                warehouse_id: warehouses.find(x => x.is_center)._id,
+                status: _const.ORDER_STATUS.SCAccepted,
+              }
+            ]
+          }]
+        }];
+
+        return models['OrderTest'].insertMany(orders);
+      })
+      .then(res => {
+        orderIds = res.map(x => x._id);
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      })
+  });
+  it('sales manager should get all unprocessed tickets for central warehouse', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`search/Order`),
+      body: {
+        options: {
+        },
+        offset: 0,
+        limit: 10
+      },
+      json: true,
+      jar: SMAgent.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.total).toEqual(2);
+      res.body.data.forEach(x => {
+        expect(x.tickets.warehouse_id).toBe(warehouses.find(x => x.is_center)._id.toString())
+      });
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+  it('shop clerk should get all unprocessed tickets for his/her warehouse', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`search/Order`),
+      body: {
+        options: {
+        },
+        offset: 0,
+        limit: 10
+      },
+      json: true,
+      jar: SCAgent.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.total).toEqual(1);
+      res.body.data.forEach(x => {
+        expect(x.tickets.warehouse_id).toBe(warehouses.find(x => x.name === 'سانا')._id.toString())
+      });
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+  it('content manager should not be able to see order lines', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`search/Order`),
+      body: {
+        options: {
+        },
+        offset: 0,
+        limit: 10
+      },
+      json: true,
+      jar: CMAgent.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('content manager can search over order lines');
       done();
     })
       .catch(err => {
@@ -543,3 +898,4 @@ describe('POST Suggest Collection', () => {
   });
 
 });
+
