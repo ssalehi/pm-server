@@ -5,7 +5,6 @@ const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 
 describe("Put page basics", () => {
-
   let adminObj = {
     aid: null,
     jar: null,
@@ -24,7 +23,6 @@ describe("Put page basics", () => {
         done();
       });
   });
-
 
   it("should add a new page", function (done) {
 
@@ -198,9 +196,223 @@ describe("Put page basics", () => {
       });
 
   });
-
-
 });
 
+describe("Put Placement Api", () => {
+  let page, collection_id, contentManager;
 
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('cm');
+      })
+      .then(res => {
+        contentManager = res;
 
+        collection_id = new mongoose.Types.ObjectId();
+
+        page = models['PageTest']({
+          address: 'test',
+          is_app: false,
+          placement: [
+            {
+              "component_name": "menu",
+              "variable_name": "topMenu",
+              "info": {
+                "order": "0",
+                "text": "مردانه",
+                "href": "collection/men"
+              }
+            },
+            {
+              "component_name": "menu",
+              "variable_name": "subMenu",
+              "info": {
+                "section": "men/header",
+                "column": 1,
+                "row": 1,
+                "text": "تازه‌ها",
+                "href": "collection/x"
+              }
+            },
+            {
+              "component_name": "menu",
+              "variable_name": "subMenu",
+              "info": {
+                "section": "men/header",
+                "column": 1,
+                "row": 3,
+                "text": "مجموعه Equality",
+                "href": "#"
+              }
+            },
+            {
+              "component_name": "menu",
+              "variable_name": "topMenu",
+              "info": {
+                "order": "1",
+                "text": "زنانه",
+                "href": "collection/women"
+              }
+            },
+            {
+              "component_name": "menu",
+              "variable_name": "topMenu",
+              "info": {
+                "order": "2",
+                "text": "دخترانه",
+                "href": "collection/girls"
+              }
+            },
+            {
+              "component_name": "menu",
+              "variable_name": "topMenu",
+              "info": {
+                "order": "3",
+                "text": "پسرانه",
+                "href": "collection/boys"
+              }
+            }
+          ],
+          page_info: {
+            collection_id: collection_id,
+            content: 'sample content'
+
+          }
+        });
+
+        return page.save()
+
+      })
+      .then(res => {
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+  it('should add new placement to page (add placement without setting order)', function (done) {
+    this.done = done;
+    rp({
+      method: 'put',
+      body: {
+        page_id: page._id,
+        placement: {
+          component_name: 'menu',
+          variable_name: 'topMenu',
+          info: {
+            text: 'بچه سال',
+            href: 'kids',
+          },
+        }
+      },
+      uri: lib.helpers.apiTestURL('placement'),
+      json: true,
+      resolveWithFullResponse: true,
+      jar: contentManager.rpJar,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['PageTest'].find({
+          '_id': page._id,
+        }).lean();
+      })
+      .then(res => {
+        expect(res.length).toBe(1);
+        res = res.placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
+        expect(res.length).toBe(5);
+        res = res.filter(el => el.info.href === 'kids');
+        expect(res.info.text).toBe('بچه سال');
+        expect(res.info.order).toBe(4);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should get error when adding a placement without specified page id', function (done) {
+    rp({
+      method: 'put',
+      body: {
+        placement: {
+          component_name: 'menu',
+          variable_name: 'topMenu',
+          info: {
+            text: 'بچه سال',
+            href: 'kids',
+          },
+        }
+      },
+      uri: lib.helpers.apiTestURL('placement'),
+      json: true,
+      resolveWithFullResponse: true,
+      jar: contentManager.rpJar,
+    })
+      .then(res => {
+        this.fail('Content Manager can add placement without specified page id');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.pageIdRequired.status);
+        expect(err.error).toBe(error.pageIdRequired.message);
+        done();
+      });
+  });
+
+  it('should get error when adding a placement without specified placement details', function (done) {
+    rp({
+      method: 'put',
+      body: {
+        page_id: page._id,
+        placement: {
+          variable_name: 'topMenu',
+          info: {
+            text: 'بچه سال',
+            href: 'kids',
+          },
+        }
+      },
+      uri: lib.helpers.apiTestURL('placement'),
+      json: true,
+      resolveWithFullResponse: true,
+      jar: contentManager.rpJar,
+    })
+      .then(res => {
+        this.fail('Content Manager can add placement without specified placement general details');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.placementDetailsRequired.status);
+        expect(err.error).toBe(error.placementDetailsRequired.message);
+        done();
+      });
+  });
+
+  it("should get error when adding placement with same href and text", function (done) {
+    rp({
+      method: 'put',
+      body: {
+        "component_name": "menu",
+        "variable_name": "topMenu",
+        "info": {
+          "text": "دخترانه",
+          "href": "collection/girls"
+        },
+      },
+      jar: contentManager.rpJar,
+      json: true,
+      uri: lib.helpers.apiTestURL('placement'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Content manager can add duplicated placement');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.duplicatePlacement.status);
+        expect(err.error).toBe(error.duplicatePlacement.message);
+        done();
+      });
+  });
+});

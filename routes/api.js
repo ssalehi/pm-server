@@ -285,6 +285,8 @@ router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false,
 router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
 
 // Placement
-// router.post('/placement', apiResponse('Customer', 'getA'))
+router.put('/placement', apiResponse('Page', 'addPlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body', [_const.ACCESS_LEVEL.ContentManager]]));
+router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
 module.exports = router;

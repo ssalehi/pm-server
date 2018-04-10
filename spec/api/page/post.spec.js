@@ -2,6 +2,7 @@ const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
+const errors = require('../../../lib/errors.list');
 
 describe('Post page basics', () => {
 
@@ -146,11 +147,22 @@ describe('Post page placements and page info', () => {
 });
 
 describe('POST placement (top menu)', () => {
-  let page, collection_id;
+  let page, collection_id, contentManager;
+  const placementId1 = new mongoose.Types.ObjectId();
+  const placementId2 = new mongoose.Types.ObjectId();
+  const placementId3 = new mongoose.Types.ObjectId();
+  const placementId4 = new mongoose.Types.ObjectId();
+  const placementId5 = new mongoose.Types.ObjectId();
+  const placementId6 = new mongoose.Types.ObjectId();
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('cm');
+      })
       .then(res => {
-        let inserts = [];
+        contentManager = res;
+
         collection_id = new mongoose.Types.ObjectId();
 
         page = models['PageTest']({
@@ -158,26 +170,73 @@ describe('POST placement (top menu)', () => {
           is_app: false,
           placement: [
             {
-              component_name: 'main'
+              "_id": placementId1,
+              "component_name": "menu",
+              "variable_name": "topMenu",
+              "info": {
+                "order": "0",
+                "text": "مردانه",
+                "href": "collection/men"
+              }
             },
             {
-              component_name: 'slider'
+              "_id": placementId2,
+              "component_name": "menu",
+              "variable_name": "subMenu",
+              "info": {
+                "section": "men/header",
+                "column": 1,
+                "row": 1,
+                "text": "تازه‌ها",
+                "href": "collection/x"
+              }
             },
             {
-              component_name: 'menu'
+              "_id": placementId3,
+              "component_name": "slider",
+              "variable_name": "پس گرفتن جنس خریداری شده تا ۳۰ روز",
+              "start_date": "",
+              "end_date": "",
+              "info": {
+                "column": 1,
+                "imgUrl": "assets/cliparts/return.png",
+                "href": "#",
+                "style": {
+                  "imgWidth": 30,
+                  "imgMarginLeft": 5
+                }
+              }
             },
             {
-              component_name: 'slider'
+              "_id": placementId4,
+              "component_name": "menu",
+              "variable_name": "topMenu",
+              "info": {
+                "order": "1",
+                "text": "زنانه",
+                "href": "collection/women"
+              }
             },
             {
-              component_name: 'main'
+              "_id": placementId5,
+              "component_name": "menu",
+              "variable_name": "topMenu",
+              "info": {
+                "order": "2",
+                "text": "دخترانه",
+                "href": "collection/girls"
+              }
             },
             {
-              component_name: 'menu'
-            },
-            {
-              component_name: 'menu'
-            },
+              "_id": placementId6,
+              "component_name": "menu",
+              "variable_name": "topMenu",
+              "info": {
+                "order": "3",
+                "text": "پسرانه",
+                "href": "collection/boys"
+              }
+            }
           ],
           page_info: {
             collection_id: collection_id,
@@ -198,19 +257,185 @@ describe('POST placement (top menu)', () => {
       });
   });
 
-  it('should add new placement to page', function (done) {
-
+  it("content manager should apply updated details to the top menu items (update placement)", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+        placement: [
+          {
+            "_id": placementId1,
+            "component_name": "menu",
+            "variable_name": "topMenu",
+            "info": {
+              "order": "3",
+              "text": "مردانه - جدید",
+              "href": "collection/men"
+            }
+          },
+          {
+            "_id": placementId4,
+            "component_name": "menu",
+            "variable_name": "topMenu",
+            "info": {
+              "order": "1",
+              "text": "زنانه",
+              "href": "collection/women"
+            }
+          },
+          {
+            "_id": placementId5,
+            "component_name": "menu",
+            "variable_name": "topMenu",
+            "info": {
+              "order": "0",
+              "text": "دخترانه",
+              "href": "collection/girls"
+            }
+          },
+          {
+            "_id": placementId6,
+            "component_name": "menu",
+            "variable_name": "topMenu",
+            "info": {
+              "order": "2",
+              "text": "پسرانه",
+              "href": "collection/boys"
+            }
+          }]
+      },
+      uri: lib.helpers.apiTestURL('placement'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['PageTest'].find({_id: page._id}).lean();
+      })
+      .then(res => {
+        res = res.placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
+        expect(res.length).toBe(4);
+        expect(res.find(el => el.info.href === 'collection/girls').order).toBe(0);
+        expect(res.find(el => el.info.href === 'collection/women').order).toBe(1);
+        expect(res.find(el => el.info.href === 'collection/boys').order).toBe(2);
+        expect(res.find(el => el.info.href === 'collection/men').order).toBe(3);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should get error when adding a placement without specified page id', function (done) {
-
+  it("should get error when no id is specified for placement (update placement)", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+        placement: [
+          {
+            "_id": placementId1,
+            "component_name": "menu",
+            "variable_name": "topMenu",
+            "info": {
+              "order": "3",
+              "text": "مردانه - جدید",
+              "href": "collection/men"
+            }
+          },
+          {
+            "component_name": "menu",
+            "variable_name": "topMenu",
+            "info": {
+              "order": "1",
+              "text": "زنانه",
+              "href": "collection/women"
+            }
+          }
+        ]
+      },
+      uri: lib.helpers.apiTestURL('placement'),
+      jar: contentManager.rpJar,
+      json: true,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Content manager can update without specifies placement id');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.placementIdRequired.status);
+        expect(err.error).toBe(errors.placementIdRequired.message);
+        done();
+      });
   });
 
-  it('should apply reordering to the top menu items', function (done) {
-
+  it("content manager should delete placement", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+        placement_id: placementId1,
+      },
+      json: true,
+      jar: contentManager.rpJar,
+      uri: lib.helpers.apiTestURL('placement/delete'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['PageTest'].find({_id: page._id}).lean();
+      })
+      .then(res => {
+        res = res.placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
+        expect(res.length).toBe(3);
+        expect(res.find(el => el._id.toString() === placementId1.toString())).toBeUndefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should update the placement details', function (done) {
+  it("should get error when no page's id is not specified", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        placement_id: placementId1,
+      },
+      json: true,
+      jar: contentManager.rpJar,
+      uri: lib.helpers.apiTestURL('placement/delete'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail("Content manager can delete a placement without specified page id");
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.pageIdRequired.status);
+        expect(err.error).toBe(errors.pageIdRequired.message);
+        done();
+      });
+  });
 
+  it("should get error when placement id is not passed", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+      },
+      json: true,
+      jar: contentManager.rpJar,
+      uri: lib.helpers.apiTestURL('placement/delete'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail("Content manager can delete a placement without specified placement id");
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.placementIdRequired.status);
+        expect(err.error).toBe(errors.placementIdRequired.message);
+        done();
+      });
   });
 });
