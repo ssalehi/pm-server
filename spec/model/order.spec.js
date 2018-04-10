@@ -187,6 +187,7 @@ describe('POST Order - verify order', () => {
         expect(x.tickets.length).toBe(1);
         expect(x.tickets[0].warehouse_id.toString()).toEqual(warehouses.find(x => x.is_center)._id.toString());
         expect(x.tickets[0].status).toBe(_const.ORDER_STATUS.default);
+        expect(x.tickets[0].is_processed).toBe(true);
       });
       done();
 
