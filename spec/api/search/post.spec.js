@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const error = require('../../../lib/errors.list');
 const _const = require('../../../lib/const.list');
 
-xdescribe('POST Search Collection', () => {
+describe('POST Search Collection', () => {
 
   let adminObj = {
     aid: null,
@@ -124,7 +124,7 @@ xdescribe('POST Search Collection', () => {
 
 });
 
-xdescribe('POST Search Page', () => {
+describe('POST Search Page', () => {
 
   let page1, page2, collection1, collection2;
   let adminObj = {
@@ -276,7 +276,7 @@ xdescribe('POST Search Page', () => {
 
 });
 
-xdescribe('POST Order - Search over order lines by tickets', () => {
+describe('POST Order - Search over order lines by tickets', () => {
 
   let customer1 = {
     cid: null,
@@ -361,7 +361,7 @@ xdescribe('POST Order - Search over order lines by tickets', () => {
         return models['WarehouseTest'].insertMany(warehouses)
       })
       .then(() => {
-        return lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
+        return lib.dbHelpers.addAndLoginAgent('bm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
       })
       .then(res => {
         SMAgent.cid = res.cid;
@@ -627,151 +627,8 @@ xdescribe('POST Order - Search over order lines by tickets', () => {
         done();
       });
   });
-});
-
-describe('POST Order - Search over order lines by references',  () => {
-  let salesObj = {
-    aid: null,
-    jar: null
-  };
-  let order;
-  let _warehouseId;
-  let _orderId;
-  let _customerId;
-  let _orderLines = [];
-  beforeEach(done => {
-    lib.dbHelpers.dropAll()
-      .then(() => {
-        return models['WarehouseTest'].create({
-          name: 'warehouse 001',
-          address: {
-            province: 'تهران',
-            city: 'تهران',
-            street: 'اندرزگو',
-            province: 'تهران'
-          },
-          phone: '02177665544',
-          is_center: true
-        });
-      })
-      .then((warehouse) => {
-        _warehouseId = warehouse._id;
-        return lib.dbHelpers.addAndLoginAgent('admin', _const.ACCESS_LEVEL.SalesManager, warehouse._id)
-      })
-      .then(res => {
-        salesObj.aid = res.aid;
-        salesObj.jar = res.rpJar;
-        return new models['OrderTest']({
-          order_id: mongoose.Types.ObjectId(),
-          total_amount: 3,
-          order_time: new Date(),
-          transaction_id: mongoose.Types.ObjectId(),
-          is_cart: false,
-          address_id: mongoose.Types.ObjectId()
-        }).save();
-      })
-      .then((res) => {
-        order = res;
-      })
-      .then(() => {
-        return models['CustomerTest'].create({
-          first_name: 'mohammadali',
-          surname: 'farhad',
-          username: 'farhad@yahoo.com',
-          is_verified: true,
-          is_guest: false,
-          addresses: [
-            {
-              province: 'تهران',
-              city: 'تهران',
-              street: 'شهید مدنی',
-              province: 'تهران' 
-            }
-          ]
-        });
-      })
-      .then((customerRes) => {
-        _customerId = customerRes._id;
-        return models['ProductTest'].create({
-          name: "product 001",
-          product_type: {name: 'product type 001', product_type_id: mongoose.Types.ObjectId()},
-          brand: {name: 'brand 001', brand_id: mongoose.Types.ObjectId()},
-          base_price: 2000
-        });
-      })
-      .then((productRes) => {
-        _orderId = mongoose.Types.ObjectId();
-        return models['OrderTest'].create({
-          _id: _orderId,
-          total_amount: 3,
-          customer_id: _customerId,
-          order_time: new Date(),
-          transaction_id: mongoose.Types.ObjectId(),
-          is_cart: false,
-          address_id: mongoose.Types.ObjectId(),
-          order_lines: [
-            {
-              product_instance_id: mongoose.Types.ObjectId(),
-              product_id: productRes._id,
-              paid_price: 2000,
-              adding_time: new Date(),
-              tickets: [
-                {
-                  warehouse_id: _warehouseId,
-                  status: 2,
-                  desc: 'Order Accepted 001',
-                  is_processed: false
-                },
-                {
-                  warehouse_id: mongoose.Types.ObjectId(),
-                  status: 3,
-                  desc: 'Order Accepted 002',
-                  is_processed: false
-                },
-                {
-                  warehouse_id: mongoose.Types.ObjectId(),
-                  status: 3,
-                  desc: 'Order Accepted 005',
-                  is_processed: true
-                }
-              ]
-            },
-            {
-              product_instance_id: mongoose.Types.ObjectId(),
-              product_id: productRes._id,
-              paid_price: 3000,
-              adding_time: new Date(),
-              tickets: [
-                {
-                  warehouse_id: mongoose.Types.ObjectId(),
-                  status: 2,
-                  desc: 'Order Accepted 003',
-                  is_processed: true
-                },
-                {
-                  warehouse_id: mongoose.Types.ObjectId(),
-                  status: 3,
-                  desc: 'Order Accepted 004',
-                  is_processed: false
-                }
-              ]
-            }
-          ]
-        })
-      })
-      .then((res) => {
-        _orderLines[0] = res.order_lines[0]._id;
-        _orderLines[1] = res.order_lines[1]._id;
-        done();
-      })
-      .catch(err => {
-        console.log(err);
-        done();
-      });
-  });
-
-
-  it('expect should return ticket of order lines last state true | ticket is_process = false && warehouse_id = user.warehouse.id', function (done) {
+  
+  it('expect should return ticket of order lines references', function (done) {
     this.done = done;
 
     rp({
@@ -779,23 +636,25 @@ describe('POST Order - Search over order lines by references',  () => {
       uri: lib.helpers.apiTestURL(`search/Order`),
       body: {
         options: {
-          outputs: true
+          output: true
         },
         offset: 0,
         limit: 10
       },
       json: true,
-      jar: salesObj.jar,
+      jar: SMAgent.jar,
       resolveWithFullResponse: true
     })
     .then((res) => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(3);
       done();
     })
     .catch(lib.helpers.errorHandler.bind(this));
   });
 });
 
-xdescribe('POST Suggest Product / Tag / Color', () => {
+describe('POST Suggest Product / Tag / Color', () => {
 
   let productTypeIds = [
     mongoose.Types.ObjectId(),
@@ -974,7 +833,7 @@ xdescribe('POST Suggest Product / Tag / Color', () => {
 
 });
 
-xdescribe('POST Suggest Collection', () => {
+describe('POST Suggest Collection', () => {
 
   let adminObj = {
     aid: null,
