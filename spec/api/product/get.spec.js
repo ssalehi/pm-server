@@ -3,9 +3,65 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
+const _const = require('../../../lib/const.list');
 
 describe("Get products", () => {
-  let typeIds, brandIds, colorIds, tgIds, tagIds, productColorIds, warehouseIds, productIds;
+  let typeIds, brandIds, colorIds, tgIds, tagIds, productColorIds, warehouseIds, productIds, products;
+
+  let SMAgent = {
+    cid: null,
+    jar: null
+  };
+  let SCAgent = {
+    cid: null,
+    jar: null
+  };
+  let CMAgent = {
+    cid: null,
+    jar: null
+  };
+  let warehouses = [{
+    _id: mongoose.Types.ObjectId(),
+    name: 'سانا',
+    phone: '021 7443 8111',
+    has_customer_pickup: true,
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'اندرزگو'
+    }
+  }, {
+    _id: mongoose.Types.ObjectId(),
+    name: 'ایران مال',
+    phone: 'نا مشخص',
+    has_customer_pickup: true,
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'اتوبان خرازی'
+    }
+  }, {
+    _id: mongoose.Types.ObjectId(),
+    name: 'پالادیوم',
+    phone: ' 021 2201 0600',
+    has_customer_pickup: true,
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'مقدس اردبیلی'
+    }
+  }, {
+    _id: mongoose.Types.ObjectId(),
+    name: 'انبار مرکزی',
+    phone: 'نا مشخص',
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'نامشخص'
+    },
+    is_center: true
+  }];
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
@@ -137,8 +193,9 @@ describe("Get products", () => {
         ]);
       })
       .then(res => {
+        products = res;
         productIds = res.map(x => x._id);
-          done();
+        done();
       })
       .catch(err => {
         console.log(err);
@@ -154,9 +211,9 @@ describe("Get products", () => {
       resolveWithFullResponse: true
     }).then(res => {
       let obj = JSON.parse(res.body);
-       //console.log('ssssss',obj.colors);
-        //console.log('ssssss',obj.colors.name);
-     console.log('ssssss',obj.instances[0].inventory);
+      //console.log('ssssss',obj.colors);
+      //console.log('ssssss',obj.colors.name);
+      console.log('ssssss', obj.instances[0].inventory);
 
       expect(res.statusCode).toBe(200);
       expect(obj.name).toBe('sample name 1');
@@ -174,6 +231,27 @@ describe("Get products", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
+  it("should get a product instance", function (done) {
+    this.done = done;
+
+    let instanceId = products[0].instances[0]._id;
+
+    rp({
+      method: 'get',
+      uri: lib.helpers.apiTestURL(`product/instance/${productIds[0]}/${instanceId}`),
+      jar: SMAgent.jar,
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.inventory[0].warehouse_id).toBe(warehouseIds[0].toString());
+      expect(res.body.inventory[0].count).toBe(2);
+      done();
+    })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
   it("should get error when product id is not specified", function (done) {
     rp({
       method: 'get',
