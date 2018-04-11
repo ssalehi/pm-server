@@ -13,6 +13,10 @@ let schema_obj = {
   },
   ref_newest_id: {
     type: Schema.Types.ObjectId
+  },
+  is_deleted: {
+    type: Boolean,
+    default: false,
   }
 };
 
