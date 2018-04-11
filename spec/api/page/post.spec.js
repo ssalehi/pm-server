@@ -258,6 +258,115 @@ describe('Post page placements and page info', () => {
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
+  it("should finalizing the placements", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+        is_finalized: true,
+      },
+      uri: lib.helpers.apiTestURL('placement/finalize'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['PageTest'].find({_id: page._id}).lean();
+      })
+      .then(res => {
+        expect(res[0].placement.length).toBe(4);
+        res = res[0].placement;
+        expect(res.find(el => el._id.toString() === placementId3.toString())).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId1.toString())).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
+        expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should finalized placements by default unless is_finalized property is set", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+      },
+      uri: lib.helpers.apiTestURL('placement/finalize'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['PageTest'].find({_id: page._id}).lean();
+      })
+      .then(res => {
+        expect(res[0].placement.length).toBe(4);
+        res = res[0].placement;
+        expect(res.find(el => el._id.toString() === placementId3.toString())).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId1.toString())).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should remove non-finalized placement (revert changes)", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+        is_finalized: false,
+      },
+      uri: lib.helpers.apiTestURL('placement/finalize'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['PageTest'].find({_id: page._id}).lean();
+      })
+      .then(res => {
+        expect(res[0].placement.length).toBe(4);
+        res = res[0].placement;
+
+        expect(res.find(el => el._id.toString() === placementId3.toString()).info.href).toBe('collection/men');
+        expect(res.find(el => el._id.toString() === placementId3.toString().is_deleted)).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId7.toString())).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId1.toString()).info.subTitle.title).toBe('کفش پیاده روی زنانه نایک، مدل پگاسوس');
+        expect(res.find(el => el._id.toString() === placementId1.toString()).ref_newest_id).toBeUndefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should get error when page id is not passed", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        is_finalized: false,
+      },
+      uri: lib.helpers.apiTestURL('placement/finalize'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Content manager can revert changes without defined page id');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.pageIdRequired.status);
+        expect(err.error).toBe(errors.pageIdRequired.message);
+        done();
+      });
+  });
 });
 
 describe('POST placement (top menu)', () => {
