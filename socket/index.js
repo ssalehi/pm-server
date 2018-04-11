@@ -25,7 +25,6 @@ let setGroup = (token) => {
       .on('connection', function (socket) {
         console.log(`-> new user has been connected to ${token}`);
       });
-    console.log('-> ',this.groups.token);
   }
 };
 
