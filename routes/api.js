@@ -173,6 +173,7 @@ router.post('/product/color', apiResponse('Product', 'setColor', true, ['body'],
 router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // product instance
+router.get('/product/instance/:id/:piid', apiResponse('Product', 'getInstance', false, ['params.id', 'params.piid']));
 router.put('/product/instance/:id', apiResponse('Product', 'setInstance', true, ['body', 'params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product/instance/:id/:pid', apiResponse('Product', 'setInstance', true, ['body', 'params.id', 'params.pid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/product/instance/:id/:productColorId', apiResponse('Product', 'deleteInstance', true, ['params.id', 'params.productColorId'], [_const.ACCESS_LEVEL.ContentManager]));
@@ -289,5 +290,12 @@ router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, [
 router.put('/placement', apiResponse('Page', 'addPlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+
+
+
+// temp api
+// todo: must be removed
+router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.addressId', 'body.transactionId']));
+
 
 module.exports = router;
