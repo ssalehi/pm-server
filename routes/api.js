@@ -110,7 +110,7 @@ router.put('/register', apiResponse('Customer', 'registration', false, ['body'])
 router.post('/register/verify', apiResponse('Customer', 'verification', false, ['body.code', 'body.username']));
 router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
-router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user','body']));
+router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user', 'body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
 router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
@@ -207,8 +207,6 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   });
 
 });
-
-
 router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // Product color
@@ -292,6 +290,28 @@ router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body']
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
+router.use('/placement/image/:pageId/:placementId', (req, res, next) => {
+  let destination;
+  if (req.test)
+    destination = env.uploadPlacementImagePath + path.sep + 'test' + path.sep + req.params.pageId + path.sep + req.params.placementId;
+  else
+    destination = env.uploadPlacementImagePath + path.sep + req.params.pageId + path.sep + req.params.placementId;
+
+  let placementStorage = multer.diskStorage({
+    destination,
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    }
+  });
+
+  let placementUpload = multer({storage: placementStorage});
+  placementUpload.single('file')(req, res, err => {
+    if (!err) {
+      next();
+    }
+  });
+});
+router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // temp api
 // todo: must be removed
