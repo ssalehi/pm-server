@@ -1,6 +1,5 @@
  const Schema = require('mongoose').Schema;
 const OrderLineSchema = require('./order_line.schema');
-const TicketSchema = require('./ticket.schema');
 
 let schema_obj = {
   customer_id: {
@@ -24,15 +23,16 @@ let schema_obj = {
   },
   is_collect: {
     type: Boolean,
-    default: false
+    default: false,
+    required: true
   },
   coupon_code: String,
   is_cart: {
     type: Boolean,
     default: false,
   },
-  order_line_ids: [OrderLineSchema],
-  tickets: [TicketSchema]
+  order_lines: [OrderLineSchema],
+
 };
 
 

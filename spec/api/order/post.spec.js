@@ -3,6 +3,7 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
+const _const = require('../../../lib/const.list');
 
 describe('POST Order (New Order)', () => {
 
@@ -108,7 +109,7 @@ describe('POST Order (New Order)', () => {
           total_amount: 0,
           order_time: new Date(),
           is_cart: true,
-          order_line_ids: [{
+          order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0]
           }]
@@ -173,9 +174,9 @@ describe('POST Order (New Order)', () => {
       .then(res => {
         expect(res.length).toEqual(1);
         expect(res[0].is_cart).toBe(true);
-        expect(res[0].order_line_ids.length).toBe(1);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines.length).toBe(1);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
 
         done();
       })
@@ -204,15 +205,15 @@ describe('POST Order (New Order)', () => {
       .then(res => {
         expect(res.length).toEqual(1);
         expect(res[0].is_cart).toBe(true);
-        expect(res[0].order_line_ids.length).toBe(4);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[2].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[3].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[2].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[3].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines.length).toBe(4);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[1].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[2].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[3].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[1].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[2].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[3].product_instance_id).toEqual(productInstanceIds[0]);
 
         done();
       })
@@ -324,7 +325,7 @@ describe('POST Order (Already-exist Order)', () => {
           total_amount: 0,
           order_time: new Date(),
           is_cart: true,
-          order_line_ids: [{
+          order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0]
           }]
@@ -363,11 +364,11 @@ describe('POST Order (Already-exist Order)', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].order_line_ids.length).toBe(2);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[1]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[2]);
+        expect(res[0].order_lines.length).toBe(2);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[1].product_id).toEqual(productIds[1]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[1].product_instance_id).toEqual(productInstanceIds[2]);
 
         done();
       })
@@ -395,15 +396,15 @@ describe('POST Order (Already-exist Order)', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].order_line_ids.length).toBe(4);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[1]);
-        expect(res[0].order_line_ids[2].product_id).toEqual(productIds[1]);
-        expect(res[0].order_line_ids[3].product_id).toEqual(productIds[1]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[2]);
-        expect(res[0].order_line_ids[2].product_instance_id).toEqual(productInstanceIds[2]);
-        expect(res[0].order_line_ids[3].product_instance_id).toEqual(productInstanceIds[2]);
+        expect(res[0].order_lines.length).toBe(4);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[1].product_id).toEqual(productIds[1]);
+        expect(res[0].order_lines[2].product_id).toEqual(productIds[1]);
+        expect(res[0].order_lines[3].product_id).toEqual(productIds[1]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[1].product_instance_id).toEqual(productInstanceIds[2]);
+        expect(res[0].order_lines[2].product_instance_id).toEqual(productInstanceIds[2]);
+        expect(res[0].order_lines[3].product_instance_id).toEqual(productInstanceIds[2]);
 
         done();
       })
@@ -645,7 +646,7 @@ describe('POST Order (Fetch cart details)', () => {
           _id: orderId1,
           customer_id: customerObj.cid,
           order_time: new Date(),
-          order_line_ids: [{
+          order_lines: [{
             product_instance_id: instanceId1,
             product_id: product1._id,
             adding_time: new Date(),
@@ -672,7 +673,7 @@ describe('POST Order (Fetch cart details)', () => {
           _id: orderId2,
           customer_id: customerObj.cid,
           order_time: new Date(),
-          order_line_ids: [{
+          order_lines: [{
             product_instance_id: instanceId5,
             product_id: product2._id,
             adding_time: new Date(),
@@ -811,7 +812,7 @@ describe('POST Order (Fetch cart details)', () => {
   });
 });
 
-describe('POST Order (Delete Orderlines)', () => {
+describe('POST Order (Delete Order lines)', () => {
 
   let customerObj = {
     cid: null,
@@ -927,7 +928,7 @@ describe('POST Order (Delete Orderlines)', () => {
           total_amount: 0,
           order_time: new Date(),
           is_cart: true,
-          order_line_ids: [{
+          order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
           }, {
@@ -973,9 +974,9 @@ describe('POST Order (Delete Orderlines)', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].order_line_ids.length).toBe(1);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[1]);
+        expect(res[0].order_lines.length).toBe(1);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[1]);
 
         done();
       })
@@ -1001,11 +1002,11 @@ describe('POST Order (Delete Orderlines)', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].order_line_ids.length).toBe(2);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[1]);
+        expect(res[0].order_lines.length).toBe(2);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[1].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[1].product_instance_id).toEqual(productInstanceIds[1]);
 
         done();
       })
@@ -1031,15 +1032,16 @@ describe('POST Order (Delete Orderlines)', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].order_line_ids.length).toBe(3);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[0].product_instance_id.equals(productInstanceIds[0])).toBe(true);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines.length).toBe(3);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[1].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[0].product_instance_id.equals(productInstanceIds[0])).toBe(true);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[1].product_instance_id).toEqual(productInstanceIds[0]);
 
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 });
+

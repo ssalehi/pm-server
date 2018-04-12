@@ -707,10 +707,10 @@
     {
       "component_name": "menu",
       "variable_name": "topMenu",
-      "start_date": "",
-      "end_date": "",
       "info": {
+        "column": "0",
         "text": "مردانه",
+        "section": "men",
         "href": "collection/men"
       }
     },
@@ -1048,30 +1048,30 @@
     {
       "component_name": "menu",
       "variable_name": "topMenu",
-      "start_date": "",
-      "end_date": "",
       "info": {
+        "column": "1",
         "text": "زنانه",
+        "section": "women",
         "href": "collection/women"
       }
     },
     {
       "component_name": "menu",
       "variable_name": "topMenu",
-      "start_date": "",
-      "end_date": "",
       "info": {
+        "column": "2",
         "text": "دخترانه",
+        "section": "girls",
         "href": "collection/girls"
       }
     },
     {
       "component_name": "menu",
       "variable_name": "topMenu",
-      "start_date": "",
-      "end_date": "",
       "info": {
+        "column": "3",
         "text": "پسرانه",
+        "section": "boys",
         "href": "collection/boys"
       }
     }
@@ -1112,6 +1112,7 @@
       "end_date": "",
       "info": {
         "text": "مردانه",
+        "section": "men",
         "href": "collection/men"
       }
     },
