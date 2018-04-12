@@ -17,9 +17,10 @@ describe('Get User All Orders', () => {
     mongoose.Types.ObjectId()
   ];
   let existingOrderId;
-  let existingOrderForSecondCustomer;
-  let colorIds = [];
-  let address= {
+  let firstOrder;
+  let secondOrder;
+  let thirdOrder;
+  let address = {
     province: "assd",
     city: "dsgg",
     district: "sdgsdg",
@@ -51,7 +52,6 @@ describe('Get User All Orders', () => {
         .then(res => {
           models['CustomerTest'].find({_id: res.cid}).then(r => {
           }).catch(e => console.log(e));
-          console.log(res.cid);
           customerObj.cid = res.cid;
           customerObj.jar = res.rpJar;
           type1 = models['ProductTypeTest']({
@@ -120,9 +120,9 @@ describe('Get User All Orders', () => {
           return Promise.all([products[0].save(), products[1].save()]);
         })
         .then(() => {
-          existingOrderForSecondCustomer = {
+          firstOrder = {
             customer_id: customerObj.cid,
-            address:address,
+            address: address,
             total_amount: 0,
             order_time: new Date(),
             is_cart: false,
@@ -135,11 +135,39 @@ describe('Get User All Orders', () => {
               product_instance_id: productInstanceIds[1]
             }]
           };
+          secondOrder = {
+            customer_id: customerObj.cid,
+            address: address,
+            total_amount: 0,
+            order_time: new Date(),
+            is_cart: false,
+            transaction_id: mongoose.Types.ObjectId(),
+            order_lines: [{
+              product_id: productIds[0],
+              product_instance_id: productInstanceIds[0]
+            }]
+          };
 
-          return models['OrderTest'].insertMany([existingOrderForSecondCustomer]);
+          thirdOrder = {
+            customer_id: customerObj.cid,
+            address: address,
+            total_amount: 0,
+            order_time: new Date(),
+            is_cart: true,
+            transaction_id: mongoose.Types.ObjectId(),
+            order_lines: [{
+              product_id: productIds[0],
+              product_instance_id: productInstanceIds[0]
+            }]
+          };
+
+          return models['OrderTest'].insertMany([firstOrder]);
         })
         .then(res => {
           existingOrderId = res[0]._id;
+          return models['OrderTest'].insertMany([secondOrder, thirdOrder])
+        })
+        .then(() => {
           return models['CustomerTest'].update({_id: customerObj.cid}, {$addToSet: {orders: existingOrderId}});
         })
         .then(() => {
@@ -150,7 +178,7 @@ describe('Get User All Orders', () => {
           done();
         });
   });
-  it('should return user only order', function (done) {
+  it('should return user two order', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -160,7 +188,9 @@ describe('Get User All Orders', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(3);
+      expect(res.body.data.length).toBe(2);
+      expect(res.body.data[0]._id).toEqual(secondOrder.transaction_id.toString());
+      expect(res.body.data[1]._id).toEqual(firstOrder.transaction_id.toString());
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
