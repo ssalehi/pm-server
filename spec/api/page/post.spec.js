@@ -136,6 +136,7 @@ describe('Post page placements and page info', () => {
                 "href": "collection/men"
               },
               is_finalized: true,
+              is_deleted: true,
             },
             {
               "_id": placementId4,
@@ -227,6 +228,7 @@ describe('Post page placements and page info', () => {
       expect(res.statusCode).toBe(200);
       let result = res.body;
       expect(result.placement.length).toBe(4);
+      expect(result.placement.find(el => el._id.toString() === placementId3.toString()).is_deleted).toBeUndefined();
       expect(result.page_info.collection_id.toString()).toBe(collection_id.toString());
       expect(result.page_info.content).toBe('sample content');
       done();
@@ -249,16 +251,125 @@ describe('Post page placements and page info', () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
         res = res.body;
-        expect(res.placement.length).toBe(5);
+        expect(res.placement.length).toBe(4);
         expect(res.placement.find(el => el._id.toString() === placementId6.toString())).toBeUndefined();
         expect(res.placement.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
+  it("should finalizing the placements", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+        is_finalized: true,
+      },
+      uri: lib.helpers.apiTestURL('placement/finalize'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['PageTest'].find({_id: page._id}).lean();
+      })
+      .then(res => {
+        expect(res[0].placement.length).toBe(4);
+        res = res[0].placement;
+        expect(res.find(el => el._id.toString() === placementId3.toString())).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId1.toString())).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
+        expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should finalized placements by default unless is_finalized property is set", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+      },
+      uri: lib.helpers.apiTestURL('placement/finalize'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['PageTest'].find({_id: page._id}).lean();
+      })
+      .then(res => {
+        expect(res[0].placement.length).toBe(4);
+        res = res[0].placement;
+        expect(res.find(el => el._id.toString() === placementId3.toString())).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId1.toString())).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should remove non-finalized placement (revert changes)", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+        is_finalized: false,
+      },
+      uri: lib.helpers.apiTestURL('placement/finalize'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['PageTest'].find({_id: page._id}).lean();
+      })
+      .then(res => {
+        expect(res[0].placement.length).toBe(4);
+        res = res[0].placement;
+
+        expect(res.find(el => el._id.toString() === placementId3.toString()).info.href).toBe('collection/men');
+        expect(res.find(el => el._id.toString() === placementId3.toString().is_deleted)).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId7.toString())).toBeUndefined();
+        expect(res.find(el => el._id.toString() === placementId1.toString()).info.subTitle.title).toBe('کفش پیاده روی زنانه نایک، مدل پگاسوس');
+        expect(res.find(el => el._id.toString() === placementId1.toString()).ref_newest_id).toBeUndefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should get error when page id is not passed", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        is_finalized: false,
+      },
+      uri: lib.helpers.apiTestURL('placement/finalize'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Content manager can revert changes without defined page id');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.pageIdRequired.status);
+        expect(err.error).toBe(errors.pageIdRequired.message);
+        done();
+      });
+  });
 });
 
-xdescribe('POST placement (top menu)', () => {
+describe('POST placement (top menu)', () => {
   let page, collection_id, contentManager;
   const placementId1 = new mongoose.Types.ObjectId();
   const placementId2 = new mongoose.Types.ObjectId();
@@ -266,6 +377,7 @@ xdescribe('POST placement (top menu)', () => {
   const placementId4 = new mongoose.Types.ObjectId();
   const placementId5 = new mongoose.Types.ObjectId();
   const placementId6 = new mongoose.Types.ObjectId();
+  const placementId7 = new mongoose.Types.ObjectId();
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
@@ -290,7 +402,9 @@ xdescribe('POST placement (top menu)', () => {
                 "text": "مردانه",
                 "section": "men",
                 "href": "collection/men"
-              }
+              },
+              ref_newest_id: placementId7,
+              is_finalized: true,
             },
             {
               "_id": placementId2,
@@ -302,7 +416,8 @@ xdescribe('POST placement (top menu)', () => {
                 "row": 1,
                 "text": "تازه‌ها",
                 "href": "collection/x"
-              }
+              },
+              is_finalized: true,
             },
             {
               "_id": placementId3,
@@ -318,7 +433,8 @@ xdescribe('POST placement (top menu)', () => {
                   "imgWidth": 30,
                   "imgMarginLeft": 5
                 }
-              }
+              },
+              is_finalized: false,
             },
             {
               "_id": placementId4,
@@ -329,7 +445,8 @@ xdescribe('POST placement (top menu)', () => {
                 "text": "زنانه",
                 "section": "women",
                 "href": "collection/women"
-              }
+              },
+              is_finalized: false,
             },
             {
               "_id": placementId5,
@@ -340,7 +457,8 @@ xdescribe('POST placement (top menu)', () => {
                 "text": "دخترانه",
                 "section": "girls",
                 "href": "collection/girls"
-              }
+              },
+              is_finalized: true,
             },
             {
               "_id": placementId6,
@@ -351,7 +469,20 @@ xdescribe('POST placement (top menu)', () => {
                 "text": "پسرانه",
                 "section": "boys",
                 "href": "collection/boys"
-              }
+              },
+              is_finalized: false,
+            },
+            {
+              "_id": placementId7,
+              "component_name": "menu",
+              "variable_name": "topMenu",
+              "info": {
+                "column": "0",
+                "text": "مردانه",
+                "section": "men",
+                "href": "collection/men/list"
+              },
+              is_finalized: false,
             }
           ],
           page_info: {
@@ -385,7 +516,6 @@ xdescribe('POST placement (top menu)', () => {
             "info": {
               "column": "3",
               "text": "مردانه - جدید",
-              "href": "collection/men"
             }
           },
           {
@@ -412,7 +542,7 @@ xdescribe('POST placement (top menu)', () => {
               "href": "collection/boys",
               "section": 'bad_boys',
             }
-          }]
+          }],
       },
       uri: lib.helpers.apiTestURL('placement'),
       json: true,
@@ -424,13 +554,26 @@ xdescribe('POST placement (top menu)', () => {
         return models['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
+        expect(res[0].placement.length).toBe(8);
         res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
-        expect(res.length).toBe(4);
-        expect(res.find(el => el.info.href === 'collection/girls').info.column).toBe(0);
-        expect(res.find(el => el.info.href === 'collection/women').info.column).toBe(1);
-        expect(res.find(el => el.info.href === 'collection/boys').info.column).toBe(2);
-        expect(res.find(el => el.info.href === 'collection/boys').info.section).toBe('boys');
-        expect(res.find(el => el.info.href === 'collection/men').info.column).toBe(3);
+        expect(res.length).toBe(6);
+        expect(res.filter(el => el.info.href === 'collection/girls').length).toBe(2);
+        expect(res.find(el => el.info.href === 'collection/girls' && el._id.toString() === placementId5.toString()).info.column).toBe(2);
+        expect(res.find(el => el.info.href === 'collection/girls' && el._id.toString() === placementId5.toString()).is_finalized).toBe(true);
+        expect(res.find(el => el.info.href === 'collection/girls' && el._id.toString() !== placementId5.toString()).info.column).toBe(0);
+        expect(res.find(el => el.info.href === 'collection/girls' && el._id.toString() !== placementId5.toString()).is_finalized).toBe(false);
+        expect(res.filter(el => el.info.href === 'collection/boys').length).toBe(1);
+        expect(res.find(el => el.info.href === 'collection/boys' && el._id.toString() === placementId6.toString()).info.column).toBe(2);
+        expect(res.find(el => el.info.href === 'collection/boys' && el._id.toString() === placementId6.toString()).info.section).toBe('boys');
+        expect(res.find(el => el.info.href === 'collection/boys' && el._id.toString() === placementId6.toString()).is_finalized).toBe(false);
+        expect(res.filter(el => el.info.href === 'collection/women').length).toBe(1);
+        expect(res.find(el => el.info.href === 'collection/women' && el._id.toString() === placementId4.toString()).info.column).toBe(1);
+        expect(res.find(el => el.info.href === 'collection/women' && el._id.toString() === placementId4.toString()).is_finalized).toBe(false);
+        expect(res.filter(el => el.info.href === 'collection/men').length).toBe(1);
+        expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).info.column).toBe(0);
+        expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).is_finalized).toBe(true);
+        expect(res.find(el => el.info.href === 'collection/men/list' && el._id.toString() !== placementId1.toString()).info.column).toBe(3);
+        expect(res.find(el => el.info.href === 'collection/men/list' && el._id.toString() !== placementId1.toString()).is_finalized).toBe(false);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -522,7 +665,7 @@ xdescribe('POST placement (top menu)', () => {
       });
   });
 
-  it("content manager should delete placement (delete placement)", function (done) {
+  it("content manager should delete finalized placement (delete placement)", function (done) {
     this.done = done;
     rp({
       method: 'post',
@@ -540,9 +683,39 @@ xdescribe('POST placement (top menu)', () => {
         return models['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
+        expect(res[0].placement.length).toBe(7);
         res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
-        expect(res.length).toBe(3);
-        expect(res.find(el => el._id.toString() === placementId1.toString())).toBeUndefined();
+        expect(res.length).toBe(5);
+        expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).info.column).toBe(0);
+        expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).is_finalized).toBe(true);
+        expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).is_deleted).toBe(true);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("content manager should delete not finalized placement (delete placement)", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+        placement_id: placementId4,
+      },
+      json: true,
+      jar: contentManager.rpJar,
+      uri: lib.helpers.apiTestURL('placement/delete'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['PageTest'].find({_id: page._id}).lean();
+      })
+      .then(res => {
+        expect(res[0].placement.length).toBe(6);
+        res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
+        expect(res.length).toBe(4);
+        expect(res.find(el => el.info.href === 'collection/women' && el._id.toString() === placementId4.toString())).toBeUndefined();
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
