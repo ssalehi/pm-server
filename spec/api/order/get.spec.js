@@ -18,6 +18,23 @@ describe('Get User All Orders', () => {
   ];
   let existingOrderId;
   let existingOrderForSecondCustomer;
+  let colorIds = [];
+  let address= {
+    province: "assd",
+    city: "dsgg",
+    district: "sdgsdg",
+    street: "sdgsdgdsg",
+    unit: "2",
+    no: "4",
+    postal_code: "512123456",
+    loc: {
+      type: {
+        long: 12,
+        lat: 12,
+      }
+    }
+  };
+
 
   let productInstanceIds = [
     mongoose.Types.ObjectId(),
@@ -27,8 +44,14 @@ describe('Get User All Orders', () => {
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
-        .then(() => lib.dbHelpers.addAndLoginCustomer('test@test'))
+        .then(() =>
+            lib.dbHelpers.addAndLoginCustomer('test@test', "123456", {
+              addresses: [address]
+            }))
         .then(res => {
+          models['CustomerTest'].find({_id: res.cid}).then(r => {
+          }).catch(e => console.log(e));
+          console.log(res.cid);
           customerObj.cid = res.cid;
           customerObj.jar = res.rpJar;
           type1 = models['ProductTypeTest']({
@@ -99,10 +122,12 @@ describe('Get User All Orders', () => {
         .then(() => {
           existingOrderForSecondCustomer = {
             customer_id: customerObj.cid,
+            address:address,
             total_amount: 0,
             order_time: new Date(),
-            is_cart: true,
-            order_line_ids: [{
+            is_cart: false,
+            transaction_id: mongoose.Types.ObjectId(),
+            order_lines: [{
               product_id: productIds[0],
               product_instance_id: productInstanceIds[0]
             }, {
@@ -135,7 +160,7 @@ describe('Get User All Orders', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body.orders.length).toBe(1);
+      expect(res.body.data.length).toBe(3);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
