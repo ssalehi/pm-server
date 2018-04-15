@@ -23,7 +23,8 @@ let schema_obj = {
   },
   is_collect: {
     type: Boolean,
-    default: false
+    default: false,
+    required: true
   },
   coupon_code: String,
   is_cart: {

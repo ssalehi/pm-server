@@ -7,7 +7,8 @@
         "text": "مردانه",
         "section": "men",
         "href": "collection/men"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -18,7 +19,8 @@
         "section": "men/shoes",
         "imgUrl": "/product-pic/shoes.png",
         "is_header": true
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -28,7 +30,8 @@
         "href": "collection/men/shoes",
         "section": "men/shoes",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -38,7 +41,8 @@
         "href": "collection/men/shoes/football",
         "section": "men/shoes",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -48,7 +52,8 @@
         "href": "collection/men/shoes/walking",
         "section": "men/shoes",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -58,7 +63,8 @@
         "href": "collection/men/shoes/running",
         "section": "men/shoes",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -69,7 +75,8 @@
         "section": "men/shirts",
         "imgUrl": "/product-pic/shirts.png",
         "is_header": true
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -79,7 +86,8 @@
         "href": "collection/men/shirts/new",
         "section": "men/shirts",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -89,7 +97,8 @@
         "href": "collection/men/shirts/winter",
         "section": "men/shirts",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -98,7 +107,8 @@
         "text": "زنانه",
         "section": "women",
         "href": "collection/women"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -109,7 +119,8 @@
         "section": "women/shoes",
         "imgUrl": "/product-pic/shoes.png",
         "is_header": true
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -119,7 +130,8 @@
         "href": "collection/women/shoes/all",
         "section": "women/shoes",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -129,7 +141,8 @@
         "href": "collection/women/shoes/football",
         "section": "women/shoes",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -139,7 +152,8 @@
         "href": "collection/women/shoes/walking",
         "section": "women/shoes",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -149,7 +163,8 @@
         "href": "collection/women/shoes/new",
         "section": "women/shoes",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -160,7 +175,8 @@
         "section": "women/shirts",
         "imgUrl": "/product-pic/shirts.png",
         "is_header": true
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -170,7 +186,8 @@
         "href": "collection/women/shirts/new",
         "section": "women/shirts",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -180,7 +197,8 @@
         "href": "collection/women/shirts/swimming",
         "section": "women/shirts",
         "is_header": false
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -189,7 +207,8 @@
         "text": "پسرانه",
         "section": "boy",
         "href": "collection/boy"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -198,7 +217,8 @@
         "text": "دخترانه",
         "section": "girl",
         "href": "collection/girl"
-      }
+      },
+      "is_finalized": true
     }
   ],
   "feed": [
@@ -230,7 +250,8 @@
             "pos": "card-icon"
           }
         ]
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -257,7 +278,8 @@
             "color": "white"
           }
         ]
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -283,7 +305,8 @@
             "color": "white"
           }
         ]
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -316,7 +339,8 @@
             "color": "black"
           }
         ]
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -344,7 +368,8 @@
             "color": "black"
           }
         ]
-      }
+      },
+      "is_finalized": true
     }
   ],
   "home": [
@@ -358,7 +383,8 @@
         "style": {
           "width": 60
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "logos",
@@ -373,7 +399,8 @@
           "right": 7,
           "top": 4
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "logos",
@@ -387,7 +414,8 @@
           "right": 4,
           "top": 2
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "logos",
@@ -400,7 +428,8 @@
           "height": 45,
           "top": 8
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "logos",
@@ -415,7 +444,8 @@
           "right": 3,
           "top": 27
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "logos",
@@ -429,7 +459,8 @@
           "height": 110,
           "top": 41
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "logos",
@@ -444,7 +475,8 @@
           "right": 16,
           "top": 10
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "logos",
@@ -458,7 +490,8 @@
           "height": 34,
           "right": 5
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "logos",
@@ -471,7 +504,8 @@
           "width": 45,
           "right": 3
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "logos",
@@ -480,7 +514,8 @@
         "text": "Puma",
         "column": 10,
         "imgUrl": "puma.png"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "logos",
@@ -493,7 +528,8 @@
           "width": 40,
           "right": 4
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -512,7 +548,8 @@
             "color": ""
           }
         ]
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -531,7 +568,8 @@
             "color": "black"
           }
         ]
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -550,7 +588,8 @@
             "color": ""
           }
         ]
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -569,7 +608,8 @@
             "color": ""
           }
         ]
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -588,7 +628,8 @@
             "color": ""
           }
         ]
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -611,7 +652,8 @@
           "textColor": "gray"
         },
         "areas": []
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -629,7 +671,8 @@
           "textColor": "gray"
         },
         "areas": []
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -647,7 +690,8 @@
           "textColor": "gray"
         },
         "areas": []
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "main",
@@ -665,7 +709,8 @@
           "textColor": "gray"
         },
         "areas": []
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "slider",
@@ -676,7 +721,8 @@
         "column": 0,
         "imgUrl": "assets/cliparts/delivery.png",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "slider",
@@ -691,7 +737,8 @@
           "imgWidth": 30,
           "imgMarginLeft": 5
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "slider",
@@ -702,17 +749,19 @@
         "column": 2,
         "imgUrl": "assets/cliparts/loyalty.png",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
       "variable_name": "topMenu",
-      "start_date": "",
-      "end_date": "",
       "info": {
+        "column": "0",
         "text": "مردانه",
+        "section": "men",
         "href": "collection/men"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -723,7 +772,8 @@
         "row": 1,
         "text": "تازه‌ها",
         "href": "collection/x"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -734,7 +784,8 @@
         "row": 2,
         "text": "پرفروش‌ها",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -745,7 +796,8 @@
         "row": 3,
         "text": "مجموعه Equality",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -756,7 +808,8 @@
         "row": 4,
         "text": "زیر ۵۰۰ هزار تومان",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -767,7 +820,8 @@
         "row": 5,
         "text": "داره مد میشه",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -778,7 +832,8 @@
         "row": 6,
         "text": "مجموعه Fleece",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -789,7 +844,8 @@
         "row": 7,
         "text": "برای فصل سرما",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -800,7 +856,8 @@
         "row": 1,
         "text": "کفش‌ها",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -811,7 +868,8 @@
         "row": 2,
         "text": "دو",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -822,7 +880,8 @@
         "row": 3,
         "text": "فوتبال",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -833,7 +892,8 @@
         "row": 4,
         "text": "نرمش",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -844,7 +904,8 @@
         "row": 5,
         "text": "بسکتبال",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -855,7 +916,8 @@
         "row": 1,
         "text": "لباس‌ها",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -866,7 +928,8 @@
         "row": 2,
         "text": "Nike Pro و Compression",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -877,7 +940,8 @@
         "row": 3,
         "text": "پیراهن‌های Polo",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -888,7 +952,8 @@
         "row": 4,
         "text": "لباس‌های کلاه‌دار",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -899,8 +964,9 @@
         "row": 5,
         "text": "لوازم جانبی",
         "href": "#",
-        "isHeader": true
-      }
+        "is_header": true
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -911,7 +977,8 @@
         "row": 6,
         "text": "کوله‌ها و کیف‌ها",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -922,7 +989,8 @@
         "row": 7,
         "text": "عینک آفتابی",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -933,7 +1001,8 @@
         "row": 1,
         "text": "با برند",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -944,7 +1013,8 @@
         "row": 2,
         "text": "Nike",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -955,7 +1025,8 @@
         "row": 3,
         "text": "Converse",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -966,7 +1037,8 @@
         "row": 4,
         "text": "Hurley",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -977,7 +1049,8 @@
         "row": 5,
         "text": "Nike Jordan",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -988,7 +1061,8 @@
         "row": 6,
         "text": "The North Face",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -999,7 +1073,8 @@
         "row": 7,
         "text": "Timberland",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -1010,7 +1085,8 @@
         "row": 8,
         "text": "Polo Ralph Lauren",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -1021,7 +1097,8 @@
         "row": 1,
         "text": "با ورزش",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -1032,7 +1109,8 @@
         "row": 2,
         "text": "دو",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -1043,37 +1121,41 @@
         "row": 3,
         "text": "فوتبال",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
       "variable_name": "topMenu",
-      "start_date": "",
-      "end_date": "",
       "info": {
+        "column": "1",
         "text": "زنانه",
+        "section": "women",
         "href": "collection/women"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
       "variable_name": "topMenu",
-      "start_date": "",
-      "end_date": "",
       "info": {
+        "column": "2",
         "text": "دخترانه",
+        "section": "girls",
         "href": "collection/girls"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
       "variable_name": "topMenu",
-      "start_date": "",
-      "end_date": "",
       "info": {
+        "column": "3",
         "text": "پسرانه",
+        "section": "boys",
         "href": "collection/boys"
-      }
+      },
+      "is_finalized": true
     }
   ],
   "collection/men": [
@@ -1091,7 +1173,8 @@
             "color": "darkblue"
           }
         ]
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "logos",
@@ -1103,7 +1186,8 @@
         "style": {
           "width": 60
         }
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -1112,8 +1196,10 @@
       "end_date": "",
       "info": {
         "text": "مردانه",
+        "section": "men",
         "href": "collection/men"
-      }
+      },
+      "is_finalized": true
     },
     {
       "component_name": "menu",
@@ -1124,7 +1210,8 @@
         "row": 3,
         "text": "پیراهن‌های Polo",
         "href": "#"
-      }
+      },
+      "is_finalized": true
     }
   ]
 }

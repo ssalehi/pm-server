@@ -175,6 +175,7 @@ router.post('/product/color', apiResponse('Product', 'setColor', true, ['body'],
 router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // product instance
+router.get('/product/instance/:id/:piid', apiResponse('Product', 'getInstance', false, ['params.id', 'params.piid']));
 router.put('/product/instance/:id', apiResponse('Product', 'setInstance', true, ['body', 'params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product/instance/:id/:pid', apiResponse('Product', 'setInstance', true, ['body', 'params.id', 'params.pid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/product/instance/:id/:productColorId', apiResponse('Product', 'deleteInstance', true, ['params.id', 'params.productColorId'], [_const.ACCESS_LEVEL.ContentManager]));
@@ -242,7 +243,8 @@ router.get('/page/:id', apiResponse('Page', 'getPage', false, ['params.id']));
 router.put('/page', apiResponse('Page', 'setPage', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id'], [_const.ACCESS_LEVEL.ContentManager]));
-router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address']));
+router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address', () => false]));
+router.post('/page/cm/preview', apiResponse('Page', 'getPageByAddress', true, ['body.address', () => true], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 // Search
@@ -285,5 +287,17 @@ router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false,
 
 // Customer Address
 router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
+
+// Placement
+router.put('/placement', apiResponse('Page', 'addPlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+
+
+// temp api
+// todo: must be removed
+router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.addressId', 'body.transactionId']));
+
 
 module.exports = router;
