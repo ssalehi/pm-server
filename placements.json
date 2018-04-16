@@ -711,7 +711,8 @@
       "end_date": "",
       "info": {
         "text": "مردانه",
-        "href": "collection/men"
+        "href": "collection/men",
+        "section": "men"
       }
     },
     {
