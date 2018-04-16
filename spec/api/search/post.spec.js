@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const error = require('../../../lib/errors.list');
 const _const = require('../../../lib/const.list');
 
-describe('POST Search Collection', () => {
+xdescribe('POST Search Collection', () => {
 
   let adminObj = {
     aid: null,
@@ -124,7 +124,7 @@ describe('POST Search Collection', () => {
 
 });
 
-describe('POST Search Page', () => {
+xdescribe('POST Search Page', () => {
 
   let page1, page2, collection1, collection2;
   let adminObj = {
@@ -497,7 +497,8 @@ describe('POST Order - Search over order lines by tickets', () => {
             tickets: [ // sales manager ticket
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default
+                status: _const.ORDER_STATUS.default,
+                is_processed: true
               }
             ]
           }, { // shop clerk ticket
@@ -507,12 +508,13 @@ describe('POST Order - Search over order lines by tickets', () => {
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
                 status: _const.ORDER_STATUS.default,
-                is_processed: true,
+                // is_processed: true,
                 agent_id: SMAgent.cid
               },
               {
                 warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
-                referral_advice: _const.REFERRAL_ADVICE.SendToCustomer
+                referral_advice: _const.REFERRAL_ADVICE.SendToCustomer,
+                is_processed: true
               }
             ]
           }]
@@ -530,17 +532,18 @@ describe('POST Order - Search over order lines by tickets', () => {
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
                 status: _const.ORDER_STATUS.default,
-                is_processed: true,
+                // is_processed: true,
                 agent_id: SMAgent.cid
               },
               {
                 warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
                 referral_advice: _const.REFERRAL_ADVICE.SendToCentral,
-                is_processed: true,
+                // is_processed: true,
                 agent_id: SCAgent.cid
               }, {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
                 status: _const.ORDER_STATUS.SCAccepted,
+                is_processed: true,
               }
             ]
           }]
@@ -627,7 +630,6 @@ describe('POST Order - Search over order lines by tickets', () => {
         done();
       });
   });
-  
   it('expect should return ticket of order lines references', function (done) {
     this.done = done;
 
@@ -654,7 +656,7 @@ describe('POST Order - Search over order lines by tickets', () => {
   });
 });
 
-describe('POST Suggest Product / Tag / Color', () => {
+xdescribe('POST Suggest Product / Tag / Color', () => {
 
   let productTypeIds = [
     mongoose.Types.ObjectId(),
@@ -833,7 +835,7 @@ describe('POST Suggest Product / Tag / Color', () => {
 
 });
 
-describe('POST Suggest Collection', () => {
+xdescribe('POST Suggest Collection', () => {
 
   let adminObj = {
     aid: null,
