@@ -377,6 +377,7 @@ describe('POST placement (top menu)', () => {
   const placementId4 = new mongoose.Types.ObjectId();
   const placementId5 = new mongoose.Types.ObjectId();
   const placementId6 = new mongoose.Types.ObjectId();
+  const placementId7 = new mongoose.Types.ObjectId();
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
@@ -402,6 +403,7 @@ describe('POST placement (top menu)', () => {
                 "section": "men",
                 "href": "collection/men"
               },
+              ref_newest_id: placementId7,
               is_finalized: true,
             },
             {
@@ -469,6 +471,18 @@ describe('POST placement (top menu)', () => {
                 "href": "collection/boys"
               },
               is_finalized: false,
+            },
+            {
+              "_id": placementId7,
+              "component_name": "menu",
+              "variable_name": "topMenu",
+              "info": {
+                "column": "0",
+                "text": "مردانه",
+                "section": "men",
+                "href": "collection/men/list"
+              },
+              is_finalized: false,
             }
           ],
           page_info: {
@@ -502,7 +516,6 @@ describe('POST placement (top menu)', () => {
             "info": {
               "column": "3",
               "text": "مردانه - جدید",
-              "href": "collection/men"
             }
           },
           {
@@ -556,11 +569,11 @@ describe('POST placement (top menu)', () => {
         expect(res.filter(el => el.info.href === 'collection/women').length).toBe(1);
         expect(res.find(el => el.info.href === 'collection/women' && el._id.toString() === placementId4.toString()).info.column).toBe(1);
         expect(res.find(el => el.info.href === 'collection/women' && el._id.toString() === placementId4.toString()).is_finalized).toBe(false);
-        expect(res.filter(el => el.info.href === 'collection/men').length).toBe(2);
+        expect(res.filter(el => el.info.href === 'collection/men').length).toBe(1);
         expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).info.column).toBe(0);
         expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).is_finalized).toBe(true);
-        expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() !== placementId1.toString()).info.column).toBe(3);
-        expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() !== placementId1.toString()).is_finalized).toBe(false);
+        expect(res.find(el => el.info.href === 'collection/men/list' && el._id.toString() !== placementId1.toString()).info.column).toBe(3);
+        expect(res.find(el => el.info.href === 'collection/men/list' && el._id.toString() !== placementId1.toString()).is_finalized).toBe(false);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -670,9 +683,9 @@ describe('POST placement (top menu)', () => {
         return models['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
-        expect(res[0].placement.length).toBe(6);
+        expect(res[0].placement.length).toBe(7);
         res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
-        expect(res.length).toBe(4);
+        expect(res.length).toBe(5);
         expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).info.column).toBe(0);
         expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).is_finalized).toBe(true);
         expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).is_deleted).toBe(true);
@@ -699,9 +712,9 @@ describe('POST placement (top menu)', () => {
         return models['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
-        expect(res[0].placement.length).toBe(5);
+        expect(res[0].placement.length).toBe(6);
         res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
-        expect(res.length).toBe(3);
+        expect(res.length).toBe(4);
         expect(res.find(el => el.info.href === 'collection/women' && el._id.toString() === placementId4.toString())).toBeUndefined();
         done();
       })
