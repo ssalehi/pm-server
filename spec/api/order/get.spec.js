@@ -213,7 +213,6 @@ describe('Get User All Orders', () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      console.log(JSON.stringify(res.body,null,2));
       expect(res.statusCode).toBe(200);
       expect(res.body.orders.length).toBe(2);
       expect(res.body.orders[0]._id).toEqual(secondOrder.transaction_id.toString());
