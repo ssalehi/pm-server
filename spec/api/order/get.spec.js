@@ -16,6 +16,15 @@ describe('Get User All Orders', () => {
     mongoose.Types.ObjectId(),
     mongoose.Types.ObjectId()
   ];
+  let ticket = {
+    warehouse_id: mongoose.Types.ObjectId(),
+    status :1,
+    desc:"descccc",
+    timeStamp:new Date(),
+    is_processed:false,
+    referral_advice:1123,
+    agent_id: mongoose.Types.ObjectId()
+  };
   let existingOrderId;
   let firstOrder;
   let secondOrder;
@@ -29,10 +38,8 @@ describe('Get User All Orders', () => {
     no: "4",
     postal_code: "512123456",
     loc: {
-      type: {
         long: 12,
         lat: 12,
-      }
     }
   };
 
@@ -133,8 +140,10 @@ describe('Get User All Orders', () => {
           coupon_code: '12345abcde',
           order_lines: [{
             product_id: productIds[0],
-            product_instance_id: productInstanceIds[0]
+            product_instance_id: productInstanceIds[0],
+            tickets:[ticket]
           }, {
+            tickets:[ticket],
             product_id: productIds[0],
             product_instance_id: productInstanceIds[1]
           }]
@@ -151,6 +160,7 @@ describe('Get User All Orders', () => {
           is_collect: true,
           coupon_code: 'abcde12345',
           order_lines: [{
+            tickets:[ticket],
             product_id: productIds[1],
             product_instance_id: productInstanceIds[2]
           }]
@@ -197,9 +207,19 @@ describe('Get User All Orders', () => {
     }).then(res => {
       console.log(JSON.stringify(res.body, null, 4));
       expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(2);
-      expect(res.body.data[0]._id).toEqual(secondOrder.transaction_id.toString());
-      expect(res.body.data[1]._id).toEqual(firstOrder.transaction_id.toString());
+      expect(res.body.orders.length).toBe(2);
+      expect(res.body.orders[0]._id).toEqual(secondOrder.transaction_id.toString());
+      expect(res.body.orders[1]._id).toEqual(firstOrder.transaction_id.toString());
+      expect(res.body.orders[0].order_lines[0].total_amount).toEqual(secondOrder.total_amount);
+      expect(res.body.orders[0].order_lines[0].used_point).toEqual(secondOrder.used_point);
+      expect(res.body.orders[0].order_lines[0].used_balance).toEqual(secondOrder.used_balance);
+      expect(res.body.orders[0].order_lines[0].product.name).toEqual(products[1].name);
+      expect(res.body.orders[1].order_lines[0].product.name).toEqual(products[0].name);
+      expect(res.body.orders[1].order_lines[1].product.name).toEqual(products[0].name);
+      expect(res.body.orders[1].order_lines[1].product_instance.barcode).toEqual(products[0].instances[1].barcode);
+      expect(res.body.orders[1].order_lines[1].tickets[0].referral_advice).toEqual(ticket.referral_advice);
+
+
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
