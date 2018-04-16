@@ -135,7 +135,7 @@ describe('Get User All Orders', () => {
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0]
           }, {
-            product_id: productIds[1],
+            product_id: productIds[0],
             product_instance_id: productInstanceIds[1]
           }]
         };
@@ -149,11 +149,10 @@ describe('Get User All Orders', () => {
           used_balance: 1400,
           order_time: new Date(),
           is_collect: true,
-          coupon_code: 'abcde',
+          coupon_code: 'abcde12345',
           order_lines: [{
-            product_id: productIds[0],
-
-            product_instance_id: productInstanceIds[0]
+            product_id: productIds[1],
+            product_instance_id: productInstanceIds[2]
           }]
         };
         thirdOrder = {
