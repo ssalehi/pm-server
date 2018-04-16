@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const error = require('../../../lib/errors.list');
 const _const = require('../../../lib/const.list');
 
-xdescribe('POST Search Collection', () => {
+describe('POST Search Collection', () => {
 
   let adminObj = {
     aid: null,
@@ -124,7 +124,7 @@ xdescribe('POST Search Collection', () => {
 
 });
 
-xdescribe('POST Search Page', () => {
+describe('POST Search Page', () => {
 
   let page1, page2, collection1, collection2;
   let adminObj = {
@@ -656,7 +656,7 @@ describe('POST Order - Search over order lines by tickets', () => {
   });
 });
 
-xdescribe('POST Suggest Product / Tag / Color', () => {
+describe('POST Suggest Product / Tag / Color', () => {
 
   let productTypeIds = [
     mongoose.Types.ObjectId(),
@@ -835,7 +835,7 @@ xdescribe('POST Suggest Product / Tag / Color', () => {
 
 });
 
-xdescribe('POST Suggest Collection', () => {
+describe('POST Suggest Collection', () => {
 
   let adminObj = {
     aid: null,
