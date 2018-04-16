@@ -18,11 +18,11 @@ describe('Get User All Orders', () => {
   ];
   let ticket = {
     warehouse_id: mongoose.Types.ObjectId(),
-    status :1,
-    desc:"descccc",
-    timeStamp:new Date(),
-    is_processed:false,
-    referral_advice:1123,
+    status: 1,
+    desc: "descccc",
+    timeStamp: new Date(),
+    is_processed: false,
+    referral_advice: 1123,
     agent_id: mongoose.Types.ObjectId()
   };
   let existingOrderId;
@@ -38,8 +38,8 @@ describe('Get User All Orders', () => {
     no: "4",
     postal_code: "512123456",
     loc: {
-        long: 12,
-        lat: 12,
+      long: 12,
+      lat: 12,
     }
   };
 
@@ -141,13 +141,17 @@ describe('Get User All Orders', () => {
           order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
-            tickets:[ticket]
+            tickets: [ticket]
           }, {
-            tickets:[ticket],
+            tickets: [ticket],
             product_id: productIds[0],
             product_instance_id: productInstanceIds[1]
           }]
         };
+        return models['OrderTest'].insertMany([firstOrder]);
+      })
+      .then(res => {
+        existingOrderId = res[0]._id;
         secondOrder = {
           customer_id: customerObj.cid,
           is_cart: false,
@@ -160,31 +164,35 @@ describe('Get User All Orders', () => {
           is_collect: true,
           coupon_code: 'abcde12345',
           order_lines: [{
-            tickets:[ticket],
+            tickets: [ticket],
             product_id: productIds[1],
             product_instance_id: productInstanceIds[2]
           }]
         };
-        thirdOrder = {
-          customer_id: customerObj.cid,
-          is_cart: true,
-          transaction_id: mongoose.Types.ObjectId(),
-          address: address,
-          total_amount: 3000,
-          used_point: 200,
-          used_balance: 400,
-          order_time: new Date(),
-          order_lines: [{
-            product_id: productIds[1],
-            product_instance_id: productInstanceIds[1]
-          }]
-        };
-        return models['OrderTest'].insertMany([firstOrder]);
-      })
-      .then(res => {
-        existingOrderId = res[0]._id;
-        return models['OrderTest'].insertMany([secondOrder, thirdOrder])
-      })
+
+        return models['OrderTest'].insertMany([secondOrder])
+      }).then(res => {
+      existingOrderId = res[0]._id;
+      thirdOrder = {
+        customer_id: customerObj.cid,
+        is_cart: true,
+        transaction_id: mongoose.Types.ObjectId(),
+        address: address,
+        total_amount: 3000,
+        used_point: 200,
+        used_balance: 400,
+        order_time: new Date(),
+        is_collect:false,
+        coupon_code: '123456789',
+        order_lines: [{
+          tickets: [ticket],
+          product_id: productIds[1],
+          product_instance_id: productInstanceIds[2]
+        }]
+      };
+
+      return models['OrderTest'].insertMany([thirdOrder])
+    })
       .then(() => {
         return models['CustomerTest'].update({_id: customerObj.cid}, {$addToSet: {orders: existingOrderId}});
       })
@@ -205,7 +213,7 @@ describe('Get User All Orders', () => {
       json: true,
       resolveWithFullResponse: true
     }).then(res => {
-      console.log(JSON.stringify(res.body, null, 4));
+      console.log(JSON.stringify(res.body,null,2));
       expect(res.statusCode).toBe(200);
       expect(res.body.orders.length).toBe(2);
       expect(res.body.orders[0]._id).toEqual(secondOrder.transaction_id.toString());
