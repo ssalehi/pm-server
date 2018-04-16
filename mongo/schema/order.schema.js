@@ -1,5 +1,6 @@
- const Schema = require('mongoose').Schema;
+const Schema = require('mongoose').Schema;
 const OrderLineSchema = require('./order_line.schema');
+const addressSchema = require('./address.schema');
 
 let schema_obj = {
   customer_id: {
@@ -7,8 +8,9 @@ let schema_obj = {
     ref: 'Customer'
   },
   transaction_id: Schema.Types.ObjectId,
-  address_id: {
-    type: Schema.Types.ObjectId,
+  address: {
+    type: addressSchema,
+    required: true
   },
   total_amount: {
     type: Number,
@@ -16,6 +18,7 @@ let schema_obj = {
     default: 0
   },
   used_point: Number,
+  used_balance: Number,
   discount: Number,
   order_time: {
     type: Date,
