@@ -328,28 +328,6 @@ describe('Guest User', () => {
       is_verified: false,
       is_guest: true,
     }
-    //   {
-    //   $set: {
-    //     first_name: 'Sareh',
-    //     surname: 'Salehi',
-    //     mobile_no: '0912000000',
-    //     addresses: [{
-    //       city: 'Tehran',
-    //       street: 'Zartosht',
-    //       province: 'Tehran',
-    //       recipient_title: 'f',
-    //       recipient_name: 'Sima',
-    //       recipient_surname: 'Salehi',
-    //       recipient_national_id: '123321',
-    //       recipient_mobile_no: '091212121212',
-    //       district: '',
-    //       unit: 13,
-    //       no: 18,
-    //       postal_code: 13445,
-    //       loc: {long: 2345, lat: 3445},
-    //     }],
-    //   },
-    // }
     ).then(res => {
         console.log(res);
         return rp({
@@ -458,9 +436,7 @@ describe('Guest User', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('should add address to a exist guest user',function (done){
-    this.done = done;
-
-
-  })
+  // TODO add spec for this state
+  // it('should add address to a exist guest user',function (done){
+  // })
 });
