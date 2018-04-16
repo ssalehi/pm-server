@@ -18,6 +18,7 @@ let schema_obj = {
     default: 0
   },
   used_point: Number,
+  used_balance: Number,
   discount: Number,
   order_time: {
     type: Date,
