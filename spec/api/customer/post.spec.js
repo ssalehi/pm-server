@@ -57,7 +57,6 @@ describe('Set Address', () => {
       resolveWithFullResponse: true,
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body.n).toBe(1);
       return models['CustomerTest'].findOne({username: 'sa'})
     }).then(res => {
       expect(res.addresses.length).toBe(1);
@@ -222,7 +221,6 @@ describe('Set Address', () => {
       })
       .then(res => {
           expect(res.statusCode).toBe(200);
-          expect(res.body.n).toBe(1);
           return models['CustomerTest'].findOne({username: 'sareh'})
         }).then(res => {
           expect(res.addresses.length).toBe(1);
@@ -375,7 +373,7 @@ describe('Guest User', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('should add new guest', function (done) {
+  it('should add new guest', function (done) {
     this.done = done;
     rp({
       method: 'post',

@@ -65,7 +65,6 @@ compareFunction = function (candidatePassword, cb) {
 schemas.AgentSchema.pre('save', preSaveFunction);
 schemas.AgentSchema.methods.comparePassword = compareFunction;
 schemas.CustomerSchema.pre('save', preSaveFunction);
-// schemas.CustomerSchema.pre('update', preSaveFunction);
 schemas.CustomerSchema.methods.comparePassword = compareFunction;
 
 // can save data out of schema using strict: false
