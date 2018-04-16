@@ -758,10 +758,9 @@
       "info": {
         "column": "0",
         "text": "مردانه",
-        "section": "men",
-        "href": "collection/men"
-      },
-      "is_finalized": true
+        "href": "collection/men",
+        "section": "men"
+      }
     },
     {
       "component_name": "menu",
