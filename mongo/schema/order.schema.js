@@ -1,4 +1,4 @@
- const Schema = require('mongoose').Schema;
+const Schema = require('mongoose').Schema;
 const OrderLineSchema = require('./order_line.schema');
 
 let schema_obj = {
@@ -15,7 +15,16 @@ let schema_obj = {
     required: true,
     default: 0
   },
-  used_point: Number,
+  used_point: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  used_balance: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   discount: Number,
   order_time: {
     type: Date,

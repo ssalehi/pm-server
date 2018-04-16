@@ -110,7 +110,7 @@ router.put('/register', apiResponse('Customer', 'registration', false, ['body'])
 router.post('/register/verify', apiResponse('Customer', 'verification', false, ['body.code', 'body.username']));
 router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
-router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user','body']));
+router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user', 'body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
 router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
@@ -156,6 +156,7 @@ router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', fa
 // Order
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
+router.post('/order/ticket/:type', apiResponse('Order', 'setTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
@@ -286,10 +287,10 @@ router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false,
 router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
 
 
+// temp apis
 
-// temp api
 // todo: must be removed
-router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.addressId', 'body.transactionId']));
+router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.addressId', 'body.transactionId','body.usedPoints','body.usedBalance']));
 
 
 module.exports = router;
