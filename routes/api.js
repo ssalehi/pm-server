@@ -159,6 +159,8 @@ router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', fa
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
+router.post('/order/ticket/:type', apiResponse('Order', 'setTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/ticket/offline/verifyInvoice', apiResponse('Order', 'verifyInvoice', false, ['body']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
@@ -295,10 +297,10 @@ router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body']
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
+// temp apis
 
-// temp api
 // todo: must be removed
-router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.addressId', 'body.transactionId']));
+router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.addressId', 'body.transactionId','body.usedPoints','body.usedBalance']));
 
 
 module.exports = router;
