@@ -3,6 +3,7 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
+const _const = require('../../../lib/const.list');
 
 describe('POST Order (New Order)', () => {
 
@@ -108,7 +109,7 @@ describe('POST Order (New Order)', () => {
           total_amount: 0,
           order_time: new Date(),
           is_cart: true,
-          order_line_ids: [{
+          order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0]
           }]
@@ -173,9 +174,9 @@ describe('POST Order (New Order)', () => {
       .then(res => {
         expect(res.length).toEqual(1);
         expect(res[0].is_cart).toBe(true);
-        expect(res[0].order_line_ids.length).toBe(1);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines.length).toBe(1);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
 
         done();
       })
@@ -204,15 +205,15 @@ describe('POST Order (New Order)', () => {
       .then(res => {
         expect(res.length).toEqual(1);
         expect(res[0].is_cart).toBe(true);
-        expect(res[0].order_line_ids.length).toBe(4);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[2].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[3].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[2].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[3].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines.length).toBe(4);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[1].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[2].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[3].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[1].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[2].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[3].product_instance_id).toEqual(productInstanceIds[0]);
 
         done();
       })
@@ -324,7 +325,7 @@ describe('POST Order (Already-exist Order)', () => {
           total_amount: 0,
           order_time: new Date(),
           is_cart: true,
-          order_line_ids: [{
+          order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0]
           }]
@@ -363,11 +364,11 @@ describe('POST Order (Already-exist Order)', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].order_line_ids.length).toBe(2);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[1]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[2]);
+        expect(res[0].order_lines.length).toBe(2);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[1].product_id).toEqual(productIds[1]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[1].product_instance_id).toEqual(productInstanceIds[2]);
 
         done();
       })
@@ -395,15 +396,15 @@ describe('POST Order (Already-exist Order)', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].order_line_ids.length).toBe(4);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[1]);
-        expect(res[0].order_line_ids[2].product_id).toEqual(productIds[1]);
-        expect(res[0].order_line_ids[3].product_id).toEqual(productIds[1]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[2]);
-        expect(res[0].order_line_ids[2].product_instance_id).toEqual(productInstanceIds[2]);
-        expect(res[0].order_line_ids[3].product_instance_id).toEqual(productInstanceIds[2]);
+        expect(res[0].order_lines.length).toBe(4);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[1].product_id).toEqual(productIds[1]);
+        expect(res[0].order_lines[2].product_id).toEqual(productIds[1]);
+        expect(res[0].order_lines[3].product_id).toEqual(productIds[1]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[1].product_instance_id).toEqual(productInstanceIds[2]);
+        expect(res[0].order_lines[2].product_instance_id).toEqual(productInstanceIds[2]);
+        expect(res[0].order_lines[3].product_instance_id).toEqual(productInstanceIds[2]);
 
         done();
       })
@@ -645,7 +646,7 @@ describe('POST Order (Fetch cart details)', () => {
           _id: orderId1,
           customer_id: customerObj.cid,
           order_time: new Date(),
-          order_line_ids: [{
+          order_lines: [{
             product_instance_id: instanceId1,
             product_id: product1._id,
             adding_time: new Date(),
@@ -672,7 +673,7 @@ describe('POST Order (Fetch cart details)', () => {
           _id: orderId2,
           customer_id: customerObj.cid,
           order_time: new Date(),
-          order_line_ids: [{
+          order_lines: [{
             product_instance_id: instanceId5,
             product_id: product2._id,
             adding_time: new Date(),
@@ -811,7 +812,7 @@ describe('POST Order (Fetch cart details)', () => {
   });
 });
 
-describe('POST Order (Delete Orderlines)', () => {
+describe('POST Order (Delete Order lines)', () => {
 
   let customerObj = {
     cid: null,
@@ -927,7 +928,7 @@ describe('POST Order (Delete Orderlines)', () => {
           total_amount: 0,
           order_time: new Date(),
           is_cart: true,
-          order_line_ids: [{
+          order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
           }, {
@@ -973,9 +974,9 @@ describe('POST Order (Delete Orderlines)', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].order_line_ids.length).toBe(1);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[1]);
+        expect(res[0].order_lines.length).toBe(1);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[1]);
 
         done();
       })
@@ -1001,11 +1002,11 @@ describe('POST Order (Delete Orderlines)', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].order_line_ids.length).toBe(2);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[1]);
+        expect(res[0].order_lines.length).toBe(2);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[1].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[1].product_instance_id).toEqual(productInstanceIds[1]);
 
         done();
       })
@@ -1031,15 +1032,879 @@ describe('POST Order (Delete Orderlines)', () => {
       })
       .then(res => {
         expect(res.length).toEqual(1);
-        expect(res[0].order_line_ids.length).toBe(3);
-        expect(res[0].order_line_ids[0].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[1].product_id).toEqual(productIds[0]);
-        expect(res[0].order_line_ids[0].product_instance_id.equals(productInstanceIds[0])).toBe(true);
-        expect(res[0].order_line_ids[0].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(res[0].order_line_ids[1].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines.length).toBe(3);
+        expect(res[0].order_lines[0].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[1].product_id).toEqual(productIds[0]);
+        expect(res[0].order_lines[0].product_instance_id.equals(productInstanceIds[0])).toBe(true);
+        expect(res[0].order_lines[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res[0].order_lines[1].product_instance_id).toEqual(productInstanceIds[0]);
 
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+});
+
+describe('POST Order - (Set Ticket)', () => {
+
+  let SMAgent = {
+    cid: null,
+    jar: null
+  };
+  let SCAgent = {
+    cid: null,
+    jar: null
+  };
+  let CMAgent = {
+    cid: null,
+    jar: null
+  };
+
+  let productInstanceIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId()
+  ];
+  let colorIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId()
+  ];
+  let productIds = [];
+  let warehouses = [{
+    _id: mongoose.Types.ObjectId(),
+    name: 'سانا',
+    phone: '021 7443 8111',
+    has_customer_pickup: true,
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'اندرزگو'
+    }
+  }, {
+    _id: mongoose.Types.ObjectId(),
+    name: 'ایران مال',
+    phone: 'نا مشخص',
+    has_customer_pickup: true,
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'اتوبان خرازی'
+    }
+  }, {
+    _id: mongoose.Types.ObjectId(),
+    name: 'پالادیوم',
+    phone: ' 021 2201 0600',
+    has_customer_pickup: true,
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'مقدس اردبیلی'
+    }
+  }, {
+    _id: mongoose.Types.ObjectId(),
+    name: 'انبار مرکزی',
+    phone: 'نا مشخص',
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'نامشخص'
+    },
+    is_center: true
+  }];
+
+  let orders = [];
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return models['WarehouseTest'].insertMany(warehouses)
+      })
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
+      })
+      .then(res => {
+        SMAgent.aid = res.aid;
+        SMAgent.jar = res.rpJar;
+        return lib.dbHelpers.addAndLoginAgent('sc', _const.ACCESS_LEVEL.ShopClerk, warehouses.find(x => x.name === 'سانا')._id)
+      })
+      .then(res => {
+        SCAgent.aid = res.aid;
+        SCAgent.jar = res.rpJar;
+        return lib.dbHelpers.addAndLoginAgent('cm')
+      })
+      .then(res => {
+        CMAgent.aid = res.aid;
+        CMAgent.jar = res.rpJar;
+        let products = [{
+          _id: productIds[0],
+          name: 'sample 1',
+          product_type: {
+            name: 'sample type',
+            product_type_id: mongoose.Types.ObjectId()
+          },
+          brand: {
+            name: 'sample brand',
+            brand_id: mongoose.Types.ObjectId()
+          },
+          base_price: 30000,
+          desc: 'some description for this product',
+          colors: [
+            {
+              color_id: colorIds[0],
+              name: 'green'
+            },
+            {
+              color_id: colorIds[1],
+              name: 'yellow'
+            },
+            {
+              color_id: colorIds[2],
+              name: 'red'
+            }
+          ],
+          instances: [
+            {
+              _id: productInstanceIds[0],
+              product_color_id: colorIds[0],
+              size: "9",
+              price: 2000,
+              barcode: '0394081341'
+            },
+            {
+              _id: productInstanceIds[1],
+              product_color_id: colorIds[1],
+              size: "10",
+              price: 4000,
+              barcode: '19231213123'
+            }
+          ]
+        },
+          {
+            _id: productIds[1],
+            name: 'simple 2',
+            product_type: {
+              name: 'sample type',
+              product_type_id: mongoose.Types.ObjectId()
+            },
+            brand: {
+              name: 'sample brand',
+              brand_id: mongoose.Types.ObjectId()
+            },
+            base_price: 600000,
+            desc: "some else description for this product",
+            colors: [
+              {
+                color_id: colorIds[2],
+                name: 'red'
+              }, {
+                color_id: colorIds[3],
+                name: 'purple'
+              },
+            ],
+            instances: [
+              {
+                _id: productInstanceIds[2],
+                product_color_id: colorIds[2],
+                size: "11",
+                price: 50000,
+                barcode: '9303850203',
+                tickets: [
+                  {}
+                ]
+              },
+              {
+                _id: productInstanceIds[3],
+                product_color_id: colorIds[3],
+                size: "11",
+                price: 50000,
+                barcode: '9303850203',
+              }
+            ]
+          }];
+        return models['ProductTest'].insertMany(products);
+      })
+      .then(res => {
+
+        productIds = res.map(x => x._id);
+
+        let _orders = [{
+          customer_id: mongoose.Types.ObjectId(),
+          total_amount: 3,
+          order_time: new Date(),
+          is_cart: false,
+          address_id: mongoose.Types.ObjectId(),
+          transaction_id: mongoose.Types.ObjectId(),
+          order_lines: [{
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
+            tickets: [ // sales manager ticket
+              {
+                warehouse_id: warehouses.find(x => x.is_center)._id,
+                status: _const.ORDER_STATUS.default
+              }
+            ]
+          }, { // shop clerk ticket
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[1],
+            tickets: [
+              {
+                warehouse_id: warehouses.find(x => x.is_center)._id,
+                status: _const.ORDER_STATUS.default,
+                is_processed: true,
+                agent_id: SMAgent.aid
+              },
+              {
+                warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
+                referral_advice: _const.REFERRAL_ADVICE.SendToCustomer
+              }
+            ]
+          }, { // sales manager ticket
+            product_id: productIds[1],
+            product_instance_id: productInstanceIds[2],
+            tickets: [ // sales manager ticket
+              {
+                warehouse_id: warehouses.find(x => x.is_center)._id,
+                status: _const.ORDER_STATUS.default,
+                is_processed: true,
+                agent_id: SMAgent.aid
+              },
+              {
+                warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
+                referral_advice: _const.REFERRAL_ADVICE.SendToCentral,
+                is_processed: true,
+                agent_id: SCAgent.aid
+              }, {
+                warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
+                status: _const.ORDER_STATUS.Invoice,
+              }
+            ]
+          }]
+        }];
+
+        return models['OrderTest'].insertMany(_orders);
+      })
+      .then(res => {
+        orders = res;
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      })
+  });
+
+  // refer tickets
+  it('sales manager should be able to set refer ticket for a c&c order and send to shop clerk ', function (done) {
+    this.done = done;
+
+    let cANDcOrder = new models['OrderTest']({ // C&C order
+      customer_id: mongoose.Types.ObjectId(),
+      total_amount: 2,
+      order_time: new Date(),
+      is_cart: false,
+      address_id: warehouses.find(x => x.name === 'سانا')._id,
+      transaction_id: mongoose.Types.ObjectId(),
+      is_collect: true,
+      order_lines: [{
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[0],
+        tickets: [ // sales manager ticket
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.default
+          }
+        ]
+      }]
+    });
+    cANDcOrder.save()
+      .then(res => {
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`order/ticket/refer`),
+          body: {
+            orderId: res._id,
+            orderLineId: res.order_lines[0]._id,
+            warehouseId: warehouses.find(x => x.name === 'سانا')._id
+          },
+          json: true,
+          jar: SMAgent.jar,
+          resolveWithFullResponse: true
+        }).then(res => {
+          expect(res.statusCode).toBe(200);
+          expect(res.body.n).toBe(1);
+          expect(res.body.nModified).toBe(1);
+          return models['OrderTest'].findById(cANDcOrder._id).lean()
+
+        })
+          .then(res => {
+            expect(res.order_lines[0].tickets.length).toBe(2);
+            expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
+            expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
+            expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.SMAssignToWarehouse);
+            expect(res.order_lines[0].tickets[1].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
+
+            done();
+
+          })
+          .catch(lib.helpers.errorHandler.bind(this));
+      });
+
+  });
+  it('sales manager should be able to set refer ticket with referral advice for a non c&c order and send to shop clerk', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`order/ticket/refer`),
+      body: {
+        orderId: orders[0]._id,
+        orderLineId: orders[0].order_lines[0]._id,
+        referralAdvice: _const.REFERRAL_ADVICE.SendToCentral,
+        warehouseId: warehouses.find(x => x.name === 'سانا')._id
+      },
+      json: true,
+      jar: SMAgent.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.n).toBe(1);
+      expect(res.body.nModified).toBe(1);
+      return models['OrderTest'].findById(orders[0]._id).lean()
+    })
+      .then(res => {
+        expect(res.order_lines[0].tickets.length).toBe(2);
+        expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
+        expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
+        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.SMAssignToWarehouse);
+        expect(res.order_lines[0].tickets[1].referral_advice).toBe(_const.REFERRAL_ADVICE.SendToCentral);
+        expect(res.order_lines[0].tickets[1].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+  it('nobody except sales manager should not be able to make a refer ticket', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`order/ticket/refer`),
+      body: {
+        orderId: orders[0]._id,
+        orderLineId: orders[0].order_lines[0]._id,
+        referralAdvice: _const.REFERRAL_ADVICE.SendToCentral,
+        warehouseId: warehouses.find(x => x.name === 'سانا')._id
+      },
+      json: true,
+      jar: SCAgent.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('shop clerk can make a refer ticket');
+      done();
+    })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noAccess.status);
+        expect(err.error).toBe(error.noAccess.message);
+        done();
+      });
+  });
+  it('sales manager should not be able to make a refer ticket with referral advice for a c&c order', function (done) {
+    this.done = done;
+    let cANDcOrder = new models['OrderTest']({ // C&C order
+      customer_id: mongoose.Types.ObjectId(),
+      total_amount: 2,
+      order_time: new Date(),
+      is_cart: false,
+      address_id: warehouses.find(x => x.name === 'سانا')._id,
+      transaction_id: mongoose.Types.ObjectId(),
+      is_collect: true,
+      order_lines: [{
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[0],
+        tickets: [ // sales manager ticket
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.default
+          }
+        ]
+      }]
+    });
+    cANDcOrder.save()
+      .then(res => {
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`order/ticket/refer`),
+          body: {
+            orderId: res._id,
+            orderLineId: res.order_lines[0]._id,
+            referralAdvice: _const.REFERRAL_ADVICE.SendToCentral,
+            warehouseId: warehouses.find(x => x.name === 'سانا')._id
+          },
+          json: true,
+          jar: SMAgent.jar,
+          resolveWithFullResponse: true
+        })
+      })
+      .then(res => {
+        this.fail('sales manager can set a refer ticket with referral advice for a c&c order');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.activeTicketNotFound.status);
+        expect(err.error).toBe(error.activeTicketNotFound.message);
+        done();
+      });
+  });
+  it('sales manager should not be able to change warehouse id for a c&c order', function (done) {
+    this.done = done;
+    let cANDcOrder = new models['OrderTest']({ // C&C order
+      customer_id: mongoose.Types.ObjectId(),
+      total_amount: 2,
+      order_time: new Date(),
+      is_cart: false,
+      address_id: warehouses.find(x => x.name === 'سانا')._id,
+      transaction_id: mongoose.Types.ObjectId(),
+      is_collect: true,
+      order_lines: [{
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[0],
+        tickets: [ // sales manager ticket
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.default
+          }
+        ]
+      }]
+    });
+    cANDcOrder.save()
+      .then(res => {
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`order/ticket/refer`),
+          body: {
+            orderId: res._id,
+            orderLineId: res.order_lines[0]._id,
+            warehouseId: warehouses.find(x => x.name === 'پالادیوم')._id
+
+          },
+          json: true,
+          jar: SMAgent.jar,
+          resolveWithFullResponse: true
+        })
+      })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        expect(res.body.n).toBe(1);
+        expect(res.body.nModified).toBe(1);
+        return models['OrderTest'].findById(cANDcOrder._id).lean()
+      })
+      .then(res => {
+        expect(res.order_lines[0].tickets.length).toBe(2);
+        expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
+        expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
+        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.SMAssignToWarehouse);
+        expect(res.order_lines[0].tickets[1].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+  it('sales manager should not be able to make duplicate refer ticket', function (done) {
+    this.done = done;
+    let newOrder = new models['OrderTest']({
+      customer_id: mongoose.Types.ObjectId(),
+      total_amount: 3,
+      order_time: new Date(),
+      is_cart: false,
+      address_id: mongoose.Types.ObjectId(),
+      transaction_id: mongoose.Types.ObjectId(),
+      order_lines: [{
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[0],
+        tickets: [ // sales manager ticket
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.default,
+            is_processed: true,
+            agent_id: SMAgent.aid
+          },
+          {
+            warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
+            status: _const.ORDER_STATUS.SMAssignToWarehouse
+          }
+        ]
+      }]
+    });
+    newOrder.save()
+      .then(res => {
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`order/ticket/refer`),
+          body: {
+            orderId: res._id,
+            orderLineId: res.order_lines[0]._id,
+            warehouseId: warehouses.find(x => x.name === 'پالادیوم')._id
+
+          },
+          json: true,
+          jar: SMAgent.jar,
+          resolveWithFullResponse: true
+        })
+      })
+      .then(res => {
+        this.fail('sales manager can make duplicate refer ticket');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.existingActiveTicket.status);
+        expect(err.error).toBe(error.existingActiveTicket.message);
+        done();
+      });
+  });
+
+  // invoice tickets
+  it('sales manager should be able to set invoice ticket for a non c&c order', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`order/ticket/invoice`),
+      body: {
+        orderId: orders[0]._id,
+        orderLineId: orders[0].order_lines[0]._id,
+      },
+      json: true,
+      jar: SMAgent.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.n).toBe(1);
+      expect(res.body.nModified).toBe(1);
+      return models['OrderTest'].findById(orders[0]._id).lean()
+    })
+      .then(res => {
+        expect(res.order_lines[0].tickets.length).toBe(2);
+        expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
+        expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
+        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.Invoice);
+        expect(res.order_lines[0].tickets[1].warehouse_id.toString()).toBe(warehouses.find(x => x.is_center)._id.toString());
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+  it('shop clerk should be able to set invoice ticket for order and set the logined warehouse id', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`order/ticket/invoice`),
+      body: {
+        orderId: orders[0]._id,
+        orderLineId: orders[0].order_lines[0]._id,
+      },
+      json: true,
+      jar: SCAgent.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.n).toBe(1);
+      expect(res.body.nModified).toBe(1);
+      return models['OrderTest'].findById(orders[0]._id).lean()
+    })
+      .then(res => {
+        expect(res.order_lines[0].tickets.length).toBe(2);
+        expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
+        expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SCAgent.aid.toString());
+        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.Invoice);
+        expect(res.order_lines[0].tickets[1].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+  it('sales manager should not be able to make a invoice ticket for a c&c order', function (done) {
+    this.done = done;
+    let cANDcOrder = new models['OrderTest']({ // C&C order
+      customer_id: mongoose.Types.ObjectId(),
+      total_amount: 2,
+      order_time: new Date(),
+      is_cart: false,
+      address_id: warehouses.find(x => x.name === 'سانا')._id,
+      transaction_id: mongoose.Types.ObjectId(),
+      is_collect: true,
+      order_lines: [{
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[0],
+        tickets: [ // sales manager ticket
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.default
+          }
+        ]
+      }]
+    });
+    cANDcOrder.save()
+      .then(res => {
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`order/ticket/invoice`),
+          body: {
+            orderId: res._id,
+            orderLineId: res.order_lines[0]._id,
+          },
+          json: true,
+          jar: SMAgent.jar,
+          resolveWithFullResponse: true
+        })
+      })
+      .then(res => {
+        this.fail('sales manager can set a invoice ticket for a c&c order');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noAccess.status);
+        expect(err.error).toBe(error.noAccess.message);
+        done();
+      });
+  });
+  it('sales manager should be able to refresh the invoice ticket and make new request to offline system', function (done) {
+    this.done = done;
+    let newOrder = new models['OrderTest']({
+      customer_id: mongoose.Types.ObjectId(),
+      total_amount: 3,
+      order_time: new Date(),
+      is_cart: false,
+      address_id: mongoose.Types.ObjectId(),
+      transaction_id: mongoose.Types.ObjectId(),
+      order_lines: [{
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[0],
+        tickets: [ // sales manager ticket
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.default,
+            is_processed: true,
+            agent_id: SMAgent.aid
+          },
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.Invoice
+          }
+        ]
+      }]
+    });
+    newOrder.save()
+      .then(res => {
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`order/ticket/invoice`),
+          body: {
+            orderId: res._id,
+            orderLineId: res.order_lines[0]._id,
+          },
+          json: true,
+          jar: SMAgent.jar,
+          resolveWithFullResponse: true
+        }).then(res => {
+          expect(res.statusCode).toBe(200);
+          expect(res.body.result).toBe('ok');
+          done();
+        })
+          .catch(lib.helpers.errorHandler.bind(this));
+      });
+  });
+
+  // refund tickets
+  it('sales manager should be able to set refund ticket for any order ', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`order/ticket/refund`),
+      body: {
+        orderId: orders[0]._id,
+        orderLineId: orders[0].order_lines[0]._id,
+      },
+      json: true,
+      jar: SMAgent.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.n).toBe(1);
+      expect(res.body.nModified).toBe(1);
+      return models['OrderTest'].findById(orders[0]._id).lean()
+    })
+      .then(res => {
+        expect(res.order_lines[0].tickets.length).toBe(2);
+        expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
+        expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
+        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.SMRefund);
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+  it('nobody except sales manager should not be able to make a refer ticket', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`order/ticket/refund`),
+      body: {
+        orderId: orders[0]._id,
+        orderLineId: orders[0].order_lines[0]._id,
+      },
+      json: true,
+      jar: SCAgent.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('shop clerk can make a refund ticket');
+      done();
+    })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noAccess.status);
+        expect(err.error).toBe(error.noAccess.message);
+        done();
+      });
+  });
+  it('sales manager should not be able to make duplicate refund ticket', function (done) {
+    this.done = done;
+    let newOrder = new models['OrderTest']({
+      customer_id: mongoose.Types.ObjectId(),
+      total_amount: 3,
+      order_time: new Date(),
+      is_cart: false,
+      address_id: mongoose.Types.ObjectId(),
+      transaction_id: mongoose.Types.ObjectId(),
+      order_lines: [{
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[0],
+        tickets: [ // sales manager ticket
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.default,
+            is_processed: true,
+            agent_id: SMAgent.aid
+          },
+          {
+            status: _const.ORDER_STATUS.SMRefund
+          }
+        ]
+      }]
+    });
+    newOrder.save()
+      .then(res => {
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`order/ticket/refund`),
+          body: {
+            orderId: res._id,
+            orderLineId: res.order_lines[0]._id,
+
+          },
+          json: true,
+          jar: SMAgent.jar,
+          resolveWithFullResponse: true
+        })
+      })
+      .then(res => {
+        this.fail('sales manager can make duplicate refer ticket');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.existingActiveTicket.status);
+        expect(err.error).toBe(error.existingActiveTicket.message);
+        done();
+      });
+  });
+
+  // verify invoice tickets
+  it('offline system should be able to call verify invoice api', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`order/ticket/verifyInvoice`),
+      body: {
+        orderId: orders[0]._id,
+        orderLineId: orders[0].order_lines[2]._id,
+        warehouseId: warehouses.find(x => x.name === 'سانا')._id,
+        userId: SCAgent.aid
+      },
+      json: true,
+      jar: SCAgent.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.n).toBe(1);
+      expect(res.body.nModified).toBe(1);
+      return models['OrderTest'].findById(orders[0]._id).lean()
+    })
+      .then(res => {
+        expect(res.order_lines[2].tickets.length).toBe(4);
+        expect(res.order_lines[2].tickets[2].is_processed).toBeTruthy();
+        expect(res.order_lines[2].tickets[2].agent_id.toString()).toBe(SCAgent.aid.toString());
+        expect(res.order_lines[2].tickets[3].status).toBe(_const.ORDER_STATUS.ReadyToDeliver);
+        expect(res.order_lines[2].tickets[3].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+  it('offline system should not be able to make duplicate verify invoice ticket', function (done) {
+    this.done = done;
+    let newOrder = new models['OrderTest']({
+      customer_id: mongoose.Types.ObjectId(),
+      total_amount: 3,
+      order_time: new Date(),
+      is_cart: false,
+      address_id: mongoose.Types.ObjectId(),
+      transaction_id: mongoose.Types.ObjectId(),
+      order_lines: [{
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[0],
+        tickets: [ // sales manager ticket
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.default,
+            is_processed: true,
+            agent_id: SMAgent.aid
+          },
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.Invoice,
+            is_processed: true,
+            agent_id: SMAgent.aid
+          },
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.ReadyToDeliver,
+          },
+        ]
+      }]
+    });
+    newOrder.save()
+      .then(res => {
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`order/ticket/verifyInvoice`),
+          body: {
+            orderId: res._id,
+            orderLineId: res.order_lines[0]._id,
+            warehouseId: warehouses.find(x => x.name === 'سانا')._id,
+            userId: SCAgent.aid
+          },
+          json: true,
+          jar: SCAgent.jar,
+          resolveWithFullResponse: true
+        })
+      })
+      .then(res => {
+        this.fail('offline system can make duplicate verify invoice ticket');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.existingActiveTicket.status);
+        expect(err.error).toBe(error.existingActiveTicket.message);
+        done();
+      });
+  });
+
+
 });

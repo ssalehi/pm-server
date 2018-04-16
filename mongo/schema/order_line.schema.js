@@ -1,17 +1,26 @@
 const Schema = require('mongoose').Schema;
+const TicketSchema = require('./ticket.schema');
 
 let schema_obj = {
-  product_instance_id: Schema.Types.ObjectId,
+  product_instance_id: {
+    type: Schema.Types.ObjectId,
+    required: true
+  },
   product_id: {
     type: Schema.Types.ObjectId,
     ref: 'Product',
+    required: true
   },
   paid_price: {
     type: Number,
     required: true,
     default: 0
   },
-  adding_time: Date,
+  adding_time: {
+    type: Date,
+    default: Date.now,
+    required: true
+  },
   campaign_id: {
     type: Schema.Types.ObjectId,
     ref: 'Campaign'
@@ -24,6 +33,7 @@ let schema_obj = {
     type: Schema.Types.ObjectId,
     ref: 'Warehouse'
   },
+  tickets: [TicketSchema]
 };
 
 let OrderLineSchema = new Schema(schema_obj, {strict: true});

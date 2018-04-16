@@ -57,7 +57,7 @@ let schema_obj = {
 };
 
 
-let addressSchema = new Schema(schema_obj, {collection: 'address', strict: true});
+let addressSchema = new Schema(schema_obj, {strict: true});
 
 
 module.exports = addressSchema;

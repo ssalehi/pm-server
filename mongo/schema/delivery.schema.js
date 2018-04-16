@@ -26,18 +26,18 @@ return_template = {
 let schema_obj = {
   order_id: {
     type: Schema.Types.ObjectId,
-    require: true,
+    required: true,
     ref: 'Order'
   },
   order_line_id: {
     type: Schema.Types.ObjectId,
-    require: true,
+    required: true,
   },
   send: send_template,
   return: return_template,
   processed_by: {
     type: Schema.Types.ObjectId,
-    require: true,
+    required: true,
     ref: 'Agent'
   },
   start_time: {

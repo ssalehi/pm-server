@@ -7,13 +7,69 @@ const _const = require('./lib/const.list');
 const env = require('./env');
 const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
+const mongoose = require('mongoose');
 
 SALT_WORK_FACTOR = 10;
 let PLACEMENTS = null;
 let pKeys = [];
+let _hash;
+
 
 db.dbIsReady()
   .then(() => {
+    return models['Warehouse'].find().lean();
+  })
+  .then(res => {
+    if (!res || res.length === 0) {
+      let warehouses = [{
+        _id: mongoose.Types.ObjectId(),
+        name: 'سانا',
+        phone: '021 7443 8111',
+        has_customer_pickup: true,
+        address: {
+          province: 'تهران',
+          city: 'تهران',
+          street: 'اندرزگو'
+        }
+      }, {
+        _id: mongoose.Types.ObjectId(),
+        name: 'ایران مال',
+        phone: 'نا مشخص',
+        has_customer_pickup: true,
+        address: {
+          province: 'تهران',
+          city: 'تهران',
+          street: 'اتوبان خرازی'
+        }
+      }, {
+        _id: mongoose.Types.ObjectId(),
+        name: 'پالادیوم',
+        phone: ' 021 2201 0600',
+        has_customer_pickup: true,
+        address: {
+          province: 'تهران',
+          city: 'تهران',
+          street: 'مقدس اردبیلی'
+        }
+      }, {
+        _id: mongoose.Types.ObjectId(),
+        name: 'انبار مرکزی',
+        phone: 'نا مشخص',
+        address: {
+          province: 'تهران',
+          city: 'تهران',
+          street: 'نامشخص'
+        },
+        is_center: true
+      }];
+
+      return models['Warehouse'].insertMany(warehouses);
+    }
+    else
+      return Promise.resolve();
+  })
+  .then(() => {
+
     return new Promise((resolve, reject) => {
       env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
         if (err) return next(err);
@@ -27,51 +83,32 @@ db.dbIsReady()
     })
   })
   .then(hash => {
-    let query = {},
-      update = {
+    _hash = hash;
+    return models['Agent'].find().lean();
+
+  })
+  .then(res => {
+    if (!res || res.length === 0) {
+      let agents = [{
         username: 'admin@persianmode.com',
-        secret: hash,
+        secret: _hash,
         access_level: _const.ACCESS_LEVEL.ContentManager,
         first_name: 'ContentManager',
         surname: 'ContentManager',
-      },
-      options = {upsert: true, new: true, setDefaultsOnInsert: true};
-
-    return models['Agent'].findOneAndUpdate(query, update, options);
-
-  })
-  .then(() => {
-    console.log('-> ', 'default content manager has been added!');
-
-    return new Promise((resolve, reject) => {
-      env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
-        if (err) return next(err);
-
-        env.bcrypt.hash('admin@123', salt, null, function (err, hash) {
-          if (err) reject(err);
-
-          resolve(hash)
-        });
-      });
-    })
-  })
-
-  .then(hash => {
-    let query = {},
-      update = {
+      }, {
         username: 'sm@persianmode.com',
-        secret: hash,
+        secret: _hash,
         access_level: _const.ACCESS_LEVEL.SalesManager,
         first_name: 'Sales Manager',
         surname: 'Sales Manager',
-      },
-      options = {upsert: true, new: true, setDefaultsOnInsert: true};
+      }];
 
-    return models['Agent'].findOneAndUpdate(query, update, options);
-
+      return models['Agent'].insertMany(agents);
+    } else
+      return Promise.resolve()
   })
   .then(() => {
-    console.log('-> ', 'default sales manger has been added!');
+    console.log('-> ', 'default agents has been added!');
     PLACEMENTS = JSON.parse(fs.readFileSync('placements.json', 'utf8'));
     pKeys = Object.keys(PLACEMENTS);
     return Promise.all(pKeys.map((r, i) => {
@@ -129,7 +166,7 @@ db.dbIsReady()
       if (err.name !== 'BulkWriteError') {
         console.log('-> ', err);
       }
-      else{
+      else {
         console.log('-> ', 'dictionary is added');
       }
       process.exit();

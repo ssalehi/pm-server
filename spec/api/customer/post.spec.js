@@ -57,7 +57,6 @@ describe('Set Address', () => {
       resolveWithFullResponse: true,
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body.n).toBe(1);
       return models['CustomerTest'].findOne({username: 'sa'})
     }).then(res => {
       expect(res.addresses.length).toBe(1);
@@ -222,7 +221,6 @@ describe('Set Address', () => {
       })
       .then(res => {
           expect(res.statusCode).toBe(200);
-          expect(res.body.n).toBe(1);
           return models['CustomerTest'].findOne({username: 'sareh'})
         }).then(res => {
           expect(res.addresses.length).toBe(1);
@@ -233,139 +231,210 @@ describe('Set Address', () => {
   });
 
 // Guest User
-// describe('Guest User', () => {
-//   beforeEach(done => {
-//     lib.dbHe
-//     lpers.dropAll()
-//       .then(res => {
-//       done();
-//     })
-//       .catch(err => {
-//         console.log(err);
-//         done();
-//       });
-//   });
-//
-//   it("should get error when email exist", function (done) {
-//     this.done = done;
-//     (new models['CustomerTest']({
-//       username: 'saman@gmail.com',
-//       first_name: 'saman',
-//       surname: 'vaziri',
-//       mobile_no: '0912000000',
-//       'addresses': {
-//         city: 'tehran',
-//         street: 'zartosht'},
-//         is_verified: true,
-//         is_guest: false
-//     })).save()
-//       .then(res => {
-//         return rp({
-//           method: 'post',
-//           body: {
-//             username: 'saman@gmail.com',
-//             first_name: 'asd',
-//             surname: 'ad',
-//             mobile_no: '2343424324',
-//             city: 'tehran',
-//             street: 'zartosht',
-//             is_verified: true,
-//             is_guest: false
-//           },
-//           json: true,
-//           uri: lib.helpers.apiTestURL('user/guest/address'),
-//           resolveWithFullResponse: true,
-//         })
-//       })
-//       .then(res => {
-//        this.fail('Email already exists!');
-//         done();
-//       })
-//       .catch(err => {
-//        expect(err.statusCode).toBe(error.customerExist.status);
-//        expect(err.error).toBe(error.customerExist.message);
-//         done();
-//       });
-//   });
-//
-//   it('should update guest information that already exist', function (done) {
-//     this.done = done;
-//     models['CustomerTest'].update({
-//       username: 'saman@gmail.com',
-//       is_verified: false,
-//       is_guest: true,
-//     }, {
-//       $set: {
-//         first_name: 'saman',
-//         surname: 'vaziri',
-//         mobile_no: '0912000000',
-//         'addresses': {
-//           city: 'tehran',
-//           street: 'zartosht'},
-//       },
-//     }).then(res =>
-//         rp({
-//           method: 'post',
-//           body: {
-//             username: 'saman@gmail.com',
-//             first_name: 'asd',
-//             surname: 'ad',
-//             mobile_no: '2343424324',
-//             city: 'tehran',
-//             street: 'zartosht',
-//             gender: 'm',
-//             is_verified: false,
-//             is_guest: false
-//           },
-//           json: true,
-//           uri: lib.helpers.apiTestURL('user/guest/address'),
-//           resolveWithFullResponse: true,
-//         })
-//       )
-//       .then(res => {
-//         expect(res.statusCode).toBe(200);
-//         return models['CustomerTest'].find().lean();
-//       }).then(res => {
-//       expect(res.length).toBe(1);
-//       res = res[0];
-//       expect(res.username).toBe('saman@gmail.com');
-//       expect(res.first_name).toBe('asd');
-//       expect(res.surname).toBe('ad');
-//       expect(res.gender).toBe('m');
-//       expect(res.is_verified).toBe(false);
-//       done();
-//     }).catch(lib.helpers.errorHandler.bind(this));
-//   });
-//
-//   it('should add new guest', function (done) {
-//     this.done = done;
-//     rp({
-//       method: 'post',
-//       body: {
-//         username: 'saman@gmail.com',
-//         first_name: 'saman',
-//         surname: 'vaziri',
-//         mobile_no: '1234567890',
-//         gender: 'm',
-//         is_verified: false,
-//         is_guest: true
-//       },
-//       json: true,
-//       uri: lib.helpers.apiTestURL('user/guest/address'),
-//       resolveWithFullResponse: true,
-//     }).then(res => {
-//         expect(res.statusCode).toBe(200);
-//         return models['CustomerTest'].find().lean();
-//       }).then(res => {
-//             expect(res.length).toBe(1);
-//             res = res[0];
-//             expect(res.username).toBe('saman@gmail.com');
-//             expect(res.first_name).toBe('saman');
-//             expect(res.surname).toBe('vaziri');
-//             expect(res.mobile_no).toBe('1234567890');
-//             expect(res.gender).toBe('m');
-//             expect(res.is_verified).toBe(false);
-//             done();
-//           }).catch(lib.helpers.errorHandler.bind(this));
-//     })
-// });
+describe('Guest User', () => {
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return lib.dbHelpers.addCustomer('sareh@gmail.com', '12131111', {  // add a guest (not verified) user first
+          is_verified: false,
+          is_guest: true,
+          first_name: 'Sareh',
+          surname: 'Salehi',
+          addresses: [{
+            city: 'Tehran',
+            street: 'Zartosht',
+            province: 'Tehran',
+            recipient_title: 'f',
+            recipient_name: 'Sima',
+            recipient_surname: 'Salehi',
+            recipient_national_id: '123321',
+            recipient_mobile_no: '091212121212',
+            district: '',
+            unit: 13,
+            no: 18,
+            postal_code: 13445,
+            loc: {long: 2345, lat: 3445},
+          }],
+        });
+      })
+      .then(res => {
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+  it("should get error when email exist", function (done) {
+    this.done = done;
+    (new models['CustomerTest']({ // add a verified user (not guest) to database first
+      username: 'sam@gmail.com',
+      first_name: 'saman',
+      surname: 'vaziri',
+      mobile_no: '0912000000',
+      addresses: [],
+      is_verified: true,
+      is_guest: false
+    })).save()
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            username: 'sam@gmail.com',
+            first_name: 'asd',
+            surname: 'ad',
+            mobile_no: '2343424324',
+            addresses: [{
+              province: 'Tehran',
+              city: 'tehran',
+              street: 'zartosht',
+              recipient_title: 'm',
+              recipient_name: 'Sasan',
+              recipient_surname: 'Vaziri',
+              recipient_national_id: '123321',
+              recipient_mobile_no: '091212121212',
+              unit: 13,
+              no: 18,
+              postal_code: 13445,
+              loc: {long: 2345, lat: 3445},
+            }
+            ],
+            is_verified: true,
+            is_guest: false
+          },
+          json: true,
+          uri: lib.helpers.apiTestURL('user/guest/address'),
+          resolveWithFullResponse: true,
+        })
+      })
+      .then(res => {
+        this.fail('Email already exists!');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.customerExist.status);
+        expect(err.error).toBe(error.customerExist.message);
+        done();
+      });
+  });
+
+  it('should update guest information that already exist', function (done) {
+    this.done = done;
+    models['CustomerTest'].update({
+      username: 'sareh@gmail.com',
+      is_verified: false,
+      is_guest: true,
+    }
+    ).then(res => {
+        console.log(res);
+        return rp({
+          method: 'post',
+          body: {
+            username: 'sareh@gmail.com',
+            first_name: 'asd',
+            surname: 'ad',
+            mobile_no: '2343424324',
+            addresses: [{
+              city: 'Tehran',
+              street: 'Zartosht Gharbi',
+              province: 'Tehran',
+              recipient_title: 'f',
+              recipient_name: 'Sahar',
+              recipient_surname: 'Salehi',
+              recipient_national_id: '123321',
+              recipient_mobile_no: '09112233333',
+              district: '',
+              unit: 13,
+              no: 18,
+              postal_code: 13445,
+              loc: {long: 2345, lat: 3445},
+            }],
+            gender: 'f',
+          },
+          json: true,
+          uri: lib.helpers.apiTestURL('user/guest/address'),
+          resolveWithFullResponse: true,
+        })
+      }
+    )
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['CustomerTest'].find().lean();
+      }).then(res => {
+      expect(res.length).toBe(1);
+      res = res[0];
+      expect(res.username).toBe('sareh@gmail.com');
+      expect(res.first_name).toBe('asd');
+      expect(res.surname).toBe('ad');
+      expect(res.gender).toBe('f');
+      expect(res.is_verified).toBe(false);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should add new guest', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        username: 'saman@gmail.com',
+        first_name: 'saman',
+        surname: 'vaziri',
+        mobile_no: '1234567890',
+        gender: 'm',
+        is_verified: false,
+        addresses : [
+          {
+            province : 'Tehran',
+            city : 'Tajrish',
+            street : 'emam',
+            recipient_title: 'f',
+            recipient_name: 'Zahra',
+            recipient_surname: 'Salehi',
+            recipient_national_id: '558822',
+            recipient_mobile_no: '0912111111',
+            unit: 4,
+            no: 20,
+            postal_code: 3715976155,
+            loc: {long: 1245, lat: 3478}
+          },
+          {
+            province : 'Qom',
+            city : 'Qom',
+            street : 'Honarestan',
+            recipient_title: 'm',
+            recipient_name: 'Ali',
+            recipient_surname: 'Salehi',
+            recipient_national_id: '55881111',
+            recipient_mobile_no: '0912111111',
+            unit: 3,
+            no: 13,
+            postal_code: 3715976155,
+            loc: {long: 1245, lat: 3478}
+          }
+        ],
+        is_guest: true
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('user/guest/address'),
+      resolveWithFullResponse: true,
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['CustomerTest'].find().lean();
+    }).then(res => {
+      expect(res.length).toBe(2);
+      expect(res[1].username).toBe('saman@gmail.com');
+      expect(res[1].first_name).toBe('saman');
+      expect(res[1].surname).toBe('vaziri');
+      expect(res[1].mobile_no).toBe('1234567890');
+      expect(res[1].gender).toBe('m');
+      expect(res[1].is_verified).toBe(false);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  // TODO add spec for this state
+  // it('should add address to a exist guest user',function (done){
+  // })
+});
