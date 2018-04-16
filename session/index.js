@@ -12,7 +12,7 @@ let setup = (app) => {
         let option = {
           "client": redis.redis_client(),
           "host": env.redisHost,
-          "port": 6379
+          "port": env.redisPort
         };
         let conn = env.redisURL ? env.redisURL : option;
         let sessionStore = new redisStore(conn);
@@ -50,5 +50,5 @@ let setup = (app) => {
 
 module.exports = {
   setup,
-  session_config,
+  session_config : () => session_config ,
 };
