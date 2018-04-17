@@ -1666,7 +1666,7 @@ describe('POST Order - (Set Ticket)', () => {
         done();
       });
   });
-  it('sales manager should be able to refresh the invoice ticket and make new request to offline system', function (done) {
+  it('sales manager should be able to request for invoice for second time', function (done) {
     this.done = done;
     let newOrder = new models['OrderTest']({
       customer_id: mongoose.Types.ObjectId(),
@@ -1696,7 +1696,7 @@ describe('POST Order - (Set Ticket)', () => {
       .then(res => {
         return rp({
           method: 'POST',
-          uri: lib.helpers.apiTestURL(`order/ticket/invoice`),
+          uri: lib.helpers.apiTestURL(`order/ticket/offline/requestInvoice`),
           body: {
             orderId: res._id,
             orderLineId: res.order_lines[0]._id,
@@ -1712,6 +1712,53 @@ describe('POST Order - (Set Ticket)', () => {
           .catch(lib.helpers.errorHandler.bind(this));
       });
   });
+  it('sales manager should not be able to request for invoice for second time when previous active invoice ticket is not exists', function (done) {
+    this.done = done;
+    let newOrder = new models['OrderTest']({
+      customer_id: mongoose.Types.ObjectId(),
+      total_amount: 3,
+      order_time: new Date(),
+      is_cart: false,
+      address_id: mongoose.Types.ObjectId(),
+      transaction_id: mongoose.Types.ObjectId(),
+      order_lines: [{
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[0],
+        tickets: [ // sales manager ticket
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.default,
+            is_processed: true,
+            agent_id: SMAgent.aid
+          }
+        ]
+      }]
+    });
+    newOrder.save()
+      .then(res => {
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`order/ticket/offline/requestInvoice`),
+          body: {
+            orderId: res._id,
+            orderLineId: res.order_lines[0]._id,
+          },
+          json: true,
+          jar: SMAgent.jar,
+          resolveWithFullResponse: true
+        }).then(res => {
+          this.fail('sales manage can request for invoice for second time when previous active invoice ticket is not exists');
+          done();
+        })
+          .catch(err => {
+            expect(err.statusCode).toBe(error.preInvoiceTicketIsNotExists.status);
+            expect(err.error).toBe(error.preInvoiceTicketIsNotExists.message);
+            done();
+          });
+      });
+  });
+
+
 
   // refund tickets
   it('sales manager should be able to set refund ticket for any order ', function (done) {
