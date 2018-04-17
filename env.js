@@ -65,7 +65,6 @@ const redisURL = getEnvValue(process.env.REDIS_URL);
 const redisHost = getEnvValue(process.env.REDIS_HOST);
 const redisPass = getEnvValue(process.env.REDIS_PASSWORD);
 
-
 /**
  * upload files
  */
@@ -75,6 +74,10 @@ uploadProductImagePath = "public/images/product-image";
 uploadPlacementImagePath = "public/images/placements";
 uploadExcelPath = "public/excel/";
 
+/**
+ * offline system api
+ */
+const offlineURL = getEnvValue(process.env.OFFLINE_URL);
 
 /**
  *  in some cases env var name which is declared in .env file is not compatible with server env var in production mode.
@@ -114,6 +117,7 @@ module.exports = {
     clientSecret: googleAuth_clientSecret,
     callBackURL: googleAuth_callbackUrl,
   },
+  offlineURL
 };
 
 
