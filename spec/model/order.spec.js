@@ -30,6 +30,7 @@ describe('POST Order - verify order', () => {
     phone: '021 7443 8111',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'اندرزگو'
@@ -40,6 +41,7 @@ describe('POST Order - verify order', () => {
     phone: 'نا مشخص',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'اتوبان خرازی'
@@ -50,6 +52,7 @@ describe('POST Order - verify order', () => {
     phone: ' 021 2201 0600',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'مقدس اردبیلی'
@@ -135,7 +138,7 @@ describe('POST Order - verify order', () => {
           total_amount: 2,
           order_time: new Date(),
           is_cart: false,
-          address_id: mongoose.Types.ObjectId(),
+          address: warehouses[0].address,
           transaction_id: mongoose.Types.ObjectId(),
           order_lines: [{
             product_id: productIds[0],
@@ -180,7 +183,7 @@ describe('POST Order - verify order', () => {
         return models['OrderTest'].find().lean();
       }).then(res => {
       res = res[0];
-      expect(res.address_id.toString()).toEqual(addressId.toString());
+      expect(res.address._id.toString()).toEqual(addressId.toString());
       expect(res.transaction_id.toString()).toEqual(transactionId.toString());
       expect(res.is_cart).toBeFalsy();
       res.order_lines.forEach(x => {

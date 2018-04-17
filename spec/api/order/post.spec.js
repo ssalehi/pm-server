@@ -5,7 +5,7 @@ const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 
-xdescribe('POST Order (New Order)', () => {
+describe('POST Order (New Order)', () => {
 
   let customerObj = {
     cid: null,
@@ -221,7 +221,7 @@ xdescribe('POST Order (New Order)', () => {
   });
 });
 
-xdescribe('POST Order (Already-exist Order)', () => {
+describe('POST Order (Already-exist Order)', () => {
 
   let customerObj = {
     cid: null,
@@ -413,7 +413,7 @@ xdescribe('POST Order (Already-exist Order)', () => {
 
 });
 
-xdescribe('POST Order (Fetch cart details)', () => {
+describe('POST Order (Fetch cart details)', () => {
   let product1, product2;
   let type1, type2, brand1, brand2, color1, color2, tagGroup1, tag1, tag2;
   let order1, order2;
@@ -750,7 +750,6 @@ xdescribe('POST Order (Fetch cart details)', () => {
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-
   it("should get order items (lines) data for not logged in customer", function (done) {
     this.done = done;
     rp({
@@ -759,11 +758,13 @@ xdescribe('POST Order (Fetch cart details)', () => {
         data: [
           {
             product_id: product1._id,
-            instance_id: instanceId4
+            instance_id: instanceId4,
+            quantity: 3
           },
           {
             product_id: product1._id,
-            instance_id: instanceId1
+            instance_id: instanceId1,
+            quantity: 3
           },
         ],
       },
@@ -776,7 +777,6 @@ xdescribe('POST Order (Fetch cart details)', () => {
         res = res.body;
         expect(res.length).toBe(2);
         res = res[0];
-
         expect(res.instance_id).toBeDefined();
         expect(res.product_id).toBeDefined();
         expect(res.color).toBeDefined();
@@ -789,7 +789,6 @@ xdescribe('POST Order (Fetch cart details)', () => {
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-
   it("should get error when customer is not logged in and instance_ids is not declared", function (done) {
     rp({
       method: 'post',
@@ -812,7 +811,7 @@ xdescribe('POST Order (Fetch cart details)', () => {
   });
 });
 
-xdescribe('POST Order (Delete Order lines)', () => {
+describe('POST Order (Delete Order lines)', () => {
 
   let customerObj = {
     cid: null,
@@ -1055,10 +1054,6 @@ describe('POST Order - (Set Ticket)', () => {
     cid: null,
     jar: null
   };
-  let CMAgent = {
-    cid: null,
-    jar: null
-  };
 
   let productInstanceIds = [
     mongoose.Types.ObjectId(),
@@ -1079,6 +1074,7 @@ describe('POST Order - (Set Ticket)', () => {
     phone: '021 7443 8111',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'اندرزگو'
@@ -1089,6 +1085,7 @@ describe('POST Order - (Set Ticket)', () => {
     phone: 'نا مشخص',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'اتوبان خرازی'
@@ -1099,6 +1096,7 @@ describe('POST Order - (Set Ticket)', () => {
     phone: ' 021 2201 0600',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'مقدس اردبیلی'
@@ -1108,6 +1106,7 @@ describe('POST Order - (Set Ticket)', () => {
     name: 'انبار مرکزی',
     phone: 'نا مشخص',
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'نامشخص'
@@ -1132,11 +1131,6 @@ describe('POST Order - (Set Ticket)', () => {
       .then(res => {
         SCAgent.aid = res.aid;
         SCAgent.jar = res.rpJar;
-        return lib.dbHelpers.addAndLoginAgent('cm')
-      })
-      .then(res => {
-        CMAgent.aid = res.aid;
-        CMAgent.jar = res.rpJar;
         let products = [{
           _id: productIds[0],
           name: 'sample 1',
@@ -1170,14 +1164,14 @@ describe('POST Order - (Set Ticket)', () => {
               product_color_id: colorIds[0],
               size: "9",
               price: 2000,
-              barcode: '0394081341'
+              barcode: '0394081341',
             },
             {
               _id: productInstanceIds[1],
               product_color_id: colorIds[1],
               size: "10",
               price: 4000,
-              barcode: '19231213123'
+              barcode: '19231213123',
             }
           ]
         },
@@ -1212,7 +1206,14 @@ describe('POST Order - (Set Ticket)', () => {
                 barcode: '9303850203',
                 tickets: [
                   {}
-                ]
+                ],
+                inventory : [
+                  {
+                    warehouse_id : warehouses.find(x => x.name === 'سانا')._id,
+                    count : 2,
+                    reserved: 1
+                  }
+                ],
               },
               {
                 _id: productInstanceIds[3],
@@ -1220,6 +1221,7 @@ describe('POST Order - (Set Ticket)', () => {
                 size: "11",
                 price: 50000,
                 barcode: '9303850203',
+
               }
             ]
           }];
@@ -1234,7 +1236,12 @@ describe('POST Order - (Set Ticket)', () => {
           total_amount: 3,
           order_time: new Date(),
           is_cart: false,
-          address_id: mongoose.Types.ObjectId(),
+          address: {
+            _id: mongoose.Types.ObjectId(),
+            province: 'تهران',
+            city: 'تهران',
+            street: 'نامشخص'
+          },
           transaction_id: mongoose.Types.ObjectId(),
           order_lines: [{
             product_id: productIds[0],
@@ -1304,7 +1311,7 @@ describe('POST Order - (Set Ticket)', () => {
       total_amount: 2,
       order_time: new Date(),
       is_cart: false,
-      address_id: warehouses.find(x => x.name === 'سانا')._id,
+      address: warehouses.find(x => x.name === 'سانا').address,
       transaction_id: mongoose.Types.ObjectId(),
       is_collect: true,
       order_lines: [{
@@ -1415,7 +1422,7 @@ describe('POST Order - (Set Ticket)', () => {
       total_amount: 2,
       order_time: new Date(),
       is_cart: false,
-      address_id: warehouses.find(x => x.name === 'سانا')._id,
+      address: warehouses.find(x => x.name === 'سانا').address,
       transaction_id: mongoose.Types.ObjectId(),
       is_collect: true,
       order_lines: [{
@@ -1462,7 +1469,7 @@ describe('POST Order - (Set Ticket)', () => {
       total_amount: 2,
       order_time: new Date(),
       is_cart: false,
-      address_id: warehouses.find(x => x.name === 'سانا')._id,
+      address: warehouses.find(x => x.name === 'سانا').address,
       transaction_id: mongoose.Types.ObjectId(),
       is_collect: true,
       order_lines: [{
@@ -1516,7 +1523,12 @@ describe('POST Order - (Set Ticket)', () => {
       total_amount: 3,
       order_time: new Date(),
       is_cart: false,
-      address_id: mongoose.Types.ObjectId(),
+      address: {
+        _id: mongoose.Types.ObjectId(),
+        province: 'تهران',
+        city: 'تهران',
+        street: 'نامشخص'
+      },
       transaction_id: mongoose.Types.ObjectId(),
       order_lines: [{
         product_id: productIds[0],
@@ -1628,7 +1640,7 @@ describe('POST Order - (Set Ticket)', () => {
       total_amount: 2,
       order_time: new Date(),
       is_cart: false,
-      address_id: warehouses.find(x => x.name === 'سانا')._id,
+      address: warehouses.find(x => x.name === 'سانا').address,
       transaction_id: mongoose.Types.ObjectId(),
       is_collect: true,
       order_lines: [{
@@ -1666,14 +1678,19 @@ describe('POST Order - (Set Ticket)', () => {
         done();
       });
   });
-  it('sales manager should be able to refresh the invoice ticket and make new request to offline system', function (done) {
+  it('sales manager should be able to request for invoice for second time', function (done) {
     this.done = done;
     let newOrder = new models['OrderTest']({
       customer_id: mongoose.Types.ObjectId(),
       total_amount: 3,
       order_time: new Date(),
       is_cart: false,
-      address_id: mongoose.Types.ObjectId(),
+      address: {
+        _id: mongoose.Types.ObjectId(),
+        province: 'تهران',
+        city: 'تهران',
+        street: 'نامشخص'
+      },
       transaction_id: mongoose.Types.ObjectId(),
       order_lines: [{
         product_id: productIds[0],
@@ -1696,7 +1713,7 @@ describe('POST Order - (Set Ticket)', () => {
       .then(res => {
         return rp({
           method: 'POST',
-          uri: lib.helpers.apiTestURL(`order/ticket/invoice`),
+          uri: lib.helpers.apiTestURL(`order/ticket/offline/requestInvoice`),
           body: {
             orderId: res._id,
             orderLineId: res.order_lines[0]._id,
@@ -1712,6 +1729,57 @@ describe('POST Order - (Set Ticket)', () => {
           .catch(lib.helpers.errorHandler.bind(this));
       });
   });
+  it('sales manager should not be able to request for invoice for second time when previous active invoice ticket is not exists', function (done) {
+    this.done = done;
+    let newOrder = new models['OrderTest']({
+      customer_id: mongoose.Types.ObjectId(),
+      total_amount: 3,
+      order_time: new Date(),
+      is_cart: false,
+      address: {
+        _id: mongoose.Types.ObjectId(),
+        province: 'تهران',
+        city: 'تهران',
+        street: 'نامشخص'
+      },
+      transaction_id: mongoose.Types.ObjectId(),
+      order_lines: [{
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[0],
+        tickets: [ // sales manager ticket
+          {
+            warehouse_id: warehouses.find(x => x.is_center)._id,
+            status: _const.ORDER_STATUS.default,
+            is_processed: true,
+            agent_id: SMAgent.aid
+          }
+        ]
+      }]
+    });
+    newOrder.save()
+      .then(res => {
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`order/ticket/offline/requestInvoice`),
+          body: {
+            orderId: res._id,
+            orderLineId: res.order_lines[0]._id,
+          },
+          json: true,
+          jar: SMAgent.jar,
+          resolveWithFullResponse: true
+        }).then(res => {
+          this.fail('sales manage can request for invoice for second time when previous active invoice ticket is not exists');
+          done();
+        })
+          .catch(err => {
+            expect(err.statusCode).toBe(error.preInvoiceTicketIsNotExists.status);
+            expect(err.error).toBe(error.preInvoiceTicketIsNotExists.message);
+            done();
+          });
+      });
+  });
+
 
   // refund tickets
   it('sales manager should be able to set refund ticket for any order ', function (done) {
@@ -1771,7 +1839,12 @@ describe('POST Order - (Set Ticket)', () => {
       total_amount: 3,
       order_time: new Date(),
       is_cart: false,
-      address_id: mongoose.Types.ObjectId(),
+      address: {
+        _id: mongoose.Types.ObjectId(),
+        province: 'تهران',
+        city: 'تهران',
+        street: 'نامشخص'
+      },
       transaction_id: mongoose.Types.ObjectId(),
       order_lines: [{
         product_id: productIds[0],
@@ -1818,32 +1891,67 @@ describe('POST Order - (Set Ticket)', () => {
   // verify invoice tickets
   it('offline system should be able to call verify invoice api', function (done) {
     this.done = done;
-    rp({
-      method: 'POST',
-      uri: lib.helpers.apiTestURL(`order/ticket/verifyInvoice`),
-      body: {
-        orderId: orders[0]._id,
-        orderLineId: orders[0].order_lines[2]._id,
-        warehouseId: warehouses.find(x => x.name === 'سانا')._id,
-        userId: SCAgent.aid
-      },
-      json: true,
-      jar: SCAgent.jar,
-      resolveWithFullResponse: true
-    }).then(res => {
-      expect(res.statusCode).toBe(200);
-      expect(res.body.n).toBe(1);
-      expect(res.body.nModified).toBe(1);
-      return models['OrderTest'].findById(orders[0]._id).lean()
-    })
+
+    let order;
+    new models['CustomerTest']({
+      _id: orders[0].customer_id,
+      username: 'test@test',
+      password: '1234556',
+      mobile_no: '09125975886',
+      first_name: 'test',
+      surname: 'test'
+    }).save()
+      .then(res =>
+        rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`order/ticket/verifyInvoice`),
+          body: {
+            orderId: orders[0]._id,
+            orderLineId: orders[0].order_lines[2]._id,
+            warehouseId: warehouses.find(x => x.name === 'سانا')._id,
+            userId: SCAgent.aid,
+            mobileNo: "09125975886",
+            point: 100,
+            balance: 6500
+          },
+          json: true,
+          jar: SCAgent.jar,
+          resolveWithFullResponse: true
+        }))
       .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['OrderTest'].findById(orders[0]._id).lean()
+      })
+      .then(res => {
+        order = res;
         expect(res.order_lines[2].tickets.length).toBe(4);
         expect(res.order_lines[2].tickets[2].is_processed).toBeTruthy();
         expect(res.order_lines[2].tickets[2].agent_id.toString()).toBe(SCAgent.aid.toString());
         expect(res.order_lines[2].tickets[3].status).toBe(_const.ORDER_STATUS.ReadyToDeliver);
         expect(res.order_lines[2].tickets[3].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
 
-        done();
+        return models['CustomerTest'].findById(res.customer_id).lean();
+
+      })
+      .then(res => {
+
+        expect(res.loyalty_points).toBe(100);
+        expect(res.balance).toBe(6500);
+
+        return models['ProductTest'].findById(order.order_lines[2].product_id)
+
+      })
+      .then(res => {
+
+        let foundInstance = res.instances.find(x => x._id.toString() === order.order_lines[2].product_instance_id.toString());
+
+        let foundInventory  = foundInstance.inventory.find(x => x.warehouse_id.toString() === warehouses.find(x => x.name === 'سانا')._id.toString());
+
+        expect(foundInventory.count).toBe(1);
+        expect(foundInventory.reserved).toBe(0);
+
+        done()
+
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
@@ -1854,7 +1962,12 @@ describe('POST Order - (Set Ticket)', () => {
       total_amount: 3,
       order_time: new Date(),
       is_cart: false,
-      address_id: mongoose.Types.ObjectId(),
+      address: {
+        _id: mongoose.Types.ObjectId(),
+        province: 'تهران',
+        city: 'تهران',
+        street: 'نامشخص'
+      },
       transaction_id: mongoose.Types.ObjectId(),
       order_lines: [{
         product_id: productIds[0],
