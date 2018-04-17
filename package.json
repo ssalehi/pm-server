@@ -5,8 +5,9 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "jasmine spec/model & jasmine-node --verbose spec/api --forceexit --captureExceptions"
-   },
+  },
   "dependencies": {
+    "async-foreach": "^0.1.3",
     "bcrypt-nodejs": "0.0.3",
     "bluebird": "^3.5.1",
     "body-parser": "~1.15.2",
