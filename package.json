@@ -49,12 +49,12 @@
     "xlsx": "^0.11.17"
   },
   "devDependencies": {
-    "jasmine": "^2.8.0",
+    "fs-copy-file-sync": "^1.0.1",
+    "jasmine": "^2.99.0",
     "jasmine-node": "^1.14.5",
     "jasmine-spec-reporter": "^4.2.1",
-    "socket.io-client": "^2.0.3",
-    "fs-copy-file-sync": "^1.0.1",
     "rimraf": "^2.6.2",
-    "shelljs": "^0.8.1"
+    "shelljs": "^0.8.1",
+    "socket.io-client": "^2.0.3"
   }
 }

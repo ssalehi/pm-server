@@ -1,6 +1,6 @@
 const Schema = require('mongoose').Schema;
 const OrderLineSchema = require('./order_line.schema');
-const AddressSchema = require('./address.schema');
+const addressSchema = require('./address.schema');
 
 let schema_obj = {
   customer_id: {
@@ -8,7 +8,10 @@ let schema_obj = {
     ref: 'Customer'
   },
   transaction_id: Schema.Types.ObjectId,
-  address: AddressSchema,
+  address: {
+    type: addressSchema,
+    required: true
+  },
   total_amount: {
     type: Number,
     required: true,

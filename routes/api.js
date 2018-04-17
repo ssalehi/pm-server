@@ -53,7 +53,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
           return Promise.resolve();
       })
       .then(rs => {
-        if (adminOnly && (!rs || rs.length < 1 ))
+        if (adminOnly && (!rs || rs.length < 1))
           return Promise.reject(error.adminOnly);
         else {
           let dynamicArgs = [];
@@ -156,6 +156,7 @@ router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
 // Order
+router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
 router.post('/order/ticket/:type', apiResponse('Order', 'setTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
