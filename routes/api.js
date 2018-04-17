@@ -43,42 +43,42 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
 
   return (function (req, res) {
     (req.jwtToken ?
-        personModel.jwtStrategy(req)
-        :
-        Promise.resolve())
-        .then(() => {
-          if (adminOnly)
-            return lib.Agent.accessCheck(accessLevels, req.user, req.test);
-          else
-            return Promise.resolve();
-        })
-        .then(rs => {
-          if (adminOnly && (!rs || rs.length < 1))
-            return Promise.reject(error.adminOnly);
-          else {
-            let dynamicArgs = [];
-            for (let i in reqFuncs)
-              dynamicArgs.push((typeof reqFuncs[i] === 'function') ? reqFuncs[i](req) : deepFind(req, reqFuncs[i]));
+      personModel.jwtStrategy(req)
+      :
+      Promise.resolve())
+      .then(() => {
+        if (adminOnly)
+          return lib.Agent.accessCheck(accessLevels, req.user, req.test);
+        else
+          return Promise.resolve();
+      })
+      .then(rs => {
+        if (adminOnly && (!rs || rs.length < 1))
+          return Promise.reject(error.adminOnly);
+        else {
+          let dynamicArgs = [];
+          for (let i in reqFuncs)
+            dynamicArgs.push((typeof reqFuncs[i] === 'function') ? reqFuncs[i](req) : deepFind(req, reqFuncs[i]));
 
-            let allArgs = dynamicArgs.concat(args);
+          let allArgs = dynamicArgs.concat(args);
 
-            for (cn in lib)
-              lib[cn].test = req.test;
+          for (cn in lib)
+            lib[cn].test = req.test;
 
-            let isStaticFunction = typeof lib[className][functionName] === 'function';
-            let model = isStaticFunction ? lib[className] : new lib[className](req.test);
-            return model[functionName].apply(isStaticFunction ? null : model, allArgs);
-          }
-        })
-        .then(data => {
-          res.status(200)
-              .json(data);
-        })
-        .catch(err => {
-          console.log(`${className}/${functionName}: `, req.app.get('env') === 'development' ? err : err.message);
-          res.status(err.status || 500)
-              .send(err.message || err);
-        });
+          let isStaticFunction = typeof lib[className][functionName] === 'function';
+          let model = isStaticFunction ? lib[className] : new lib[className](req.test);
+          return model[functionName].apply(isStaticFunction ? null : model, allArgs);
+        }
+      })
+      .then(data => {
+        res.status(200)
+          .json(data);
+      })
+      .catch(err => {
+        console.log(`${className}/${functionName}: `, req.app.get('env') === 'development' ? err : err.message);
+        res.status(err.status || 500)
+          .send(err.message || err);
+      });
   });
 }
 

@@ -4,8 +4,8 @@ const models = require('../../../mongo/models.mongo');
 
 describe('GET Customer', () => {
   const custData = {
-    first_name: 'علی',
-    surname: 'میرجهانی',
+    first_name: 'c',
+    surname: 'v',
     balance: 20,
     loyalty_points: 10,
     addresses: [
@@ -17,7 +17,7 @@ describe('GET Customer', () => {
         unit: 1,
         postal_code: 1044940912,
         loc: {
-          long:35.817191,
+          long: 35.817191,
           lat: 51.427251,
         },
         recipient_name: 'علی علوی',
@@ -64,21 +64,21 @@ describe('GET Customer', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should get addresses and other needed checkout data for person a', function(done) {
+  it('should get addresses and other needed checkout data for person a', function (done) {
     this.done = done;
     rp({
       method: 'get',
       uri: lib.helpers.apiTestURL(`customer/address`),
       jar: customerObj.jar,
       json: true,
-    }).then( res => {
+    }).then(res => {
       expect(res.balance).toBe(20);
       expect(res.loyalty_points).toBe(10);
       expect(res.first_name).toBe(custData.first_name);
       expect(res.surname).toBe(custData.surname);
       expect(res.gender).toBe(custData.gender);
       expect(res.addresses.length).toBe(1);
-      if (res.addresses.length){
+      if (res.addresses.length) {
         ['recipient_title', 'recipient_name', 'recipient_national_id', 'no', 'unit', 'street', 'postal_code', 'city', 'province'].forEach(r => {
           expect(res.addresses[0][r]).toBe(custData.addresses[0][r] + '');
         })
