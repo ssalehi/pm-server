@@ -63,6 +63,7 @@ const googleAuth_callbackUrl = getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL)
  */
 const redisURL = getEnvValue(process.env.REDIS_URL);
 const redisHost = getEnvValue(process.env.REDIS_HOST);
+const redisPort = getEnvValue(process.env.REDIS_PORT);
 const redisPass = getEnvValue(process.env.REDIS_PASSWORD);
 
 /**
@@ -107,6 +108,7 @@ module.exports = {
   db_uri_test,
   redisURL,
   redisHost,
+  redisPort,
   redisPass,
   uploadPath,
   uploadProductImagePath,
