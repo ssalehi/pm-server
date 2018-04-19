@@ -1,6 +1,6 @@
- const Schema = require('mongoose').Schema;
+const Schema = require('mongoose').Schema;
 const OrderLineSchema = require('./order_line.schema');
-const TicketSchema = require('./ticket.schema');
+const addressSchema = require('./address.schema');
 
 let schema_obj = {
   customer_id: {
@@ -8,15 +8,25 @@ let schema_obj = {
     ref: 'Customer'
   },
   transaction_id: Schema.Types.ObjectId,
-  address_id: {
-    type: Schema.Types.ObjectId,
+  address: {
+    type: addressSchema,
+    required: true
   },
   total_amount: {
     type: Number,
     required: true,
     default: 0
   },
-  used_point: Number,
+  used_point: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  used_balance: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   discount: Number,
   order_time: {
     type: Date,
@@ -24,15 +34,22 @@ let schema_obj = {
   },
   is_collect: {
     type: Boolean,
-    default: false
+    default: false,
+    required: true
   },
   coupon_code: String,
   is_cart: {
     type: Boolean,
     default: false,
   },
-  order_line_ids: [OrderLineSchema],
-  tickets: [TicketSchema]
+  order_lines: [OrderLineSchema],
+  is_offline: {
+    type: Boolean,
+    required: true,
+    default: false
+  }
+
+
 };
 
 

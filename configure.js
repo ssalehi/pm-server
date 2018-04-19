@@ -22,32 +22,47 @@ db.dbIsReady()
   .then(res => {
     if (!res || res.length === 0) {
       let warehouses = [{
+        _id: mongoose.Types.ObjectId(),
         name: 'سانا',
         phone: '021 7443 8111',
+        has_customer_pickup: true,
         address: {
+          province: 'تهران',
           city: 'تهران',
-          street: 'اندرزگو'
+          street: 'اندرزگو',
+          province: 'تهران'
         }
       }, {
+        _id: mongoose.Types.ObjectId(),
         name: 'ایران مال',
         phone: 'نا مشخص',
+        has_customer_pickup: true,
         address: {
+          province: 'تهران',
           city: 'تهران',
-          street: 'اتوبان خرازی'
+          street: 'اتوبان خرازی',
+          province: 'تهران'          
         }
       }, {
+        _id: mongoose.Types.ObjectId(),
         name: 'پالادیوم',
         phone: ' 021 2201 0600',
+        has_customer_pickup: true,
         address: {
+          province: 'تهران',
           city: 'تهران',
-          street: 'مقدس اردبیلی'
+          street: 'مقدس اردبیلی',
+          province: 'تهران'          
         }
       }, {
+        _id: mongoose.Types.ObjectId(),
         name: 'انبار مرکزی',
         phone: 'نا مشخص',
         address: {
+          province: 'تهران',
           city: 'تهران',
-          street: 'نامشخص'
+          street: 'نامشخص',
+          province: 'تهران'          
         },
         is_center: true
       }];

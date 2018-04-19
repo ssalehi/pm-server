@@ -1,7 +1,6 @@
 const env = require('../env');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
-mongoose.Promise = require('bluebird');
 
 let testConnection, prodConnection;
 
@@ -12,16 +11,16 @@ if (env.isDev) {
   // mongoose.set('debug', true);
 }
 
-let dbIsReady= () => {
+let dbIsReady = () => {
 
-  let testDb = new Promise((resolve , reject) =>{
+  let testDb = new Promise((resolve, reject) => {
     testConnection.on('connected', function () {
       console.log('-> ', 'Mongoose test has been connected!');
       resolve();
     });
   });
 
-  let prodDb = new Promise((resolve , reject) =>{
+  let prodDb = new Promise((resolve, reject) => {
     prodConnection.on('connected', function () {
       console.log('-> ', 'Mongoose product has been connected!');
       resolve();
