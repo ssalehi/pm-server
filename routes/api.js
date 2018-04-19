@@ -298,13 +298,9 @@ router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body']
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
-// temp apis
 router.use('/placement/image/:pageId/:placementId', (req, res, next) => {
-  let destination;
-  if (req.test)
-    destination = env.uploadPlacementImagePath + path.sep + 'test' + path.sep + req.params.pageId + path.sep + req.params.placementId;
-  else
-    destination = env.uploadPlacementImagePath + path.sep + req.params.pageId + path.sep + req.params.placementId;
+  let destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
+    + path.sep + req.params.pageId + path.sep + req.params.placementId;
 
   let placementStorage = multer.diskStorage({
     destination,
@@ -322,8 +318,10 @@ router.use('/placement/image/:pageId/:placementId', (req, res, next) => {
 });
 router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
 
+// temp apis
+
 // todo: must be removed
-router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.addressId', 'body.transactionId','body.usedPoints','body.usedBalance']));
+router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.addressId', 'body.transactionId', 'body.usedPoints', 'body.usedBalance']));
 
 
 module.exports = router;
