@@ -1,5 +1,7 @@
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
+const fs = require('fs');
+const path = require('path');
 const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 const errors = require('../../../lib/errors.list');
@@ -763,5 +765,140 @@ describe('POST placement (top menu)', () => {
         expect(err.error).toBe(errors.placementIdRequired.message);
         done();
       });
+  });
+});
+
+describe('POST placement images (slider)', () => {
+
+  let pageId;
+  let placementIds = [
+    new mongoose.Types.ObjectId(),
+    new mongoose.Types.ObjectId(),
+    new mongoose.Types.ObjectId(),
+  ];
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
+
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(() => lib.dbHelpers.addAndLoginAgent('cm'))
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
+        return models['PageTest']({
+          address: 'sampleAddress',
+          is_app: false,
+          placement: [
+            {
+              _id: placementIds[0],
+              component_name: 'slider',
+              variable_name: 'slider',
+              info: {
+                text: 'slider1text',
+                href: 'slider1href',
+                column: 0,
+              }
+            },
+            {
+              _id: placementIds[1],
+              component_name: 'slider',
+              variable_name: 'slider',
+              info: {
+                text: 'slider2text',
+                href: 'slider2href',
+                column: 1,
+              }
+            },
+            {
+              _id: placementIds[2],
+              component_name: 'slider',
+              variable_name: 'slider',
+              info: {
+                text: 'slider3text',
+                href: 'slider3href',
+                column: 2,
+                imgUrl: 'spec/api/page/test1.jpeg',
+              }
+            }
+          ]
+        }).save();
+      })
+      .then(res => {
+        pageId = res._id;
+
+        done();
+      })
+      .catch(err => {
+        console.error(err);
+        done();
+      })
+  });
+
+  it('should upload a new image for a slider', (done) => {
+    this.done = done;
+    let _path = `/images/placements/test/${pageId}/${placementIds[0]}/test1.jpeg`;
+
+    rp.post({
+      url: lib.helpers.apiTestURL(`placement/image/${pageId}/${placementIds[0]}`),
+      formData: {
+        component_name: 'slider',
+        variable_name: 'slider',
+        file: {
+          value: fs.readFileSync('spec/api/page/test1.jpeg'),
+          options: {
+            filename: 'test1.jpeg',
+            contentType: 'image/jpeg',
+          }
+        }
+      },
+      jar: adminObj.jar,
+      resolveWithFullResponse: true,
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toContain(_path);
+      return models['PageTest'].find({_id: pageId}).lean();
+    })
+      .then(res => {
+        const pl = res[0].placement.find(el => el._id.toString() === placementIds[0].toString());
+        expect(pl).toBeTruthy();
+        expect(pl.info.imgUrl).toContain(_path);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should update the image for a slider', (done) => {
+    this.done = done;
+    let _path = `/images/placements/test/${pageId}/${placementIds[2]}/test2.jpeg`;
+
+    rp.post({
+      url: lib.helpers.apiTestURL(`placement/image/${pageId}/${placementIds[2]}`),
+      formData: {
+        component_name: 'slider',
+        variable_name: 'slider',
+        file: {
+          value: fs.readFileSync('spec/api/page/test2.jpeg'),
+          options: {
+            filename: 'test2.jpeg',
+            contentType: 'image/jpeg',
+          }
+        }
+      },
+      jar: adminObj.jar,
+      resolveWithFullResponse: true,
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toContain(_path);
+      return models['PageTest'].find({_id: pageId}).lean();
+    })
+      .then(res => {
+        const pl = res[0].placement.find(el => el._id.toString() === placementIds[2].toString());
+        expect(pl).toBeTruthy();
+        expect(pl.info.imgUrl).toContain(_path);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
   });
 });

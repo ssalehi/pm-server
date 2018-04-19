@@ -63,6 +63,7 @@ const googleAuth_callbackUrl = getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL)
  */
 const redisURL = getEnvValue(process.env.REDIS_URL);
 const redisHost = getEnvValue(process.env.REDIS_HOST);
+const redisPort = getEnvValue(process.env.REDIS_PORT);
 const redisPass = getEnvValue(process.env.REDIS_PASSWORD);
 
 /**
@@ -71,6 +72,7 @@ const redisPass = getEnvValue(process.env.REDIS_PASSWORD);
 
 uploadPath = "public/documents";
 uploadProductImagePath = "public/images/product-image";
+uploadPlacementImagePath = "public/images/placements";
 uploadExcelPath = "public/excel/";
 
 /**
@@ -106,9 +108,11 @@ module.exports = {
   db_uri_test,
   redisURL,
   redisHost,
+  redisPort,
   redisPass,
   uploadPath,
   uploadProductImagePath,
+  uploadPlacementImagePath,
   uploadExcelPath,
   googleAuth: {
     clientID: googleAuth_clientId,

@@ -160,6 +160,7 @@ router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
 router.post('/order/ticket/:type', apiResponse('Order', 'setTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/ticket/offline/requestInvoice', apiResponse('Order', 'resendInvoiceRequest', true, ['body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
 router.post('/order/ticket/offline/verifyInvoice', apiResponse('Order', 'verifyInvoice', false, ['body']));
 
 // product
@@ -212,8 +213,6 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   });
 
 });
-
-
 router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // Product color
@@ -299,6 +298,26 @@ router.put('/placement', apiResponse('Page', 'addPlacement', true, ['body'], [_c
 router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+
+router.use('/placement/image/:pageId/:placementId', (req, res, next) => {
+  let destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
+    + path.sep + req.params.pageId + path.sep + req.params.placementId;
+
+  let placementStorage = multer.diskStorage({
+    destination,
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    }
+  });
+
+  let placementUpload = multer({storage: placementStorage});
+  placementUpload.single('file')(req, res, err => {
+    if (!err) {
+      next();
+    }
+  });
+});
+router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // temp apis
 

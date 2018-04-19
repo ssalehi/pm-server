@@ -43,6 +43,12 @@ let schema_obj = {
     default: false,
   },
   order_lines: [OrderLineSchema],
+  is_offline: {
+    type: Boolean,
+    required: true,
+    default: false
+  }
+
 
 };
 
