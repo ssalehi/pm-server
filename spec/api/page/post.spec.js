@@ -276,7 +276,7 @@ describe('Post page placements and page info', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(4);
@@ -304,7 +304,7 @@ describe('Post page placements and page info', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(4);
@@ -332,7 +332,7 @@ describe('Post page placements and page info', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(4);
@@ -371,7 +371,7 @@ describe('Post page placements and page info', () => {
   });
 });
 
-describe('POST placement (top menu)', () => {
+describe('POST placement (top menu and some other placements)', () => {
   let page, collection_id, contentManager;
   const placementId1 = new mongoose.Types.ObjectId();
   const placementId2 = new mongoose.Types.ObjectId();
@@ -553,7 +553,7 @@ describe('POST placement (top menu)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(8);
@@ -682,7 +682,7 @@ describe('POST placement (top menu)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(7);
@@ -711,7 +711,7 @@ describe('POST placement (top menu)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(6);
@@ -768,83 +768,29 @@ describe('POST placement (top menu)', () => {
   });
 });
 
-describe('POST placement images (slider)', () => {
-
-  let pageId;
-  let placementIds = [
-    new mongoose.Types.ObjectId(),
-    new mongoose.Types.ObjectId(),
-    new mongoose.Types.ObjectId(),
-  ];
-  let adminObj = {
-    aid: null,
-    jar: null,
-  };
+describe('POST placement images', () => {
+  let contentManager;
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => lib.dbHelpers.addAndLoginAgent('cm'))
       .then(res => {
-        adminObj.aid = res.aid;
-        adminObj.jar = res.rpJar;
-        return models['PageTest']({
-          address: 'sampleAddress',
-          is_app: false,
-          placement: [
-            {
-              _id: placementIds[0],
-              component_name: 'slider',
-              variable_name: 'slider',
-              info: {
-                text: 'slider1text',
-                href: 'slider1href',
-                column: 0,
-              }
-            },
-            {
-              _id: placementIds[1],
-              component_name: 'slider',
-              variable_name: 'slider',
-              info: {
-                text: 'slider2text',
-                href: 'slider2href',
-                column: 1,
-              }
-            },
-            {
-              _id: placementIds[2],
-              component_name: 'slider',
-              variable_name: 'slider',
-              info: {
-                text: 'slider3text',
-                href: 'slider3href',
-                column: 2,
-                imgUrl: 'spec/api/page/test1.jpeg',
-              }
-            }
-          ]
-        }).save();
-      })
-      .then(res => {
-        pageId = res._id;
-
+        contentManager = res;
         done();
       })
       .catch(err => {
-        console.error(err);
+        console.error('Error in beforeEach block: ', err);
         done();
       })
   });
 
-  it('should upload a new image for a slider', (done) => {
+  it('should upload an image', function (done) {
     this.done = done;
-    let _path = `/images/placements/test/${pageId}/${placementIds[0]}/test1.jpeg`;
+    let _path = `/images/placements/test/temp/test1.jpeg`;
 
     rp.post({
-      url: lib.helpers.apiTestURL(`placement/image/${pageId}/${placementIds[0]}`),
+      url: lib.helpers.apiTestURL(`placement/image`),
       formData: {
-        component_name: 'slider',
-        variable_name: 'slider',
         file: {
           value: fs.readFileSync('spec/api/page/test1.jpeg'),
           options: {
@@ -853,50 +799,12 @@ describe('POST placement images (slider)', () => {
           }
         }
       },
-      jar: adminObj.jar,
+      jar: contentManager.rpJar,
       resolveWithFullResponse: true,
-    }).then(res => {
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toContain(_path);
-      return models['PageTest'].find({_id: pageId}).lean();
     })
       .then(res => {
-        const pl = res[0].placement.find(el => el._id.toString() === placementIds[0].toString());
-        expect(pl).toBeTruthy();
-        expect(pl.info.imgUrl).toContain(_path);
-        done();
-      })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  it('should update the image for a slider', (done) => {
-    this.done = done;
-    let _path = `/images/placements/test/${pageId}/${placementIds[2]}/test2.jpeg`;
-
-    rp.post({
-      url: lib.helpers.apiTestURL(`placement/image/${pageId}/${placementIds[2]}`),
-      formData: {
-        component_name: 'slider',
-        variable_name: 'slider',
-        file: {
-          value: fs.readFileSync('spec/api/page/test2.jpeg'),
-          options: {
-            filename: 'test2.jpeg',
-            contentType: 'image/jpeg',
-          }
-        }
-      },
-      jar: adminObj.jar,
-      resolveWithFullResponse: true,
-    }).then(res => {
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toContain(_path);
-      return models['PageTest'].find({_id: pageId}).lean();
-    })
-      .then(res => {
-        const pl = res[0].placement.find(el => el._id.toString() === placementIds[2].toString());
-        expect(pl).toBeTruthy();
-        expect(pl.info.imgUrl).toContain(_path);
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toContain(_path);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
