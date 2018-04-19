@@ -288,6 +288,9 @@ router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 
 router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', false, ['user', 'body']));
 router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false, ['user', 'body']));
 
+//ticket
+router.put('/order/ticket', apiResponse('Order', 'setTicket', true, ['body'], _const.ACCESS_LEVEL.SalesManager));
+
 // Customer Address
 router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
 
@@ -300,7 +303,7 @@ router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true
 // temp apis
 
 // todo: must be removed
-router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.addressId', 'body.transactionId','body.usedPoints','body.usedBalance']));
+router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['user','body.orderId', 'body.addressId', 'body.transactionId','body.usedPoints','body.usedBalance']));
 
 
 module.exports = router;

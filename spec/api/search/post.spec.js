@@ -361,7 +361,7 @@ describe('POST Order - Search over order lines by tickets', () => {
         return models['WarehouseTest'].insertMany(warehouses)
       })
       .then(() => {
-        return lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
+        return lib.dbHelpers.addAndLoginAgent('bm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
       })
       .then(res => {
         SMAgent.cid = res.cid;
@@ -497,7 +497,8 @@ describe('POST Order - Search over order lines by tickets', () => {
             tickets: [ // sales manager ticket
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default
+                status: _const.ORDER_STATUS.default,
+                is_processed: true
               }
             ]
           }, { // shop clerk ticket
@@ -507,12 +508,13 @@ describe('POST Order - Search over order lines by tickets', () => {
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
                 status: _const.ORDER_STATUS.default,
-                is_processed: true,
+                // is_processed: true,
                 agent_id: SMAgent.cid
               },
               {
                 warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
-                referral_advice: _const.REFERRAL_ADVICE.SendToCustomer
+                referral_advice: _const.REFERRAL_ADVICE.SendToCustomer,
+                is_processed: true
               }
             ]
           }]
@@ -530,17 +532,18 @@ describe('POST Order - Search over order lines by tickets', () => {
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
                 status: _const.ORDER_STATUS.default,
-                is_processed: true,
+                // is_processed: true,
                 agent_id: SMAgent.cid
               },
               {
                 warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
                 referral_advice: _const.REFERRAL_ADVICE.SendToCentral,
-                is_processed: true,
+                // is_processed: true,
                 agent_id: SCAgent.cid
               }, {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
                 status: _const.ORDER_STATUS.SCAccepted,
+                is_processed: true,
               }
             ]
           }]
@@ -627,7 +630,30 @@ describe('POST Order - Search over order lines by tickets', () => {
         done();
       });
   });
+  it('expect should return ticket of order lines references', function (done) {
+    this.done = done;
 
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`search/Order`),
+      body: {
+        options: {
+          output: true
+        },
+        offset: 0,
+        limit: 10
+      },
+      json: true,
+      jar: SMAgent.jar,
+      resolveWithFullResponse: true
+    })
+    .then((res) => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(3);
+      done();
+    })
+    .catch(lib.helpers.errorHandler.bind(this));
+  });
 });
 
 describe('POST Suggest Product / Tag / Color', () => {
