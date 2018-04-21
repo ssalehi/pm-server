@@ -301,42 +301,26 @@ router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true
 
 router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
   req.is_new = req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined" ? false : true;
+  const plc_id = req.is_new ? new mongoose.Types.ObjectId() : req.params.placementId;
 
-  (req.is_new ? Promise.resolve(null) : model['Page' + (req.test ? 'Test' : '')].find({ _id: req.params.pageId }).lean())
-    .then(res => {
-      let plc_id = req.params.placementId;
+  const destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
+    + path.sep + req.params.pageId + path.sep + plc_id;
 
-      if (res === null) {
-        plc_id = new mongoose.Types.ObjectId().toString();
-      } else {
-        const placementObj = res[0].placement.find(el => el._id.toString() === req.params.placementId);
-        if (placementObj && placementObj.is_finalized) {
-          if (placementObj.ref_newest_id)
-            plc_id = placementObj.ref_newest_id;
-          else
-            plc_id = new mongoose.Types.ObjectId().toString();
-        }
-      }
+  req.new_placement_id = plc_id;
 
-      const destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
-        + path.sep + req.params.pageId + path.sep + plc_id;
+  let placementStorage = multer.diskStorage({
+    destination,
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    }
+  });
 
-      req.new_placement_id = plc_id;
-
-      let placementStorage = multer.diskStorage({
-        destination,
-        filename: (req, file, cb) => {
-          cb(null, file.originalname);
-        }
-      });
-
-      let placementUpload = multer({ storage: placementStorage });
-      placementUpload.single('file')(req, res, err => {
-        if (!err) {
-          next();
-        }
-      });
-    });
+  let placementUpload = multer({ storage: placementStorage });
+  placementUpload.single('file')(req, res, err => {
+    if (!err) {
+      next();
+    }
+  });
 })
 router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
