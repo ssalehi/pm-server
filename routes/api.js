@@ -7,11 +7,11 @@ const env = require('../env');
 const path = require('path');
 const app = require('../app');
 const multer = require('multer');
-const mongoose = require('mongoose');
 const personModel = require('../lib/person.model');
 const fs = require('fs');
 const _const = require('../lib/const.list');
-
+const mongoose = require('mongoose');
+const model = require('../mongo/models.mongo');
 
 let storage = multer.diskStorage({
   destination: env.uploadPath + path.sep,
@@ -19,7 +19,7 @@ let storage = multer.diskStorage({
     cb(null, [req.params.username || req.user.username, file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
   }
 });
-let upload = multer({storage: storage});
+let upload = multer({ storage: storage });
 
 function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], accessLevels) {
   let args = Array.prototype.slice.call(arguments, 5);
@@ -33,7 +33,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
         } else {
           let err = new Error(`Bad request: request.${pathStr} is not found at '${path[i - 1]}'`);
           err.status = 400;
-          throw(err);
+          throw (err);
         }
       }
       obj = obj[(path[i][0] === '?') ? path[i].substring(1) : path[i]];
@@ -99,7 +99,7 @@ router.get('/agent/validUser', apiResponse('Person', 'afterLogin', false, ['user
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
-router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
+router.get('/login/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email'] }));
 router.get('/login/google/callback', passport.authenticate('google', {
   successRedirect: '/login/oauth',
   failureRedirect: '/login/oauth'
@@ -205,7 +205,7 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
       cb(null, file.originalname);
     }
   });
-  let productUpload = multer({storage: productStorage});
+  let productUpload = multer({ storage: productStorage });
 
   productUpload.single('file')(req, res, err => {
     if (!err)
@@ -269,7 +269,7 @@ router.use('/uploadData', function (req, res, next) {
       cb(null, file.originalname);
     }
   });
-  let productUpload = multer({storage: productStorage});
+  let productUpload = multer({ storage: productStorage });
 
   productUpload.single('file')(req, res, err => {
     if (!err)
@@ -299,9 +299,14 @@ router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body']
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
-router.use('/placement/image/:pageId/:placementId', (req, res, next) => {
-  let destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
-    + path.sep + req.params.pageId + path.sep + req.params.placementId;
+router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
+  req.is_new = req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined" ? false : true;
+  const plc_id = req.is_new ? new mongoose.Types.ObjectId() : req.params.placementId;
+
+  const destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
+    + path.sep + req.params.pageId + path.sep + plc_id;
+
+  req.new_placement_id = plc_id;
 
   let placementStorage = multer.diskStorage({
     destination,
@@ -310,14 +315,14 @@ router.use('/placement/image/:pageId/:placementId', (req, res, next) => {
     }
   });
 
-  let placementUpload = multer({storage: placementStorage});
+  let placementUpload = multer({ storage: placementStorage });
   placementUpload.single('file')(req, res, err => {
     if (!err) {
       next();
     }
   });
-});
-router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
+})
+router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // temp apis
 
