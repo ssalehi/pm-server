@@ -319,6 +319,7 @@ describe('POST Order - Search over order lines by tickets', () => {
     phone: '021 7443 8111',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'اندرزگو'
@@ -329,6 +330,7 @@ describe('POST Order - Search over order lines by tickets', () => {
     phone: 'نا مشخص',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'اتوبان خرازی'
@@ -339,6 +341,7 @@ describe('POST Order - Search over order lines by tickets', () => {
     phone: ' 021 2201 0600',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'مقدس اردبیلی'
@@ -348,6 +351,7 @@ describe('POST Order - Search over order lines by tickets', () => {
     name: 'انبار مرکزی',
     phone: 'نا مشخص',
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'نامشخص'
@@ -489,7 +493,7 @@ describe('POST Order - Search over order lines by tickets', () => {
           total_amount: 2,
           order_time: new Date(),
           is_cart: false,
-          address_id: mongoose.Types.ObjectId(),
+          address: warehouses[0].address,
           transaction_id: mongoose.Types.ObjectId(),
           order_lines: [{
             product_id: productIds[0],
@@ -523,7 +527,7 @@ describe('POST Order - Search over order lines by tickets', () => {
           total_amount: 1,
           order_time: new Date(),
           is_cart: false,
-          address_id: mongoose.Types.ObjectId(),
+          address: warehouses[0].address,
           transaction_id: mongoose.Types.ObjectId(),
           order_lines: [{
             product_id: productIds[1],
@@ -542,7 +546,7 @@ describe('POST Order - Search over order lines by tickets', () => {
                 agent_id: SCAgent.cid
               }, {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.SCAccepted,
+                status: _const.ORDER_STATUS.SCSentToCentral,
                 is_processed: true,
               }
             ]
