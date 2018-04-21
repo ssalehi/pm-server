@@ -10,7 +10,8 @@ const multer = require('multer');
 const personModel = require('../lib/person.model');
 const fs = require('fs');
 const _const = require('../lib/const.list');
-
+const mongoose = require('mongoose');
+const model = require('../mongo/models.mongo');
 
 let storage = multer.diskStorage({
   destination: env.uploadPath + path.sep,
@@ -298,25 +299,46 @@ router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body']
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
-router.use('/placement/image', (req, res, next) => {
-  let destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
-    + path.sep + 'temp';
+router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
+  req.is_new = req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined" ? false : true;
 
-  let placementStorage = multer.diskStorage({
-    destination,
-    filename: (req, file, cb) => {
-      cb(null, file.originalname);
-    }
-  });
+  (req.is_new ? Promise.resolve(null) : model['Page' + (req.test ? 'Test' : '')].find({ _id: req.params.pageId }).lean())
+    .then(res => {
+      let plc_id = req.params.placementId;
 
-  let placementUpload = multer({ storage: placementStorage });
-  placementUpload.single('file')(req, res, err => {
-    if (!err) {
-      next();
-    }
-  });
-});
-router.post('/placement/image', apiResponse('Page', 'uploadImage', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
+      if (res === null) {
+        plc_id = new mongoose.Types.ObjectId().toString();
+      } else {
+        const placementObj = res[0].placement.find(el => el._id.toString() === req.params.placementId);
+        if (placementObj && placementObj.is_finalized) {
+          if (placementObj.ref_newest_id)
+            plc_id = placementObj.ref_newest_id;
+          else
+            plc_id = new mongoose.Types.ObjectId().toString();
+        }
+      }
+
+      const destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
+        + path.sep + req.params.pageId + path.sep + plc_id;
+
+      req.new_placement_id = plc_id;
+
+      let placementStorage = multer.diskStorage({
+        destination,
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        }
+      });
+
+      let placementUpload = multer({ storage: placementStorage });
+      placementUpload.single('file')(req, res, err => {
+        if (!err) {
+          next();
+        }
+      });
+    });
+})
+router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // temp apis
 

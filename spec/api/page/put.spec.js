@@ -1,10 +1,9 @@
-import { log } from 'util';
-
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
+const fs = require('fs');
 
 describe("Put page basics", () => {
   let adminObj = {
@@ -335,44 +334,6 @@ describe("Put Placement Api", () => {
         expect(res.info.text).toBe('بچه سال');
         expect(res.info.section).toBe('kids');
         expect(res.info.column).toBe(4);
-        done();
-      })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  it("should add placement with imgUrl", function (done) {
-    this.done = done;
-    rp({
-      method: 'put',
-      body: {
-        page_id: page._id,
-        placement: {
-          component_name: 'main',
-          info: {
-            imgUrl: '',
-            href: 'another_site',
-            column: 4,
-            row: 1,
-          },
-        }
-      },
-      uri: lib.helpers.apiTestURL('placement'),
-      json: true,
-      jar: contentManager.rpJar,
-      resolveWithFullResponse: true,
-    })
-      .then(res => {
-        expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({
-          '_id': page._id,
-        }).lean();
-      })
-      .then(res => {
-        expect(res.length).toBe(1);
-        res = res[0].info;
-        expect(res.imgUrl).toBe();
-        expect(res.column).toBe(4);
-        expect(res.row).toBe(1);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
