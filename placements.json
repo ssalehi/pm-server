@@ -234,7 +234,7 @@
         "topTitle": {
           "title": "تصاویر این هفته",
           "text": "",
-          "color": "black"
+          "titleColor": "#000000"
         },
         "areas": [
           {
@@ -267,7 +267,7 @@
             "pos": "right-center",
             "title": "بدمینتون کار حرفه ای",
             "text": "بیست و یک برد متوالی",
-            "color": "black"
+            "tilteColor": "#000000"
           },
           {
             "pos": "card-button",
@@ -275,7 +275,7 @@
           },
           {
             "pos": "card-icon",
-            "color": "white"
+            "titleColor": "#ffffff"
           }
         ]
       },
@@ -302,7 +302,7 @@
           },
           {
             "pos": "card-icon",
-            "color": "white"
+            "titleColor": "#ffffff"
           }
         ]
       },
@@ -320,23 +320,23 @@
         "topTitle": {
           "title": "داره مد میشه...",
           "text": "",
-          "color": "black"
+          "titleColor": "#000000"
         },
         "areas": [
           {
             "pos": "left-bottom",
             "title": "طوسی بی نظیر",
             "text": "زمان درخشیدن توست",
-            "color": "black"
+            "titleColor": "#000000"
           },
           {
             "pos": "card-button",
             "text": "خرید",
-            "color": "dark"
+            "titleColor": "#000000"
           },
           {
             "pos": "card-icon",
-            "color": "black"
+            "titleColor": "#000000"
           }
         ]
       },
@@ -356,16 +356,16 @@
             "pos": "left-top",
             "title": "کفش ورزشی زنانه نایک",
             "text": "مدل پگاسوس",
-            "color": "black"
+            "titleColor": "#000000"
           },
           {
             "pos": "card-button",
             "text": "خرید",
-            "color": "dark"
+            "titleColor": "#000000"
           },
           {
             "pos": "card-icon",
-            "color": "black"
+            "titleColor": "#000000"
           }
         ]
       },
@@ -538,7 +538,7 @@
       "end_date": "",
       "info": {
         "panel_type": "full",
-        "imgUrl": "../../../../assets/pictures/nike-first-page-pic/pm-1.png",
+        "imgUrl": "/assets/pictures/nike-first-page-pic/pm-1.png",
         "href": "#",
         "row": 1,
         "column": 1,
@@ -548,10 +548,10 @@
             "title": "متفاوت باش!",
             "text": "حرکت رو به جلو ...",
             "buttonText": "خرید آنلاین",
-            "titleColor": "",
-            "textColor": "",
-            "buttonBackgroundColor": "",
-            "buttonColor": ""
+            "titleColor": "#ffffff",
+            "textColor": "#ffffff",
+            "buttonBackgroundColor": "#ffffff",
+            "buttonColor": "#000000"
           }
         ]
       },
@@ -564,7 +564,7 @@
       "end_date": "",
       "info": {
         "panel_type": "full",
-        "imgUrl": "../../../../assets/pictures/nike-first-page-pic/pm-2.png",
+        "imgUrl": "/assets/pictures/nike-first-page-pic/pm-2.png",
         "href": "#",
         "row": 2,
         "column": 1,
@@ -574,10 +574,10 @@
             "title": "مثل همیشه، فراتر از زمان!",
             "text": "معرفی محصولات جدید نایک پلاس",
             "buttonText": "خرید آنلاین",
-            "titleColor": "black",
-            "textColor": "black",
-            "buttonBackgroundColor": "black",
-            "buttonColor": "white"
+            "titleColor": "#000000",
+            "textColor": "#000000",
+            "buttonBackgroundColor": "#000000",
+            "buttonColor": "#ffffff"
           }
         ]
       },
@@ -590,7 +590,7 @@
       "end_date": "",
       "info": {
         "panel_type": "full",
-        "imgUrl": "../../../../assets/pictures/nike-first-page-pic/pm-7.png",
+        "imgUrl": "/assets/pictures/nike-first-page-pic/pm-7.png",
         "href": "#",
         "row": 3,
         "column": 1,
@@ -600,10 +600,10 @@
             "title": "طوسی بی نظیر!",
             "text": "برای اولین بار",
             "buttonText": "خرید آنلاین",
-            "titleColor": "",
-            "textColor": "",
-            "buttonBackgroundColor": "",
-            "buttonColor": ""
+            "titleColor": "#ffffff",
+            "textColor": "#ffffff",
+            "buttonBackgroundColor": "#ffffff",
+            "buttonColor": "#000000"
           }
         ]
       },
@@ -616,7 +616,7 @@
       "end_date": "",
       "info": {
         "panel_type": "half",
-        "imgUrl": "../../../../assets/pictures/nike-first-page-pic/half-1.png",
+        "imgUrl": "/assets/pictures/nike-first-page-pic/half-1.png",
         "href": "#",
         "row": 4,
         "column": 1,
@@ -626,10 +626,10 @@
             "title": "کاملا گرم",
             "text": "محصولات پشمی مناسب زمستان",
             "buttonText": "خرید آنلاین",
-            "titleColor": "",
-            "textColor": "",
-            "buttonBackgroundColor": "",
-            "buttonColor": ""
+            "titleColor": "#ffffff",
+            "textColor": "#ffffff",
+            "buttonBackgroundColor": "#ffffff",
+            "buttonColor": "#000000"
           }
         ]
       },
@@ -642,7 +642,7 @@
       "end_date": "",
       "info": {
         "panel_type": "half",
-        "imgUrl": "../../../../assets/pictures/nike-first-page-pic/half-2.png",
+        "imgUrl": "/assets/pictures/nike-first-page-pic/half-2.png",
         "href": "#",
         "row": 4,
         "column": 2,
@@ -652,10 +652,10 @@
             "title": "زمان درخشیدن توست!",
             "text": "نایک، حامی تیم ملی در طول بازیها",
             "buttonText": "خرید آنلاین",
-            "titleColor": "",
-            "textColor": "",
-            "buttonBackgroundColor": "",
-            "buttonColor": ""
+            "titleColor": "#ffffff",
+            "textColor": "#ffffff",
+            "buttonBackgroundColor": "#ffffff",
+            "buttonColor": "#000000"
           }
         ]
       },
@@ -673,15 +673,15 @@
         "topTitle": {
           "title": "رنگهای جدید، دلخواه شما",
           "text": "",
-          "titleColor": "black"
+          "titleColor": "#000000"
         },
-        "imgUrl": "../../../../assets/pictures/nike-first-page-pic/q1.png",
+        "imgUrl": "/assets/pictures/nike-first-page-pic/q1.png",
         "href": "#",
         "subTitle": {
           "title": "کفش راحتی زنانه، مدل ژاکلین",
           "text": "کفش زنانه",
-          "titleColor": "black",
-          "textColor": "gray"
+          "titleColor": "#000000",
+          "textColor": "#606060"
         },
         "areas": []
       },
@@ -696,13 +696,13 @@
         "panel_type": "quarter",
         "row": 5,
         "column": 2,
-        "imgUrl": "../../../../assets/pictures/nike-first-page-pic/q2.png",
+        "imgUrl": "/assets/pictures/nike-first-page-pic/q2.png",
         "href": "#",
         "subTitle": {
           "title": "کفش کارمندی زنانه",
           "text": "کفش زنانه",
-          "titleColor": "black",
-          "textColor": "gray"
+          "titleColor": "#000000",
+          "textColor": "#606060"
         },
         "areas": []
       },
@@ -715,15 +715,15 @@
       "end_date": "",
       "info": {
         "panel_type": "quarter",
-        "imgUrl": "../../../../assets/pictures/nike-first-page-pic/q3.png",
+        "imgUrl": "/assets/pictures/nike-first-page-pic/q3.png",
         "row": 5,
         "column": 3,
         "href": "#",
         "subTitle": {
           "title": "کفش ورزشی زنانه نایک، سری نایک پلاس",
           "text": "کفش ورزشی زنانه",
-          "titleColor": "black",
-          "textColor": "gray"
+          "titleColor": "#000000",
+          "textColor": "#606060"
         },
         "areas": []
       },
@@ -736,15 +736,15 @@
       "end_date": "",
       "info": {
         "panel_type": "quarter",
-        "imgUrl": "../../../../assets/pictures/nike-first-page-pic/q4.png",
+        "imgUrl": "/assets/pictures/nike-first-page-pic/q4.png",
         "row": 5,
         "column": 4,
         "href": "#",
         "subTitle": {
           "title": "کفش پیاده روی زنانه نایک، مدل پگاسوس",
           "text": "کفش پیاده روی زنانه",
-          "titleColor": "black",
-          "textColor": "gray"
+          "titleColor": "#000000",
+          "textColor": "#606060"
         },
         "areas": []
       },
@@ -1201,14 +1201,14 @@
       "component_name": "main",
       "info": {
         "panel_type": "full",
-        "imgUrl": "../../../../assets/pictures/men/react.png",
+        "imgUrl": "/assets/pictures/men/react.png",
         "href": "#",
         "areas": [
           {
             "pos": "left-center",
             "title": "مجموعه ری‌اکت",
             "text": "حرکت رو به جلو ...",
-            "color": "darkblue"
+            "titleColor": "#230ec4"
           }
         ]
       },
