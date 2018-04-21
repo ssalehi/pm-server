@@ -70,6 +70,7 @@ describe('Post page basics', () => {
 
 describe('Post page placements and page info', () => {
   let page, collection_id;
+  const pageId = new mongoose.Types.ObjectId();
   let contentManager;
 
   const placementId1 = new mongoose.Types.ObjectId();
@@ -91,6 +92,7 @@ describe('Post page placements and page info', () => {
         collection_id = new mongoose.Types.ObjectId();
 
         page = models['PageTest']({
+          _id: pageId,
           address: 'test',
           is_app: false,
           placement: [
@@ -100,7 +102,7 @@ describe('Post page placements and page info', () => {
               "variable_name": "",
               "info": {
                 "panel_type": "quarter",
-                "imgUrl": "../../../../assets/pictures/nike-first-page-pic/q4.png",
+                "imgUrl": `images/placements/test/${pageId}/${placementId1}`,
                 "href": "#",
                 "subTitle": {
                   "title": "کفش پیاده روی زنانه نایک، مدل پگاسوس",
@@ -109,7 +111,6 @@ describe('Post page placements and page info', () => {
                   "textColor": "gray"
                 },
               },
-              ref_newest_id: placementId5,
               is_finalized: true,
             },
             {
@@ -157,7 +158,7 @@ describe('Post page placements and page info', () => {
               "variable_name": "",
               "info": {
                 "panel_type": "quarter",
-                "imgUrl": "../../../../assets/pictures/nike-first-page-pic/q3.png",
+                "imgUrl": `images/placements/test/${pageId}/${placementId5}/q3.png`,
                 "href": "#",
                 "subTitle": {
                   "title": "کفش ورزشی زنانه نایک، سری نایک پلاس",
@@ -181,7 +182,6 @@ describe('Post page placements and page info', () => {
                 "href": "collection/x"
               },
               is_finalized: true,
-              ref_newest_id: placementId7,
             },
             {
               "_id": placementId7,
@@ -253,8 +253,7 @@ describe('Post page placements and page info', () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
         res = res.body;
-        expect(res.placement.length).toBe(4);
-        expect(res.placement.find(el => el._id.toString() === placementId6.toString())).toBeUndefined();
+        expect(res.placement.length).toBe(6);
         expect(res.placement.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
         done();
       })
@@ -276,14 +275,11 @@ describe('Post page placements and page info', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
-        expect(res[0].placement.length).toBe(4);
+        expect(res[0].placement.length).toBe(6);
         res = res[0].placement;
-        expect(res.find(el => el._id.toString() === placementId3.toString())).toBeUndefined();
-        expect(res.find(el => el._id.toString() === placementId1.toString())).toBeUndefined();
-        expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
         expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
         done();
       })
@@ -304,13 +300,11 @@ describe('Post page placements and page info', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
-        expect(res[0].placement.length).toBe(4);
+        expect(res[0].placement.length).toBe(6);
         res = res[0].placement;
-        expect(res.find(el => el._id.toString() === placementId3.toString())).toBeUndefined();
-        expect(res.find(el => el._id.toString() === placementId1.toString())).toBeUndefined();
         expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
         done();
       })
@@ -332,7 +326,7 @@ describe('Post page placements and page info', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(4);
@@ -342,7 +336,6 @@ describe('Post page placements and page info', () => {
         expect(res.find(el => el._id.toString() === placementId3.toString().is_deleted)).toBeUndefined();
         expect(res.find(el => el._id.toString() === placementId7.toString())).toBeUndefined();
         expect(res.find(el => el._id.toString() === placementId1.toString()).info.subTitle.title).toBe('کفش پیاده روی زنانه نایک، مدل پگاسوس');
-        expect(res.find(el => el._id.toString() === placementId1.toString()).ref_newest_id).toBeUndefined();
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -371,7 +364,7 @@ describe('Post page placements and page info', () => {
   });
 });
 
-describe('POST placement (top menu)', () => {
+describe('POST placement (top menu and some other placements)', () => {
   let page, collection_id, contentManager;
   const placementId1 = new mongoose.Types.ObjectId();
   const placementId2 = new mongoose.Types.ObjectId();
@@ -380,6 +373,9 @@ describe('POST placement (top menu)', () => {
   const placementId5 = new mongoose.Types.ObjectId();
   const placementId6 = new mongoose.Types.ObjectId();
   const placementId7 = new mongoose.Types.ObjectId();
+  const placementId8 = new mongoose.Types.ObjectId();
+  const placementId9 = new mongoose.Types.ObjectId();
+  const pageId = new mongoose.Types.ObjectId();
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
@@ -405,7 +401,6 @@ describe('POST placement (top menu)', () => {
                 "section": "men",
                 "href": "collection/men"
               },
-              ref_newest_id: placementId7,
               is_finalized: true,
             },
             {
@@ -485,12 +480,47 @@ describe('POST placement (top menu)', () => {
                 "href": "collection/men/list"
               },
               is_finalized: false,
+            },
+            {
+              "_id": placementId8,
+              "component_name": "main",
+              "info": {
+                "panel_type": "full",
+                "imgUrl": `/images/placement/test/${pageId}/${placementId8}/test1.jpeg`,
+                "href": "#first",
+                "areas": [
+                  {
+                    "pos": "left-center",
+                    "title": "مجموعه ری‌اکت",
+                    "text": "حرکت رو به جلو ...",
+                    "titleColor": "#230ec4"
+                  }
+                ]
+              },
+              "is_finalized": true
+            },
+            {
+              "_id": placementId9,
+              "component_name": "main",
+              "info": {
+                "panel_type": "full",
+                "imgUrl": `images/placement/test/${pageId}/${placementId9}/test1.jpeg`,
+                "href": "#second",
+                "areas": [
+                  {
+                    "pos": "left-center",
+                    "title": "مجموعه ری‌اکت",
+                    "text": " ...",
+                    "titleColor": "#230ec4"
+                  }
+                ]
+              },
+              "is_finalized": false
             }
           ],
           page_info: {
             collection_id: collection_id,
             content: 'sample content'
-
           }
         });
 
@@ -553,17 +583,17 @@ describe('POST placement (top menu)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
-        expect(res[0].placement.length).toBe(8);
+        expect(res[0].placement.length).toBe(9);
         res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
-        expect(res.length).toBe(6);
-        expect(res.filter(el => el.info.href === 'collection/girls').length).toBe(2);
+        expect(res.length).toBe(5);
+        expect(res.filter(el => el.info.href === 'collection/girls').length).toBe(1);
         expect(res.find(el => el.info.href === 'collection/girls' && el._id.toString() === placementId5.toString()).info.column).toBe(2);
         expect(res.find(el => el.info.href === 'collection/girls' && el._id.toString() === placementId5.toString()).is_finalized).toBe(true);
-        expect(res.find(el => el.info.href === 'collection/girls' && el._id.toString() !== placementId5.toString()).info.column).toBe(0);
-        expect(res.find(el => el.info.href === 'collection/girls' && el._id.toString() !== placementId5.toString()).is_finalized).toBe(false);
+        expect(res.find(el => el.info.href === 'collection/girls' && el._id.toString() === placementId5.toString()).updated_info).toBeDefined();
+        expect(res.find(el => el.info.href === 'collection/girls' && el._id.toString() === placementId5.toString()).updated_info.column).toBe(0);
         expect(res.filter(el => el.info.href === 'collection/boys').length).toBe(1);
         expect(res.find(el => el.info.href === 'collection/boys' && el._id.toString() === placementId6.toString()).info.column).toBe(2);
         expect(res.find(el => el.info.href === 'collection/boys' && el._id.toString() === placementId6.toString()).info.section).toBe('boys');
@@ -574,8 +604,8 @@ describe('POST placement (top menu)', () => {
         expect(res.filter(el => el.info.href === 'collection/men').length).toBe(1);
         expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).info.column).toBe(0);
         expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).is_finalized).toBe(true);
-        expect(res.find(el => el.info.href === 'collection/men/list' && el._id.toString() !== placementId1.toString()).info.column).toBe(3);
-        expect(res.find(el => el.info.href === 'collection/men/list' && el._id.toString() !== placementId1.toString()).is_finalized).toBe(false);
+        expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).updated_info).toBeDefined();
+        expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).updated_info.column).toBe(3);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -682,15 +712,16 @@ describe('POST placement (top menu)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
-        expect(res[0].placement.length).toBe(7);
+        expect(res[0].placement.length).toBe(9);
         res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
         expect(res.length).toBe(5);
         expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).info.column).toBe(0);
         expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).is_finalized).toBe(true);
         expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).is_deleted).toBe(true);
+        expect(res.find(el => el.info.href === 'collection/men' && el._id.toString() === placementId1.toString()).updated_info).toBeNull();
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -711,10 +742,10 @@ describe('POST placement (top menu)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models['PageTest'].find({ _id: page._id }).lean();
       })
       .then(res => {
-        expect(res[0].placement.length).toBe(6);
+        expect(res[0].placement.length).toBe(8);
         res = res[0].placement.filter(el => el.component_name === 'menu' && el.variable_name === 'topMenu');
         expect(res.length).toBe(4);
         expect(res.find(el => el.info.href === 'collection/women' && el._id.toString() === placementId4.toString())).toBeUndefined();
@@ -722,6 +753,38 @@ describe('POST placement (top menu)', () => {
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
+  xit("Content manager should delete not finalized placement with image", function(done) {
+    this.done = done;
+    fs.mkdirSync(`public/images/placements/test/${pageId}/${placementId9}`);
+    fs.copyFileSync('spec/api/page/test1.jpeg', `public/images/placements/test/${pageId}/${placementId9}/test1.jpeg`);
+    rp({
+      method: 'post',
+      body: {
+        page_id: page._id,
+        placement_id: placementId9,
+      },
+      json: true,
+      jar: contentManager.rpJar,
+      uri: lib.helpers.apiTestURL('placement/delete'),
+      resolveWithFullResponse: true,
+    })
+    .then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['PageTest'].find({ _id: page._id }).lean();
+    })
+    .then(res => {
+      expect(res[0].placement.length).toBe(8);
+      res = res[0].placement.filter(el => el.component_name === 'main');
+      expect(res.length).toBe(1);
+      expect(res.find(el => el.info.href === '#first' && el._id.toString() === placementId1.toString()).info.areas[0].text).toBe("حرکت رو به جلو ...");
+      expect(res.find(el => el.info.href === '#first' && el._id.toString() === placementId1.toString()).updated_value).toBeUndefined();
+      expect(res.find(el => el.info.href === '#second' && el._id.toString() === placementId1.toString())).toBeUndefined();
+      expect(fs.existsSync(`images/placements/test/${pageId}/${placementId9}`)).toBe(false);
+      done();
+    })
+    .catch(lib.helpers.errorHandler.bind(this));
+  })
 
   it("should get error when no page's id is not specified (delete placement)", function (done) {
     rp({
@@ -769,9 +832,9 @@ describe('POST placement (top menu)', () => {
 });
 
 describe('POST placement images (slider)', () => {
-
   let pageId;
   let placementIds = [
+    new mongoose.Types.ObjectId(),
     new mongoose.Types.ObjectId(),
     new mongoose.Types.ObjectId(),
     new mongoose.Types.ObjectId(),
@@ -799,7 +862,8 @@ describe('POST placement images (slider)', () => {
                 text: 'slider1text',
                 href: 'slider1href',
                 column: 0,
-              }
+              },
+              is_finalized: false,
             },
             {
               _id: placementIds[1],
@@ -809,7 +873,8 @@ describe('POST placement images (slider)', () => {
                 text: 'slider2text',
                 href: 'slider2href',
                 column: 1,
-              }
+              },
+              is_finalized: true,
             },
             {
               _id: placementIds[2],
@@ -819,15 +884,14 @@ describe('POST placement images (slider)', () => {
                 text: 'slider3text',
                 href: 'slider3href',
                 column: 2,
-                imgUrl: 'spec/api/page/test1.jpeg',
-              }
+              },
+              is_finalized: true,
             }
           ]
         }).save();
       })
       .then(res => {
         pageId = res._id;
-
         done();
       })
       .catch(err => {
@@ -836,7 +900,7 @@ describe('POST placement images (slider)', () => {
       })
   });
 
-  it('should upload a new image for a slider', (done) => {
+  it('should upload a new image for a placement (slider)', function(done) {
     this.done = done;
     let _path = `/images/placements/test/${pageId}/${placementIds[0]}/test1.jpeg`;
 
@@ -857,7 +921,8 @@ describe('POST placement images (slider)', () => {
       resolveWithFullResponse: true,
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body).toContain(_path);
+      res = JSON.parse(res.body);
+      expect(res.downloadURL).toContain(_path);
       return models['PageTest'].find({_id: pageId}).lean();
     })
       .then(res => {
@@ -869,7 +934,7 @@ describe('POST placement images (slider)', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should update the image for a slider', (done) => {
+  it('should update the image for a placement (slider)', function(done) {
     this.done = done;
     let _path = `/images/placements/test/${pageId}/${placementIds[2]}/test2.jpeg`;
 
@@ -890,15 +955,86 @@ describe('POST placement images (slider)', () => {
       resolveWithFullResponse: true,
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body).toContain(_path);
+      res = JSON.parse(res.body);
+      expect(res.downloadURL).toContain(_path);
       return models['PageTest'].find({_id: pageId}).lean();
     })
       .then(res => {
         const pl = res[0].placement.find(el => el._id.toString() === placementIds[2].toString());
         expect(pl).toBeTruthy();
-        expect(pl.info.imgUrl).toContain(_path);
+        expect(pl.info.imgUrl).toBeUndefined();
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should update the image for a placmenet', function(done) {
+    this.done = done;
+    let _path = `/images/placements/test/${pageId}/${placementIds[1]}/test1.jpeg`;
+
+    rp.post({
+      url: lib.helpers.apiTestURL(`placement/image/${pageId}/${placementIds[1]}`),
+      formData: {
+        component_name: 'slider',
+        variable_name: 'slider',
+        file: {
+          value: fs.readFileSync('spec/api/page/test1.jpeg'),
+          options: {
+            filename: 'test1.jpeg',
+            contentType: 'image/jpeg',
+          }
+        }
+      },
+      jar: adminObj.jar,
+      resolveWithFullResponse: true,
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      res = JSON.parse(res.body);
+      expect(res.downloadURL).toContain(_path);
+      return models['PageTest'].find({_id: pageId}).lean();
+    })
+      .then(res => {
+        const pl = res[0].placement.find(el => el._id.toString() === placementIds[1].toString());
+        expect(pl).toBeTruthy();
+        expect(pl.info.imgUrl).toBeUndefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should upload image for not-inserted placement (return placement_id)', function(done) {
+    this.done = done;
+    const semiPath = `/images/placements/test/${pageId}`;
+
+    rp({
+      method: 'post',
+      formData: {
+        component_name: 'main',
+        file: {
+          value: fs.readFileSync('spec/api/page/test2.jpeg'),
+          options: {
+            filename: 'test2.jpeg',
+            contentType: 'image/jpeg',
+          }
+        }
+      },
+      uri: lib.helpers.apiTestURL(`placement/image/${pageId}/null`),
+      jar: adminObj.jar,
+      resolveWithFullResponse: true
+    })
+    .then(res => {
+      expect(res.statusCode).toBe(200);
+      res = JSON.parse(res.body);
+      console.log('res: ', res);
+
+      expect(res.placementId).toBeDefined();
+      expect(res.downloadURL).toContain(semiPath);
+      return models['PageTest'].find({_id: res.placementId}).lean();
+    })
+    .then(res => {
+      expect(res.length).toBe(0);
+      done();
+    })
+    .catch(lib.helpers.errorHandler.bind(this));
   });
 });
