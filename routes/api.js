@@ -7,11 +7,11 @@ const env = require('../env');
 const path = require('path');
 const app = require('../app');
 const multer = require('multer');
-const mongoose = require('mongoose');
 const personModel = require('../lib/person.model');
 const fs = require('fs');
 const _const = require('../lib/const.list');
-
+const mongoose = require('mongoose');
+const model = require('../mongo/models.mongo');
 
 let storage = multer.diskStorage({
   destination: env.uploadPath + path.sep,
@@ -19,7 +19,7 @@ let storage = multer.diskStorage({
     cb(null, [req.params.username || req.user.username, file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
   }
 });
-let upload = multer({storage: storage});
+let upload = multer({ storage: storage });
 
 function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], accessLevels) {
   let args = Array.prototype.slice.call(arguments, 5);
@@ -33,7 +33,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
         } else {
           let err = new Error(`Bad request: request.${pathStr} is not found at '${path[i - 1]}'`);
           err.status = 400;
-          throw(err);
+          throw (err);
         }
       }
       obj = obj[(path[i][0] === '?') ? path[i].substring(1) : path[i]];
@@ -53,7 +53,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
           return Promise.resolve();
       })
       .then(rs => {
-        if (adminOnly && (!rs || rs.length < 1 ))
+        if (adminOnly && (!rs || rs.length < 1))
           return Promise.reject(error.adminOnly);
         else {
           let dynamicArgs = [];
@@ -99,7 +99,7 @@ router.get('/agent/validUser', apiResponse('Person', 'afterLogin', false, ['user
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
-router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
+router.get('/login/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email'] }));
 router.get('/login/google/callback', passport.authenticate('google', {
   successRedirect: '/login/oauth',
   failureRedirect: '/login/oauth'
@@ -107,10 +107,12 @@ router.get('/login/google/callback', passport.authenticate('google', {
 // router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
 // Person (Customer/Agent) API
 router.put('/register', apiResponse('Customer', 'registration', false, ['body']));
+router.post('/editUserBasicInfo', apiResponse('Customer', 'editUserBasicInfo', false, ['body', 'user.username']));
+router.post('/changePassword', apiResponse('Customer', 'changePassword', false, ['body', 'user.username']));
 router.post('/register/verify', apiResponse('Customer', 'verification', false, ['body.code', 'body.username']));
 router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
-router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user','body']));
+router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user', 'body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
 router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
@@ -154,8 +156,12 @@ router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
 // Order
+router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
+router.post('/order/ticket/:type', apiResponse('Order', 'setTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/ticket/offline/requestInvoice', apiResponse('Order', 'resendInvoiceRequest', true, ['body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/ticket/offline/verifyInvoice', apiResponse('Order', 'verifyInvoice', false, ['body']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
@@ -199,7 +205,7 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
       cb(null, file.originalname);
     }
   });
-  let productUpload = multer({storage: productStorage});
+  let productUpload = multer({ storage: productStorage });
 
   productUpload.single('file')(req, res, err => {
     if (!err)
@@ -207,8 +213,6 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   });
 
 });
-
-
 router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // Product color
@@ -265,7 +269,7 @@ router.use('/uploadData', function (req, res, next) {
       cb(null, file.originalname);
     }
   });
-  let productUpload = multer({storage: productStorage});
+  let productUpload = multer({ storage: productStorage });
 
   productUpload.single('file')(req, res, err => {
     if (!err)
@@ -283,6 +287,9 @@ router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 
 router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', false, ['user', 'body']));
 router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false, ['user', 'body']));
 
+//ticket
+router.put('/order/ticket', apiResponse('Order', 'setTicket', true, ['body'], _const.ACCESS_LEVEL.SalesManager));
+
 // Customer Address
 router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
 
@@ -292,10 +299,35 @@ router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body']
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
+router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
+  req.is_new = req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined" ? false : true;
+  const plc_id = req.is_new ? new mongoose.Types.ObjectId() : req.params.placementId;
 
-// temp api
+  const destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
+    + path.sep + req.params.pageId + path.sep + plc_id;
+
+  req.new_placement_id = plc_id;
+
+  let placementStorage = multer.diskStorage({
+    destination,
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    }
+  });
+
+  let placementUpload = multer({ storage: placementStorage });
+  placementUpload.single('file')(req, res, err => {
+    if (!err) {
+      next();
+    }
+  });
+})
+router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
+
+// temp apis
+
 // todo: must be removed
-router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.addressId', 'body.transactionId']));
+router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.transactionId', 'body.usedPoints', 'body.usedBalance']));
 
 
 module.exports = router;

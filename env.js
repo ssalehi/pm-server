@@ -63,8 +63,8 @@ const googleAuth_callbackUrl = getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL)
  */
 const redisURL = getEnvValue(process.env.REDIS_URL);
 const redisHost = getEnvValue(process.env.REDIS_HOST);
+const redisPort = getEnvValue(process.env.REDIS_PORT);
 const redisPass = getEnvValue(process.env.REDIS_PASSWORD);
-
 
 /**
  * upload files
@@ -72,8 +72,13 @@ const redisPass = getEnvValue(process.env.REDIS_PASSWORD);
 
 uploadPath = "public/documents";
 uploadProductImagePath = "public/images/product-image";
+uploadPlacementImagePath = "public/images/placements";
 uploadExcelPath = "public/excel/";
 
+/**
+ * offline system api
+ */
+const offlineURL = getEnvValue(process.env.OFFLINE_URL);
 
 /**
  *  in some cases env var name which is declared in .env file is not compatible with server env var in production mode.
@@ -103,15 +108,18 @@ module.exports = {
   db_uri_test,
   redisURL,
   redisHost,
+  redisPort,
   redisPass,
   uploadPath,
   uploadProductImagePath,
+  uploadPlacementImagePath,
   uploadExcelPath,
   googleAuth: {
     clientID: googleAuth_clientId,
     clientSecret: googleAuth_clientSecret,
     callBackURL: googleAuth_callbackUrl,
   },
+  offlineURL
 };
 
 

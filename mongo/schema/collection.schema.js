@@ -16,6 +16,7 @@ let schema_obj = {
   productIds: [{type: Schema.Types.ObjectId, ref: 'Product'}],
   typeIds: [{type: Schema.Types.ObjectId, ref: 'ProductType'}],
   tagIds: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
+  brandIds: [{type: Schema.Types.ObjectId, ref: 'Brand'}],
   parent_id: Schema.Types.ObjectId
 };
 

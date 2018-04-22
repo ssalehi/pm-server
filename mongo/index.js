@@ -8,7 +8,7 @@ prodConnection = mongoose.createConnection(env.db_uri);
 
 if (env.isDev) {
   testConnection = mongoose.createConnection(env.db_uri_test);
-  // mongoose.set('debug', true);
+  mongoose.set('debug', true);
 }
 
 let dbIsReady = () => {
@@ -37,8 +37,4 @@ module.exports = {
   testConnection,
   dbIsReady,
 };
-
-
-
-
 
