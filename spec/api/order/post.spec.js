@@ -1068,51 +1068,58 @@ describe('POST Order - (Set Ticket)', () => {
     mongoose.Types.ObjectId()
   ];
   let productIds = [];
-  let warehouses = [{
-    _id: mongoose.Types.ObjectId(),
-    name: 'سانا',
-    phone: '021 7443 8111',
-    has_customer_pickup: true,
-    address: {
+  let warehouses = [
+    {
       _id: mongoose.Types.ObjectId(),
-      province: 'تهران',
-      city: 'تهران',
-      street: 'اندرزگو'
-    }
-  }, {
-    _id: mongoose.Types.ObjectId(),
-    name: 'ایران مال',
-    phone: 'نا مشخص',
-    has_customer_pickup: true,
-    address: {
-      _id: mongoose.Types.ObjectId(),
-      province: 'تهران',
-      city: 'تهران',
-      street: 'اتوبان خرازی'
-    }
-  }, {
-    _id: mongoose.Types.ObjectId(),
-    name: 'پالادیوم',
-    phone: ' 021 2201 0600',
-    has_customer_pickup: true,
-    address: {
-      _id: mongoose.Types.ObjectId(),
-      province: 'تهران',
-      city: 'تهران',
-      street: 'مقدس اردبیلی'
-    }
-  }, {
-    _id: mongoose.Types.ObjectId(),
-    name: 'انبار مرکزی',
-    phone: 'نا مشخص',
-    address: {
-      _id: mongoose.Types.ObjectId(),
-      province: 'تهران',
-      city: 'تهران',
-      street: 'نامشخص'
+      name: 'انبار مرکزی',
+      phone: 'نا مشخص',
+      address: {
+        city: 'تهران',
+        street: 'نامشخص',
+        province: 'تهران'
+      },
+      is_center: true,
+      priority: 0,
+
     },
-    is_center: true
-  }];
+    {
+      _id: mongoose.Types.ObjectId(),
+      name: 'پالادیوم',
+      phone: ' 021 2201 0600',
+      has_customer_pickup: true,
+      address: {
+        city: 'تهران',
+        street: 'مقدس اردبیلی',
+        province: 'تهران'
+      },
+      priority: 1,
+
+    },
+    {
+      _id: mongoose.Types.ObjectId(),
+      name: 'سانا',
+      phone: '021 7443 8111',
+      has_customer_pickup: true,
+      address: {
+        province: 'تهران',
+        city: 'تهران',
+        street: 'اندرزگو',
+      },
+      priority: 2,
+    },
+    {
+      _id: mongoose.Types.ObjectId(),
+      name: 'ایران مال',
+      phone: 'نا مشخص',
+      has_customer_pickup: true,
+      address: {
+        province: 'تهران',
+        city: 'تهران',
+        street: 'اتوبان خرازی',
+      },
+      priority: 3,
+    }
+  ];
 
   let orders = [];
   beforeEach(done => {

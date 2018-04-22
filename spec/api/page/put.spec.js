@@ -3,6 +3,7 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
+const fs = require('fs');
 
 describe("Put page basics", () => {
   let adminObj = {
@@ -105,15 +106,15 @@ describe("Put page basics", () => {
           json: true,
           resolveWithFullResponse: true
         })).then(res => {
-      expect(res.statusCode).toBe(200);
+          expect(res.statusCode).toBe(200);
 
-      return models['PageTest'].find({}).lean();
+          return models['PageTest'].find({}).lean();
 
-    }).then(res => {
-      expect(res.length).toBe(2);
-      done();
+        }).then(res => {
+          expect(res.length).toBe(2);
+          done();
 
-    })
+        })
       .catch(lib.helpers.errorHandler.bind(this));
   });
   it("expect error when page address is not defined", function (done) {
@@ -188,9 +189,9 @@ describe("Put page basics", () => {
           resolveWithFullResponse: true
         })).then(res => {
 
-      this.fail('did not failed when other users are calling api');
-      done();
-    })
+          this.fail('did not failed when other users are calling api');
+          done();
+        })
       .catch(err => {
         done();
       });
