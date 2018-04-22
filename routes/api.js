@@ -327,7 +327,7 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 // temp apis
 
 // todo: must be removed
-router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['user','body.orderId', 'body.addressId', 'body.transactionId','body.usedPoints','body.usedBalance']));
+router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.transactionId', 'body.usedPoints', 'body.usedBalance']));
 
 
 module.exports = router;
