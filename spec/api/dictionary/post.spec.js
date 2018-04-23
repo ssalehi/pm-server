@@ -3,9 +3,7 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 
-
-describe('PUT Dictionary ', () => {
-
+describe('Dictionary POST', () => {
     let dictionaryId;
     beforeEach(done => {
         lib.dbHelpers.dropAll().then(() => {
@@ -26,7 +24,6 @@ describe('PUT Dictionary ', () => {
                 },
             ];
             return models['DictionaryTest'].insertMany(dictionaries);
-
         }).then(res => {
             dictionaryId = res[0]._id;
             done();
@@ -34,50 +31,118 @@ describe('PUT Dictionary ', () => {
             console.log('error', err);
             done();
         });
-
     });
 
-    it('expect insert new dictionary', function (done) {
+    it('expect update dictionary', function (done) {
         this.done = done;
-
         rp({
-            method: 'PUT',
-            uri: lib.helpers.apiTestURL(`dictionary`),
+            method: 'POST',
+            uri: lib.helpers.apiTestURL(`dictionary/${dictionaryId}`),
             body: {
-                name: 'name 4',
-                value: 'value 4',
-                type: 'type 4'
+                name: 'update name ha ha!!',
+                value: 'update value ha ha!!',
+                type: 'update type ha ha!!'
             },
-            json: true,
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
+            json: true
         }).then(res => {
             expect(res.statusCode).toBe(200);
-            return models['DictionaryTest'].find();
-        }).then((res) => {
-            expect(res.length).toEqual(4)
+            return models['DictionaryTest'].findById(dictionaryId)
+        }).then(res => {
+            expect(res._id).toEqual(dictionaryId);
+            expect(res.name).toEqual('update name ha ha!!');
             done();
         }).catch(lib.helpers.errorHandler.bind(this));
     });
 
-    it('expect error when dictionary is duplicate', function (done) {
+    it('expect error when dictionary id not valid', function (done) {
         this.done = done;
-
+        dictionaryId = dictionaryId + 'B';
         rp({
-            method: 'PUT',
-            uri: lib.helpers.apiTestURL(`dictionary`),
+            method: 'POST',
+            uri: lib.helpers.apiTestURL(`dictionary/${dictionaryId}`),
             body: {
-                name: 'name 3',
-                value: 'value 3',
-                type: 'type 3'
+                name: 'update name ha ha!!',
+                value: 'update value ha ha!!',
+                type: 'update type ha ha!!'
             },
-            json: true,
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
+            json: true
         }).then(res => {
-            this.fail('expect error when dictionary is duplicate');
+            this.fail('expect error when dictionary id not valid');
             done();
         }).catch(err => {
-            expect(err.statusCode).toBe(error.duplicateDictionary.status);
-            expect(err.error).toEqual(error.duplicateDictionary.message);
+            expect(err.statusCode).toBe(error.invalidDictionary.status);
+            expect(err.error).toEqual(error.invalidDictionary.message);
+            done();
+        });
+    });
+    
+    it('expect error when dictionary name is undefined', function (done) {
+        this.done = done;
+        rp({
+            method: 'POST',
+            uri: lib.helpers.apiTestURL(`dictionary/${dictionaryId}`),
+            body: {
+                // name: 'update name ha ha!!',
+                value: 'update value ha ha!!',
+                type: 'update type ha ha!!'
+                
+            },
+            resolveWithFullResponse: true,
+            json: true
+        }).then(res => {
+            this.fail('expect error when dictionary name is undefined');
+            done();
+        }).catch(err => {
+            expect(err.statusCode).toBe(error.dictionaryNameRequired.status);
+            expect(err.error).toEqual(error.dictionaryNameRequired.message);
+            done();
+        });
+    });
+
+    it('expect error when dictionary value is undefined', function (done) {
+        this.done = done;
+        rp({
+            method: 'POST',
+            uri: lib.helpers.apiTestURL(`dictionary/${dictionaryId}`),
+            body: {
+                name: 'update name ha ha!!',
+                // value: 'update value ha ha!!',
+                type: 'update type ha ha!!'
+                
+            },
+            resolveWithFullResponse: true,
+            json: true
+        }).then(res => {
+            this.fail('expect error when dictionary value is undefined');
+            done();
+        }).catch(err => {
+            expect(err.statusCode).toBe(error.dictionaryValueRequired.status);
+            expect(err.error).toEqual(error.dictionaryValueRequired.message);
+            done();
+        });
+    });
+
+    it('expect error when dictionary type is undefined', function (done) {
+        this.done = done;
+        rp({
+            method: 'POST',
+            uri: lib.helpers.apiTestURL(`dictionary/${dictionaryId}`),
+            body: {
+                name: 'update name ha ha!!',
+                value: 'update value ha ha!!',
+                // type: 'update type ha ha!!'
+                
+            },
+            resolveWithFullResponse: true,
+            json: true
+        }).then(res => {
+            this.fail('expect error when dictionary type is undefined');
+            done();
+        }).catch(err => {
+            expect(err.statusCode).toBe(error.dictionaryTypeRequired.status);
+            expect(err.error).toEqual(error.dictionaryTypeRequired.message);
             done();
         });
     });
