@@ -3,7 +3,7 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 
-describe('Dictionary PUT', () => {
+describe('Dictionary POST', () => {
     let dictionaryId;
     beforeEach(done => {
         lib.dbHelpers.dropAll().then(() => {
@@ -36,7 +36,7 @@ describe('Dictionary PUT', () => {
     it('expect update dictionary', function (done) {
         this.done = done;
         rp({
-            method: 'PUT',
+            method: 'POST',
             uri: lib.helpers.apiTestURL(`dictionary/${dictionaryId}`),
             body: {
                 name: 'new name ha ha!!',
@@ -63,7 +63,7 @@ describe('Dictionary PUT', () => {
         this.done = done;
         dictionaryId = dictionaryId + 'B';
         rp({
-            method: 'PUT',
+            method: 'POST',
             uri: lib.helpers.apiTestURL(`dictionary/${dictionaryId}`),
             body: {
                 name: 'new name ha ha!!'

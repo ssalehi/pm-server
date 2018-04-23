@@ -4,7 +4,7 @@ const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 
 
-describe('POST Dictionary ', () => {
+describe('PUT Dictionary ', () => {
 
     let dictionaryId;
     beforeEach(done => {
@@ -41,7 +41,7 @@ describe('POST Dictionary ', () => {
         this.done = done;
 
         rp({
-            method: 'POST',
+            method: 'PUT',
             uri: lib.helpers.apiTestURL(`dictionary`),
             body: {
                 name: 'name 4',
@@ -63,7 +63,7 @@ describe('POST Dictionary ', () => {
         this.done = done;
 
         rp({
-            method: 'POST',
+            method: 'PUT',
             uri: lib.helpers.apiTestURL(`dictionary`),
             body: {
                 name: 'name 3',
