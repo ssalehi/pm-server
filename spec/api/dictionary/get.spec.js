@@ -1,32 +1,40 @@
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
-describe("Get Color", () => {
+describe("Dictionary GET", () => {
 
   let dictionaryIds = [];
 
   beforeEach(done => {
-    lib.dbHelpers.dropAll()
-      .then(res => {
+    lib.dbHelpers.dropAll().then(res => {
 
-        let dictionaries = [
-          {name : 'name 1', value: 'value 1', type: 'type 1'},
-          {name : 'name 2', value: 'value 2', type: 'type 2'},
-          {name : 'name 3', value: 'value 3', type: 'type 3'},
-        ];
+      let dictionaries = [{
+          name: 'name 1',
+          value: 'value 1',
+          type: 'type 1'
+        },
+        {
+          name: 'name 2',
+          value: 'value 2',
+          type: 'type 2'
+        },
+        {
+          name: 'name 3',
+          value: 'value 3',
+          type: 'type 3'
+        },
+      ];
 
-        return models['DictionaryTest'].insertMany(dictionaries);
+      return models['DictionaryTest'].insertMany(dictionaries);
 
-      })
-      .then(res => {
+    }).then(res => {
 
-        dictionaryIds  = res.map(p => p._id.toString());
-        done();
-      })
-      .catch(err => {
-        console.log(err);
-        done();
-      });
+      dictionaryIds = res.map(p => p._id.toString());
+      done();
+    }).catch(err => {
+      console.log(err);
+      done();
+    });
   });
 
 
@@ -47,8 +55,7 @@ describe("Get Color", () => {
       });
       done();
 
-    })
-      .catch(lib.helpers.errorHandler.bind(this));
+    }).catch(lib.helpers.errorHandler.bind(this));
   });
 
 });
