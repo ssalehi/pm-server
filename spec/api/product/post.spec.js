@@ -98,9 +98,9 @@ describe("Post product basics", () => {
   });
 
 });
-xdescribe("Post product colors & images", () => {
+describe("Post product colors & images", () => {
 
-  let productId, brandId, typeId;
+  let productId, brandId, typeId, color;
   let adminObj = {
     aid: null,
     jar: null,
@@ -115,6 +115,10 @@ xdescribe("Post product colors & images", () => {
       })
       .then(res => {
         brandId = res[0]._id;
+        return models['ColorTest'].insertMany({name: 'green'});
+      })
+      .then(res => {
+        color = res[0];
         return models['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
@@ -157,159 +161,123 @@ xdescribe("Post product colors & images", () => {
   });
 
 
-  it("should not add a color with its images if colors array is empty and it doesn't have thumbnail", function (done) {
-
-    let colorId = mongoose.Types.ObjectId();
+  it("should add new thumbnail to existing color", function (done) {
 
     this.done = done;
 
-    rp.post({
-      url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/false`),
-      formData: {
-        file: {
-          value: fs.readFileSync('spec/api/product/test1.jpeg'),
-          options: {
-            filename: 'test1.jpeg',
-            contentType: 'image/jpeg'
-          }
-        }
-      },
-      jar: adminObj.jar,
-      resolveWithFullResponse: true
-    }).catch(res => {
-      expect(res.statusCode).toBe(404);
-      return models['ProductTest'].find({});
-    }).then(res => {
-      expect(res.length).toBe(1);
-      expect(res[0].colors.length).toBe(0);
-      done();
-    })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
-  it("should add a color with its images if colors array already contains that color and it has thumbnail", function (done) {
-
-    let preColorId = mongoose.Types.ObjectId();
-    let colorId = mongoose.Types.ObjectId();
-
-    this.done = done;
-
-    models['ProductTest'].update({
-      '_id': productId
-    }, {
-      $set: {
-        'colors': [{
-          'color_id': preColorId,
-          'image': {
-            'thumbnail': 'th',
-            'angles': ['some url 1', 'some url 2', 'some url 3'],
-          }
-        }],
-      }
-    }).then(res =>
-      rp.post({
-        url: lib.helpers.apiTestURL(`product/image/${productId}/${preColorId}/false`),
-        formData: {
-          file: {
-            value: fs.readFileSync('spec/api/product/test1.jpeg'),
-            options: {
-              filename: 'test1.jpeg',
-              contentType: 'image/jpeg'
-            }
-          }
-        },
-        jar: adminObj.jar,
-        resolveWithFullResponse: true
-      })).then(res => {
-      expect(res.statusCode).toBe(200);
-      return models['ProductTest'].find({}).lean();
-
-    }).then(res => {
-
-      expect(res.length).toBe(1);
-      expect(res[0].colors.length).toBe(1);
-      expect(res[0].colors[0].color_id).toEqual(preColorId);
-      expect(res[0].colors[0].image.angles.length).toBe(4);
-      expect(res[0].colors[0].image.thumbnail).toContain('th');
-      done();
-
-    })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
-  it("should add an new image to existing color", function (done) {
-
-    this.done = done;
-
-    let colorId = mongoose.Types.ObjectId();
-
-    let _path = env.uploadProductImagePath + path.sep + 'test' + path.sep + productId + path.sep + colorId;
-    shell.mkdir('-p', _path);
-    copyFileSync('spec/api/product/test1.jpeg', _path + path.sep + 'test1.jpeg');
-
-    let preColor = {
-
-      color_id: colorId,
-      image: {
-        angles: [_path + path.sep + 'test1.jpeg']
-      }
-    };
     return models['ProductTest'].update({
-        "_id": productId,
-      },
+      "_id": productId,
+    },
       {
         $set: {
-          'colors': [preColor]
+          'colors': [{
+            color_id: color._id,
+            name: color.name,
+          }]
         }
       })
       .then(res => {
-          models['ProductTest'].findOne({"_id": productId}).then(res => {
-            console.log("ans", res);
-            console.log("!", res.colors[0].image);
-          });
-          return rp.post({
-            url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/false`),
-            formData: {
-              file: {
-                value: fs.readFileSync('spec/api/product/test2.jpeg'),
-                options: {
-                  filename: 'test2.jpeg',
-                  contentType: 'image/jpeg'
-                }
+        return rp.post({
+          url: lib.helpers.apiTestURL(`product/image/${productId}/${color._id}/true`),
+          formData: {
+            file: {
+              value: fs.readFileSync('spec/api/product/test1.jpeg'),
+              options: {
+                filename: 'test1.jpeg',
+                contentType: 'image/jpeg'
               }
-            },
-            jar: adminObj.jar,
-            resolveWithFullResponse: true
-          })
-        }
+            }
+          },
+          jar: adminObj.jar,
+          resolveWithFullResponse: true
+        })
+      }
       ).then(res => {
         expect(res.statusCode).toBe(200);
+        let result = JSON.parse(res.body);
+        expect(result.uploaded).toContain('test1');
+        expect(result.uploaded).toContain('jpeg');
         return models['ProductTest'].find({}).lean();
 
       }).then(res => {
-        // console.log("@", res[0]);
-        // console.log("@@", res[0].colors[0]);
-        // console.log("@@@", res[0].colors[0].image);
-        expect(res.length).toBe(1);
         expect(res[0].colors.length).toBe(1);
-        expect(res[0].colors[0].color_id).toEqual(colorId);
-        expect(res[0].colors[0].image.angles[0]).toContain(productId);
-        expect(res[0].colors[0].image.angles[0]).toContain(colorId);
-        expect(res[0].colors[0].image.angles[1]).toContain(productId);
-        expect(res[0].colors[0].image.angles[1]).toContain(colorId);
-        expect(res[0].colors[0].image.angles[0]).toContain('test1.jpeg');
-        expect(res[0].colors[0].image.angles[1]).toContain('test2.jpeg');
+        expect(res[0].colors[0].color_id.toString()).toBe(color._id.toString());
+        expect(res[0].colors[0].image.thumbnail).toContain('test1');
+        expect(res[0].colors[0].image.thumbnail).toContain('jpeg');
+        expect(res[0].colors[0].image.thumbnail).toContain('-');
         done();
 
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
-  it("should add a color with its thumbnail if colors array is empty", function (done) {
 
-    let colorId = mongoose.Types.ObjectId();
+  it("should add an new angle image to existing color", function (done) {
+
+    this.done = done;
+
+    let _path = env.uploadProductImagePath + path.sep + 'test' + path.sep + productId + path.sep + color._id;
+    shell.mkdir('-p', _path);
+    copyFileSync('spec/api/product/test1.jpeg', _path + path.sep + 'test1.jpeg');
+
+    let preColor = {
+      name: color.name,
+      color_id: color._id,
+      image: {
+        thumbnail: 'test1.jpeg'
+      }
+    };
+    return models['ProductTest'].findOneAndUpdate({
+      "_id": productId,
+    },
+      {
+        $set: {
+          'colors': [preColor]
+        }
+      }, {new: true})
+      .then(res => {
+        return rp.post({
+          url: lib.helpers.apiTestURL(`product/image/${productId}/${color._id}/false`),
+          formData: {
+            file: {
+              value: fs.readFileSync('spec/api/product/test2.jpeg'),
+              options: {
+                filename: 'test2.jpeg',
+                contentType: 'image/jpeg'
+              }
+            }
+          },
+          jar: adminObj.jar,
+          resolveWithFullResponse: true
+        })
+      }
+      ).then(res => {
+        expect(res.statusCode).toBe(200);
+        let result = JSON.parse(res.body);
+        expect(result.uploaded).toContain('test2');
+        expect(result.uploaded).toContain('jpeg');
+        expect(result.uploaded).toContain('-');
+        return models['ProductTest'].find({}).lean();
+
+      }).then(res => {
+        expect(res[0].colors.length).toBe(1);
+        expect(res[0].colors[0].color_id).toEqual(color._id);
+        expect(res[0].colors[0].image.thumbnail).toBe('test1.jpeg');
+        expect(res[0].colors[0].image.angles.length).toBe(1);
+        expect(res[0].colors[0].image.angles[0]).toContain('test2');
+        expect(res[0].colors[0].image.angles[0]).toContain('jpeg');
+        expect(res[0].colors[0].image.angles[0]).toContain('-');
+        done();
+
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should not add new image angle when product color is not exist for product", function (done) {
 
     this.done = done;
 
     rp.post({
-      url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/true`),
+      url: lib.helpers.apiTestURL(`product/image/${productId}/${color._id}/false`),
       formData: {
         file: {
           value: fs.readFileSync('spec/api/product/test1.jpeg'),
@@ -322,189 +290,44 @@ xdescribe("Post product colors & images", () => {
       jar: adminObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
-      expect(res.statusCode).toBe(200);
-      return models['ProductTest'].find({});
-
-    }).then(res => {
-
-      expect(res.length).toBe(1);
-      expect(res[0].colors.length).toBe(1);
-      expect(res[0].colors[0].color_id).toEqual(colorId);
-      expect(res[0].colors[0].image.thumbnail).toContain(productId);
-      expect(res[0].colors[0].image.thumbnail).toContain(colorId);
-      expect(res[0].colors[0].image.thumbnail).toContain('test1.jpeg');
-      expect(res[0].colors[0].image.angles.length).toBe(0);
+      this.fail('did not failed when product color is not exists');
       done();
-
     })
-      .catch(lib.helpers.errorHandler.bind(this));
+      .catch(err => {
+        expect(err.statusCode).toBe(error.productColorNotExist.status);
+        expect(err.error).toBe(error.productColorNotExist.message);
+        done();
+      });
   });
-  it("should add a color with its thumbnail if colors array already contains color (angles and thumbnails)", function (done) {
 
-    let preColorId = mongoose.Types.ObjectId();
-    let colorId = mongoose.Types.ObjectId();
+  it("should not add new image angle when product color not have thumbnail", function (done) {
 
     this.done = done;
-    let thumbName = 'th url';
-
-    models['ProductTest'].update({
-      '_id': productId
-    }, {
-      $set: {
-        'colors': [{
-          'color_id': preColorId,
-          'image': {
-            'angles': ['some url1', 'some url 2', 'some url 3'],
-            'thumbnail': thumbName
-          }
-        }],
-      }
-    }).then(res =>
-      rp.post({
-        url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/true`),
-        formData: {
-          file: {
-            value: fs.readFileSync('spec/api/product/test1.jpeg'),
-            options: {
-              filename: 'test1',
-              contentType: 'image/jpeg'
-            }
-          }
-        },
-        jar: adminObj.jar,
-        resolveWithFullResponse: true
-      })).then(res => {
-      expect(res.statusCode).toBe(200);
-      return models['ProductTest'].find({}).lean();
-
-    }).then(res => {
-
-      expect(res.length).toBe(1);
-      expect(res[0].colors.length).toBe(2);
-      expect(res[0].colors[0].color_id).toEqual(preColorId);
-      expect(res[0].colors[1].color_id).toEqual(colorId);
-      expect(res[0].colors[0].image.angles.length).toBe(3);
-      expect(res[0].colors[0].image.thumbnail).toBe(thumbName);
-      expect(res[0].colors[1].image.angles.length).toBe(0);
-      expect(res[0].colors[1].image.thumbnail).toContain(colorId);
-      expect(res[0].colors[1].image.thumbnail).toContain(productId);
-      done();
-
-    })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
-  it("should update thumbnail on an existing color with thumbnail", function (done) {
-
-    this.done = done;
-
-    let colorId = mongoose.Types.ObjectId();
-
-    let _path = env.uploadProductImagePath + path.sep + 'test' + path.sep + productId + path.sep + colorId;
+    let _path = env.uploadProductImagePath + path.sep + 'test' + path.sep + productId + path.sep + color._id;
     shell.mkdir('-p', _path);
     copyFileSync('spec/api/product/test1.jpeg', _path + path.sep + 'test1.jpeg');
 
     let preColor = {
-      color_id: colorId,
-      image: {
-        thumbnail: _path + path.sep + 'test1.jpeg'
-      }
+      name: color.name,
+      color_id: color._id,
+      
     };
-    return models['ProductTest'].update({
-        "_id": productId,
-      },
+    return models['ProductTest'].findOneAndUpdate({
+      "_id": productId,
+    },
       {
         $set: {
           'colors': [preColor]
         }
-      })
-      .then(res =>
-        rp.post({
-          url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/true`),
-          formData: {
-            file: {
-              value: fs.readFileSync('spec/api/product/test2.jpeg'),
-              options: {
-                filename: 'test2.jpeg',
-                contentType: 'image/jpeg'
-              }
-            }
-          },
-          jar: adminObj.jar,
-          resolveWithFullResponse: true
-        })
-      ).then(res => {
-        expect(res.statusCode).toBe(200);
-        return models['ProductTest'].find({}).lean();
-
-      }).then(res => {
-        // console.log("@", res[0]);
-        // console.log("@@", res[0].colors[0]);
-        // console.log("@@@", res[0].colors[0].image);
-        expect(res.length).toBe(1);
-        expect(res[0].colors.length).toBe(1);
-        expect(res[0].colors[0].color_id).toEqual(colorId);
-        expect(res[0].colors[0].image.thumbnail).toContain(productId);
-        expect(res[0].colors[0].image.thumbnail).toContain(colorId);
-        expect(res[0].colors[0].image.thumbnail).toNotContain('test1.jpeg');
-        expect(res[0].colors[0].image.thumbnail).toContain('test2.jpeg');
-        done();
-
-      })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
-  it('should add a thumbnail and two angles on an existing color without thumbnail and with other angles', function (done) {
-    this.done = done;
-    let colorId = mongoose.Types.ObjectId();
-
-    let _path = env.uploadProductImagePath + path.sep + 'test' + path.sep + productId + path.sep + colorId;
-    shell.mkdir('-p', _path);
-    copyFileSync('spec/api/product/test1.jpeg', _path + path.sep + 'test1.jpeg');
-
-    let preColor = {
-      color_id: colorId,
-      image: {
-        angles: [_path + path.sep + 'test1.jpeg'],
-        thumbnail: _path + path.sep + 'test1.jpeg'
-      }
-    };
-    return models['ProductTest'].update({
-      "_id": productId,
-    }, {
-      $set: {
-        'colors': [preColor]
-      }
-    })
-      .then(res =>
-        rp.post({
-          url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/false`),
-          formData: {
-            file: {
-              value: fs.readFileSync('spec/api/product/test2.jpeg'),
-              options: {
-                filename: 'test2.jpeg',
-                contentType: 'image/jpeg'
-              }
-            }
-          },
-          jar: adminObj.jar,
-          resolveWithFullResponse: true
-        })
-      ).then(res => {
-        expect(res.statusCode).toBe(200);
-        return models['ProductTest'].find({}).lean();
-      }).then(res => {
-        expect(res.length).toBe(1);
-        expect(res[0].colors.length).toBe(1);
-        expect(res[0].colors[0].color_id).toEqual(colorId);
-        expect(res[0].colors[0].image.angles.length).toBe(2);
-
+      }, {new: true})
+      .then(res => {
         return rp.post({
-          url: lib.helpers.apiTestURL(`product/image/${productId}/${colorId}/true`),
+          url: lib.helpers.apiTestURL(`product/image/${productId}/${color._id}/false`),
           formData: {
             file: {
-              value: fs.readFileSync('spec/api/product/test2.jpeg'),
+              value: fs.readFileSync('spec/api/product/test1.jpeg'),
               options: {
-                filename: 'test2.jpeg',
+                filename: 'test1.jpeg',
                 contentType: 'image/jpeg'
               }
             }
@@ -513,17 +336,18 @@ xdescribe("Post product colors & images", () => {
           resolveWithFullResponse: true
         })
       }).then(res => {
-        expect(res.statusCode).toBe(200);
-        return models['ProductTest'].find({}).lean();
-      }).then(res => {
-        expect(res.length).toBe(1);
-        expect(res[0].colors.length).toBe(1);
-        expect(res[0].colors[0].image.angles.length).toBe(2);
-        expect(res[0].colors[0].image.thumbnail).toContain('test2.jpeg');
+        this.fail('did not failed when product color has no thumbnail');
         done();
       })
-      .catch(lib.helpers.errorHandler.bind(this));
+      .catch(err => {
+        expect(err.statusCode).toBe(error.productColorThumbnailNotFound.status);
+        expect(err.error).toBe(error.productColorThumbnailNotFound.message);
+        done();
+      });
   });
+
+
+
 });
 describe("Post product instances", () => {
   let brandId, typeId;
@@ -561,7 +385,7 @@ describe("Post product instances", () => {
           base_price: 30000,
           desc: 'some description for this product',
           details: 'some details for this product',
-            instances: [
+          instances: [
             {
               product_color_id: productColorId,
               size: 8.5,
@@ -662,7 +486,7 @@ describe("Post Product instance inventories", () => {
           base_price: 30000,
           desc: 'some description for this product',
           details: 'some details for this product',
-            instances: [
+          instances: [
             {
               product_color_id: new mongoose.Types.ObjectId(),
               size: 8.5,
@@ -688,38 +512,7 @@ describe("Post Product instance inventories", () => {
   });
 
 
-  it("should update non existing inventory info for a product instance", function (done) {
-
-    this.done = done;
-    let warehouseId = mongoose.Types.ObjectId();
-    rp({
-      method: 'post',
-      uri: lib.helpers.apiTestURL(`product/instance/inventory`),
-      body: {
-        id: productId,
-        productInstanceId,
-        warehouseId,
-        count: 5
-      },
-      jar: adminObj.jar,
-      json: true,
-      resolveWithFullResponse: true
-    }).then(res => {
-      expect(res.statusCode).toBe(200);
-
-      return models['ProductTest'].find({}).lean();
-
-    }).then(res => {
-      expect(res.length).toBe(1);
-      expect(res[0].instances.length).toBe(1);
-      expect(res[0].instances[0].inventory.length).toBe(1);
-      expect(res[0].instances[0].inventory[0].warehouse_id).toEqual(warehouseId);
-      expect(res[0].instances[0].inventory[0].count).toEqual(5);
-      done();
-
-    })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
+  
   it("should update count for current inventory", function (done) {
 
     this.done = done;
@@ -742,7 +535,8 @@ describe("Post Product instance inventories", () => {
             id: productId,
             productInstanceId,
             warehouseId,
-            count: 6
+            count: 6,
+            price: 200
           },
           jar: adminObj.jar,
           json: true,
@@ -753,14 +547,15 @@ describe("Post Product instance inventories", () => {
         expect(res.statusCode).toBe(200);
         return models['ProductTest'].find({}).lean();
       }).then(res => {
-      expect(res.length).toBe(1);
-      expect(res[0].instances.length).toBe(1);
-      expect(res[0].instances[0].inventory.length).toBe(1);
-      expect(res[0].instances[0].inventory[0].warehouse_id).toEqual(warehouseId);
-      expect(res[0].instances[0].inventory[0].count).toEqual(6);
-      done();
+        expect(res.length).toBe(1);
+        expect(res[0].instances.length).toBe(1);
+        expect(res[0].instances[0].price).toBe(200);
+        expect(res[0].instances[0].inventory.length).toBe(1);
+        expect(res[0].instances[0].inventory[0].warehouse_id).toEqual(warehouseId);
+        expect(res[0].instances[0].inventory[0].count).toEqual(6);
+        done();
 
-    })
+      })
       .catch(lib.helpers.errorHandler.bind(this));
   });
   it("expect error when product id is not declared in the body", function (done) {
@@ -871,7 +666,7 @@ describe("Post Product instance inventories", () => {
 });
 describe("Post Product tags", () => {
 
-  let brandId, typeId, tagIds , tagGroupIds;
+  let brandId, typeId, tagIds, tagGroupIds;
   let productId;
   let adminObj = {
     aid: null,
@@ -969,8 +764,8 @@ describe("Post Product tags", () => {
     this.done = done;
 
     models['ProductTest'].update({
-        "_id": productId,
-      },
+      "_id": productId,
+    },
       {
         $addToSet: {
           'tags': {
