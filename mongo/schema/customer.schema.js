@@ -47,6 +47,10 @@ let schema_obj = {
     required: true,
     default: false,
   },
+  shoesType: {
+    type: String,
+    default: "US",
+  },
   is_guest: {
     type: Boolean,
     required: true,
@@ -56,7 +60,7 @@ let schema_obj = {
   wish_list: [Schema.Types.ObjectId],
   preferred_tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
   orders: [{type: Schema.Types.ObjectId, ref: 'Order'}],
-  addresses:[addressSchema],
+  addresses: [addressSchema],
   active: { // weather user can system or not
     type: Boolean,
     default: true,

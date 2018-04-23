@@ -19,7 +19,7 @@ let storage = multer.diskStorage({
     cb(null, [req.params.username || req.user.username, file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
   }
 });
-let upload = multer({ storage: storage });
+let upload = multer({storage: storage});
 
 function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], accessLevels) {
   let args = Array.prototype.slice.call(arguments, 5);
@@ -99,7 +99,7 @@ router.get('/agent/validUser', apiResponse('Person', 'afterLogin', false, ['user
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
-router.get('/login/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email'] }));
+router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
 router.get('/login/google/callback', passport.authenticate('google', {
   successRedirect: '/login/oauth',
   failureRedirect: '/login/oauth'
@@ -155,6 +155,10 @@ router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 // Customer
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
+// Customer shoesType
+router.get('/customer/shoesType', apiResponse('Customer', 'getCustomerShoesType', false, ['user']));
+router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType', false, ['user', 'body']));
+
 // Order
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
@@ -205,7 +209,7 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
       cb(null, file.originalname);
     }
   });
-  let productUpload = multer({ storage: productStorage });
+  let productUpload = multer({storage: productStorage});
 
   productUpload.single('file')(req, res, err => {
     if (!err)
@@ -269,7 +273,7 @@ router.use('/uploadData', function (req, res, next) {
       cb(null, file.originalname);
     }
   });
-  let productUpload = multer({ storage: productStorage });
+  let productUpload = multer({storage: productStorage});
 
   productUpload.single('file')(req, res, err => {
     if (!err)
@@ -315,7 +319,7 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
     }
   });
 
-  let placementUpload = multer({ storage: placementStorage });
+  let placementUpload = multer({storage: placementStorage});
   placementUpload.single('file')(req, res, err => {
     if (!err) {
       next();
