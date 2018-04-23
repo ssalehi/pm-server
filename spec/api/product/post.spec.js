@@ -11,7 +11,7 @@ const copyFileSync = require('fs-copy-file-sync');
 const shell = require('shelljs');
 
 
-xdescribe("Post product basics", () => {
+describe("Post product basics", () => {
 
   let productId, brandId, typeId;
   let adminObj = {
@@ -195,13 +195,16 @@ describe("Post product colors & images", () => {
       ).then(res => {
         expect(res.statusCode).toBe(200);
         let result = JSON.parse(res.body);
-        expect(result.uploaded).toBe('test1.jpeg');
+        expect(result.uploaded).toContain('test1');
+        expect(result.uploaded).toContain('jpeg');
         return models['ProductTest'].find({}).lean();
 
       }).then(res => {
         expect(res[0].colors.length).toBe(1);
         expect(res[0].colors[0].color_id.toString()).toBe(color._id.toString());
-        expect(res[0].colors[0].image.thumbnail).toBe('test1.jpeg');
+        expect(res[0].colors[0].image.thumbnail).toContain('test1');
+        expect(res[0].colors[0].image.thumbnail).toContain('jpeg');
+        expect(res[0].colors[0].image.thumbnail).toContain('-');
         done();
 
       })
@@ -250,7 +253,9 @@ describe("Post product colors & images", () => {
       ).then(res => {
         expect(res.statusCode).toBe(200);
         let result = JSON.parse(res.body);
-        expect(result.uploaded).toBe('test2.jpeg');
+        expect(result.uploaded).toContain('test2');
+        expect(result.uploaded).toContain('jpeg');
+        expect(result.uploaded).toContain('-');
         return models['ProductTest'].find({}).lean();
 
       }).then(res => {
@@ -258,7 +263,9 @@ describe("Post product colors & images", () => {
         expect(res[0].colors[0].color_id).toEqual(color._id);
         expect(res[0].colors[0].image.thumbnail).toBe('test1.jpeg');
         expect(res[0].colors[0].image.angles.length).toBe(1);
-        expect(res[0].colors[0].image.angles[0]).toBe('test2.jpeg');
+        expect(res[0].colors[0].image.angles[0]).toContain('test2');
+        expect(res[0].colors[0].image.angles[0]).toContain('jpeg');
+        expect(res[0].colors[0].image.angles[0]).toContain('-');
         done();
 
       })
@@ -342,7 +349,7 @@ describe("Post product colors & images", () => {
 
 
 });
-xdescribe("Post product instances", () => {
+describe("Post product instances", () => {
   let brandId, typeId;
 
   let productId, productInstanceId, productColorId;
@@ -443,7 +450,7 @@ xdescribe("Post product instances", () => {
   });
 
 });
-xdescribe("Post Product instance inventories", () => {
+describe("Post Product instance inventories", () => {
 
   let brandId, typeId;
   let productId, productInstanceId;
@@ -505,38 +512,7 @@ xdescribe("Post Product instance inventories", () => {
   });
 
 
-  it("should update non existing inventory info for a product instance", function (done) {
-
-    this.done = done;
-    let warehouseId = mongoose.Types.ObjectId();
-    rp({
-      method: 'post',
-      uri: lib.helpers.apiTestURL(`product/instance/inventory`),
-      body: {
-        id: productId,
-        productInstanceId,
-        warehouseId,
-        count: 5
-      },
-      jar: adminObj.jar,
-      json: true,
-      resolveWithFullResponse: true
-    }).then(res => {
-      expect(res.statusCode).toBe(200);
-
-      return models['ProductTest'].find({}).lean();
-
-    }).then(res => {
-      expect(res.length).toBe(1);
-      expect(res[0].instances.length).toBe(1);
-      expect(res[0].instances[0].inventory.length).toBe(1);
-      expect(res[0].instances[0].inventory[0].warehouse_id).toEqual(warehouseId);
-      expect(res[0].instances[0].inventory[0].count).toEqual(5);
-      done();
-
-    })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
+  
   it("should update count for current inventory", function (done) {
 
     this.done = done;
@@ -559,7 +535,8 @@ xdescribe("Post Product instance inventories", () => {
             id: productId,
             productInstanceId,
             warehouseId,
-            count: 6
+            count: 6,
+            price: 200
           },
           jar: adminObj.jar,
           json: true,
@@ -572,6 +549,7 @@ xdescribe("Post Product instance inventories", () => {
       }).then(res => {
         expect(res.length).toBe(1);
         expect(res[0].instances.length).toBe(1);
+        expect(res[0].instances[0].price).toBe(200);
         expect(res[0].instances[0].inventory.length).toBe(1);
         expect(res[0].instances[0].inventory[0].warehouse_id).toEqual(warehouseId);
         expect(res[0].instances[0].inventory[0].count).toEqual(6);
@@ -686,7 +664,7 @@ xdescribe("Post Product instance inventories", () => {
   });
 
 });
-xdescribe("Post Product tags", () => {
+describe("Post Product tags", () => {
 
   let brandId, typeId, tagIds, tagGroupIds;
   let productId;
