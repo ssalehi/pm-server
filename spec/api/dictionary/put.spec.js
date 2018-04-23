@@ -39,7 +39,12 @@ describe('Dictionary PUT', () => {
             method: 'PUT',
             uri: lib.helpers.apiTestURL(`dictionary/${dictionaryId}`),
             body: {
-                name: 'new name ha ha!!'
+                name: 'new name ha ha!!',
+                aaa: 'aaa',
+                bbb: 'bbbb',
+                ccc: 'dddd',
+                ffff: 'sssss',
+                value: '1212112'
             },
             resolveWithFullResponse: true,
             json: true
