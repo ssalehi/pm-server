@@ -4,18 +4,18 @@ const Schema = require('mongoose').Schema;
 inventory_template = {
   warehouse_id: {
     type: Schema.Types.ObjectId,
-    require: true,
+    required: true,
     // unique: true,
     ref: 'Warehouse'
   },
   count: {
     type: Number,
-    require: true,
+    required: true,
     min: 0
   },
   reserved: {
     type: Number,
-    require: true,
+    required: true,
     min: 0,
     default: 0
   }

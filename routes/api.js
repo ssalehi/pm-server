@@ -180,7 +180,8 @@ router.delete('/product/tag/:id/:tagId', apiResponse('Product', 'deleteTag', tru
 
 // product color
 router.post('/product/color', apiResponse('Product', 'setColor', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
-router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId'], [_const.ACCESS_LEVEL.ContentManager]));
+router.delete('/product/color/:id/:colorId', apiResponse('Product', 'removeColor', true, ['params.id', 'params.colorId'], [_const.ACCESS_LEVEL.ContentManager]));
+router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
 
 // product instance
 router.get('/product/instance/:id/:piid', apiResponse('Product', 'getInstance', false, ['params.id', 'params.piid']));
@@ -206,7 +207,15 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   let productStorage = multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
-      cb(null, file.originalname);
+
+      const parts = file.originalname.split('.');
+
+      if (!parts || parts.length !== 2) {
+        cb(new Error('count not read file extension'));
+      }
+      else {
+        cb(null, parts[0] + '-' + Date.now() + '.'+ parts[1]);
+      }
     }
   });
   let productUpload = multer({storage: productStorage});
@@ -217,10 +226,10 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   });
 
 });
-router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setImage', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/product/image/:id/:colorId', apiResponse('Product', 'removeImage', true, ['params.id', 'params.colorId', 'body.angle'], [_const.ACCESS_LEVEL.ContentManager]));
 
-// Product color
-router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
+
 
 
 // Collection
