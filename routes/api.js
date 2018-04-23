@@ -143,7 +143,10 @@ router.get('/productType', apiResponse('ProductType', 'getTypes', false, []));
 router.get('/color', apiResponse('Color', 'getColors', false, []));
 
 // Dictionaries
+router.delete('/dictionary/:dictionaryId', apiResponse('Dictionary', 'removeDictionary', false, ['params.dictionaryId']));
+router.post('/dictionary/:dictionaryId', apiResponse('Dictionary', 'updateDictionary', false, ['params.dictionaryId', 'body']));
 router.get('/dictionary', apiResponse('Dictionary', 'getDictionaries', false, []));
+router.put('/dictionary', apiResponse('Dictionary', 'addDictionary', false, ['body']));
 
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
