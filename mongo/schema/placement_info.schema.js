@@ -35,7 +35,6 @@ let schema_obj = {
     },
   ],
   style: Schema.Types.Mixed,
-
 };
 
 let PlacementInfoSchema = new Schema(schema_obj, {strict: true});

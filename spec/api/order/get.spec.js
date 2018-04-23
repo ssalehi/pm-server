@@ -182,7 +182,7 @@ describe('Get User All Orders', () => {
         used_point: 200,
         used_balance: 400,
         order_time: new Date(),
-        is_collect:false,
+        is_collect: false,
         coupon_code: '123456789',
         order_lines: [{
           tickets: [ticket],
@@ -215,11 +215,11 @@ describe('Get User All Orders', () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
       expect(res.body.orders.length).toBe(2);
-      expect(res.body.orders[0]._id).toEqual(secondOrder.transaction_id.toString());
-      expect(res.body.orders[1]._id).toEqual(firstOrder.transaction_id.toString());
-      expect(res.body.orders[0].order_lines[0].total_amount).toEqual(secondOrder.total_amount);
-      expect(res.body.orders[0].order_lines[0].used_point).toEqual(secondOrder.used_point);
-      expect(res.body.orders[0].order_lines[0].used_balance).toEqual(secondOrder.used_balance);
+      expect(res.body.orders[0].transaction_id).toEqual(secondOrder.transaction_id.toString());
+      expect(res.body.orders[1].transaction_id).toEqual(firstOrder.transaction_id.toString());
+      expect(res.body.orders[0].total_amount).toEqual(secondOrder.total_amount);
+      expect(res.body.orders[0].used_point).toEqual(secondOrder.used_point);
+      expect(res.body.orders[0].used_balance).toEqual(secondOrder.used_balance);
       expect(res.body.orders[0].order_lines[0].product.name).toEqual(products[1].name);
       expect(res.body.orders[1].order_lines[0].product.name).toEqual(products[0].name);
       expect(res.body.orders[1].order_lines[1].product.name).toEqual(products[0].name);

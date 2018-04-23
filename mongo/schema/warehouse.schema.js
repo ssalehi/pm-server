@@ -24,6 +24,12 @@ let schema_obj = {
     type: Boolean,
     required: true,
     default: false
+  },
+  priority: {
+    type: Number,
+    required: true,
+    unique: true,
+    min: 0
   }
 };
 
