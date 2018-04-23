@@ -144,6 +144,7 @@ router.get('/color', apiResponse('Color', 'getColors', false, []));
 
 // Dictionaries
 router.delete('/dictionary/:dictionaryId', apiResponse('Dictionary', 'removeDictionary', false, ['params.dictionaryId']));
+router.put('/dictionary/:dictionaryId', apiResponse('Dictionary', 'updateDictionary', false, ['params.dictionaryId', 'body']));
 router.get('/dictionary', apiResponse('Dictionary', 'getDictionaries', false, []));
 router.post('/dictionary', apiResponse('Dictionary', 'addDictionary', false, ['body']));
 
