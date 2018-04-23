@@ -752,24 +752,24 @@
     },
     {
       "component_name": "slider",
-      "variable_name": "ارسال رایگان در تهران و حومه",
       "start_date": "",
       "end_date": "",
       "info": {
         "column": 0,
         "imgUrl": "assets/cliparts/delivery.png",
+        "text": "ارسال رایگان در تهران و حومه",
         "href": "#"
       },
       "is_finalized": true
     },
     {
       "component_name": "slider",
-      "variable_name": "پس گرفتن جنس خریداری شده تا ۳۰ روز",
       "start_date": "",
       "end_date": "",
       "info": {
         "column": 1,
         "imgUrl": "assets/cliparts/return.png",
+        "text": "پس گرفتن جنس خریداری شده تا ۳۰ روز",
         "href": "#",
         "style": {
           "imgWidth": 30,
@@ -780,12 +780,12 @@
     },
     {
       "component_name": "slider",
-      "variable_name": "تخفیف‌های ویژه و حراج‌های اختصاصی برای اعضاء",
       "start_date": "",
       "end_date": "",
       "info": {
         "column": 2,
         "imgUrl": "assets/cliparts/loyalty.png",
+        "text": "تخفیف‌های ویژه و حراج‌های اختصاصی برای اعضاء",
         "href": "#"
       },
       "is_finalized": true
