@@ -375,7 +375,6 @@
   "home": [
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Nike",
         "href": "nike",
@@ -389,7 +388,6 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Converse",
         "href": "converse",
@@ -406,7 +404,6 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Nike Jordan",
         "href": "nike_jordan",
@@ -422,7 +419,6 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "column": 4,
         "text": "Hurley",
@@ -437,7 +433,6 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "The North Face",
         "href": "north_face",
@@ -454,7 +449,6 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Timberland",
         "href": "timberland",
@@ -470,7 +464,6 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Polo Ralph Lauren",
         "href": "poloralph",
@@ -487,7 +480,6 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "ASICS",
         "href": "asics",
@@ -503,7 +495,6 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Adidas",
         "href": "adidas",
@@ -518,7 +509,6 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Puma",
         "href": "puma",
@@ -529,7 +519,6 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Tommy Hilfiger",
         "href": "hilfiger",
@@ -1471,7 +1460,6 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Nike",
         "href": "nike",
