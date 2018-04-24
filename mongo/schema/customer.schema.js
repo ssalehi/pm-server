@@ -1,5 +1,6 @@
 const Schema = require('mongoose').Schema;
 const addressSchema = require('./address.schema');
+const wishListSchema = require('./wish_list.schema');
 
 let schema_obj = {
   first_name: {
@@ -53,10 +54,11 @@ let schema_obj = {
     default: false,
   },
   preferred_brands: [{type: Schema.Types.ObjectId, ref: 'Brand'}],
-  wish_list: [Schema.Types.ObjectId],
+  // wish_list: [Schema.Types.ObjectId],
+  wish_list: [wishListSchema],
   preferred_tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
   orders: [{type: Schema.Types.ObjectId, ref: 'Order'}],
-  addresses:[addressSchema],
+  addresses: [addressSchema],
   active: { // weather user can system or not
     type: Boolean,
     default: true,
