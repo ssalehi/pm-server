@@ -19,7 +19,7 @@ let storage = multer.diskStorage({
     cb(null, [req.params.username || req.user.username, file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
   }
 });
-let upload = multer({ storage: storage });
+let upload = multer({storage: storage});
 
 function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], accessLevels) {
   let args = Array.prototype.slice.call(arguments, 5);
@@ -99,7 +99,7 @@ router.get('/agent/validUser', apiResponse('Person', 'afterLogin', false, ['user
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
-router.get('/login/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email'] }));
+router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
 router.get('/login/google/callback', passport.authenticate('google', {
   successRedirect: '/login/oauth',
   failureRedirect: '/login/oauth'
@@ -143,7 +143,10 @@ router.get('/productType', apiResponse('ProductType', 'getTypes', false, []));
 router.get('/color', apiResponse('Color', 'getColors', false, []));
 
 // Dictionaries
+router.delete('/dictionary/:dictionaryId', apiResponse('Dictionary', 'removeDictionary', false, ['params.dictionaryId']));
+router.post('/dictionary/:dictionaryId', apiResponse('Dictionary', 'updateDictionary', false, ['params.dictionaryId', 'body']));
 router.get('/dictionary', apiResponse('Dictionary', 'getDictionaries', false, []));
+router.put('/dictionary', apiResponse('Dictionary', 'addDictionary', false, ['body']));
 
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
@@ -176,7 +179,8 @@ router.delete('/product/tag/:id/:tagId', apiResponse('Product', 'deleteTag', tru
 
 // product color
 router.post('/product/color', apiResponse('Product', 'setColor', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
-router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId'], [_const.ACCESS_LEVEL.ContentManager]));
+router.delete('/product/color/:id/:colorId', apiResponse('Product', 'removeColor', true, ['params.id', 'params.colorId'], [_const.ACCESS_LEVEL.ContentManager]));
+router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
 
 // product instance
 router.get('/product/instance/:id/:piid', apiResponse('Product', 'getInstance', false, ['params.id', 'params.piid']));
@@ -202,10 +206,18 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   let productStorage = multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
-      cb(null, file.originalname);
+
+      const parts = file.originalname.split('.');
+
+      if (!parts || parts.length !== 2) {
+        cb(new Error('count not read file extension'));
+      }
+      else {
+        cb(null, parts[0] + '-' + Date.now() + '.'+ parts[1]);
+      }
     }
   });
-  let productUpload = multer({ storage: productStorage });
+  let productUpload = multer({storage: productStorage});
 
   productUpload.single('file')(req, res, err => {
     if (!err)
@@ -213,10 +225,10 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   });
 
 });
-router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setImage', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/product/image/:id/:colorId', apiResponse('Product', 'removeImage', true, ['params.id', 'params.colorId', 'body.angle'], [_const.ACCESS_LEVEL.ContentManager]));
 
-// Product color
-router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
+
 
 
 // Collection
@@ -269,7 +281,7 @@ router.use('/uploadData', function (req, res, next) {
       cb(null, file.originalname);
     }
   });
-  let productUpload = multer({ storage: productStorage });
+  let productUpload = multer({storage: productStorage});
 
   productUpload.single('file')(req, res, err => {
     if (!err)
@@ -315,7 +327,7 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
     }
   });
 
-  let placementUpload = multer({ storage: placementStorage });
+  let placementUpload = multer({storage: placementStorage});
   placementUpload.single('file')(req, res, err => {
     if (!err) {
       next();
