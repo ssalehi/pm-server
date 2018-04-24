@@ -375,9 +375,9 @@
   "home": [
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Nike",
+        "href": "nike",
         "column": 1,
         "imgUrl": "nike.png",
         "style": {
@@ -388,9 +388,9 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Converse",
+        "href": "converse",
         "column": 2,
         "imgUrl": "converse.png",
         "style": {
@@ -404,9 +404,9 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Nike Jordan",
+        "href": "nike_jordan",
         "column": 3,
         "imgUrl": "nike-jordan.png",
         "style": {
@@ -419,10 +419,10 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "column": 4,
         "text": "Hurley",
+        "href": "hurley",
         "imgUrl": "Hurley.png",
         "style": {
           "height": 45,
@@ -433,9 +433,9 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "The North Face",
+        "href": "north_face",
         "column": 5,
         "imgUrl": "thenorthface.png",
         "style": {
@@ -449,9 +449,9 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Timberland",
+        "href": "timberland",
         "column": 6,
         "imgUrl": "timberland.png",
         "style": {
@@ -464,9 +464,9 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Polo Ralph Lauren",
+        "href": "poloralph",
         "column": 7,
         "imgUrl": "Polo-Ralph-Lauren-Clean.png",
         "style": {
@@ -480,9 +480,9 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "ASICS",
+        "href": "asics",
         "column": 8,
         "imgUrl": "store-logo-asics.png",
         "style": {
@@ -495,9 +495,9 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Adidas",
+        "href": "adidas",
         "column": 9,
         "imgUrl": "adidas.png",
         "style": {
@@ -509,9 +509,9 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Puma",
+        "href": "puma",
         "column": 10,
         "imgUrl": "puma.png"
       },
@@ -519,9 +519,9 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Tommy Hilfiger",
+        "href": "hilfiger",
         "column": 11,
         "imgUrl": "tommyhilfiger.png",
         "style": {
@@ -767,9 +767,9 @@
       "start_date": "",
       "end_date": "",
       "info": {
+        "text": "پس گرفتن جنس خریداری شده تا ۳۰ روز",
         "column": 1,
         "imgUrl": "assets/cliparts/return.png",
-        "text": "پس گرفتن جنس خریداری شده تا ۳۰ روز",
         "href": "#",
         "style": {
           "imgWidth": 30,
@@ -783,9 +783,9 @@
       "start_date": "",
       "end_date": "",
       "info": {
+        "text": "تخفیف‌های ویژه و حراج‌های اختصاصی برای اعضاء",
         "column": 2,
         "imgUrl": "assets/cliparts/loyalty.png",
-        "text": "تخفیف‌های ویژه و حراج‌های اختصاصی برای اعضاء",
         "href": "#"
       },
       "is_finalized": true
@@ -1460,9 +1460,9 @@
     },
     {
       "component_name": "logos",
-      "variable_name": "",
       "info": {
         "text": "Nike",
+        "href": "nike",
         "column": 1,
         "imgUrl": "nike.png",
         "style": {
