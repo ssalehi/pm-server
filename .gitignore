@@ -46,3 +46,6 @@ docker-compose.yml
 
 # data folder
 /data
+
+# dump
+dump.rdb
