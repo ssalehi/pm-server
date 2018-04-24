@@ -763,20 +763,18 @@
     },
     {
       "component_name": "slider",
-      "variable_name": "slider",
       "start_date": "",
       "end_date": "",
       "info": {
-        "text": "ارسال رایگان در تهران و حومه",
         "column": 0,
         "imgUrl": "assets/cliparts/delivery.png",
+        "text": "ارسال رایگان در تهران و حومه",
         "href": "#"
       },
       "is_finalized": true
     },
     {
       "component_name": "slider",
-      "variable_name": "slider",
       "start_date": "",
       "end_date": "",
       "info": {
@@ -793,7 +791,6 @@
     },
     {
       "component_name": "slider",
-      "variable_name": "slider",
       "start_date": "",
       "end_date": "",
       "info": {
@@ -1206,6 +1203,250 @@
         "text": "پسرانه",
         "section": "boys",
         "href": "collection/boys"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 1,
+        "column": 1,
+        "text": "کارت های هدیه",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 2,
+        "column": 1,
+        "text": "تخفیف های دانش آموزی",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 3,
+        "column": 1,
+        "text": "آدرس شعبه ها",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 4,
+        "column": 1,
+        "text": "عضو شوید",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 5,
+        "column": 1,
+        "text": "فیدبک های اعضا",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 1,
+        "column": 2,
+        "text": "سوالات متداول",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 2,
+        "column": 2,
+        "text": "وضعیت سفارش",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 3,
+        "column": 2,
+        "text": "خرید و دریافت",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 4,
+        "column": 2,
+        "text": "بازگرداندن کالا",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": true,
+        "row": 5,
+        "column": 2,
+        "text": "آپشن های پرداخت",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 6,
+        "column": 2,
+        "text": "تماس با ما",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 1,
+        "column": 3,
+        "text": "درباره پرشین مد",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 2,
+        "column": 3,
+        "text": "اخبار",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 3,
+        "column": 3,
+        "text": "حرفه ای ها",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 4,
+        "column": 3,
+        "text": "تالار گفتگو",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 5,
+        "column": 3,
+        "text": "حامیان",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "site_link",
+      "info": {
+        "is_header": false,
+        "row": 6,
+        "column": 3,
+        "text": "ایده های نو",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "social_link",
+      "info": {
+        "column": 1,
+        "text": "fa fa-twitter-square",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "social_link",
+      "info": {
+        "column": 2,
+        "text": "fa fa-facebook-square",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "social_link",
+      "info": {
+        "column": 3,
+        "text": "fa fa-linkedin-square",
+        "href": "#"
+      },
+      "is_finalized": true
+    },
+    {
+      "component_name": "footer",
+      "variable_name": "social_link",
+      "info": {
+        "column": 4,
+        "text": "fa fa-instagram",
+        "href": "#"
       },
       "is_finalized": true
     }
