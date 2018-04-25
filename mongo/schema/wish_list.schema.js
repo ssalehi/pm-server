@@ -17,7 +17,7 @@ let schema_obj = {
   }
 };
 
-let wishListSchema = new Schema(schema_obj, {strict: true});
+let wishListItemSchema = new Schema(schema_obj, {strict: true});
 
 
-module.exports = wishListSchema;
+module.exports = wishListItemSchema;
