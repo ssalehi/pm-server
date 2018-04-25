@@ -159,9 +159,11 @@ router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', fa
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
-router.post('/order/ticket/:type', apiResponse('Order', 'setTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/ticket/offline/requestInvoice', apiResponse('Order', 'resendInvoiceRequest', true, ['body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/ticket/offline/verifyInvoice', apiResponse('Order', 'verifyInvoice', false, ['body']));
+router.post('/order/ticket/:type', apiResponse('Order', 'setManualTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+
+// api's used by offline system
+router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
+router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
