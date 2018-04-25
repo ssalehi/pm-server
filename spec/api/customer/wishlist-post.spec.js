@@ -27,11 +27,19 @@ describe('Set Wish-List', () => {
     mongoose.Types.ObjectId(),
     mongoose.Types.ObjectId()
   ];
+  let productColorId = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId()
+  ]
 
   let type1, brand1;
+  let colorArr = [];
   let productArr = [];
 
   beforeEach(done => {
+    productArr = [];
+    colorArr = [];
     lib.dbHelpers.dropAll()
       .then(res => {
         return lib.dbHelpers.addAndLoginCustomer('s@s.com', '123456', {first_name: 'Sareh', surname: 'Salehi'})
@@ -55,6 +63,18 @@ describe('Set Wish-List', () => {
         });
         return Promise.all([type1.save(), brand1.save()]);
       })
+      .then((res) => {
+        colorArr.push(models['ColorTest']({
+          name: 'testColor1'
+        }));
+        colorArr.push(models['ColorTest']({
+          name: 'testColor2'
+        }));
+        colorArr.push(models['ColorTest']({
+          name: 'testColor3'
+        }));
+        return Promise.all([colorArr[0].save(), colorArr[1].save(), colorArr[2].save()]);
+      })
       .then(res => {
         productArr.push(models['ProductTest']({
           _id: productIds[0],
@@ -68,18 +88,30 @@ describe('Set Wish-List', () => {
             brand_id: brand1._id
           },
           base_price: 38000,
+          colors: [
+            {
+              _id: productColorId[0],
+              color_id: colorArr[0]._id,
+              name: colorArr[0].name,
+            },
+            {
+              _id: productColorId[1],
+              color_id: colorArr[1]._id,
+              name: colorArr[1].name,
+            }
+          ],
           desc: 'this is a test description for testProductName1',
           instances: [
             {
               _id: productInstanceIds[0],
-              product_color_id: mongoose.Types.ObjectId(),
+              product_color_id: productColorId[0],
               size: "10.5",
               price: 35000,
               barcode: '123123123123'
             },
             {
               _id: productInstanceIds[1],
-              product_color_id: mongoose.Types.ObjectId(),
+              product_color_id: productColorId[0],
               size: "11.5",
               barcode: '123123123124'
             }
@@ -119,9 +151,8 @@ describe('Set Wish-List', () => {
       });
   }); // now I have 2 customers, 2 products
 
-  xit('should add a product to valid customer wish-list(wishlist is empty)', function (done) {
+  it('should add a product to valid customer wish-list(wishlist is empty)', function (done) {
     this.done = done;
-
     rp({
       method: 'POST',
       uri: lib.helpers.apiTestURL('wishlist'),
@@ -137,7 +168,7 @@ describe('Set Wish-List', () => {
         expect(res.statusCode).toBe(200);
         return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
       })
-      .then( res => {
+      .then(res => {
         expect(res.wish_list.length).toBe(1);
         expect(res.wish_list[0].product_id).toEqual(productIds[0]);
         expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[0]);
@@ -147,7 +178,7 @@ describe('Set Wish-List', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('should not be able to add a product to customer wishlist that has been added before', function (done) {
+  it('should not be able to add a product to customer wishlist that has been added before', function (done) {
     this.done = done;
 
     rp({
@@ -165,7 +196,7 @@ describe('Set Wish-List', () => {
         expect(res.statusCode).toBe(200);
         return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj2.cid)}).lean()
       })
-      .then( res => {
+      .then(res => {
         expect(res.wish_list.length).toBe(1);
         expect(res.wish_list[0].product_id).toEqual(productIds[0]);
         expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[1]);
@@ -210,7 +241,7 @@ describe('Set Wish-List', () => {
         expect(res.statusCode).toBe(200);
         return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
       })
-      .then( res => {
+      .then(res => {
         expect(res.wish_list.length).toBe(1);
         expect(res.wish_list[0].product_id).toEqual(productIds[0]);
         expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[1]);
@@ -218,8 +249,8 @@ describe('Set Wish-List', () => {
           method: 'POST',
           uri: lib.helpers.apiTestURL('wishlist'),
           body: {
-            product_id: productIds[1],
-            product_instance_id: productInstanceIds[2],
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
           },
           jar: customerObj.jar,
           json: true,
@@ -233,7 +264,7 @@ describe('Set Wish-List', () => {
       .then(res => {
         expect(res.wish_list.length).toBe(2);
         expect(res.wish_list[0].product_id).toEqual(productIds[0]);
-        expect(res.wish_list[1].product_instance_id).toEqual(productInstanceIds[2]);
+        expect(res.wish_list[1].product_instance_id).toEqual(productInstanceIds[0]);
         done();
       })
       .catch(err => {
