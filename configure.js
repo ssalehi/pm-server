@@ -8,6 +8,8 @@ const env = require('./env');
 const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
 const mongoose = require('mongoose');
+const copydir = require('copy-dir');
+
 
 SALT_WORK_FACTOR = 10;
 let PLACEMENTS = null;
@@ -17,6 +19,9 @@ let _hash;
 
 db.dbIsReady()
   .then(() => {
+
+    copydir.sync('assets', 'public/assets');
+    console.log('-> ', 'here');
     return models['Warehouse'].find().lean();
   })
   .then(res => {
