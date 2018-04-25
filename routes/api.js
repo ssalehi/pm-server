@@ -202,6 +202,7 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   else
     destination = env.uploadProductImagePath + path.sep + req.params.id + path.sep + req.params.colorId;
 
+
   let productStorage = multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
@@ -209,10 +210,11 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
       const parts = file.originalname.split('.');
 
       if (!parts || parts.length !== 2) {
+
         cb(new Error('count not read file extension'));
       }
       else {
-        cb(null, parts[0] + '-' + Date.now() + '.'+ parts[1]);
+        cb(null, parts[0] + '-' + Date.now() + '.' + parts[1]);
       }
     }
   });
@@ -274,18 +276,23 @@ router.use('/uploadData', function (req, res, next) {
   else
     destination = env.uploadExcelPath + fileName;
 
-  let productStorage = multer.diskStorage({
-    destination,
-    filename: (req, file, cb) => {
-      cb(null, file.originalname);
-    }
-  });
-  let productUpload = multer({storage: productStorage});
+  const rmPromise = require('rimraf-promise');
+  rmPromise(env.uploadExcelPath)
+    .then(res => {
+      let productStorage = multer.diskStorage({
+        destination,
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        }
+      });
+      let productUpload = multer({storage: productStorage});
 
-  productUpload.single('file')(req, res, err => {
-    if (!err)
-      next()
-  });
+      productUpload.single('file')(req, res, err => {
+        if (!err)
+          next()
+      });
+    }).catch(err => {
+    });
 
 });
 
