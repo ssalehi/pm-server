@@ -533,7 +533,7 @@
         "column": 1,
         "areas": [
           {
-            "pos": "left-center",
+            "pos": "right-center",
             "title": "کاملا گرم",
             "text": "محصولات پشمی مناسب زمستان",
             "buttonText": "خرید آنلاین",
@@ -559,9 +559,9 @@
         "column": 2,
         "areas": [
           {
-            "pos": "right-center",
+            "pos": "left-center",
             "title": "زمان درخشیدن توست!",
-            "text": "نایک، حامی تیم ملی در طول بازیها",
+            "text": "نایک، حامی تیم ملی در طول بازی ها",
             "buttonText": "خرید آنلاین",
             "titleColor": "#ffffff",
             "textColor": "#ffffff",
@@ -1346,62 +1346,6 @@
       "info": {
         "column": 4,
         "text": "fa fa-instagram",
-        "href": "#"
-      },
-      "is_finalized": true
-    }
-  ],
-  "collection/men": [
-    {
-      "component_name": "main",
-      "info": {
-        "panel_type": "full",
-        "imgUrl": "/assets/pictures/men/react.png",
-        "href": "#",
-        "areas": [
-          {
-            "pos": "left-center",
-            "title": "مجموعه ری‌اکت",
-            "text": "حرکت رو به جلو ...",
-            "titleColor": "#230ec4"
-          }
-        ]
-      },
-      "is_finalized": true
-    },
-    {
-      "component_name": "logos",
-      "info": {
-        "text": "Nike",
-        "href": "nike",
-        "column": 1,
-        "imgUrl": "assets/logos/nike.png",
-        "style": {
-          "width": 60
-        }
-      },
-      "is_finalized": true
-    },
-    {
-      "component_name": "menu",
-      "variable_name": "topMenu",
-      "start_date": "",
-      "end_date": "",
-      "info": {
-        "text": "مردانه",
-        "section": "men",
-        "href": "collection/men"
-      },
-      "is_finalized": true
-    },
-    {
-      "component_name": "menu",
-      "variable_name": "subMenu",
-      "info": {
-        "section": "men/middle",
-        "column": 2,
-        "row": 3,
-        "text": "پیراهن‌های Polo",
         "href": "#"
       },
       "is_finalized": true
