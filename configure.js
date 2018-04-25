@@ -8,6 +8,8 @@ const env = require('./env');
 const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
 const mongoose = require('mongoose');
+const copydir = require('copy-dir');
+
 
 SALT_WORK_FACTOR = 10;
 let PLACEMENTS = null;
@@ -17,6 +19,9 @@ let _hash;
 
 db.dbIsReady()
   .then(() => {
+
+    copydir.sync('assets', 'public/assets');
+    console.log('-> ', 'here');
     return models['Warehouse'].find().lean();
   })
   .then(res => {
@@ -104,14 +109,14 @@ db.dbIsReady()
         username: 'admin@persianmode.com',
         secret: _hash,
         access_level: _const.ACCESS_LEVEL.ContentManager,
-        first_name: 'ContentManager',
-        surname: 'ContentManager',
+        first_name: 'Content',
+        surname: 'Manager',
       }, {
         username: 'sm@persianmode.com',
         secret: _hash,
         access_level: _const.ACCESS_LEVEL.SalesManager,
-        first_name: 'Sales Manager',
-        surname: 'Sales Manager',
+        first_name: 'Sales',
+        surname: 'Manager',
       }];
 
       return models['Agent'].insertMany(agents);

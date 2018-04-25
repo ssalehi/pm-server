@@ -2,8 +2,6 @@ const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
-const moment = require('moment');
-const mongoose = require('mongoose');
 
 describe('Set Address', () => {
   let customerObj = {};

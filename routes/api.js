@@ -168,6 +168,9 @@ router.post('/order/ticket/:type', apiResponse('Order', 'setManualTicket', true,
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
 router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
 
+// Wish List
+router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
+
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
 router.put('/product', apiResponse('Product', 'setProduct', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
@@ -205,6 +208,7 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   else
     destination = env.uploadProductImagePath + path.sep + req.params.id + path.sep + req.params.colorId;
 
+
   let productStorage = multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
@@ -212,10 +216,11 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
       const parts = file.originalname.split('.');
 
       if (!parts || parts.length !== 2) {
+
         cb(new Error('count not read file extension'));
       }
       else {
-        cb(null, parts[0] + '-' + Date.now() + '.'+ parts[1]);
+        cb(null, parts[0] + '-' + Date.now() + '.' + parts[1]);
       }
     }
   });
@@ -229,8 +234,6 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
 });
 router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setImage', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product/image/:id/:colorId', apiResponse('Product', 'removeImage', true, ['params.id', 'params.colorId', 'body.angle'], [_const.ACCESS_LEVEL.ContentManager]));
-
-
 
 
 // Collection
@@ -277,18 +280,23 @@ router.use('/uploadData', function (req, res, next) {
   else
     destination = env.uploadExcelPath + fileName;
 
-  let productStorage = multer.diskStorage({
-    destination,
-    filename: (req, file, cb) => {
-      cb(null, file.originalname);
-    }
-  });
-  let productUpload = multer({storage: productStorage});
+  const rmPromise = require('rimraf-promise');
+  rmPromise(env.uploadExcelPath)
+    .then(res => {
+      let productStorage = multer.diskStorage({
+        destination,
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        }
+      });
+      let productUpload = multer({storage: productStorage});
 
-  productUpload.single('file')(req, res, err => {
-    if (!err)
-      next()
-  });
+      productUpload.single('file')(req, res, err => {
+        if (!err)
+          next()
+      });
+    }).catch(err => {
+    });
 
 });
 
