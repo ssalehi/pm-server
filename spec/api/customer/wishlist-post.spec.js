@@ -30,8 +30,6 @@ describe('Set Wish-List', () => {
 
   let type1, brand1;
   let productArr = [];
-  let existingOrderId;
-  let existingOrderForSecondCustomer;
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
@@ -113,34 +111,6 @@ describe('Set Wish-List', () => {
         return Promise.all([productArr[0].save(), productArr[1].save()]);
       })
       .then(res => {
-        existingOrderForSecondCustomer = {
-          customer_id: customerObj2.cid,
-          total_amount: 120000,
-          order_time: new Date(),
-          address: {
-            city: 'Tehran',
-            street: 'Valiasr',
-            province: 'Tehran',
-            recipient_title: 'm',
-            recipient_name: 'Sasan',
-            recipient_surname: 'Vaziri',
-            recipient_national_id: '123321',
-            recipient_mobile_no: '091212121212',
-            unit: 13,
-            no: 18,
-            postal_code: 13445,
-            loc: {long: 2345, lat: 3445}
-          },
-          is_cart: true,
-          order_lines: [{
-            product_id: productIds[0],
-            product_instance_id: productInstanceIds[0]
-          }]
-        };
-        return models['OrderTest'].insertMany([existingOrderForSecondCustomer]);
-      })
-      .then(res => {
-        existingOrderId = res[0]._id;
         done();
       })
       .catch(err => {
@@ -220,7 +190,52 @@ describe('Set Wish-List', () => {
         expect(err.error).toBe(error.duplicateWishListItem.message);
         done();
       });
+  });
 
+  it('should add a product to customer wishlist and another one after it', function (done) {
+    this.done = done;
+
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL('wishlist'),
+      body: {
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[1],
+      },
+      jar: customerObj.jar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
+      })
+      .then( res => {
+        expect(res.wish_list.length).toBe(1);
+        expect(res.wish_list[0].product_id).toEqual(productIds[0]);
+        expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[1]);
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL('wishlist'),
+          body: {
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
+          },
+          jar: customerObj.jar,
+          json: true,
+          resolveWithFullResponse: true
+        })
+      })
+      .then(res => {
+        expect(res.wish_list.length).toBe(2);
+        expect(res.wish_list[0].product_id).toEqual(productIds[0]);
+        expect(res.wish_list[1].product_instance_id).toEqual(productInstanceIds[0]);
+        done();
+      })
+      .catch(err => {
+        console.log(err.message);
+        done();
+      });
   })
 
 });
