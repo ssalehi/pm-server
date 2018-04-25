@@ -162,9 +162,11 @@ router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', fa
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
-router.post('/order/ticket/:type', apiResponse('Order', 'setTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/ticket/offline/requestInvoice', apiResponse('Order', 'resendInvoiceRequest', true, ['body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/ticket/offline/verifyInvoice', apiResponse('Order', 'verifyInvoice', false, ['body']));
+router.post('/order/ticket/:type', apiResponse('Order', 'setManualTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+
+// api's used by offline system
+router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
+router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
 
 // Wish List
 router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
@@ -216,7 +218,7 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
         cb(new Error('count not read file extension'));
       }
       else {
-        cb(null, parts[0] + '-' + Date.now() + '.'+ parts[1]);
+        cb(null, parts[0] + '-' + Date.now() + '.' + parts[1]);
       }
     }
   });
@@ -230,8 +232,6 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
 });
 router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setImage', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product/image/:id/:colorId', apiResponse('Product', 'removeImage', true, ['params.id', 'params.colorId', 'body.angle'], [_const.ACCESS_LEVEL.ContentManager]));
-
-
 
 
 // Collection

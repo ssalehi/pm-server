@@ -104,14 +104,14 @@ db.dbIsReady()
         username: 'admin@persianmode.com',
         secret: _hash,
         access_level: _const.ACCESS_LEVEL.ContentManager,
-        first_name: 'ContentManager',
-        surname: 'ContentManager',
+        first_name: 'Content',
+        surname: 'Manager',
       }, {
         username: 'sm@persianmode.com',
         secret: _hash,
         access_level: _const.ACCESS_LEVEL.SalesManager,
-        first_name: 'Sales Manager',
-        surname: 'Sales Manager',
+        first_name: 'Sales',
+        surname: 'Manager',
       }];
 
       return models['Agent'].insertMany(agents);
