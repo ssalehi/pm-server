@@ -1,7 +1,7 @@
 FROM node:carbon
 
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR /src/app
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
