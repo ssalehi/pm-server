@@ -195,8 +195,8 @@ describe("Post product colors & images", () => {
       ).then(res => {
         expect(res.statusCode).toBe(200);
         let result = JSON.parse(res.body);
-        expect(result.uploaded).toContain('test1');
-        expect(result.uploaded).toContain('jpeg');
+        expect(result.downloadURL).toContain('test1');
+        expect(result.downloadURL).toContain('jpeg');
         return models['ProductTest'].find({}).lean();
 
       }).then(res => {
@@ -253,9 +253,9 @@ describe("Post product colors & images", () => {
       ).then(res => {
         expect(res.statusCode).toBe(200);
         let result = JSON.parse(res.body);
-        expect(result.uploaded).toContain('test2');
-        expect(result.uploaded).toContain('jpeg');
-        expect(result.uploaded).toContain('-');
+        expect(result.downloadURL).toContain('test2');
+        expect(result.downloadURL).toContain('jpeg');
+        expect(result.downloadURL).toContain('-');
         return models['ProductTest'].find({}).lean();
 
       }).then(res => {
