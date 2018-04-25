@@ -117,7 +117,7 @@ describe('Set Wish-List', () => {
         console.log(err.statusCode);
         done();
       });
-  }); // now I have 2 customers, 2 products, and one existing order for a customer
+  }); // now I have 2 customers, 2 products
 
   it('should add a product to valid customer wish-list(wishlist is empty)', function (done) {
     this.done = done;
