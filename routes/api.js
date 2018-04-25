@@ -215,7 +215,7 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
         cb(new Error('count not read file extension'));
       }
       else {
-        cb(null, parts[0] + '-' + Date.now() + '.'+ parts[1]);
+        cb(null, parts[0] + '-' + Date.now() + '.' + parts[1]);
       }
     }
   });
@@ -229,8 +229,6 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
 });
 router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setImage', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product/image/:id/:colorId', apiResponse('Product', 'removeImage', true, ['params.id', 'params.colorId', 'body.angle'], [_const.ACCESS_LEVEL.ContentManager]));
-
-
 
 
 // Collection
