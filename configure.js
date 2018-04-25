@@ -21,51 +21,58 @@ db.dbIsReady()
   })
   .then(res => {
     if (!res || res.length === 0) {
-      let warehouses = [{
-        _id: mongoose.Types.ObjectId(),
-        name: 'سانا',
-        phone: '021 7443 8111',
-        has_customer_pickup: true,
-        address: {
-          province: 'تهران',
-          city: 'تهران',
-          street: 'اندرزگو',
-          province: 'تهران'
-        }
-      }, {
-        _id: mongoose.Types.ObjectId(),
-        name: 'ایران مال',
-        phone: 'نا مشخص',
-        has_customer_pickup: true,
-        address: {
-          province: 'تهران',
-          city: 'تهران',
-          street: 'اتوبان خرازی',
-          province: 'تهران'          
-        }
-      }, {
-        _id: mongoose.Types.ObjectId(),
-        name: 'پالادیوم',
-        phone: ' 021 2201 0600',
-        has_customer_pickup: true,
-        address: {
-          province: 'تهران',
-          city: 'تهران',
-          street: 'مقدس اردبیلی',
-          province: 'تهران'          
-        }
-      }, {
-        _id: mongoose.Types.ObjectId(),
-        name: 'انبار مرکزی',
-        phone: 'نا مشخص',
-        address: {
-          province: 'تهران',
-          city: 'تهران',
-          street: 'نامشخص',
-          province: 'تهران'          
+      let warehouses = [
+        {
+          _id: mongoose.Types.ObjectId(),
+          name: 'انبار مرکزی',
+          phone: 'نا مشخص',
+          address: {
+            city: 'تهران',
+            street: 'نامشخص',
+            province: 'تهران'
+          },
+          is_center: true,
+          priority: 0,
+
         },
-        is_center: true
-      }];
+        {
+          _id: mongoose.Types.ObjectId(),
+          name: 'پالادیوم',
+          phone: ' 021 2201 0600',
+          has_customer_pickup: true,
+          address: {
+            city: 'تهران',
+            street: 'مقدس اردبیلی',
+            province: 'تهران'
+          },
+          priority: 1,
+
+        },
+        {
+          _id: mongoose.Types.ObjectId(),
+          name: 'سانا',
+          phone: '021 7443 8111',
+          has_customer_pickup: true,
+          address: {
+            province: 'تهران',
+            city: 'تهران',
+            street: 'اندرزگو',
+          },
+          priority: 2,
+        },
+        {
+          _id: mongoose.Types.ObjectId(),
+          name: 'ایران مال',
+          phone: 'نا مشخص',
+          has_customer_pickup: true,
+          address: {
+            province: 'تهران',
+            city: 'تهران',
+            street: 'اتوبان خرازی',
+          },
+          priority: 3,
+        }
+      ];
 
       return models['Warehouse'].insertMany(warehouses);
     }
@@ -97,14 +104,14 @@ db.dbIsReady()
         username: 'admin@persianmode.com',
         secret: _hash,
         access_level: _const.ACCESS_LEVEL.ContentManager,
-        first_name: 'ContentManager',
-        surname: 'ContentManager',
+        first_name: 'Content',
+        surname: 'Manager',
       }, {
         username: 'sm@persianmode.com',
         secret: _hash,
         access_level: _const.ACCESS_LEVEL.SalesManager,
-        first_name: 'Sales Manager',
-        surname: 'Sales Manager',
+        first_name: 'Sales',
+        surname: 'Manager',
       }];
 
       return models['Agent'].insertMany(agents);

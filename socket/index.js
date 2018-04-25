@@ -78,13 +78,19 @@ let setGroup = (ns) => {
  */
 let sendToNS = (ns, message) => {
 
-  if(!message.type || !message.data)
+  if (!message.type || !message.data)
     return Promise.reject(error.invalidSocketMessageType);
 
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      groups[ns].emit('msg', message);
-      resolve();
+
+      if (groups[ns]) {
+        groups[ns].emit('msg', message);
+        resolve();
+      } else {
+        console.log('-> ', `${ns} is not in namespaces`);
+        reject(new Error(`${ns} is not in namespaces`));
+      }
     }, 0)
   })
 

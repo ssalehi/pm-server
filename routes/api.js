@@ -7,11 +7,11 @@ const env = require('../env');
 const path = require('path');
 const app = require('../app');
 const multer = require('multer');
-const mongoose = require('mongoose');
 const personModel = require('../lib/person.model');
 const fs = require('fs');
 const _const = require('../lib/const.list');
-
+const mongoose = require('mongoose');
+const model = require('../mongo/models.mongo');
 
 let storage = multer.diskStorage({
   destination: env.uploadPath + path.sep,
@@ -33,7 +33,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
         } else {
           let err = new Error(`Bad request: request.${pathStr} is not found at '${path[i - 1]}'`);
           err.status = 400;
-          throw(err);
+          throw (err);
         }
       }
       obj = obj[(path[i][0] === '?') ? path[i].substring(1) : path[i]];
@@ -143,7 +143,10 @@ router.get('/productType', apiResponse('ProductType', 'getTypes', false, []));
 router.get('/color', apiResponse('Color', 'getColors', false, []));
 
 // Dictionaries
+router.delete('/dictionary/:dictionaryId', apiResponse('Dictionary', 'removeDictionary', false, ['params.dictionaryId']));
+router.post('/dictionary/:dictionaryId', apiResponse('Dictionary', 'updateDictionary', false, ['params.dictionaryId', 'body']));
 router.get('/dictionary', apiResponse('Dictionary', 'getDictionaries', false, []));
+router.put('/dictionary', apiResponse('Dictionary', 'addDictionary', false, ['body']));
 
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
@@ -159,9 +162,15 @@ router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', fa
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
-router.post('/order/ticket/:type', apiResponse('Order', 'setTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/ticket/offline/requestInvoice', apiResponse('Order', 'resendInvoiceRequest', true, ['body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/ticket/offline/verifyInvoice', apiResponse('Order', 'verifyInvoice', false, ['body']));
+router.post('/order/ticket/:type', apiResponse('Order', 'setManualTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+
+// api's used by offline system
+router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
+router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
+
+// Wish List
+router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
+router.get('/wishlist', apiResponse('Customer', 'getWishListItems', false, ['user']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
@@ -176,7 +185,8 @@ router.delete('/product/tag/:id/:tagId', apiResponse('Product', 'deleteTag', tru
 
 // product color
 router.post('/product/color', apiResponse('Product', 'setColor', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
-router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId'], [_const.ACCESS_LEVEL.ContentManager]));
+router.delete('/product/color/:id/:colorId', apiResponse('Product', 'removeColor', true, ['params.id', 'params.colorId'], [_const.ACCESS_LEVEL.ContentManager]));
+router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
 
 // product instance
 router.get('/product/instance/:id/:piid', apiResponse('Product', 'getInstance', false, ['params.id', 'params.piid']));
@@ -202,7 +212,15 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   let productStorage = multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
-      cb(null, file.originalname);
+
+      const parts = file.originalname.split('.');
+
+      if (!parts || parts.length !== 2) {
+        cb(new Error('count not read file extension'));
+      }
+      else {
+        cb(null, parts[0] + '-' + Date.now() + '.' + parts[1]);
+      }
     }
   });
   let productUpload = multer({storage: productStorage});
@@ -213,10 +231,8 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   });
 
 });
-router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
-
-// Product color
-router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
+router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setImage', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/product/image/:id/:colorId', apiResponse('Product', 'removeImage', true, ['params.id', 'params.colorId', 'body.angle'], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 // Collection
@@ -299,9 +315,14 @@ router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body']
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
-router.use('/placement/image/:pageId/:placementId', (req, res, next) => {
-  let destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
-    + path.sep + req.params.pageId + path.sep + req.params.placementId;
+router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
+  req.is_new = req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined" ? false : true;
+  const plc_id = req.is_new ? new mongoose.Types.ObjectId() : req.params.placementId;
+
+  const destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
+    + path.sep + req.params.pageId + path.sep + plc_id;
+
+  req.new_placement_id = plc_id;
 
   let placementStorage = multer.diskStorage({
     destination,
@@ -316,13 +337,13 @@ router.use('/placement/image/:pageId/:placementId', (req, res, next) => {
       next();
     }
   });
-});
-router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
+})
+router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // temp apis
 
 // todo: must be removed
-router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['user','body.orderId', 'body.addressId', 'body.transactionId','body.usedPoints','body.usedBalance']));
+router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.transactionId', 'body.usedPoints', 'body.usedBalance']));
 
 
 module.exports = router;

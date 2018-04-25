@@ -69,6 +69,8 @@ let schema_obj = {
   base_price: {
     type: Number,
     required: true,
+    default: 0,
+    min: 0
   },
   date: {
     type: Date,
@@ -80,8 +82,7 @@ let schema_obj = {
   reviews: [ProductReview],
   colors: [ProductColor],
   instances: [ProductInstanceSchema],
-  campaigns: [{type: Schema.Types.ObjectId, ref: 'Campaign'}]
-
+  campaigns: [{type: Schema.Types.ObjectId, ref: 'Campaign', default: []}]
 };
 
 
