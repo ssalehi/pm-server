@@ -39,9 +39,8 @@ Thumbs.db
 .env
 
 # public folder
-/public/*
-# TODO: add public folder to gitignore again!
-!/public/assets
+/public
+
 # docker compose file
 docker-compose.yml
 
