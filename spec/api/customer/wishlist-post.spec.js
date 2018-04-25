@@ -227,6 +227,10 @@ describe('Set Wish-List', () => {
         })
       })
       .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
+      })
+      .then(res => {
         expect(res.wish_list.length).toBe(2);
         expect(res.wish_list[0].product_id).toEqual(productIds[0]);
         expect(res.wish_list[1].product_instance_id).toEqual(productInstanceIds[0]);
