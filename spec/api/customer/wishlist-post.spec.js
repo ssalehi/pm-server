@@ -147,7 +147,7 @@ describe('Set Wish-List', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should add a product to customer wishlist (wishlist has an item)', function (done) {
+  it('should not be able to add a product to customer wishlist (wishlist has the same item)', function (done) {
     this.done = done;
 
     rp({
