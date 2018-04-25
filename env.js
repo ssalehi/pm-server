@@ -78,7 +78,8 @@ uploadExcelPath = "public/excel/";
 /**
  * offline system api
  */
-const offlineURL = getEnvValue(process.env.OFFLINE_URL);
+const onlineWarehouseAPI = getEnvValue(process.env.ONLINE_WAREHOUSE_API);
+const invoiceAPI = getEnvValue(process.env.INVOICE_API);
 
 /**
  *  in some cases env var name which is declared in .env file is not compatible with server env var in production mode.
@@ -119,7 +120,8 @@ module.exports = {
     clientSecret: googleAuth_clientSecret,
     callBackURL: googleAuth_callbackUrl,
   },
-  offlineURL
+  onlineWarehouseAPI,
+  invoiceAPI
 };
 
 

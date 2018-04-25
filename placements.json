@@ -6,7 +6,8 @@
       "info": {
         "text": "مردانه",
         "section": "men",
-        "href": "collection/men"
+        "href": "collection/men",
+        "column": 1
       },
       "is_finalized": true
     },
@@ -16,8 +17,9 @@
       "info": {
         "text": "کفش",
         "href": "collection/men/shoes",
+        "row": 1,
         "section": "men/shoes",
-        "imgUrl": "/product-pic/shoes.png",
+        "imgUrl": "assets/pictures/app/shoes.png",
         "is_header": true
       },
       "is_finalized": true
@@ -28,6 +30,7 @@
       "info": {
         "text": "تمام کفش ها",
         "href": "collection/men/shoes",
+        "row": 1,
         "section": "men/shoes",
         "is_header": false
       },
@@ -39,6 +42,7 @@
       "info": {
         "text": "فوتبال",
         "href": "collection/men/shoes/football",
+        "row": 2,
         "section": "men/shoes",
         "is_header": false
       },
@@ -50,6 +54,7 @@
       "info": {
         "text": "پیاده روی",
         "href": "collection/men/shoes/walking",
+        "row": 3,
         "section": "men/shoes",
         "is_header": false
       },
@@ -61,6 +66,7 @@
       "info": {
         "text": "دو",
         "href": "collection/men/shoes/running",
+        "row": 4,
         "section": "men/shoes",
         "is_header": false
       },
@@ -72,8 +78,9 @@
       "info": {
         "text": "لباس",
         "href": "collection/men/shirts",
+        "row": 2,
         "section": "men/shirts",
-        "imgUrl": "/product-pic/shirts.png",
+        "imgUrl": "assets/pictures/app/shirts.png",
         "is_header": true
       },
       "is_finalized": true
@@ -84,6 +91,7 @@
       "info": {
         "text": "تازه ها",
         "href": "collection/men/shirts/new",
+        "row": 1,
         "section": "men/shirts",
         "is_header": false
       },
@@ -95,6 +103,7 @@
       "info": {
         "text": "زمستانی",
         "href": "collection/men/shirts/winter",
+        "row": 2,
         "section": "men/shirts",
         "is_header": false
       },
@@ -106,7 +115,8 @@
       "info": {
         "text": "زنانه",
         "section": "women",
-        "href": "collection/women"
+        "href": "collection/women",
+        "column": 2
       },
       "is_finalized": true
     },
@@ -116,8 +126,9 @@
       "info": {
         "text": "کفش",
         "href": "collection/women/shoes",
+        "row": 1,
         "section": "women/shoes",
-        "imgUrl": "/product-pic/shoes.png",
+        "imgUrl": "assets/pictures/app/shoes.png",
         "is_header": true
       },
       "is_finalized": true
@@ -128,6 +139,7 @@
       "info": {
         "text": "تمام کفش ها",
         "href": "collection/women/shoes/all",
+        "row": 1,
         "section": "women/shoes",
         "is_header": false
       },
@@ -139,6 +151,7 @@
       "info": {
         "text": "فوتبال",
         "href": "collection/women/shoes/football",
+        "row": 2,
         "section": "women/shoes",
         "is_header": false
       },
@@ -150,6 +163,7 @@
       "info": {
         "text": "پیاده روی",
         "href": "collection/women/shoes/walking",
+        "row": 3,
         "section": "women/shoes",
         "is_header": false
       },
@@ -161,6 +175,7 @@
       "info": {
         "text": "تازه ها",
         "href": "collection/women/shoes/new",
+        "row": 4,
         "section": "women/shoes",
         "is_header": false
       },
@@ -172,8 +187,9 @@
       "info": {
         "text": "لباس",
         "href": "collection/women/shirts",
+        "row": 2,
         "section": "women/shirts",
-        "imgUrl": "/product-pic/shirts.png",
+        "imgUrl": "assets/pictures/app/shirts.png",
         "is_header": true
       },
       "is_finalized": true
@@ -184,6 +200,7 @@
       "info": {
         "text": "تازه ها",
         "href": "collection/women/shirts/new",
+        "row": 1,
         "section": "women/shirts",
         "is_header": false
       },
@@ -195,6 +212,7 @@
       "info": {
         "text": "شنا",
         "href": "collection/women/shirts/swimming",
+        "row": 2,
         "section": "women/shirts",
         "is_header": false
       },
@@ -206,7 +224,8 @@
       "info": {
         "text": "پسرانه",
         "section": "boy",
-        "href": "collection/boy"
+        "href": "collection/boy",
+        "column": 3
       },
       "is_finalized": true
     },
@@ -216,158 +235,50 @@
       "info": {
         "text": "دخترانه",
         "section": "girl",
-        "href": "collection/girl"
+        "href": "collection/girl",
+        "column": 4
       },
       "is_finalized": true
     }
   ],
   "feed": [
     {
-      "component_name": "main",
-      "variable_name": "",
-      "start_date": "",
-      "end_date": "",
+      "component_name": "feed",
       "info": {
-        "panel_type": "full",
-        "imgUrl": "http://e1.365dm.com/17/10/16-9/20/skysports-tennis-roger-federer-basel_4137189.jpg?20171024192811",
+        "imgUrl": "/assets/pictures/app/13.jpg",
         "href": "#",
-        "topTitle": {
-          "title": "تصاویر این هفته",
-          "text": "",
-          "titleColor": "#000000"
-        },
-        "areas": [
-          {
-            "pos": "left-center",
-            "title": "راجر فدرر",
-            "text": "او تمام مسابقات را برده است"
-          },
-          {
-            "pos": "card-button",
-            "text": "خرید"
-          },
-          {
-            "pos": "card-icon"
-          }
-        ]
+        "row": 1,
+        "text": "Nothing to say. Enjoy your ..."
       },
       "is_finalized": true
     },
     {
-      "component_name": "main",
-      "variable_name": "",
-      "start_date": "",
-      "end_date": "",
+      "component_name": "feed",
       "info": {
-        "panel_type": "full",
-        "imgUrl": "http://www.psdgraphics.com/file/orange-light-burst.jpg",
+        "imgUrl": "/assets/pictures/app/orange-light-burst.jpg",
         "href": "#",
-        "areas": [
-          {
-            "pos": "right-center",
-            "title": "بدمینتون کار حرفه ای",
-            "text": "بیست و یک برد متوالی",
-            "tilteColor": "#000000"
-          },
-          {
-            "pos": "card-button",
-            "text": "خرید"
-          },
-          {
-            "pos": "card-icon",
-            "titleColor": "#ffffff"
-          }
-        ]
+        "row": 2,
+        "text": "miss ..."
       },
       "is_finalized": true
     },
     {
-      "component_name": "main",
-      "variable_name": "",
-      "start_date": "",
-      "end_date": "",
+      "component_name": "feed",
       "info": {
-        "panel_type": "full",
-        "imgUrl": "http://e0.365dm.com/17/12/16-9/20/skysports-cristiano-ronaldo-real-madrid_4176213.jpg?20171207091750",
+        "imgUrl": "/assets/pictures/app/shoeSample.png",
         "href": "#",
-        "areas": [
-          {
-            "pos": "left-bottom",
-            "title": "رونالدو",
-            "text": "بازیکن سال"
-          },
-          {
-            "pos": "card-button",
-            "text": "خرید"
-          },
-          {
-            "pos": "card-icon",
-            "titleColor": "#ffffff"
-          }
-        ]
+        "row": 4,
+        "text": "need help"
       },
       "is_finalized": true
     },
     {
-      "component_name": "main",
-      "variable_name": "",
-      "start_date": "",
-      "end_date": "",
+      "component_name": "feed",
       "info": {
-        "panel_type": "full",
-        "imgUrl": "/product-pic/shoeSample.png",
+        "imgUrl": "/assets/pictures/app/q1.png",
         "href": "#",
-        "topTitle": {
-          "title": "داره مد میشه...",
-          "text": "",
-          "titleColor": "#000000"
-        },
-        "areas": [
-          {
-            "pos": "left-bottom",
-            "title": "طوسی بی نظیر",
-            "text": "زمان درخشیدن توست",
-            "titleColor": "#000000"
-          },
-          {
-            "pos": "card-button",
-            "text": "خرید",
-            "titleColor": "#000000"
-          },
-          {
-            "pos": "card-icon",
-            "titleColor": "#000000"
-          }
-        ]
-      },
-      "is_finalized": true
-    },
-    {
-      "component_name": "main",
-      "variable_name": "",
-      "start_date": "",
-      "end_date": "",
-      "info": {
-        "panel_type": "full",
-        "imgUrl": "/product-pic/q1.png",
-        "href": "#",
-        "areas": [
-          {
-            "pos": "left-top",
-            "title": "کفش ورزشی زنانه نایک",
-            "text": "مدل پگاسوس",
-            "titleColor": "#000000"
-          },
-          {
-            "pos": "card-button",
-            "text": "خرید",
-            "titleColor": "#000000"
-          },
-          {
-            "pos": "card-icon",
-            "titleColor": "#000000"
-          }
-        ]
+        "row": 5,
+        "text": "Be polite"
       },
       "is_finalized": true
     }
@@ -756,7 +667,7 @@
       "end_date": "",
       "info": {
         "column": 0,
-        "imgUrl": "assets/cliparts/delivery.png",
+        "imgUrl": "/assets/cliparts/delivery.png",
         "text": "ارسال رایگان در تهران و حومه",
         "href": "#"
       },
