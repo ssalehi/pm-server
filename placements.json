@@ -379,7 +379,7 @@
         "text": "Nike",
         "href": "nike",
         "column": 1,
-        "imgUrl": "nike.png",
+        "imgUrl": "assets/logos/nike.png",
         "style": {
           "width": 60
         }
@@ -392,7 +392,7 @@
         "text": "Converse",
         "href": "converse",
         "column": 2,
-        "imgUrl": "converse.png",
+        "imgUrl": "assets/logos/converse.png",
         "style": {
           "width": 77,
           "height": 36,
@@ -408,7 +408,7 @@
         "text": "Nike Jordan",
         "href": "nike_jordan",
         "column": 3,
-        "imgUrl": "nike-jordan.png",
+        "imgUrl": "assets/logos/nike-jordan.png",
         "style": {
           "width": 88,
           "right": 4,
@@ -423,7 +423,7 @@
         "column": 4,
         "text": "Hurley",
         "href": "hurley",
-        "imgUrl": "Hurley.png",
+        "imgUrl": "assets/logos/Hurley.png",
         "style": {
           "height": 45,
           "top": 8
@@ -437,7 +437,7 @@
         "text": "The North Face",
         "href": "north_face",
         "column": 5,
-        "imgUrl": "thenorthface.png",
+        "imgUrl": "assets/logos/thenorthface.png",
         "style": {
           "width": 76,
           "height": 84,
@@ -453,7 +453,7 @@
         "text": "Timberland",
         "href": "timberland",
         "column": 6,
-        "imgUrl": "timberland.png",
+        "imgUrl": "assets/logos/timberland.png",
         "style": {
           "width": 110,
           "height": 110,
@@ -468,7 +468,7 @@
         "text": "Polo Ralph Lauren",
         "href": "poloralph",
         "column": 7,
-        "imgUrl": "Polo-Ralph-Lauren-Clean.png",
+        "imgUrl": "assets/logos/Polo-Ralph-Lauren-Clean.png",
         "style": {
           "width": 38,
           "height": 50,
@@ -484,7 +484,7 @@
         "text": "ASICS",
         "href": "asics",
         "column": 8,
-        "imgUrl": "store-logo-asics.png",
+        "imgUrl": "assets/logos/store-logo-asics.png",
         "style": {
           "width": 62,
           "height": 34,
@@ -499,7 +499,7 @@
         "text": "Adidas",
         "href": "adidas",
         "column": 9,
-        "imgUrl": "adidas.png",
+        "imgUrl": "assets/logos/adidas.png",
         "style": {
           "width": 45,
           "right": 3
@@ -513,7 +513,7 @@
         "text": "Puma",
         "href": "puma",
         "column": 10,
-        "imgUrl": "puma.png"
+        "imgUrl": "assets/logos/puma.png"
       },
       "is_finalized": true
     },
@@ -523,7 +523,7 @@
         "text": "Tommy Hilfiger",
         "href": "hilfiger",
         "column": 11,
-        "imgUrl": "tommyhilfiger.png",
+        "imgUrl": "assets/logos/tommyhilfiger.png",
         "style": {
           "width": 40,
           "right": 4
@@ -1464,7 +1464,7 @@
         "text": "Nike",
         "href": "nike",
         "column": 1,
-        "imgUrl": "nike.png",
+        "imgUrl": "assets/logos/nike.png",
         "style": {
           "width": 60
         }
