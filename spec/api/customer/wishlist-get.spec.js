@@ -6,7 +6,7 @@ const moment = require('moment');
 const mongoose = require('mongoose');
 
 
-describe('Set Wish-List', () => {
+describe('Get Wish-List', () => {
   // I need some instance of customer and product for my test
 
   let customerObj = {
@@ -30,26 +30,38 @@ describe('Set Wish-List', () => {
   let productColorId = [
     mongoose.Types.ObjectId(),
     mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId()
   ]
 
   let type1, brand1;
   let colorArr = [];
   let productArr = [];
 
+  let wishListArr = [
+    {
+      _id: mongoose.Types.ObjectId(),
+      product_id: productIds[0],
+      product_instance_id: productInstanceIds[0],
+    }, {
+      _id: mongoose.Types.ObjectId(),
+      product_id: productIds[1],
+      product_instance_id: productInstanceIds[2],
+    }
+  ];
+
   beforeEach(done => {
     productArr = [];
     colorArr = [];
     lib.dbHelpers.dropAll()
       .then(res => {
-        return lib.dbHelpers.addAndLoginCustomer('s@s.com', '123456', {first_name: 'Sareh', surname: 'Salehi'})
+        return lib.dbHelpers.addAndLoginCustomer('s@s.com', '123456', {first_name: 'Sareh', surname: 'Salehi', wish_list: wishListArr})
       }).then(res => {
       let rpJar = null;
       customerObj.cid = res.cid;
       customerObj.jar = res.rpJar;
       return lib.dbHelpers.addAndLoginCustomer('a@a.com', '654321', {
         first_name: 'Ali',
-        surname: 'Alavi'
+        surname: 'Alavi',
+        // wish_list: wishListArr[1]
       })
     })
       .then(res => {
@@ -70,10 +82,7 @@ describe('Set Wish-List', () => {
         colorArr.push(models['ColorTest']({
           name: 'testColor2'
         }));
-        colorArr.push(models['ColorTest']({
-          name: 'testColor3'
-        }));
-        return Promise.all([colorArr[0].save(), colorArr[1].save(), colorArr[2].save()]);
+        return Promise.all([colorArr[0].save(), colorArr[1].save()]);
       })
       .then(res => {
         productArr.push(models['ProductTest']({
@@ -131,16 +140,16 @@ describe('Set Wish-List', () => {
           base_price: 48000,
           colors: [
             {
-              _id: productColorId[2],
-              color_id: colorArr[2]._id,
-              name: colorArr[2].name,
+              _id: productColorId[1],
+              color_id: colorArr[1]._id,
+              name: colorArr[1].name,
             },
           ],
           desc: 'this is a test description for testProductName1',
           instances: [
             {
               _id: productInstanceIds[2],
-              product_color_id: productColorId[2],
+              product_color_id: productColorId[1],
               size: "M",
               price: 45000,
               barcode: '123123123125'
@@ -158,126 +167,60 @@ describe('Set Wish-List', () => {
       });
   }); // now I have 2 customers, 2 products
 
-  it('should add a product to valid customer wish-list(wishlist is empty)', function (done) {
+  it('should not be able to get wish list if customer is not logged in', function (done) {
     this.done = done;
     rp({
-      method: 'POST',
+      method: 'GET',
       uri: lib.helpers.apiTestURL('wishlist'),
-      body: {
-        product_id: productIds[0],
-        product_instance_id: productInstanceIds[0],
-      },
+      jar: null,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        this.fail('Customer is not logged in');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noUser.status);
+        expect(err.error).toBe(error.noUser.message);
+        done();
+      });
+  });
+  it('should get all wished items of customer', function (done) {
+    this.done = done;
+    rp({
+      method: 'GET',
+      uri: lib.helpers.apiTestURL('wishlist'),
       jar: customerObj.jar,
       json: true,
       resolveWithFullResponse: true
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
-      })
-      .then(res => {
-        expect(res.wish_list.length).toBe(1);
-        expect(res.wish_list[0].product_id).toEqual(productIds[0]);
-        expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[0]);
-        expect(mongoose.Types.ObjectId(res.wish_list[0].product_id)).toEqual(mongoose.Types.ObjectId(productIds[0]));
+        expect(res.body.length).toBe(2);
+        expect(res.body[0].product[0].instances[0].size).toBe(productArr[0].instances[0].size);
+        expect(res.body[0].product[0].name).toEqual(productArr[0].name);
+        expect(res.body[1].product[0].name).toEqual(productArr[1].name);
+        expect(res.body[1].product[0].instances[0].size).toEqual('M');
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should not be able to add a product to customer wishlist that has been added before', function (done) {
+  it('should resolve true message if wish list is empty', function (done) {
     this.done = done;
-
     rp({
-      method: 'POST',
+      method: 'GET',
       uri: lib.helpers.apiTestURL('wishlist'),
-      body: {
-        product_id: productIds[0],
-        product_instance_id: productInstanceIds[1],
-      },
       jar: customerObj2.jar,
       json: true,
       resolveWithFullResponse: true
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj2.cid)}).lean()
-      })
-      .then(res => {
-        expect(res.wish_list.length).toBe(1);
-        expect(res.wish_list[0].product_id).toEqual(productIds[0]);
-        expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[1]);
-        return rp({
-          method: 'POST',
-          uri: lib.helpers.apiTestURL('wishlist'),
-          body: {
-            product_id: productIds[0],
-            product_instance_id: productInstanceIds[1],
-          },
-          jar: customerObj2.jar,
-          json: true,
-          resolveWithFullResponse: true
-        })
-      })
-      .then(res => {
-        this.fail('This product has been added to your wish-list before');
+        expect(res.body).toEqual('No wished item exists')
         done();
       })
-      .catch(err => {
-        expect(err.statusCode).toBe(error.duplicateWishListItem.statusCode);
-        expect(err.error).toBe(error.duplicateWishListItem.message);
-        done();
-      });
+      .catch(lib.helpers.errorHandler.bind(this));
   });
-
-  it('should add a product to customer wishlist and another one after it', function (done) {
-    this.done = done;
-
-    rp({
-      method: 'POST',
-      uri: lib.helpers.apiTestURL('wishlist'),
-      body: {
-        product_id: productIds[0],
-        product_instance_id: productInstanceIds[1],
-      },
-      jar: customerObj.jar,
-      json: true,
-      resolveWithFullResponse: true
-    })
-      .then(res => {
-        expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
-      })
-      .then(res => {
-        expect(res.wish_list.length).toBe(1);
-        expect(res.wish_list[0].product_id).toEqual(productIds[0]);
-        expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[1]);
-        return rp({
-          method: 'POST',
-          uri: lib.helpers.apiTestURL('wishlist'),
-          body: {
-            product_id: productIds[0],
-            product_instance_id: productInstanceIds[0],
-          },
-          jar: customerObj.jar,
-          json: true,
-          resolveWithFullResponse: true
-        })
-      })
-      .then(res => {
-        expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
-      })
-      .then(res => {
-        expect(res.wish_list.length).toBe(2);
-        expect(res.wish_list[0].product_id).toEqual(productIds[0]);
-        expect(res.wish_list[1].product_instance_id).toEqual(productInstanceIds[0]);
-        done();
-      })
-      .catch(err => {
-        console.log(err.message);
-        done();
-      });
-  })
-
-});
+})

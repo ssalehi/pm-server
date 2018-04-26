@@ -174,6 +174,7 @@ router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'veri
 
 // Wish List
 router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
+router.get('/wishlist', apiResponse('Customer', 'getWishListItems', false, ['user']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
