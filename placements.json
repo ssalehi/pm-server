@@ -336,6 +336,7 @@
         "href": "hurley",
         "imgUrl": "assets/logos/Hurley.png",
         "style": {
+          "width": 72,
           "height": 45,
           "top": 8
         }
