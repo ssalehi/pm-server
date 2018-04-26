@@ -143,7 +143,10 @@ router.get('/productType', apiResponse('ProductType', 'getTypes', false, []));
 router.get('/color', apiResponse('Color', 'getColors', false, []));
 
 // Dictionaries
+router.delete('/dictionary/:dictionaryId', apiResponse('Dictionary', 'removeDictionary', false, ['params.dictionaryId']));
+router.post('/dictionary/:dictionaryId', apiResponse('Dictionary', 'updateDictionary', false, ['params.dictionaryId', 'body']));
 router.get('/dictionary', apiResponse('Dictionary', 'getDictionaries', false, []));
+router.put('/dictionary', apiResponse('Dictionary', 'addDictionary', false, ['body']));
 
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
@@ -164,6 +167,9 @@ router.post('/order/ticket/:type', apiResponse('Order', 'setManualTicket', true,
 // api's used by offline system
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
 router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
+
+// Wish List
+router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
@@ -228,8 +234,6 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
 });
 router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setImage', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product/image/:id/:colorId', apiResponse('Product', 'removeImage', true, ['params.id', 'params.colorId', 'body.angle'], [_const.ACCESS_LEVEL.ContentManager]));
-
-
 
 
 // Collection
@@ -342,10 +346,6 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
 })
 router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
-// temp apis
-
-// todo: must be removed
-router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.transactionId', 'body.usedPoints', 'body.usedBalance']));
-
-
+// checkout
+router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address', 'body.customerData', 'body.transaction_id', 'body.used_point', 'body.used_balance', 'body.total_amount', 'body.is_collect']));
 module.exports = router;

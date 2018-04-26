@@ -83,7 +83,6 @@ let schema_obj = {
   colors: [ProductColor],
   instances: [ProductInstanceSchema],
   campaigns: [{type: Schema.Types.ObjectId, ref: 'Campaign', default: []}]
-
 };
 
 
