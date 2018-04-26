@@ -6,7 +6,7 @@ const moment = require('moment');
 const mongoose = require('mongoose');
 
 
-describe('Set Wish-List', () => {
+describe('Get Wish-List', () => {
   // I need some instance of customer and product for my test
 
   let customerObj = {
@@ -186,7 +186,7 @@ describe('Set Wish-List', () => {
         done();
       });
   });
-  it('should get all wished items of customet', function (done) {
+  it('should get all wished items of customer', function (done) {
     this.done = done;
     rp({
       method: 'GET',
@@ -198,10 +198,10 @@ describe('Set Wish-List', () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
         expect(res.body.length).toBe(2);
-        expect(res.body[0].wishedItem.size).toBe(productArr[0].instances[0].size);
+        expect(res.body[0].product[0].instances[0].size).toBe(productArr[0].instances[0].size);
         expect(res.body[0].product[0].name).toEqual(productArr[0].name);
         expect(res.body[1].product[0].name).toEqual(productArr[1].name);
-        expect(res.body[1].wishedItem.size).toEqual('M');
+        expect(res.body[1].product[0].instances[0].size).toEqual('M');
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
