@@ -200,7 +200,7 @@ describe('Get User All Orders', () => {
         done();
       })
       .catch(err => {
-        console.log(err);
+        console.lowg(err);
         done();
       });
   });

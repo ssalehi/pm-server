@@ -158,6 +158,10 @@ router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 // Customer
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
+// Customer shoesType
+router.get('/customer/shoesType', apiResponse('Customer', 'getCustomerShoesType', false, ['user']));
+router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType', false, ['user', 'body']));
+
 // Order
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
