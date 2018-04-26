@@ -129,11 +129,18 @@ describe('Set Wish-List', () => {
             brand_id: brand1._id
           },
           base_price: 48000,
+          colors: [
+            {
+              _id: productColorId[2],
+              color_id: colorArr[2]._id,
+              name: colorArr[2].name,
+            },
+          ],
           desc: 'this is a test description for testProductName1',
           instances: [
             {
               _id: productInstanceIds[2],
-              product_color_id: mongoose.Types.ObjectId(),
+              product_color_id: productColorId[2],
               size: "M",
               price: 45000,
               barcode: '123123123125'
