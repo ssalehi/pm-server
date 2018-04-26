@@ -7,7 +7,9 @@ let schema_obj = {
     type: Schema.Types.ObjectId,
     ref: 'Customer'
   },
-  transaction_id: Schema.Types.ObjectId,
+  transaction_id: {
+    type: String,
+  },
   address: {
     type: addressSchema,
     required: true

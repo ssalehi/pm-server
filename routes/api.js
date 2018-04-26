@@ -209,6 +209,7 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   else
     destination = env.uploadProductImagePath + path.sep + req.params.id + path.sep + req.params.colorId;
 
+
   let productStorage = multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
@@ -216,6 +217,7 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
       const parts = file.originalname.split('.');
 
       if (!parts || parts.length !== 2) {
+
         cb(new Error('count not read file extension'));
       }
       else {
@@ -279,18 +281,23 @@ router.use('/uploadData', function (req, res, next) {
   else
     destination = env.uploadExcelPath + fileName;
 
-  let productStorage = multer.diskStorage({
-    destination,
-    filename: (req, file, cb) => {
-      cb(null, file.originalname);
-    }
-  });
-  let productUpload = multer({storage: productStorage});
+  const rmPromise = require('rimraf-promise');
+  rmPromise(env.uploadExcelPath)
+    .then(res => {
+      let productStorage = multer.diskStorage({
+        destination,
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        }
+      });
+      let productUpload = multer({storage: productStorage});
 
-  productUpload.single('file')(req, res, err => {
-    if (!err)
-      next()
-  });
+      productUpload.single('file')(req, res, err => {
+        if (!err)
+          next()
+      });
+    }).catch(err => {
+    });
 
 });
 
@@ -340,10 +347,6 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
 })
 router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
-// temp apis
-
-// todo: must be removed
-router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.transactionId', 'body.usedPoints', 'body.usedBalance']));
-
-
+// checkout
+router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address', 'body.customerData', 'body.transaction_id', 'body.used_point', 'body.used_balance', 'body.total_amount', 'body.is_collect']));
 module.exports = router;
