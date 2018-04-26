@@ -11,7 +11,7 @@ ENV APP_NAME Persian-Mode
 ENV APP_ADDRESS http://173.249.11.153
 ENV PORT 3000
 ENV DATABASE PersianMode
-ENV DB_URI mongodb://mongo:27017/PersianMode
+ENV DB_URI mongodb://mongo/PersianMode
 ENV REDIS_HOST redis
 ENV GOOGLE_OAUTH_CLIENTID 636231560622ENVk29avsd6knviv7bu7ni9sf6r6okac3bt.apps.googleusercontent.com
 ENV GOOGLE_OAUTH_CLIENTSECRET A7cwgIu3p8H37m69VqrjrW2J
