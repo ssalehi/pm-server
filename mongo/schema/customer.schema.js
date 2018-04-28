@@ -48,6 +48,10 @@ let schema_obj = {
     required: true,
     default: false,
   },
+  shoesType: {
+    type: String,
+    default: "US",
+  },
   is_guest: {
     type: Boolean,
     required: true,
