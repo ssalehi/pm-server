@@ -7,6 +7,7 @@ let schema_obj = {
   // start_date: Date, // for scheduling
   // end_date: Date,
   info: PlacementInfoSchema,
+  updated_info: PlacementInfoSchema,
   is_finalized: {
     type: Boolean,
     default: false,

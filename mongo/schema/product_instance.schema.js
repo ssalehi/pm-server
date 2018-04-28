@@ -13,7 +13,7 @@ inventory_template = {
     require: true,
     min: 0
   },
-  reserved:{
+  reserved: {
     type: Number,
     require: true,
     min: 0,
