@@ -17,4 +17,5 @@ COPY . .
 
 EXPOSE 80
 
+# cmd would be overwritten if docker-compose is used to build container from image or command exists in docker run command
 CMD [ "npm", "start" ]
