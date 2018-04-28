@@ -86,11 +86,10 @@ let sendToNS = (ns, message) => {
 
       if (groups[ns]) {
         groups[ns].emit('msg', message);
-        resolve();
       } else {
         console.log('-> ', `${ns} is not in namespaces`);
-        reject(new Error(`${ns} is not in namespaces`));
       }
+      resolve();
     }, 0)
   })
 
