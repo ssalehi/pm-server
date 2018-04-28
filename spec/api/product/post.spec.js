@@ -165,7 +165,7 @@ describe("Post product colors & images", () => {
 
     this.done = done;
 
-    return models['ProductTest'].update({
+    return models['ProductTest'].findOneAndUpdate({
       "_id": productId,
     },
       {
@@ -175,10 +175,10 @@ describe("Post product colors & images", () => {
             name: color.name,
           }]
         }
-      })
+      }, {new: true})
       .then(res => {
         return rp.post({
-          url: lib.helpers.apiTestURL(`product/image/${productId}/${color._id}/true`),
+          url: lib.helpers.apiTestURL(`product/image/${productId}/${res.colors[0]._id}/true`),
           formData: {
             file: {
               value: fs.readFileSync('spec/api/product/test1.jpeg'),
@@ -236,7 +236,7 @@ describe("Post product colors & images", () => {
       }, {new: true})
       .then(res => {
         return rp.post({
-          url: lib.helpers.apiTestURL(`product/image/${productId}/${color._id}/false`),
+          url: lib.helpers.apiTestURL(`product/image/${productId}/${res.colors[0]._id}/false`),
           formData: {
             file: {
               value: fs.readFileSync('spec/api/product/test2.jpeg'),
@@ -277,7 +277,7 @@ describe("Post product colors & images", () => {
     this.done = done;
 
     rp.post({
-      url: lib.helpers.apiTestURL(`product/image/${productId}/${color._id}/false`),
+      url: lib.helpers.apiTestURL(`product/image/${productId}/${new mongoose.Types.ObjectId()}/false`),
       formData: {
         file: {
           value: fs.readFileSync('spec/api/product/test1.jpeg'),
@@ -310,7 +310,7 @@ describe("Post product colors & images", () => {
     let preColor = {
       name: color.name,
       color_id: color._id,
-      
+
     };
     return models['ProductTest'].findOneAndUpdate({
       "_id": productId,
@@ -322,7 +322,7 @@ describe("Post product colors & images", () => {
       }, {new: true})
       .then(res => {
         return rp.post({
-          url: lib.helpers.apiTestURL(`product/image/${productId}/${color._id}/false`),
+          url: lib.helpers.apiTestURL(`product/image/${productId}/${res.colors[0]._id}/false`),
           formData: {
             file: {
               value: fs.readFileSync('spec/api/product/test1.jpeg'),
@@ -512,7 +512,7 @@ describe("Post Product instance inventories", () => {
   });
 
 
-  
+
   it("should update count for current inventory", function (done) {
 
     this.done = done;
