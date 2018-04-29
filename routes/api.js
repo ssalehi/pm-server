@@ -159,7 +159,6 @@ router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
 // Customer shoesType
-router.get('/customer/shoesType', apiResponse('Customer', 'getCustomerShoesType', false, ['user']));
 router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType', false, ['user', 'body']));
 
 // Order
@@ -179,6 +178,7 @@ router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'veri
 // Wish List
 router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
 router.get('/wishlist', apiResponse('Customer', 'getWishListItems', false, ['user']));
+router.delete('/wishlist/delete/:wishItemId', apiResponse('Customer', 'removeFromWishList', false, ['user', 'params.wishItemId']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
