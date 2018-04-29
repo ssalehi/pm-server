@@ -159,7 +159,7 @@ describe('Set Wish-List', () => {
   }); // now I have 2 customers, 2 products
 
   xit('should not be able to add item to wish list if user is not looged ib', function (done) {
-    // TODO 
+    // TODO
     this.done = done;
   })
 
