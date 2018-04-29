@@ -103,7 +103,6 @@ describe('POST Order (New Order)', () => {
         return Promise.all([productArr[0].save(), productArr[1].save()]);
       })
       .then(res => {
-
         existingOrderForSecondCustomer = {
           customer_id: mongoose.Types.ObjectId(),
           total_amount: 0,

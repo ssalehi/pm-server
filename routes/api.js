@@ -19,7 +19,7 @@ let storage = multer.diskStorage({
     cb(null, [req.params.username || req.user.username, file.mimetype.substr(file.mimetype.lastIndexOf('/') + 1)].join('.'));
   }
 });
-let upload = multer({ storage: storage });
+let upload = multer({storage: storage});
 
 function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], accessLevels) {
   let args = Array.prototype.slice.call(arguments, 5);
@@ -99,7 +99,7 @@ router.get('/agent/validUser', apiResponse('Person', 'afterLogin', false, ['user
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
-router.get('/login/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email'] }));
+router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
 router.get('/login/google/callback', passport.authenticate('google', {
   successRedirect: '/login/oauth',
   failureRedirect: '/login/oauth'
@@ -143,7 +143,10 @@ router.get('/productType', apiResponse('ProductType', 'getTypes', false, []));
 router.get('/color', apiResponse('Color', 'getColors', false, []));
 
 // Dictionaries
+router.delete('/dictionary/:dictionaryId', apiResponse('Dictionary', 'removeDictionary', false, ['params.dictionaryId']));
+router.post('/dictionary/:dictionaryId', apiResponse('Dictionary', 'updateDictionary', false, ['params.dictionaryId', 'body']));
 router.get('/dictionary', apiResponse('Dictionary', 'getDictionaries', false, []));
+router.put('/dictionary', apiResponse('Dictionary', 'addDictionary', false, ['body']));
 
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
@@ -155,13 +158,23 @@ router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 // Customer
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
+// Customer shoesType
+router.get('/customer/shoesType', apiResponse('Customer', 'getCustomerShoesType', false, ['user']));
+router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType', false, ['user', 'body']));
+
 // Order
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
-router.post('/order/ticket/:type', apiResponse('Order', 'setTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/ticket/offline/requestInvoice', apiResponse('Order', 'resendInvoiceRequest', true, ['body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/ticket/offline/verifyInvoice', apiResponse('Order', 'verifyInvoice', false, ['body']));
+router.post('/order/ticket/:type', apiResponse('Order', 'setManualTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+
+// api's used by offline system
+router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
+router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
+
+// Wish List
+router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
+router.get('/wishlist', apiResponse('Customer', 'getWishListItems', false, ['user']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
@@ -176,7 +189,8 @@ router.delete('/product/tag/:id/:tagId', apiResponse('Product', 'deleteTag', tru
 
 // product color
 router.post('/product/color', apiResponse('Product', 'setColor', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
-router.delete('/product/color/:id/:colorId', apiResponse('Product', 'deleteColor', true, ['params.id', 'params.colorId'], [_const.ACCESS_LEVEL.ContentManager]));
+router.delete('/product/color/:id/:colorId', apiResponse('Product', 'removeColor', true, ['params.id', 'params.colorId'], [_const.ACCESS_LEVEL.ContentManager]));
+router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
 
 // product instance
 router.get('/product/instance/:id/:piid', apiResponse('Product', 'getInstance', false, ['params.id', 'params.piid']));
@@ -199,13 +213,23 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   else
     destination = env.uploadProductImagePath + path.sep + req.params.id + path.sep + req.params.colorId;
 
+
   let productStorage = multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
-      cb(null, file.originalname);
+
+      const parts = file.originalname.split('.');
+
+      if (!parts || parts.length !== 2) {
+
+        cb(new Error('count not read file extension'));
+      }
+      else {
+        cb(null, parts[0] + '-' + Date.now() + '.' + parts[1]);
+      }
     }
   });
-  let productUpload = multer({ storage: productStorage });
+  let productUpload = multer({storage: productStorage});
 
   productUpload.single('file')(req, res, err => {
     if (!err)
@@ -213,10 +237,8 @@ router.use('/product/image/:id/:colorId/:is_thumbnail', function (req, res, next
   });
 
 });
-router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setColor', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
-
-// Product color
-router.get('/product/color/:id', apiResponse('Product', 'getProductColor', false, ['params.id']));
+router.post('/product/image/:id/:colorId/:is_thumbnail', apiResponse('Product', 'setImage', true, ['params.id', 'params.colorId', 'params.is_thumbnail', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/product/image/:id/:colorId', apiResponse('Product', 'removeImage', true, ['params.id', 'params.colorId', 'body.angle'], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 // Collection
@@ -263,18 +285,23 @@ router.use('/uploadData', function (req, res, next) {
   else
     destination = env.uploadExcelPath + fileName;
 
-  let productStorage = multer.diskStorage({
-    destination,
-    filename: (req, file, cb) => {
-      cb(null, file.originalname);
-    }
-  });
-  let productUpload = multer({ storage: productStorage });
+  const rmPromise = require('rimraf-promise');
+  rmPromise(env.uploadExcelPath)
+    .then(res => {
+      let productStorage = multer.diskStorage({
+        destination,
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        }
+      });
+      let productUpload = multer({storage: productStorage});
 
-  productUpload.single('file')(req, res, err => {
-    if (!err)
-      next()
-  });
+      productUpload.single('file')(req, res, err => {
+        if (!err)
+          next()
+      });
+    }).catch(err => {
+    });
 
 });
 
@@ -315,7 +342,7 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
     }
   });
 
-  let placementUpload = multer({ storage: placementStorage });
+  let placementUpload = multer({storage: placementStorage});
   placementUpload.single('file')(req, res, err => {
     if (!err) {
       next();
@@ -324,10 +351,6 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
 })
 router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
-// temp apis
-
-// todo: must be removed
-router.post('/order/verify', apiResponse('Order', 'verifyOrder', false, ['body.orderId', 'body.transactionId', 'body.usedPoints', 'body.usedBalance']));
-
-
+// checkout
+router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address', 'body.customerData', 'body.transaction_id', 'body.used_point', 'body.used_balance', 'body.total_amount', 'body.is_collect']));
 module.exports = router;
