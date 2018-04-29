@@ -218,7 +218,7 @@ describe('Get Wish-List', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        expect(res.body).toEqual('No wished item exists')
+        expect(res.body.length).toBe(0);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));

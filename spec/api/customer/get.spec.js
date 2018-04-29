@@ -88,21 +88,5 @@ describe('GET Customer', () => {
       }
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
-  })
-
-  it('should get user Shoes Type ', function (done) {
-    this.done = done;
-    rp({
-      method: 'get',
-      uri: lib.helpers.apiTestURL(`customer/shoesType`),
-      jar: customerObj.jar,
-      json: true,
-      resolveWithFullResponse: true
-    }).then(res => {
-      expect(res.statusCode).toBe(200);
-      expect(res.body.shoesType).toBe(custData.shoesType);
-      done();
-    }).catch(lib.helpers.errorHandler.bind(this));
-
-  })
+  });
 });
