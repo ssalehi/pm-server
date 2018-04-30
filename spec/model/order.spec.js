@@ -4,8 +4,9 @@ const error = require('../../lib/errors.list');
 const mongoose = require('mongoose');
 const _const = require('../../lib/const.list');
 const Order = require('../../lib/order.model');
+const rp = require('request-promise');
 
-describe('POST Order - verify order', () => {
+xdescribe('POST Order - verify order', () => {
 
   let customer1 = {
     cid: null,
@@ -208,4 +209,235 @@ describe('POST Order - verify order', () => {
       });
   });
 
+});
+
+describe('POST Order - ORP', () => {
+  let _order, _warehouses;
+  let customer1 = {
+    cid: null,
+    jar: null
+  };
+
+  let productInstanceIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+  ];
+  let colorIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId()
+  ];
+  let productIds = [];
+  let orderIds = [];
+  let warehouses = [
+    {
+      _id: mongoose.Types.ObjectId(),
+      name: 'انبار مرکزی',
+      phone: 'نا مشخص',
+      address: {
+        city: 'تهران',
+        street: 'نامشخص',
+        province: 'تهران'
+      },
+      is_center: true,
+      priority: 0,
+
+    },
+    {
+      _id: mongoose.Types.ObjectId(),
+      name: 'پالادیوم',
+      phone: ' 021 2201 0600',
+      has_customer_pickup: true,
+      address: {
+        city: 'تهران',
+        street: 'مقدس اردبیلی',
+        province: 'تهران'
+      },
+      priority: 1,
+
+    },
+    {
+      _id: mongoose.Types.ObjectId(),
+      name: 'سانا',
+      phone: '021 7443 8111',
+      has_customer_pickup: true,
+      address: {
+        province: 'تهران',
+        city: 'تهران',
+        street: 'اندرزگو',
+      },
+      priority: 2,
+    },
+    {
+      _id: mongoose.Types.ObjectId(),
+      name: 'ایران مال',
+      phone: 'نا مشخص',
+      has_customer_pickup: true,
+      address: {
+        province: 'تهران',
+        city: 'تهران',
+        street: 'اتوبان خرازی',
+      },
+      priority: 3,
+    }
+  ];
+
+  beforeEach(done => {
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return models['WarehouseTest'].insertMany(warehouses)
+      })
+      .then(res => {
+        _warehouses = res;
+        return lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
+          first_name: 'test 1',
+          surname: 'test 1',
+        })
+      })
+      .then(res => {
+        customer1.cid = res.cid;
+        customer1.jar = res.rpJar;
+        let products = [{
+          _id: productIds[0],
+          name: 'sample 1',
+          product_type: {
+            name: 'sample type',
+            product_type_id: mongoose.Types.ObjectId()
+          },
+          brand: {
+            name: 'sample brand',
+            brand_id: mongoose.Types.ObjectId()
+          },
+          base_price: 30000,
+          desc: 'some description for this product',
+          colors: [
+            {
+              color_id: colorIds[0],
+              name: 'green'
+            },
+            {
+              color_id: colorIds[1],
+              name: 'yellow'
+            },
+            {
+              color_id: colorIds[2],
+              name: 'red'
+            }
+          ],
+          instances: [{
+              _id: productInstanceIds[0],
+              product_color_id: colorIds[0],
+              size: "11",
+              price: 2000,
+              barcode: '0394081341',
+            inventory: [{
+              count: 4,
+              reserved: 0,
+              warehouse_id: _warehouses[0]._id
+            },{
+              count: 1,
+              reserved: 0,
+              warehouse_id: _warehouses[1]._id
+            },{
+              count: 2,
+              reserved: 0,
+              warehouse_id: _warehouses[2]._id
+            },{
+              count: 3,
+              reserved: 0,
+              warehouse_id: _warehouses[3]._id
+            }]
+            },
+            {
+              _id: productInstanceIds[1],
+              product_color_id: colorIds[1],
+              size: "10",
+              price: 4000,
+              barcode: '19231213123',
+              inventory: [{
+                count: 4,
+                reserved: 0,
+                warehouse_id: _warehouses[0]._id
+              },{
+                count: 1,
+                reserved: 0,
+                warehouse_id: _warehouses[1]._id
+              },{
+                count: 2,
+                reserved: 0,
+                warehouse_id: _warehouses[2]._id
+              },{
+                count: 3,
+                reserved: 0,
+                warehouse_id: _warehouses[3]._id
+              }]
+            }
+          ]
+        }];
+        return models['ProductTest'].insertMany(products);
+      })
+      .then(res => {
+
+        productIds = res.map(x => x._id);
+
+        let orders = [{
+          customer_id: customer1.cid,
+          total_amount: 2,
+          order_time: new Date(),
+          is_cart: false,
+          address: warehouses[0].address,
+          transaction_id: mongoose.Types.ObjectId(),
+          order_lines: [{
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
+            tickets: [ // sales manager ticket
+              // {
+              //   warehouse_id: warehouses.find(x => x.is_center)._id,
+              //   status: _const.ORDER_STATUS.default
+              // }
+            ]
+          }, { // shop clerk ticket
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[1],
+            tickets: []
+          }]
+        }];
+
+        return models['OrderTest'].insertMany(orders);
+      })
+      .then(res => {
+        _order = res[0]
+        orderIds = res.map(x => x._id);
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      })
+  });
+
+  it('expect set a ticket', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`checkout`),
+      body: {
+        order_id: _order.id,
+        cartItems: _order.order_lines,
+        address: _order.address,
+        transaction_id: _order.transaction_id,
+        used_point: _order.used_point,
+        used_balance: _order.used_balance,
+        total_amount: _order.total_amount,
+        is_collect: _order.is_collect
+      },
+      json: true,
+      resolveWithFullResponse: true,
+      jar: customer1.jar
+    }).then((res) => {
+      console.log('---->', res.body);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  })
 });
