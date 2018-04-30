@@ -212,7 +212,7 @@ xdescribe('POST Order - verify order', () => {
 });
 
 describe('POST Order - ORP', () => {
-  let _order, _warehouses;
+  let _order, _warehouses, _products;
   let customer1 = {
     cid: null,
     jar: null
@@ -332,19 +332,19 @@ describe('POST Order - ORP', () => {
               price: 2000,
               barcode: '0394081341',
             inventory: [{
-              count: 4,
+              count: 1,
               reserved: 0,
               warehouse_id: _warehouses[0]._id
             },{
-              count: 1,
+              count: 2,
               reserved: 0,
               warehouse_id: _warehouses[1]._id
             },{
-              count: 2,
+              count: 3,
               reserved: 0,
               warehouse_id: _warehouses[2]._id
             },{
-              count: 3,
+              count: 4,
               reserved: 0,
               warehouse_id: _warehouses[3]._id
             }]
@@ -356,19 +356,19 @@ describe('POST Order - ORP', () => {
               price: 4000,
               barcode: '19231213123',
               inventory: [{
-                count: 4,
+                count: 1,
                 reserved: 0,
                 warehouse_id: _warehouses[0]._id
               },{
-                count: 1,
+                count: 2,
                 reserved: 0,
                 warehouse_id: _warehouses[1]._id
               },{
-                count: 2,
+                count: 3,
                 reserved: 0,
                 warehouse_id: _warehouses[2]._id
               },{
-                count: 3,
+                count: 4,
                 reserved: 0,
                 warehouse_id: _warehouses[3]._id
               }]
@@ -378,7 +378,7 @@ describe('POST Order - ORP', () => {
         return models['ProductTest'].insertMany(products);
       })
       .then(res => {
-
+        _products = res;
         productIds = res.map(x => x._id);
 
         let orders = [{
@@ -391,13 +391,8 @@ describe('POST Order - ORP', () => {
           order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
-            tickets: [ // sales manager ticket
-              // {
-              //   warehouse_id: warehouses.find(x => x.is_center)._id,
-              //   status: _const.ORDER_STATUS.default
-              // }
-            ]
-          }, { // shop clerk ticket
+            tickets: []
+          }, {
             product_id: productIds[0],
             product_instance_id: productInstanceIds[1],
             tickets: []
@@ -417,14 +412,14 @@ describe('POST Order - ORP', () => {
       })
   });
 
-  it('expect set a ticket', function (done) {
+  it('expect should be set ticket for instance that warhouse is center', function (done) {
     this.done = done;
     rp({
       method: 'POST',
       uri: lib.helpers.apiTestURL(`checkout`),
       body: {
         order_id: _order.id,
-        cartItems: _order.order_lines,
+        cartItems: _order.order_lines[0],
         address: _order.address,
         transaction_id: _order.transaction_id,
         used_point: _order.used_point,
@@ -436,8 +431,19 @@ describe('POST Order - ORP', () => {
       resolveWithFullResponse: true,
       jar: customer1.jar
     }).then((res) => {
-      console.log('---->', res.body);
+      expect(res.statusCode).toBe(200);
+      return models['OrderTest'].findById(_order._id);
+    }).then(res => {
+      expect(res._id).toEqual(_order._id);
+      expect(res.order_lines[0]._id).toEqual(_order.order_lines[0]._id);
+      expect(res.order_lines[0].tickets.length).toBe(1);
+      
+      return models['ProductTest'].findById(productIds[0]).lean();
+    }).then(res => {
+      let _instanceFind = res.instances.find(x => x._id.toString() === productInstanceIds[0].toString());
+      expect(_warehouses[0]._id.toString()).toEqual(_instanceFind.inventory[0].warehouse_id.toString());
+      expect(_instanceFind.inventory[0].reserved).toBe(1);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
-  })
+  });
 });
