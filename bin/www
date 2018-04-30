@@ -8,6 +8,7 @@ const debug = require('debug')('persian-mode:server');
 const http = require('http');
 const env = require('../env');
 const socket = require('../socket');
+const port = normalizePort(env.port || '3000');
 
 /**
  * Get port from environment and store in Express.
@@ -19,7 +20,6 @@ appWaiter = setInterval(() => {
     console.log('App is set up');
     clearInterval(appWaiter);
     app = require('../app').get();
-    const port = normalizePort(env.port || '3000');
     app.set('port', port);
 
     /*
