@@ -39,9 +39,11 @@ let setup = http => {
 
   io.on('connection', socket => {
 
-    let user = socket.session.passport.user;
-    if (user && user.warehouse_id) {
-      setRoom(socket, user.warehouse_id);
+    if (sockt.session.passport.user) {
+      let user = socket.session.passport.user;
+      if (user && user.warehouse_id) {
+        setRoom(socket, user.warehouse_id);
+      }
     }
   });
 };
