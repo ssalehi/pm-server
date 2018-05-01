@@ -158,18 +158,27 @@ router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
 // Customer
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
+// Customer shoesType
+router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType', false, ['user', 'body']));
+
 // Order
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
 router.post('/order/ticket/:type', apiResponse('Order', 'setManualTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
 
-// api's used by offline system
+// Order => direct request to offline system
+router.post('/order/offline/requestInvoice', apiResponse('Offline', 'manualRequestInvoice', true, ['body.orderId', 'body.orderLineId', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/offline/requestOnlineWarehouse', apiResponse('Offline', 'manualRequestOnlineWarehouse', true, ['body.orderId', 'body.orderLineId', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+
+// Order => api's used by offline system
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
 router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
 
 // Wish List
 router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
+router.get('/wishlist', apiResponse('Customer', 'getWishListItems', false, ['user']));
+router.delete('/wishlist/delete/:wishItemId', apiResponse('Customer', 'removeFromWishList', false, ['user', 'params.wishItemId']));
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
@@ -348,4 +357,5 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 
 // checkout
 router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address', 'body.customerData', 'body.transaction_id', 'body.used_point', 'body.used_balance', 'body.total_amount', 'body.is_collect']));
+router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 module.exports = router;

@@ -7,6 +7,7 @@ describe('GET Customer', () => {
     first_name: 'c',
     surname: 'v',
     balance: 20,
+    shoesType: "EU",
     loyalty_points: 10,
     addresses: [
       {
@@ -87,5 +88,5 @@ describe('GET Customer', () => {
       }
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
-  })
+  });
 });
