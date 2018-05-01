@@ -95,8 +95,6 @@ function getEnvValue(procEnv) {
     return procEnv;
 }
 
-console.log('-> ', process.env);
-
 
 module.exports = {
   bcrypt,
