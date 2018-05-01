@@ -6,7 +6,7 @@ const _const = require('../../lib/const.list');
 const Order = require('../../lib/order.model');
 const rp = require('request-promise');
 
-describe('POST Order - verify order', () => {
+xdescribe('POST Order - verify order', () => {
 
   let customer1 = {
     cid: null,
@@ -217,6 +217,10 @@ describe('POST Order - ORP', () => {
     cid: null,
     jar: null
   };
+  let SMAgent = {
+    cid: null,
+    jar: null
+  };
 
   let productInstanceIds = [
     mongoose.Types.ObjectId(),
@@ -287,8 +291,13 @@ describe('POST Order - ORP', () => {
     lib.dbHelpers.dropAll()
       .then(() => {
         return models['WarehouseTest'].insertMany(warehouses)
+      .then(() => {
+            return lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
+          })
       })
       .then(res => {
+        SMAgent.aid = res.aid;
+        SMAgent.jar = res.rpJar;
         _warehouses = res;
         return lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
           first_name: 'test 1',
@@ -413,6 +422,33 @@ describe('POST Order - ORP', () => {
             product_instance_id: productInstanceIds[1],
             tickets: []
           }]
+        },{
+          customer_id: customer1.cid,
+          total_amount: 3,
+          order_time: new Date(),
+          is_cart: false,
+          address: {
+          _id: mongoose.Types.ObjectId(),
+           province: 'تهران',
+           city: 'تهران',
+           street: 'نامشخص'
+        },
+          transaction_id: mongoose.Types.ObjectId(),
+          order_lines: [{
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
+            tickets: [ // sales manager ticket
+              {
+                warehouse_id: warehouses.find(x => x.is_center)._id,
+                status: _const.ORDER_STATUS.default,
+                agent_id: SMAgent.aid
+              }
+            ]
+          }, {
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
+            tickets: []
+          }]
         }];
 
         return models['OrderTest'].insertMany(orders);
@@ -446,7 +482,7 @@ describe('POST Order - ORP', () => {
       json: true,
       resolveWithFullResponse: true,
       jar: customer1.jar
-    }).then((res) => {
+    }).then(res => {
       expect(res.statusCode).toBe(200);
       return models['OrderTest'].findById(_order[0]._id);
     }).then(res => {
@@ -454,7 +490,6 @@ describe('POST Order - ORP', () => {
       expect(res.order_lines[0]._id).toEqual(_order[0].order_lines[0]._id);
       expect(res.order_lines[0].tickets.length).toBe(1);
       expect(res.order_lines[0].tickets[0].status).toBe(1);
-      
       return models['ProductTest'].findById(productIds[0]).lean();
     }).then(res => {
       let _instanceFind = res.instances.find(x => x._id.toString() === productInstanceIds[0].toString());
@@ -482,16 +517,16 @@ describe('POST Order - ORP', () => {
       json: true,
       resolveWithFullResponse: true,
       jar: customer1.jar
-    }).then((res) => {
+    }).then(res => {
       expect(res.statusCode).toBe(200);
       return models['OrderTest'].findById(_order[1]._id);
-    }).then((res) => {
+    }).then(res => {
       expect(res._id).toEqual(_order[1]._id);
       expect(res.order_lines[0]._id).toEqual(_order[1].order_lines[0]._id);
       expect(res.order_lines[0].tickets.length).toBe(1);
       expect(res.order_lines[0].tickets[0].status).toBe(1);
       return models['ProductTest'].findById(productIds[0]).lean();
-    }).then((res) => {
+    }).then(res => {
       let _instanceFind = res.instances.find(x => x._id.toString() === productInstanceIds[1].toString());
       expect(_warehouses[1]._id.toString()).toEqual(_instanceFind.inventory[1].warehouse_id.toString());
       expect(_instanceFind.inventory[0].reserved).toBe(2);
