@@ -291,13 +291,11 @@ describe('POST Order - ORP', () => {
     lib.dbHelpers.dropAll()
       .then(() => {
         return models['WarehouseTest'].insertMany(warehouses)
-      .then(() => {
-            return lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
-          })
+      // .then(() => {
+      //       return lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
+      //     })
       })
       .then(res => {
-        SMAgent.aid = res.aid;
-        SMAgent.jar = res.rpJar;
         _warehouses = res;
         return lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
           first_name: 'test 1',
@@ -305,6 +303,8 @@ describe('POST Order - ORP', () => {
         })
       })
       .then(res => {
+        SMAgent.aid = res.aid;
+        SMAgent.jar = res.rpJar;
         customer1.cid = res.cid;
         customer1.jar = res.rpJar;
         let products = [{
@@ -437,11 +437,12 @@ describe('POST Order - ORP', () => {
           order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
-            tickets: [ // sales manager ticket
+            tickets: [
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
                 status: _const.ORDER_STATUS.default,
-                agent_id: SMAgent.aid
+                agent_id: SMAgent.aid,
+
               }
             ]
           }, {
@@ -533,5 +534,39 @@ describe('POST Order - ORP', () => {
       expect(_instanceFind.inventory[1].reserved).toBe(1);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('Sales Manager should be able to set invoice ticket', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`checkout`),
+      body: {
+        order_id: _order[0].id,
+        cartItems: _order[0].order_lines[0],
+        address: _order[0].address,
+        transaction_id: _order[1].transaction_id,
+        used_point: _order[0].used_point,
+        used_balance: _order[0].used_balance,
+        total_amount: _order[0].total_amount,
+        is_collect: _order[0].is_collect
+      },
+      json: true,
+      jar: customer1.jar,
+      // jar: SMAgent.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['OrderTest'].findById(_order[0]._id).lean()
+    })
+      .then(res => {
+        expect(res.order_lines[0].tickets.length).toBe(1);
+        //expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
+        expect(res.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
+        expect(res.order_lines[0].tickets[0].warehouse_id.toString()).toBe(warehouses.find(x => x.is_center)._id.toString());
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
   });
 });
