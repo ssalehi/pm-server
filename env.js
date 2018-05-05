@@ -95,6 +95,7 @@ function getEnvValue(procEnv) {
     return procEnv;
 }
 
+
 module.exports = {
   bcrypt,
   isProd: isProd,
