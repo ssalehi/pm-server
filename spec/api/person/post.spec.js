@@ -4,8 +4,11 @@ const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const moment = require('moment');
 const _const = require('../../../lib/const.list');
+const mongoose = require('mongoose');
 
 describe('Person POST API', () => {
+  let warehouseId1, warehouseId2, warehouseId3;
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
@@ -80,6 +83,54 @@ describe('Person POST API', () => {
         });
       })
       .then(res => {
+        warehouseId1 = mongoose.Types.ObjectId();
+        warehouseId2 = mongoose.Types.ObjectId();
+        warehouseId3 = mongoose.Types.ObjectId();
+
+        let warehouses = [
+          {
+            _id: warehouseId1,
+            name: 'انبار مرکزی',
+            phone: 'نا مشخص',
+            address: {
+              city: 'تهران',
+              street: 'نامشخص',
+              province: 'تهران'
+            },
+            is_center: true,
+            priority: 0,
+  
+          },
+          {
+            _id: warehouseId2,
+            name: 'پالادیوم',
+            phone: ' 021 2201 0600',
+            has_customer_pickup: true,
+            address: {
+              city: 'تهران',
+              street: 'مقدس اردبیلی',
+              province: 'تهران'
+            },
+            priority: 1,
+  
+          },
+          {
+            _id: warehouseId3,
+            name: 'سانا',
+            phone: '021 7443 8111',
+            has_customer_pickup: true,
+            address: {
+              province: 'تهران',
+              city: 'تهران',
+              street: 'اندرزگو',
+            },
+            priority: 2,
+          }
+        ];
+  
+        return models['WarehouseTest'].insertMany(warehouses);
+      })
+      .then(res => {
         done();
       })
       .catch(err => {
@@ -118,7 +169,8 @@ describe('Person POST API', () => {
       body: {
         username: 'sm@gmail.com',
         password: '123456',
-        loginType: _const.ACCESS_LEVEL.SalesManager
+        loginType: _const.ACCESS_LEVEL.SalesManager,
+        warehouse_id: warehouseId1,
       },
       json: true,
       uri: lib.helpers.apiTestURL('agent/login'),
@@ -141,7 +193,8 @@ describe('Person POST API', () => {
       body: {
         username: 'sc@gmail.com',
         password: '123456',
-        loginType: _const.ACCESS_LEVEL.ShopClerk
+        loginType: _const.ACCESS_LEVEL.ShopClerk,
+        warehouse_id: warehouseId2,
       },
       json: true,
       uri: lib.helpers.apiTestURL('agent/login'),
@@ -164,7 +217,8 @@ describe('Person POST API', () => {
       body: {
         username: 'da@gmail.com',
         password: '123456',
-        loginType: _const.ACCESS_LEVEL.DeliveryAgent
+        loginType: _const.ACCESS_LEVEL.DeliveryAgent,
+        warehouse_id: warehouseId3,
       },
       json: true,
       uri: lib.helpers.apiTestURL('agent/login'),
@@ -559,7 +613,7 @@ describe('Person POST API', () => {
       });
   });
 
-  it("should not able to set mobile number for user who is verified (by registration api)", function (done) {
+  it("should not be able to set mobile number for user who is verified (by registration api)", function (done) {
     this.done = done;
     (new models['CustomerTest']({
       first_name: 'ABC',
@@ -573,7 +627,7 @@ describe('Person POST API', () => {
         return rp({
           method: 'post',
           body: {
-            username: 'ab@ba.com',
+            username: 'ab@b.com',
             mobile_no: '98745632109',
           },
           uri: lib.helpers.apiTestURL('register/mobile'),
@@ -582,7 +636,181 @@ describe('Person POST API', () => {
         })
       })
       .then(res => {
-        this.fail('Can set mobile number for incorrect username');
+        this.fail('System can set mobile number for incorrect username');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noUser.status);
+        expect(err.error).toBe(error.noUser.message);
+        done();
+      });
+  });
+
+  it("should send verification code", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        mobile_no: '+989391993730',
+      },
+      uri: lib.helpers.apiTestURL('forgot/password'),
+      json: true,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['CustomerTest'].findOne({mobile_no: '+989391993730'}).lean();
+      })
+      .then(res => {
+        expect(res.is_verified).toBe(true);
+        expect(res.verification_code).toBeDefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should get error when apply for code and there is no mobile_no passed to server", function (done) {
+    rp({
+      method: 'post',
+      body: {},
+      json: true,
+      uri: lib.helpers.apiTestURL('forgot/password'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail("User can apply for verification code to change his password without passing mobile number");
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noMobileNo.status);
+        expect(err.error).toBe(error.noMobileNo.message);
+        done();
+      });
+  });
+
+  it("should get error when mobile number is not found", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        mobile_no: '+98939190',
+      },
+      uri: lib.helpers.apiTestURL('forgot/password'),
+      json: true,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Customer can apply for code with incorrect mobile number');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noUser.status);
+        expect(err.error).toBe(error.noUser.message);
+        done();
+      });
+  });
+
+  it("should get error when customer is not verified yet", function (done) {
+    models['CustomerTest'].update({
+      mobile_no: '+989391993730',
+    }, {
+        $set: {
+          is_verified: false,
+        }
+      })
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            mobile_no: '+989391993730',
+          },
+          uri: lib.helpers.apiTestURL('forgot/password'),
+          json: true,
+          resolveWithFullResponse: true,
+        });
+      })
+      .then(res => {
+        this.fail('Customer can apply for code with false as is_verified');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noUser.status);
+        expect(err.error).toBe(error.noUser.message);
+        done();
+      });
+  });
+
+  it("should set new password (in forgotting password condition)", function (done) {
+    this.done = done;
+    models['CustomerTest'].update({
+      mobile_no: '+989391993730',
+    }, {
+        $set: {
+          verification_code: 123456,
+        }
+      })
+      .then(res => {
+        return rp({
+          method: 'post',
+          body: {
+            mobile_no: '+989391993730',
+            code: 123456,
+            password: 'P:123abc',
+          },
+          uri: lib.helpers.apiTestURL('forgot/set/password'),
+          json: true,
+          resolveWithFullResponse: true,
+        })
+      })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['CustomerTest'].findOne({
+          mobile_no: '+989391993730',
+        }).lean();
+      })
+      .then(res => {
+        expect(res.verification_code).toBeNull();
+        expect(res.is_verified).toBe(true);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should get error when any of code, password or mobile_no is not set up", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        mobile_no: '+989391993730',
+        password: '123',
+      },
+      uri: lib.helpers.apiTestURL('forgot/set/password'),
+      json: true,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Customer can change his password without passing code to server');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noCode.status);
+        expect(err.error).toBe(error.noCode.message);
+        done();
+      });
+  });
+
+  it("should get error when no user match with passed code, mobile_no and true as is_verified", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        mobile_no: '+989391993730',
+        code: '123',
+        password: '123',
+      },
+      uri: lib.helpers.apiTestURL('forgot/set/password'),
+      json: true,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Customer can change his password without matching code, mobile_no and true as is_verified');
         done();
       })
       .catch(err => {

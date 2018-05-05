@@ -104,7 +104,7 @@ router.get('/login/google/callback', passport.authenticate('google', {
   successRedirect: '/login/oauth',
   failureRedirect: '/login/oauth'
 }));
-// router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
+router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
 // Person (Customer/Agent) API
 router.put('/register', apiResponse('Customer', 'registration', false, ['body']));
 router.post('/editUserBasicInfo', apiResponse('Customer', 'editUserBasicInfo', false, ['body', 'user.username']));
@@ -130,7 +130,8 @@ router.post('/user/profile', apiResponse('Person', 'setProfile', false, ['user',
 router.get('/user/profile/:pid', apiResponse('Person', 'getPersonInfo', false, ['user.pid', 'params.pid']));
 router.delete('/user/:pid', apiResponse('Person', 'delete', true, ['params.pid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.put('/user/message', apiResponse('Person', 'socketHandler', false, ['body']));
-
+router.post('/forgot/password', apiResponse('Customer', 'forgotPassword', false, ['body']));
+router.post('/forgot/set/password', apiResponse('Customer', 'setNewPassword', false, ['body']));
 
 router.put('/addAgent', apiResponse('Agent', 'save', false, ['']));
 router.put('/addCustomer', apiResponse('Customer', 'save', false, ['']));
