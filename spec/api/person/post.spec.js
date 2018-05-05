@@ -4,8 +4,11 @@ const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const moment = require('moment');
 const _const = require('../../../lib/const.list');
+const mongoose = require('mongoose');
 
 describe('Person POST API', () => {
+  let warehouseId1, warehouseId2, warehouseId3;
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
@@ -80,6 +83,54 @@ describe('Person POST API', () => {
         });
       })
       .then(res => {
+        warehouseId1 = mongoose.Types.ObjectId();
+        warehouseId2 = mongoose.Types.ObjectId();
+        warehouseId3 = mongoose.Types.ObjectId();
+
+        let warehouses = [
+          {
+            _id: warehouseId1,
+            name: 'انبار مرکزی',
+            phone: 'نا مشخص',
+            address: {
+              city: 'تهران',
+              street: 'نامشخص',
+              province: 'تهران'
+            },
+            is_center: true,
+            priority: 0,
+  
+          },
+          {
+            _id: warehouseId2,
+            name: 'پالادیوم',
+            phone: ' 021 2201 0600',
+            has_customer_pickup: true,
+            address: {
+              city: 'تهران',
+              street: 'مقدس اردبیلی',
+              province: 'تهران'
+            },
+            priority: 1,
+  
+          },
+          {
+            _id: warehouseId3,
+            name: 'سانا',
+            phone: '021 7443 8111',
+            has_customer_pickup: true,
+            address: {
+              province: 'تهران',
+              city: 'تهران',
+              street: 'اندرزگو',
+            },
+            priority: 2,
+          }
+        ];
+  
+        return models['WarehouseTest'].insertMany(warehouses);
+      })
+      .then(res => {
         done();
       })
       .catch(err => {
@@ -111,15 +162,15 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  // Should define warehouse id for three below tests
-  xit('sales manager should login', function (done) {
+  it('sales manager should login', function (done) {
     this.done = done;
     rp({
       method: 'post',
       body: {
         username: 'sm@gmail.com',
         password: '123456',
-        loginType: _const.ACCESS_LEVEL.SalesManager
+        loginType: _const.ACCESS_LEVEL.SalesManager,
+        warehouse_id: warehouseId1,
       },
       json: true,
       uri: lib.helpers.apiTestURL('agent/login'),
@@ -135,14 +186,15 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('shop clerk manager should login', function (done) {
+  it('shop clerk manager should login', function (done) {
     this.done = done;
     rp({
       method: 'post',
       body: {
         username: 'sc@gmail.com',
         password: '123456',
-        loginType: _const.ACCESS_LEVEL.ShopClerk
+        loginType: _const.ACCESS_LEVEL.ShopClerk,
+        warehouse_id: warehouseId2,
       },
       json: true,
       uri: lib.helpers.apiTestURL('agent/login'),
@@ -158,14 +210,15 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('delivery agent should login', function (done) {
+  it('delivery agent should login', function (done) {
     this.done = done;
     rp({
       method: 'post',
       body: {
         username: 'da@gmail.com',
         password: '123456',
-        loginType: _const.ACCESS_LEVEL.DeliveryAgent
+        loginType: _const.ACCESS_LEVEL.DeliveryAgent,
+        warehouse_id: warehouseId3,
       },
       json: true,
       uri: lib.helpers.apiTestURL('agent/login'),
@@ -560,7 +613,7 @@ describe('Person POST API', () => {
       });
   });
 
-  it("should not able to set mobile number for user who is verified (by registration api)", function (done) {
+  it("should not be able to set mobile number for user who is verified (by registration api)", function (done) {
     this.done = done;
     (new models['CustomerTest']({
       first_name: 'ABC',
@@ -574,7 +627,7 @@ describe('Person POST API', () => {
         return rp({
           method: 'post',
           body: {
-            username: 'ab@ba.com',
+            username: 'ab@b.com',
             mobile_no: '98745632109',
           },
           uri: lib.helpers.apiTestURL('register/mobile'),
@@ -583,7 +636,7 @@ describe('Person POST API', () => {
         })
       })
       .then(res => {
-        this.fail('Can set mobile number for incorrect username');
+        this.fail('System can set mobile number for incorrect username');
         done();
       })
       .catch(err => {
@@ -765,5 +818,5 @@ describe('Person POST API', () => {
         expect(err.error).toBe(error.noUser.message);
         done();
       });
-  })
+  });
 });
