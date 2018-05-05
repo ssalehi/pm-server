@@ -12,7 +12,7 @@ const error = require('../lib/errors.list');
  * but instead of emitting to all connected sockets it will emit to all connected socket except the one it is being called on.
  *
  */
-let groups = {};
+let rooms = [];
 let io;
 let setup = http => {
 
@@ -30,7 +30,7 @@ let setup = http => {
 
   io.adapter(redis.redis_socket({host: env.redisHost, port: env.redisPort}));
 
-  io.set('transports', ['websocket']);
+  // io.set('transports', ['websocket']);
 
   let socketSession = socketIOSession(session.session_config());
 
@@ -39,10 +39,12 @@ let setup = http => {
 
   io.on('connection', socket => {
 
-    let user = socket.session.passport.user;
-    if (user && user.warehouse_id)
-      setGroup(user.warehouse_id);
-
+    if (socket.session.passport) {
+      let user = socket.session.passport.user;
+      if (user && user.warehouse_id) {
+        setRoom(socket, user.warehouse_id);
+      }
+    }
   });
 };
 
@@ -58,25 +60,20 @@ function onAuthorizeFail(data, message, error, accept) {
   accept(null, false);
 }
 
-let setGroup = (ns) => {
-
-  if (!groups[ns]) {
-
-    groups[ns] = io
-      .of(`/${ns}`)
-      .on('connection', function (socket) {
-        console.log(`-> new user has been connected to ${ns}`);
-      });
-  }
-};
+let setRoom = (socket, name) => {
+  socket.join(name);
+  console.log(`-> new user has been joined to room: ${name}`);
+  if (!rooms.find(x => x === name))
+    rooms.push(name);
+}
 
 /**
  *
- * @param ns => warehouse id
+ * @param name => warehouse id
  * @param message => is an object such as : {type: ... , data: ...}
  * @returns {Promise}
  */
-let sendToNS = (ns, message) => {
+let sendToNS = (name, message) => {
 
   if (!message.type || !message.data)
     return Promise.reject(error.invalidSocketMessageType);
@@ -84,10 +81,10 @@ let sendToNS = (ns, message) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
 
-      if (groups[ns]) {
-        groups[ns].emit('msg', message);
+      if (rooms.find(x => x === name)) {
+        io.to(name).emit('msg', message);
       } else {
-        console.log('-> ', `${ns} is not in namespaces`);
+        console.log('-> ', `${name} is not in rooms`);
       }
       resolve();
     }, 0)
@@ -99,6 +96,6 @@ let sendToNS = (ns, message) => {
 
 module.exports = {
   setup,
-  setGroup,
-  sendToNS
+  sendToNS,
+  setRoom
 };
