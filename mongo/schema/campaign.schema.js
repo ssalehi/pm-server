@@ -9,21 +9,18 @@ let schema_obj = {
     trim: true,
     unique: true
   },
-  discount_ref:Number,
+  discount_ref: Number,
   start_date: Date,
   end_date: Date,
-  image_url: {
-    type: Schema.Types.ObjectId,
-    ref: 'Image'
-  },
   coupon_code: String,
-  tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
-  desc: String,
-  loyalty_group_id:{
+  loyalty_group_id: {
     type: Schema.Types.ObjectId,
     ref: 'LoyaltyGroup'
   },
-  // campaign_collection_ids: [CampaignCollection]
+  collection_ids: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Collection'
+  }]
 };
 
 
