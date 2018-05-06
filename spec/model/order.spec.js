@@ -217,10 +217,10 @@ describe('POST Order - ORP', () => {
     cid: null,
     jar: null
   };
-  let SMAgent = {
-    cid: null,
-    jar: null
-  };
+  // let SMAgent = {
+  //   cid: null,
+  //   jar: null
+  // };
 
   let productInstanceIds = [
     mongoose.Types.ObjectId(),
@@ -291,9 +291,6 @@ describe('POST Order - ORP', () => {
     lib.dbHelpers.dropAll()
       .then(() => {
         return models['WarehouseTest'].insertMany(warehouses)
-      // .then(() => {
-      //       return lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
-      //     })
       })
       .then(res => {
         _warehouses = res;
@@ -303,8 +300,6 @@ describe('POST Order - ORP', () => {
         })
       })
       .then(res => {
-        SMAgent.aid = res.aid;
-        SMAgent.jar = res.rpJar;
         customer1.cid = res.cid;
         customer1.jar = res.rpJar;
         let products = [{
@@ -395,7 +390,7 @@ describe('POST Order - ORP', () => {
           total_amount: 2,
           order_time: new Date(),
           is_cart: false,
-          address: warehouses[0].address,
+          address: warehouses[1].address,
           transaction_id: mongoose.Types.ObjectId(),
           order_lines: [{
             product_id: productIds[0],
@@ -411,7 +406,23 @@ describe('POST Order - ORP', () => {
           total_amount: 2,
           order_time: new Date(),
           is_cart: false,
-          address: warehouses[1].address,
+          address: warehouses[2].address,
+          transaction_id: mongoose.Types.ObjectId(),
+          order_lines: [{
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
+            tickets: []
+          }, {
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[1],
+            tickets: []
+          }]
+        },{
+          customer_id: customer1.cid,
+          total_amount: 2,
+          order_time: new Date(),
+          is_cart: false,
+          address: warehouses[2].address,
           transaction_id: mongoose.Types.ObjectId(),
           order_lines: [{
             product_id: productIds[0],
@@ -437,14 +448,7 @@ describe('POST Order - ORP', () => {
           order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
-            tickets: [
-              {
-                warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default,
-                agent_id: SMAgent.aid,
-
-              }
-            ]
+            tickets: []
           }, {
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
@@ -500,7 +504,7 @@ describe('POST Order - ORP', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('expect should be set ticket for instance if warehouse have enough count and is_collect is true', function (done) {
+  xit('expect should be set ticket for instance if warehouse have enough count and is_collect is true', function (done) {
     this.done = done;
     rp({
       method: 'POST',
@@ -536,7 +540,7 @@ describe('POST Order - ORP', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('Sales Manager should be able to set invoice ticket', function (done) {
+  xit('Sales Manager should be able to set invoice ticket', function (done) {
     this.done = done;
     rp({
       method: 'POST',
@@ -553,7 +557,6 @@ describe('POST Order - ORP', () => {
       },
       json: true,
       jar: customer1.jar,
-      // jar: SMAgent.jar,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
@@ -561,9 +564,68 @@ describe('POST Order - ORP', () => {
     })
       .then(res => {
         expect(res.order_lines[0].tickets.length).toBe(1);
-        //expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
         expect(res.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
         expect(res.order_lines[0].tickets[0].warehouse_id.toString()).toBe(warehouses.find(x => x.is_center)._id.toString());
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  xit('should choose center warehouse to deliver order to customer', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`checkout`),
+      body: {
+        order_id: _order[0].id,
+        cartItems: _order[0].order_lines[0],
+       // address: _order[0].address,
+        transaction_id: _order[1].transaction_id,
+        used_point: _order[0].used_point,
+        used_balance: _order[0].used_balance,
+        total_amount: _order[0].total_amount,
+        is_collect: _order[0].is_collect
+      },
+      json: true,
+      jar: customer1.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['OrderTest'].findById(_order[0]._id).lean()
+    })
+      .then(res => {
+        expect(res.order_lines[0].tickets.length).toBe(1);
+        expect(res.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
+        expect(res.order_lines[0].tickets[0].warehouse_id.toString()).toBe(warehouses.find(x => x.is_center)._id.toString());
+
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  xit('should choose a warehouse to deliver order to center warehouse', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`checkout`),
+      body: {
+        order_id: _order[1].id,
+        order_line_id: _order[1].order_lines,
+        address: warehouses.find(x => x.name === 'پالادیوم').address,
+
+      },
+      json: true,
+      jar: customer1.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['OrderTest'].findById(_order[1]._id).lean()
+    })
+      .then(res => {
+        expect(res.order_lines[1].tickets.length).toBe(1);
+        expect(res.order_lines[1].tickets[0].status).toBe(_const.ORDER_STATUS.default);
+        expect(res.order_lines[1].tickets[0].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'پالادیوم')._id.toString());
 
         done();
       })
