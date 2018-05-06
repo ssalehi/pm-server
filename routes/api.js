@@ -271,7 +271,7 @@ router.put('/campaign', apiResponse('Campaign', 'setCampaign', true, ['body'], [
 router.post('/campaign/:cid', apiResponse('Campaign', 'setCampaign', true, ['body', 'params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/campaign/collection/add', apiResponse('Campaign', 'addCollection', true, ['body.campaignId', 'body.collectionId'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/campaign/collection/remove', apiResponse('Campaign', 'removeCollection', true, ['body.campaignId', 'body.collectionId'], [_const.ACCESS_LEVEL.ContentManager]));
-router.delete('/campaign/:cid', apiResponse('Campaign', 'setCampaign', true, ['body', 'params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
+router.delete('/campaign/:cid', apiResponse('Campaign', 'removeCampaign', true, ['params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 // Page
