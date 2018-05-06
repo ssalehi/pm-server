@@ -1,5 +1,4 @@
 const Schema = require('mongoose').Schema;
-const CampaignCollection = require('./campaign_collection.schema');
 
 
 let schema_obj = {
