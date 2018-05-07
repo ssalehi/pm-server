@@ -266,6 +266,13 @@ router.delete('/collection/type/:cid/:tid', apiResponse('Collection', 'deleteTyp
 router.delete('/collection/tag/:cid/:tid', apiResponse('Collection', 'deleteTagFromCollection', true, ['params.cid', 'params.tid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'deleteProductFromCollection', true, ['params.cid', 'params.pid'], [_const.ACCESS_LEVEL.ContentManager]));
 
+// Campaign
+router.get('/campaign/:cid', apiResponse('Campaign', 'getCampaign', true, ['params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
+router.put('/campaign', apiResponse('Campaign', 'setCampaign', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/campaign/:cid', apiResponse('Campaign', 'setCampaign', true, ['body', 'params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/campaign/collection/:isAdd', apiResponse('Campaign', 'addRemoveCollection', true, ['body.campaignId', 'body.collectionId', 'params.isAdd'], [_const.ACCESS_LEVEL.ContentManager]));
+router.delete('/campaign/:cid', apiResponse('Campaign', 'endCampaign', true, ['params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
+
 
 // Page
 router.get('/page/:id', apiResponse('Page', 'getPage', false, ['params.id']));
