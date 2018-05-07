@@ -7,6 +7,9 @@ let schema_obj = {
     // unique: true,
   },
   content: String, // html content if needed
+  title: {
+    type: String,
+  }
 };
 
 let PageInfoSchema = new Schema(schema_obj, {strict: true});
