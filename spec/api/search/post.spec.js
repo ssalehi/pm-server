@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const error = require('../../../lib/errors.list');
 const _const = require('../../../lib/const.list');
 
-describe('POST Search Collection', () => {
+
+xdescribe('POST Search Collection', () => {
 
   let adminObj = {
     aid: null,
@@ -124,7 +125,7 @@ describe('POST Search Collection', () => {
 
 });
 
-describe('POST Search Page', () => {
+xdescribe('POST Search Page', () => {
 
   let page1, page2, collection1, collection2;
   let adminObj = {
@@ -276,7 +277,7 @@ describe('POST Search Page', () => {
 
 });
 
-describe('POST Order - Search over order lines by tickets', () => {
+xdescribe('POST Order - Search over order lines by tickets', () => {
 
   let customer1 = {
     cid: null,
@@ -667,7 +668,7 @@ describe('POST Order - Search over order lines by tickets', () => {
   });
 });
 
-describe('POST Suggest Product / Tag / Color', () => {
+xdescribe('POST Suggest Product / Tag / Color', () => {
 
   let productTypeIds = [
     mongoose.Types.ObjectId(),
@@ -846,7 +847,7 @@ describe('POST Suggest Product / Tag / Color', () => {
 
 });
 
-describe('POST Suggest Collection', () => {
+xdescribe('POST Suggest Collection', () => {
 
   let adminObj = {
     aid: null,
@@ -933,6 +934,112 @@ describe('POST Suggest Collection', () => {
         done();
       });
   });
-
 });
 
+describe('POST Suggest Page Address', () => {
+
+  let page1, page2;
+      let adminObj = {
+        aid: null,
+        jar: null,
+      };
+
+  beforeEach((done) => {
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('admin');
+      })
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
+        let inserts = [];
+        let n = 0;
+        while (n < 5) {
+          let newPage = models['PageTest']({
+            address: `test${n + 1}`,
+            is_app: false,
+          });
+          inserts.push(newPage.save());
+          n++;
+        }
+        return Promise.all(inserts);
+      })
+      .then(res => {
+        done()
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+  xit('should give suggestion over page', function (done) {
+        this.done = done;
+        rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`/suggest/Page`),
+          body: {
+            phrase: 'test1',
+            options: {
+              exceptionAddress: "test2",
+            }
+          },
+          json: true,
+          jar: adminObj.jar,
+          resolveWithFullResponse: true
+        }).then(res => {
+          expect(res.statusCode).toBe(200);
+          expect(res.body.length).toEqual(1);
+          expect(res.body[0].address).toBe('test1');
+          done();
+        }).catch(lib.helpers.errorHandler.bind(this));
+      });
+
+  it('should return addresses of two pages', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`/suggest/Page`),
+      body: {
+        phrase: 'test',
+        options: {
+          exceptionAddress: "test2",
+        }
+      },
+      json: true,
+      jar: adminObj.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toEqual(4);
+      res.body.forEach(x => expect(x.address).toContain('test'));
+      res.body.forEach(x => expect(x.address).not.toBe('test2'));
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  xit('should get error when some one other than content manager is calling api', function (done) {
+        this.done = done;
+        rp({
+          method: "POST",
+          uri: lib.helpers.apiTestURL(`/suggest/Page`),
+          body: {
+            phrase: 'test1',
+            options: {
+              exceptionAddress: "test2",
+            }
+          },
+          json: true,
+          // jar: adminObj.jar,
+          resolveWithFullResponse: true
+        }).then(res => {
+          this.fail('some one other than content manager could call api');
+          done();
+        })
+          .catch(err => {
+            expect(err.statusCode).toBe(error.noAccess.status);
+            expect(err.error).toBe(error.noAccess.message);
+            done();
+          });
+      });
+    });
