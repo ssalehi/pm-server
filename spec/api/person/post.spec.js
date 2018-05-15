@@ -99,7 +99,7 @@ describe('Person POST API', () => {
             },
             is_center: true,
             priority: 0,
-  
+
           },
           {
             _id: warehouseId2,
@@ -112,7 +112,7 @@ describe('Person POST API', () => {
               province: 'تهران'
             },
             priority: 1,
-  
+
           },
           {
             _id: warehouseId3,
@@ -127,7 +127,7 @@ describe('Person POST API', () => {
             priority: 2,
           }
         ];
-  
+
         return models['WarehouseTest'].insertMany(warehouses);
       })
       .then(res => {
@@ -277,6 +277,29 @@ describe('Person POST API', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
+  it('regular user (customer) should login with mobile number', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        username: '+989391993730',
+        password: '123456',
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('login'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        expect(res.body.username).toBe('aa@gmail.com');
+        expect(res.body.mobile_no).toBe('+989391993730');
+        expect(res.body.personType).toBe('customer');
+        expect(res.body.access_level).toBeUndefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
   it('normal user should login from app', function (done) {
     this.done = done;
     rp({
@@ -292,6 +315,29 @@ describe('Person POST API', () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
         expect(res.body.username).toBe('aa@gmail.com');
+        expect(res.body.personType).toBe('customer');
+        expect(res.body.access_level).toBeUndefined();
+        expect(res.body.token).toBeDefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('regular user (customer) should login from app with mobile number', function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        username: '+989391993730',
+        password: '123456',
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('app/login'),
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        expect(res.body.mobile_no).toBe('+989391993730');
         expect(res.body.personType).toBe('customer');
         expect(res.body.access_level).toBeUndefined();
         expect(res.body.token).toBeDefined();
