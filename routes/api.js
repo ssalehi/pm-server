@@ -152,6 +152,10 @@ router.put('/dictionary', apiResponse('Dictionary', 'addDictionary', false, ['bo
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 
+//Tags
+router.get('/tags/:tagGroupName', apiResponse('Tag', 'getTags', false, ['params.tagGroupName']));
+
+
 // Warehouses
 router.get('/warehouse/all', apiResponse('Warehouse', 'getAllWarehouses', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
