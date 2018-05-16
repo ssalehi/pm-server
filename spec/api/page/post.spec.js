@@ -5,6 +5,7 @@ const path = require('path');
 const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 const errors = require('../../../lib/errors.list');
+const moment = require('moment');
 
 describe('Post page basics', () => {
 
@@ -111,6 +112,7 @@ describe('Post page placements and page info', () => {
                   "textColor": "gray"
                 },
               },
+              start_date: new Date(),
               is_finalized: true,
             },
             {
@@ -126,6 +128,7 @@ describe('Post page placements and page info', () => {
                   "imgMarginLeft": 5
                 }
               },
+              start_date: new Date(),
               is_finalized: true,
             },
             {
@@ -140,6 +143,7 @@ describe('Post page placements and page info', () => {
               },
               is_finalized: true,
               is_deleted: true,
+              start_date: new Date(),
             },
             {
               "_id": placementId4,
@@ -151,6 +155,7 @@ describe('Post page placements and page info', () => {
                 "href": "#"
               },
               is_finalized: false,
+              start_date: new Date(),
             },
             {
               "_id": placementId5,
@@ -168,6 +173,7 @@ describe('Post page placements and page info', () => {
                 },
                 "areas": []
               },
+              start_date: new Date(),
               is_finalized: false,
             },
             {
@@ -181,6 +187,7 @@ describe('Post page placements and page info', () => {
                 "text": "تازه‌ها",
                 "href": "collection/x"
               },
+              start_date: new Date(),
               is_finalized: true,
             },
             {
@@ -194,6 +201,7 @@ describe('Post page placements and page info', () => {
                 "text": "پرفروش‌ها",
                 "href": "#"
               },
+              start_date: new Date('2010', '10', '10'),
               is_finalized: false,
             },
           ],
@@ -281,6 +289,11 @@ describe('Post page placements and page info', () => {
         expect(res[0].placement.length).toBe(6);
         res = res[0].placement;
         expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
+        expect(moment(res.find(el => el._id.toString() === placementId7.toString()).start_date).format('YYYY-MM-DD HH:MM')).toBe(moment(new Date()).format('YYYY-MM-DD HH:MM'));
+        return models['ArchivePlacementTest'].find({page_id: page._id}).lean();
+      })
+      .then(res => {
+        expect(res.length).toBe(1);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -401,6 +414,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "section": "men",
                 "href": "collection/men"
               },
+              start_date: new Date(),
               is_finalized: true,
             },
             {
@@ -414,6 +428,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "text": "تازه‌ها",
                 "href": "collection/x"
               },
+              start_date: new Date(),
               is_finalized: true,
             },
             {
@@ -431,6 +446,7 @@ describe('POST placement (top menu and some other placements)', () => {
                   "imgMarginLeft": 5
                 }
               },
+              start_date: new Date(),
               is_finalized: false,
             },
             {
@@ -443,6 +459,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "section": "women",
                 "href": "collection/women"
               },
+              start_date: new Date(),
               is_finalized: false,
             },
             {
@@ -455,6 +472,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "section": "girls",
                 "href": "collection/girls"
               },
+              start_date: new Date(),
               is_finalized: true,
             },
             {
@@ -467,6 +485,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "section": "boys",
                 "href": "collection/boys"
               },
+              start_date: new Date(),
               is_finalized: false,
             },
             {
@@ -479,6 +498,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "section": "men",
                 "href": "collection/men/list"
               },
+              start_date: new Date(),
               is_finalized: false,
             },
             {
@@ -497,6 +517,7 @@ describe('POST placement (top menu and some other placements)', () => {
                   }
                 ]
               },
+              start_date: new Date(),
               "is_finalized": true
             },
             {
@@ -515,6 +536,7 @@ describe('POST placement (top menu and some other placements)', () => {
                   }
                 ]
               },
+              start_date: new Date(),
               "is_finalized": false
             }
           ],

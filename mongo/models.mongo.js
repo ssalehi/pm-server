@@ -20,6 +20,7 @@ let schemas = {
   PageSchema: require('./schema/page.schema'),
   WarehouseSchema: require('./schema/warehouse.schema'),
   DictionarySchema: require('./schema/dictionary.schema'),
+  ArchivePlacementSchema: require('./schema/archive_placement.schema'),
 };
 
 
