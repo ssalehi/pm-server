@@ -339,7 +339,7 @@ router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
 router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
-  req.is_new = req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined" ? false : true;
+  req.is_new = !(req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined");
   const plc_id = req.is_new ? new mongoose.Types.ObjectId() : req.params.placementId;
 
   const destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
@@ -360,7 +360,7 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
       next();
     }
   });
-})
+});
 router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // checkout
