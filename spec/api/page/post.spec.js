@@ -70,7 +70,7 @@ describe('Post page basics', () => {
 });
 
 describe('Post page placements and page info', () => {
-  let page, collection_id;
+  let page, collection_id, archivePlacement1, archivePlacement2;
   const pageId = new mongoose.Types.ObjectId();
   let contentManager;
 
@@ -81,6 +81,8 @@ describe('Post page placements and page info', () => {
   const placementId5 = new mongoose.Types.ObjectId();
   const placementId6 = new mongoose.Types.ObjectId();
   const placementId7 = new mongoose.Types.ObjectId();
+  const placementId8 = new mongoose.Types.ObjectId();
+  const placementId9 = new mongoose.Types.ObjectId();
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
@@ -112,7 +114,7 @@ describe('Post page placements and page info', () => {
                   "textColor": "gray"
                 },
               },
-              start_date: new Date(),
+              start_date: moment(new Date(2013, 10, 10)).format('YYYY-MM-DD'),
               is_finalized: true,
             },
             {
@@ -128,7 +130,7 @@ describe('Post page placements and page info', () => {
                   "imgMarginLeft": 5
                 }
               },
-              start_date: new Date(),
+              start_date: moment(new Date()).format('YYYY-MM-DD'),
               is_finalized: true,
             },
             {
@@ -143,7 +145,7 @@ describe('Post page placements and page info', () => {
               },
               is_finalized: true,
               is_deleted: true,
-              start_date: new Date(),
+              start_date: moment(new Date()).format('YYYY-MM-DD'),
             },
             {
               "_id": placementId4,
@@ -155,7 +157,7 @@ describe('Post page placements and page info', () => {
                 "href": "#"
               },
               is_finalized: false,
-              start_date: new Date(),
+              start_date: moment(new Date()).format('YYYY-MM-DD'),
             },
             {
               "_id": placementId5,
@@ -173,7 +175,7 @@ describe('Post page placements and page info', () => {
                 },
                 "areas": []
               },
-              start_date: new Date(),
+              start_date: moment(new Date()).format('YYYY-MM-DD'),
               is_finalized: false,
             },
             {
@@ -187,7 +189,7 @@ describe('Post page placements and page info', () => {
                 "text": "تازه‌ها",
                 "href": "collection/x"
               },
-              start_date: new Date(),
+              start_date: moment(new Date()).format('YYYY-MM-DD'),
               is_finalized: true,
             },
             {
@@ -201,7 +203,7 @@ describe('Post page placements and page info', () => {
                 "text": "پرفروش‌ها",
                 "href": "#"
               },
-              start_date: new Date('2010', '10', '10'),
+              start_date: moment(new Date('2010', '10', '10')).format('YYYY-MM-DD'),
               is_finalized: false,
             },
           ],
@@ -212,7 +214,47 @@ describe('Post page placements and page info', () => {
         });
 
         return page.save()
+      })
+      .then(res => {
+        archivePlacement1 = models['ArchivePlacementTest']({
+          _id: placementId8,
+          page_id: pageId,
+          component_name: "main",
+          start_date: moment(new Date(2010, 10, 10)).format('YYYY-MM-DD'),
+          end_date: moment(new Date(2013, 10, 10)).format('YYYY-MM-DD'),
+          info: {
+            "panel_type": "full",
+            "imgUrl": `images/placements/test/${pageId}/${placementId1}`,
+            "href": "#",
+            "subTitle": {
+              "title": "کفش پیاده روی زنانه نایک، مدل پگاسوس",
+              "text": "کفش پیاده روی زنانه",
+              "color": "black",
+              "textColor": "gray"
+            }
+          }
+        });
 
+        return archivePlacement1.save();
+      })
+      .then(res => {
+        archivePlacement2 = models['ArchivePlacementTest']({
+          _id: placementId9,
+          page_id: pageId,
+          component_name: "footer",
+          variable_name: "site_link",
+          start_date: moment(new Date(2009, 10, 10)).format('YYYY-MM-DD'),
+          end_date: moment(new Date(2010, 10, 10)).format('YYYY-MM-DD'),
+          info: {
+            "is_header": true,
+            "row": 1,
+            "column": 1,
+            "text": "خرید و دریافت",
+            "href": "#"
+          }
+        });
+
+        return archivePlacement2.save();
       })
       .then(res => {
         done();
@@ -268,6 +310,31 @@ describe('Post page placements and page info', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
+  it("should get placements for specific date", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        address: page.address,
+        date: new Date(2012, 1, 1),
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('page/cm/preview'),
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        res = res.body;
+        expect(res.placement.length).toBe(2);
+        expect(res.placement.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
+        expect(res.placement.find(el => el._id.toString() === placementId8.toString()).info.subTitle.title).toBe('کفش پیاده روی زنانه نایک، مدل پگاسوس');
+        expect(res.placement.find(el => el._id.toString() === placementId9.toString())).toBeUndefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
   it("should finalizing the placements", function (done) {
     this.done = done;
     rp({
@@ -293,7 +360,7 @@ describe('Post page placements and page info', () => {
         return models['ArchivePlacementTest'].find({page_id: page._id}).lean();
       })
       .then(res => {
-        expect(res.length).toBe(1);
+        expect(res.length).toBe(3);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
