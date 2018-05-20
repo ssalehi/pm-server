@@ -557,5 +557,4 @@ describe('Set User Favorite Shoes Type', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-})
-;
+});

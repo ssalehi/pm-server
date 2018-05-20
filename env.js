@@ -42,7 +42,6 @@ if (isDev)
 /**
  *  App
  */
-
 const appName = getEnvValue(process.env.APP_NAME);
 const appAddress = getEnvValue(process.env.APP_ADDRESS);
 const port = getEnvValue(process.env.PORT);
@@ -57,6 +56,32 @@ const db_uri_test = getEnvValue(process.env.DB_URI) + '_test';
 const googleAuth_clientId = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTID);
 const googleAuth_clientSecret = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTSECRET);
 const googleAuth_callbackUrl = getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL);
+
+/**
+ * Mail Config
+ */
+const mailConfig = (isDev ? {
+  "host": "smtp.mailgun.org",
+  "port": "465",
+  "secure": true,
+  "auth": {
+    "user": "no-reply@mail.quran.parts",
+    "pass": "2e$e2ha#wed$uQuRe_5p"
+  },
+  "tls": {
+    "rejectUnauthorized": false
+  },
+  "from": "Persian Mode <no-reply@mail.quran.parts>"
+} : {
+  "host": "smtp.mailgun.org",
+  "port": "465",
+  "secure": true,
+  "auth": {
+    "user": "postmaster@mg.bentoak.systems",
+    "pass": "9ac5e5a1c799dace810f36d143989c0d"
+  },
+  "from": "Persian Mode <postmaster@mg.bentoak.systems>"
+});
 
 /**
  * Redis
@@ -122,7 +147,8 @@ module.exports = {
     callBackURL: googleAuth_callbackUrl,
   },
   onlineWarehouseAPI,
-  invoiceAPI
+  invoiceAPI,
+  mailConfig,
 };
 
 

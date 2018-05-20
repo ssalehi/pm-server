@@ -114,10 +114,10 @@ router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode'
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
 router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user', 'body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
+router.get('/user/activate/link/:link', apiResponse('Customer', 'checkActiveLink', false, ['params.link']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
-router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
-router.post('/user/auth/local/:link', apiResponse('Person', 'completeAuth', false, ['params.link', 'body']));
-router.post('/user/auth/link', apiResponse('Person', 'sendActivationMail', false, ['body.email', 'body.is_forgot_mail']));
+// router.post('/user/auth/local/:link', apiResponse('Person', 'completeAuth', false, ['params.link', 'body']));
+router.post('/user/auth/link', apiResponse('Customer', 'sendActivationMail', false, ['body.email', 'body.is_forgot_mail']));
 router.post('/profile/image/:pid', upload.single('image'), apiResponse('Person', 'setProfileImage', false, ['user.pid', 'params.pid', 'file']));
 router.post('/profile/image/:username/:pid', upload.single('image'), apiResponse('Person', 'setProfileImage', true, ['user.pid', 'params.pid', 'file']));
 router.get('/profile/image/:pid', apiResponse('Person', 'getProfileImage', false, ['params.pid']));
@@ -313,7 +313,7 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-    });
+  });
 
 });
 
