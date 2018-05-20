@@ -34,7 +34,10 @@ let schema_obj = {
     type: String,
     required: true,
   },
-
+  article_no: {
+    type: String,
+    required: true,
+  },
   inventory: [inventory_template]
 };
 
