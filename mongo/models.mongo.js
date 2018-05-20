@@ -61,7 +61,7 @@ soldOutPreSaveFunction = function(next){
   const soldOut = this;
   let insertionDate = new Date();
   soldOut.sold_out_date = insertionDate;
-  soldOut.visible_date = new Date().setDate(insertionDate.getDate() + 7);
+  soldOut.expiration_date = new Date().setDate(insertionDate.getDate() + 7);
   next();
 }
 

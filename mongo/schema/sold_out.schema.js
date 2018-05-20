@@ -12,12 +12,7 @@ let schema_obj = {
     required: true
   },
   sold_out_date: Date,
-  visible_date: Date, // this is the date when content manager sees the product in the sold out page in admin panel (it is normally one week after sold_out_date)
-  is_sold_out: {
-    type: Boolean,
-    required: true,
-    default: false
-  }
+  expiration_date: Date, // this is the date when content manager sees the product in the sold out page in admin panel (it is normally one week after sold_out_date)
 };
 
 
