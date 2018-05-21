@@ -34,7 +34,15 @@ let schema_obj = {
     type: String,
     required: true,
   },
-
+  article_no: {
+    type: String,
+    required: true,
+  },
+  sold_out: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   inventory: [inventory_template]
 };
 
