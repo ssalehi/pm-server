@@ -437,7 +437,7 @@ const error = require('../../../lib/errors.list');
 //   // })
 // });
 
-xdescribe('Set User Favorite Shoes Type', () => {
+describe('Set User Favorite Shoes Type', () => {
   const custData = {
     first_name: 'c',
     surname: 'v',
@@ -561,7 +561,7 @@ xdescribe('Set User Favorite Shoes Type', () => {
 
 
 describe('POST Customer / ', () => {
-  let customerId;
+  let username;
   let preferred_brands = [];
   let preferred_tags = [];
   let preferred_size;
@@ -595,7 +595,7 @@ describe('POST Customer / ', () => {
         return models['CustomerTest'].create(customerObj);
       })
       .then((customer) => {
-        return customerId = customer._id;
+        username = customer.username;
       })
       .then(() => {
         return models['TagGroupTest'].insertMany(tagGroupArr);
@@ -651,7 +651,7 @@ describe('POST Customer / ', () => {
       method: 'POST',
       uri: lib.helpers.apiTestURL(`customer/preferences`),
       body: {
-        customerId,
+        username,
         preferred_brands,
         preferred_tags,
         preferred_size
@@ -660,37 +660,13 @@ describe('POST Customer / ', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['CustomerTest'].findById(customerId);
+      return models['CustomerTest'].findOne({username});
     }).then(res => {
       expect(res.preferred_size).toEqual('7.5');
       expect(res.preferred_tags.length).toBe(4);
       expect(res.preferred_brands.length).toBe(1);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  it('expect error when customerId is not valid', function (done) {
-    this.done = done;
-    customerId = customerId + 'A'
-    rp({
-      method: 'POST',
-      uri: lib.helpers.apiTestURL(`customer/preferences`),
-      body: {
-        customerId,
-        preferred_brands,
-        preferred_tags,
-        preferred_size
-      },
-      json: true,
-      resolveWithFullResponse: true
-    }).then(res => {
-      this.fail('expect error when customerId is not valid');
-      done();
-    }).catch(err => {
-      expect(err.statusCode).toBe(error.invalidId.status);
-      expect(err.error).toBe(error.invalidId.message);
-      done();
-    });
   });
 
 });
