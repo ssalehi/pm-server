@@ -21,6 +21,7 @@ let schemas = {
   WarehouseSchema: require('./schema/warehouse.schema'),
   DictionarySchema: require('./schema/dictionary.schema'),
   ArchivePlacementSchema: require('./schema/archive_placement.schema'),
+  SoldOutSchema: require('./schema/sold_out.schema'),
 };
 
 
@@ -56,6 +57,16 @@ preSaveFunction = function (next) {
   });
 };
 
+
+soldOutPreSaveFunction = function(next){
+  const soldOut = this;
+  let insertionDate = new Date();
+  soldOut.sold_out_date = insertionDate;
+  soldOut.expiration_date = new Date().setDate(insertionDate.getDate() + 7);
+  next();
+}
+
+
 compareFunction = function (candidatePassword, cb) {
   env.bcrypt.compare(candidatePassword, this.secret, function (err, isMatch) {
     if (err) return cb(err);
@@ -67,6 +78,11 @@ schemas.AgentSchema.pre('save', preSaveFunction);
 schemas.AgentSchema.methods.comparePassword = compareFunction;
 schemas.CustomerSchema.pre('save', preSaveFunction);
 schemas.CustomerSchema.methods.comparePassword = compareFunction;
+
+schemas.SoldOutSchema.pre('save', soldOutPreSaveFunction);
+
+
+
 
 // can save data out of schema using strict: false
 let models = {};
