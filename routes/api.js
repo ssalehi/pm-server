@@ -166,6 +166,9 @@ router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', fa
 // Customer shoesType
 router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType', false, ['user', 'body']));
 
+// Customer Preferences
+router.post('/customer/preferences', apiResponse('Customer', 'setPreferences', false, ['body']));
+
 // Order
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));

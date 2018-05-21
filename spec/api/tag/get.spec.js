@@ -63,7 +63,7 @@ describe("GET Tags", () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual(4);
+      expect(res.body.length).toEqual(4);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });

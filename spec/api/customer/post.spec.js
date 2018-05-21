@@ -437,7 +437,7 @@ const error = require('../../../lib/errors.list');
 //   // })
 // });
 
-describe('Set User Favorite Shoes Type', () => {
+xdescribe('Set User Favorite Shoes Type', () => {
   const custData = {
     first_name: 'c',
     surname: 'v',
@@ -557,5 +557,140 @@ describe('Set User Favorite Shoes Type', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
-})
-;
+});
+
+
+describe('POST Customer / ', () => {
+  let customerId;
+  let preferred_brands = [];
+  let preferred_tags = [];
+  let preferred_size;
+  
+  beforeEach(done => {
+    let customerObj = {
+      first_name: 'mohammadali',
+      surname: 'farhad',
+      username: 'farhad@yahoo.com',
+      active: true,
+      is_verified: true,
+      shoesType: 'US',
+      is_guest: false
+    };
+    let brandArr = [{
+      name: 'nike'
+    },{
+      name: 'puma'
+    },{
+      name: 'adidas'
+    }];
+    let tagGroupArr = [{
+      name: 'Category'
+    }, {
+      name: 'Sub Division'
+    }, {
+      name: 'Gender'
+    }];
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return models['CustomerTest'].create(customerObj);
+      })
+      .then((customer) => {
+        return customerId = customer._id;
+      })
+      .then(() => {
+        return models['TagGroupTest'].insertMany(tagGroupArr);
+      }).then(tag_group => {
+        return models['TagTest'].insertMany([{
+          name: 'ACTION SPORTS',
+          tag_group_id: tag_group[0]._id
+        }, {
+          name: 'RUNNING',
+          tag_group_id: tag_group[0]._id
+        }, {
+          name: 'FOOTBALL/SOCCER',
+          tag_group_id: tag_group[0]._id
+        }, {
+          name: 'TRAINING',
+          tag_group_id: tag_group[0]._id
+        }, {
+          name: 'BALL PUMP',
+          tag_group_id: tag_group[1]._id
+        }, {
+          name: 'TOWEL',
+          tag_group_id: tag_group[1]._id
+        }, {
+          name: 'SLIP-ON SHOES',
+          tag_group_id: tag_group[2]._id
+        }, {
+          name: 'BASKETBALL',
+          tag_group_id: tag_group[2]._id
+        }, {
+          name: 'BaseBall',
+          tag_group_id: tag_group[2]._id
+        }]);
+      })
+      .then(res => {
+        preferred_tags = res.slice(0, 4).map(el => el._id);
+        return models['BrandTest'].insertMany(brandArr);
+      })
+      .then(res => {
+        preferred_size = '7.5';
+        preferred_brands =  res.slice(0, 1).map(el => el._id);
+        done();
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+  it('expect preferences customer update', function (done) {
+    this.done = done;
+    
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`customer/preferences`),
+      body: {
+        customerId,
+        preferred_brands,
+        preferred_tags,
+        preferred_size
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      return models['CustomerTest'].findById(customerId);
+    }).then(res => {
+      expect(res.preferred_size).toEqual('7.5');
+      expect(res.preferred_tags.length).toBe(4);
+      expect(res.preferred_brands.length).toBe(1);
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('expect error when customerId is not valid', function (done) {
+    this.done = done;
+    customerId = customerId + 'A'
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`customer/preferences`),
+      body: {
+        customerId,
+        preferred_brands,
+        preferred_tags,
+        preferred_size
+      },
+      json: true,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('expect error when customerId is not valid');
+      done();
+    }).catch(err => {
+      expect(err.statusCode).toBe(error.invalidId.status);
+      expect(err.error).toBe(error.invalidId.message);
+      done();
+    });
+  });
+
+});
