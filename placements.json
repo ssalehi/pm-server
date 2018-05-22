@@ -446,8 +446,6 @@
     {
       "component_name": "main",
       "variable_name": "",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "panel_type": "full",
         "imgUrl": "/assets/pictures/nike-first-page-pic/pm-1.png",
@@ -472,8 +470,6 @@
     {
       "component_name": "main",
       "variable_name": "",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "panel_type": "full",
         "imgUrl": "/assets/pictures/nike-first-page-pic/pm-2.png",
@@ -498,8 +494,6 @@
     {
       "component_name": "main",
       "variable_name": "",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "panel_type": "full",
         "imgUrl": "/assets/pictures/nike-first-page-pic/pm-7.png",
@@ -524,8 +518,6 @@
     {
       "component_name": "main",
       "variable_name": "",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "panel_type": "half",
         "imgUrl": "/assets/pictures/nike-first-page-pic/half-1.png",
@@ -550,8 +542,6 @@
     {
       "component_name": "main",
       "variable_name": "",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "panel_type": "half",
         "imgUrl": "/assets/pictures/nike-first-page-pic/half-2.png",
@@ -576,8 +566,6 @@
     {
       "component_name": "main",
       "variable_name": "",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "panel_type": "quarter",
         "row": 5,
@@ -602,8 +590,6 @@
     {
       "component_name": "main",
       "variable_name": "",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "panel_type": "quarter",
         "row": 5,
@@ -623,8 +609,6 @@
     {
       "component_name": "main",
       "variable_name": "",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "panel_type": "quarter",
         "imgUrl": "/assets/pictures/nike-first-page-pic/q3.png",
@@ -644,8 +628,6 @@
     {
       "component_name": "main",
       "variable_name": "",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "panel_type": "quarter",
         "imgUrl": "/assets/pictures/nike-first-page-pic/q4.png",
@@ -664,8 +646,6 @@
     },
     {
       "component_name": "slider",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "column": 0,
         "imgUrl": "/assets/cliparts/delivery.png",
@@ -676,8 +656,6 @@
     },
     {
       "component_name": "slider",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "text": "پس گرفتن جنس خریداری شده تا ۳۰ روز",
         "column": 1,
@@ -692,8 +670,6 @@
     },
     {
       "component_name": "slider",
-      "start_date": "",
-      "end_date": "",
       "info": {
         "text": "تخفیف‌های ویژه و حراج‌های اختصاصی برای اعضاء",
         "column": 2,
