@@ -16,6 +16,10 @@ let schema_obj = {
     textColor: String,
   },
   imgUrl: String,
+  fileType: {
+    ext: String,
+    mime: String,
+  },
   subTitle: {
     title: String,
     text: String,
