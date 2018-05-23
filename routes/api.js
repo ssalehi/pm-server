@@ -152,6 +152,10 @@ router.put('/dictionary', apiResponse('Dictionary', 'addDictionary', false, ['bo
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 
+//Tags
+router.get('/tags/:tagGroupName', apiResponse('Tag', 'getTags', false, ['params.tagGroupName']));
+
+
 // Warehouses
 router.get('/warehouse/all', apiResponse('Warehouse', 'getAllWarehouses', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
@@ -161,6 +165,9 @@ router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', fa
 
 // Customer shoesType
 router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType', false, ['user', 'body']));
+
+// Customer Preferences
+router.post('/customer/preferences', apiResponse('Customer', 'setPreferences', false, ['body']));
 
 // Order
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));

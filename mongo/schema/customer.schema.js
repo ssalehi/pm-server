@@ -61,6 +61,7 @@ let schema_obj = {
   // wish_list: [Schema.Types.ObjectId],
   wish_list: [wishListItemSchema],
   preferred_tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
+  preferred_size: {type: String},
   orders: [{type: Schema.Types.ObjectId, ref: 'Order'}],
   addresses: [addressSchema],
   active: { // weather user can system or not
