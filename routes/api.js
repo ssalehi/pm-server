@@ -292,6 +292,7 @@ router.post('/page/cm/preview', apiResponse('Page', 'getPageByAddress', true, ['
 
 // Search
 router.post('/search/:className', apiResponse('Search', 'search', false, ['params.className', 'body', 'user']));
+router.post('/collectionPages', apiResponse('Collection', 'getCollectionPages', false, ['body']));
 router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body', 'user']));
 
 // upload Data
