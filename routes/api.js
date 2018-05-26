@@ -193,6 +193,7 @@ router.delete('/wishlist/delete/:wishItemId', apiResponse('Customer', 'removeFro
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
 router.put('/product', apiResponse('Product', 'setProduct', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product', apiResponse('Product', 'setProduct', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/product/getMultiple', apiResponse('Product', 'getProducts', false, ['body.productIds', 'undefined', 'undefined', 'undefined', 'true']));
 router.delete('/product/:id', apiResponse('Product', 'deleteProduct', true, ['params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.get('/product/color/:product_id/:color_id/', apiResponse('Product', 'getProductByColor', false, ['params.product_id', 'params.color_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
@@ -329,7 +330,7 @@ router.use('/uploadData', function (req, res, next) {
 router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // Cart
-router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 'body']));
+router.get('/cart/items', apiResponse('Order', 'getCartItems', false, ['user']));
 
 // Coupon
 router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', false, ['user', 'body']));
