@@ -9,6 +9,7 @@ const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
 const mongoose = require('mongoose');
 const copydir = require('copy-dir');
+const warehouses = require('./warehouses');
 
 
 SALT_WORK_FACTOR = 10;
@@ -21,64 +22,11 @@ db.dbIsReady()
   .then(() => {
 
     copydir.sync('assets', 'public/assets');
-    console.log('-> ', 'here');
     return models['Warehouse'].find().lean();
   })
   .then(res => {
     if (!res || res.length === 0) {
-      let warehouses = [
-        {
-          _id: mongoose.Types.ObjectId(),
-          name: 'انبار مرکزی',
-          phone: 'نا مشخص',
-          address: {
-            city: 'تهران',
-            street: 'نامشخص',
-            province: 'تهران'
-          },
-          is_center: true,
-          priority: 0,
-
-        },
-        {
-          _id: mongoose.Types.ObjectId(),
-          name: 'پالادیوم',
-          phone: ' 021 2201 0600',
-          has_customer_pickup: true,
-          address: {
-            city: 'تهران',
-            street: 'مقدس اردبیلی',
-            province: 'تهران'
-          },
-          priority: 1,
-
-        },
-        {
-          _id: mongoose.Types.ObjectId(),
-          name: 'سانا',
-          phone: '021 7443 8111',
-          has_customer_pickup: true,
-          address: {
-            province: 'تهران',
-            city: 'تهران',
-            street: 'اندرزگو',
-          },
-          priority: 2,
-        },
-        {
-          _id: mongoose.Types.ObjectId(),
-          name: 'ایران مال',
-          phone: 'نا مشخص',
-          has_customer_pickup: true,
-          address: {
-            province: 'تهران',
-            city: 'تهران',
-            street: 'اتوبان خرازی',
-          },
-          priority: 3,
-        }
-      ];
-
+      
       return models['Warehouse'].insertMany(warehouses);
     }
     else

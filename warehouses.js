@@ -1,0 +1,77 @@
+const mongoose = require('mongoose');
+
+
+centralAddress = {
+  _id: mongoose.Types.ObjectId(),
+  city: 'تهران',
+  street: 'نامشخص',
+  province: 'تهران'
+}
+
+let warehouses = [
+  {
+    _id: mongoose.Types.ObjectId(),
+    name: 'مرکز تجمیع',
+    phone: 'نا مشخص',
+    address: centralAddress,
+    is_hub: true,
+    has_customer_pickup: false,
+  },
+  {
+    _id: mongoose.Types.ObjectId(),
+    name: 'انبار مرکزی',
+    phone: 'نا مشخص',
+    address: centralAddress,
+    is_hub: false,
+    has_customer_pickup: false,
+    priority: 1,
+
+  },
+  {
+    _id: mongoose.Types.ObjectId(),
+    name: 'پالادیوم',
+    phone: ' 021 2201 0600',
+    has_customer_pickup: true,
+    address: {
+      city: 'تهران',
+      street: 'مقدس اردبیلی',
+      province: 'تهران'
+    },
+    priority: 2,
+    is_hub: false,
+    has_customer_pickup: true,
+  },
+  {
+    _id: mongoose.Types.ObjectId(),
+    name: 'سانا',
+    phone: '021 7443 8111',
+    has_customer_pickup: true,
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'اندرزگو',
+    },
+    priority: 3,
+    is_hub: false,
+    has_customer_pickup: true,
+
+  },
+  {
+    _id: mongoose.Types.ObjectId(),
+    name: 'ایران مال',
+    phone: 'نا مشخص',
+    has_customer_pickup: true,
+    address: {
+      province: 'تهران',
+      city: 'تهران',
+      street: 'اتوبان خرازی',
+    },
+    priority: 4,
+    is_hub: false,
+    has_customer_pickup: true,
+
+  }
+];
+
+
+module.exports = warehouses;

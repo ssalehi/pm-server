@@ -61,10 +61,11 @@ function onAuthorizeFail(data, message, error, accept) {
 }
 
 let setRoom = (socket, name) => {
-  socket.join(name);
-  console.log(`-> new user has been joined to room: ${name}`);
-  if (!rooms.find(x => x === name))
+  if (!rooms.find(x => x === name)) {
+    socket.join(name);
     rooms.push(name);
+    console.log(`-> new user has been joined to room: ${name}`);
+  }
 }
 
 /**
@@ -75,6 +76,7 @@ let setRoom = (socket, name) => {
  */
 let sendToNS = (name, message) => {
 
+  name = name.toString();
   if (!message.type || !message.data)
     return Promise.reject(error.invalidSocketMessageType);
 
