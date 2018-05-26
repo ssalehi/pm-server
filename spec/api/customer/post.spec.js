@@ -596,8 +596,7 @@ describe('POST Customer / ', () => {
       })
       .then((customer) => {
         username = customer.username;
-      })
-      .then(() => {
+        
         return models['TagGroupTest'].insertMany(tagGroupArr);
       }).then(tag_group => {
         return models['TagTest'].insertMany([{
