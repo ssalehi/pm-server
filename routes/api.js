@@ -344,6 +344,7 @@ router.put('/placement', apiResponse('Page', 'addPlacement', true, ['body'], [_c
 router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/placement/revert', apiResponse('Page', 'revertOldPlacements', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
 router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
   req.is_new = !(req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined");
