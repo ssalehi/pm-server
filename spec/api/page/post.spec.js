@@ -5,6 +5,7 @@ const path = require('path');
 const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 const errors = require('../../../lib/errors.list');
+const moment = require('moment');
 
 describe('Post page basics', () => {
 
@@ -69,7 +70,7 @@ describe('Post page basics', () => {
 });
 
 describe('Post page placements and page info', () => {
-  let page, collection_id;
+  let page, collection_id, archivePlacement1, archivePlacement2;
   const pageId = new mongoose.Types.ObjectId();
   let contentManager;
 
@@ -80,6 +81,8 @@ describe('Post page placements and page info', () => {
   const placementId5 = new mongoose.Types.ObjectId();
   const placementId6 = new mongoose.Types.ObjectId();
   const placementId7 = new mongoose.Types.ObjectId();
+  const placementId8 = new mongoose.Types.ObjectId();
+  const placementId9 = new mongoose.Types.ObjectId();
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
@@ -111,6 +114,7 @@ describe('Post page placements and page info', () => {
                   "textColor": "gray"
                 },
               },
+              start_date: moment(new Date(2013, 10, 10)).format('YYYY-MM-DD'),
               is_finalized: true,
             },
             {
@@ -126,6 +130,7 @@ describe('Post page placements and page info', () => {
                   "imgMarginLeft": 5
                 }
               },
+              start_date: moment(new Date()).format('YYYY-MM-DD'),
               is_finalized: true,
             },
             {
@@ -140,6 +145,7 @@ describe('Post page placements and page info', () => {
               },
               is_finalized: true,
               is_deleted: true,
+              start_date: moment(new Date()).format('YYYY-MM-DD'),
             },
             {
               "_id": placementId4,
@@ -151,6 +157,7 @@ describe('Post page placements and page info', () => {
                 "href": "#"
               },
               is_finalized: false,
+              start_date: moment(new Date()).format('YYYY-MM-DD'),
             },
             {
               "_id": placementId5,
@@ -168,6 +175,7 @@ describe('Post page placements and page info', () => {
                 },
                 "areas": []
               },
+              start_date: moment(new Date()).format('YYYY-MM-DD'),
               is_finalized: false,
             },
             {
@@ -181,6 +189,7 @@ describe('Post page placements and page info', () => {
                 "text": "تازه‌ها",
                 "href": "collection/x"
               },
+              start_date: moment(new Date()).format('YYYY-MM-DD'),
               is_finalized: true,
             },
             {
@@ -194,6 +203,7 @@ describe('Post page placements and page info', () => {
                 "text": "پرفروش‌ها",
                 "href": "#"
               },
+              start_date: moment(new Date('2010', '10', '10')).format('YYYY-MM-DD'),
               is_finalized: false,
             },
           ],
@@ -203,8 +213,48 @@ describe('Post page placements and page info', () => {
           }
         });
 
-        return page.save()
+        return page.save();
+      })
+      .then(res => {
+        archivePlacement1 = models['ArchivePlacementTest']({
+          _id: placementId8,
+          page_id: pageId,
+          component_name: "main",
+          start_date: moment(new Date(2010, 10, 10)).format('YYYY-MM-DD'),
+          end_date: moment(new Date(2013, 10, 10)).format('YYYY-MM-DD'),
+          info: {
+            "panel_type": "full",
+            "imgUrl": `images/placements/test/${pageId}/${placementId1}`,
+            "href": "#",
+            "subTitle": {
+              "title": "کفش پیاده روی زنانه نایک، مدل پگاسوس",
+              "text": "کفش پیاده روی زنانه",
+              "color": "black",
+              "textColor": "gray"
+            }
+          }
+        });
 
+        return archivePlacement1.save();
+      })
+      .then(res => {
+        archivePlacement2 = models['ArchivePlacementTest']({
+          _id: placementId9,
+          page_id: pageId,
+          component_name: "footer",
+          variable_name: "site_link",
+          start_date: moment(new Date(2009, 10, 10)).format('YYYY-MM-DD'),
+          end_date: moment(new Date(2010, 10, 10)).format('YYYY-MM-DD'),
+          info: {
+            "is_header": true,
+            "row": 1,
+            "column": 1,
+            "text": "خرید و دریافت",
+            "href": "#"
+          }
+        });
+
+        return archivePlacement2.save();
       })
       .then(res => {
         done();
@@ -260,6 +310,31 @@ describe('Post page placements and page info', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
+  it("should get placements for specific date", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        address: page.address,
+        date: new Date(2012, 1, 1),
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('page/cm/preview'),
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        res = res.body;
+        expect(res.placement.length).toBe(2);
+        expect(res.placement.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
+        expect(res.placement.find(el => el._id.toString() === placementId8.toString()).info.subTitle.title).toBe('کفش پیاده روی زنانه نایک، مدل پگاسوس');
+        expect(res.placement.find(el => el._id.toString() === placementId9.toString())).toBeUndefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
   it("should finalizing the placements", function (done) {
     this.done = done;
     rp({
@@ -281,6 +356,11 @@ describe('Post page placements and page info', () => {
         expect(res[0].placement.length).toBe(6);
         res = res[0].placement;
         expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
+        expect(moment(res.find(el => el._id.toString() === placementId7.toString()).start_date).format('YYYY-MM-DD HH:MM')).toBe(moment(new Date()).format('YYYY-MM-DD HH:MM'));
+        return models['ArchivePlacementTest'].find({page_id: page._id}).lean();
+      })
+      .then(res => {
+        expect(res.length).toBe(3);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -362,6 +442,111 @@ describe('Post page placements and page info', () => {
         done();
       });
   });
+
+  it("should revert old placements", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        placements: [placementId8],
+        page_id: pageId,
+      },
+      uri: lib.helpers.apiTestURL('placement/revert'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['ArchivePlacementTest'].find().lean();
+      })
+      .then(res => {
+        expect(res.length).toBe(2);
+        return models['PageTest'].find({_id: pageId}).lean();
+      })
+      .then(res => {
+        res = res[0];
+        expect(res.placement.length).toBe(8);
+        expect(res.placement.find(el => el._id.toString() === placementId8.toString()).end_date).toBeUndefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should ignore to revert placements without end_date", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        placements: [placementId8, placementId1, placementId2],
+        page_id: pageId,
+      },
+      uri: lib.helpers.apiTestURL('placement/revert'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['ArchivePlacementTest'].find().lean();
+      })
+      .then(res => {
+        expect(res.length).toBe(2);
+        return models['PageTest'].find({_id: pageId}).lean();
+      })
+      .then(res => {
+        res = res[0];
+        expect(res.placement.length).toBe(8);
+        expect(res.placement.find(el => el._id.toString() === placementId8.toString()).end_date).toBeUndefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should get error when page_id is not passed in body", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        placements: [archivePlacement1],
+      },
+      uri: lib.helpers.apiTestURL('placement/revert'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Content Manager can revert some placement items without specifing the page_id');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.pageIdRequired.status);
+        expect(err.error).toBe(errors.pageIdRequired.message);
+        done();
+      });
+  });
+
+  it("should get error when placements is not passed or is empty", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        placements: [],
+        page_id: pageId,
+      },
+      uri: lib.helpers.apiTestURL('placement/revert'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Content Manager can revert some placement items with empty placements array');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.placementIdRequired.status);
+        expect(err.error).toBe(errors.placementIdRequired.message);
+        done();
+      });
+  });
 });
 
 describe('POST placement (top menu and some other placements)', () => {
@@ -401,6 +586,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "section": "men",
                 "href": "collection/men"
               },
+              start_date: new Date(),
               is_finalized: true,
             },
             {
@@ -414,6 +600,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "text": "تازه‌ها",
                 "href": "collection/x"
               },
+              start_date: new Date(),
               is_finalized: true,
             },
             {
@@ -431,6 +618,7 @@ describe('POST placement (top menu and some other placements)', () => {
                   "imgMarginLeft": 5
                 }
               },
+              start_date: new Date(),
               is_finalized: false,
             },
             {
@@ -443,6 +631,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "section": "women",
                 "href": "collection/women"
               },
+              start_date: new Date(),
               is_finalized: false,
             },
             {
@@ -455,6 +644,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "section": "girls",
                 "href": "collection/girls"
               },
+              start_date: new Date(),
               is_finalized: true,
             },
             {
@@ -467,6 +657,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "section": "boys",
                 "href": "collection/boys"
               },
+              start_date: new Date(),
               is_finalized: false,
             },
             {
@@ -479,6 +670,7 @@ describe('POST placement (top menu and some other placements)', () => {
                 "section": "men",
                 "href": "collection/men/list"
               },
+              start_date: new Date(),
               is_finalized: false,
             },
             {
@@ -497,6 +689,7 @@ describe('POST placement (top menu and some other placements)', () => {
                   }
                 ]
               },
+              start_date: new Date(),
               "is_finalized": true
             },
             {
@@ -515,6 +708,7 @@ describe('POST placement (top menu and some other placements)', () => {
                   }
                 ]
               },
+              start_date: new Date(),
               "is_finalized": false
             }
           ],
