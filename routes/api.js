@@ -152,6 +152,10 @@ router.put('/dictionary', apiResponse('Dictionary', 'addDictionary', false, ['bo
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 
+//Tags
+router.get('/tags/:tagGroupName', apiResponse('Tag', 'getTags', false, ['params.tagGroupName']));
+
+
 // Warehouses
 router.get('/warehouse/all', apiResponse('Warehouse', 'getAllWarehouses', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
@@ -161,6 +165,10 @@ router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', fa
 
 // Customer shoesType
 router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType', false, ['user', 'body']));
+
+// Customer Preferences
+router.get('/customer/preferences', apiResponse('Customer', 'getPreferences', false, ['user.username']));
+router.post('/customer/preferences', apiResponse('Customer', 'setPreferences', false, ['body', 'user.username']));
 
 // Order
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
@@ -185,6 +193,7 @@ router.delete('/wishlist/delete/:wishItemId', apiResponse('Customer', 'removeFro
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
 router.put('/product', apiResponse('Product', 'setProduct', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product', apiResponse('Product', 'setProduct', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/product/getMultiple', apiResponse('Product', 'getProducts', false, ['body.productIds', 'undefined', 'undefined', 'undefined', 'true']));
 router.delete('/product/:id', apiResponse('Product', 'deleteProduct', true, ['params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.get('/product/color/:product_id/:color_id/', apiResponse('Product', 'getProductByColor', false, ['params.product_id', 'params.color_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
@@ -279,8 +288,8 @@ router.get('/page/:id', apiResponse('Page', 'getPage', false, ['params.id']));
 router.put('/page', apiResponse('Page', 'setPage', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id'], [_const.ACCESS_LEVEL.ContentManager]));
-router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address', () => false]));
-router.post('/page/cm/preview', apiResponse('Page', 'getPageByAddress', true, ['body.address', () => true], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body', () => false]));
+router.post('/page/cm/preview', apiResponse('Page', 'getPageByAddress', true, ['body', () => true], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 // Search
@@ -321,7 +330,7 @@ router.use('/uploadData', function (req, res, next) {
 router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // Cart
-router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 'body']));
+router.get('/cart/items', apiResponse('Order', 'getCartItems', false, ['user']));
 
 // Coupon
 router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', false, ['user', 'body']));
@@ -338,9 +347,11 @@ router.put('/placement', apiResponse('Page', 'addPlacement', true, ['body'], [_c
 router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/placement/revert', apiResponse('Page', 'revertOldPlacements', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+
 
 router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
-  req.is_new = req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined" ? false : true;
+  req.is_new = !(req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined");
   const plc_id = req.is_new ? new mongoose.Types.ObjectId() : req.params.placementId;
 
   const destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
@@ -361,7 +372,7 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
       next();
     }
   });
-})
+});
 router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // checkout
