@@ -61,9 +61,9 @@ let schema_obj = {
     default: false,
   },
   preferred_brands: [{type: Schema.Types.ObjectId, ref: 'Brand'}],
-  // wish_list: [Schema.Types.ObjectId],
   wish_list: [wishListItemSchema],
   preferred_tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
+  preferred_size: {type: String},
   orders: [{type: Schema.Types.ObjectId, ref: 'Order'}],
   addresses: [addressSchema],
   active: { // wether user can system (?!) or not
