@@ -184,6 +184,9 @@ router.post('/order/offline/requestOnlineWarehouse', apiResponse('Offline', 'man
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
 router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
 
+// Order => tickets
+router.get('/order/:orderId/:orderLineId', apiResponse('Order', 'getTickets', true, ['params', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+
 // Wish List
 router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
 router.get('/wishlist', apiResponse('Customer', 'getWishListItems', false, ['user']));
