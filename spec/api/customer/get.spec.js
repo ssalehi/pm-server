@@ -1,6 +1,8 @@
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
+const error = require('../../../lib/errors.list');
+const mongoose = require('mongoose');
 
 describe('GET Customer', () => {
   const custData = {
@@ -33,6 +35,12 @@ describe('GET Customer', () => {
     jar: null,
   };
 
+  let preferred_brands, preferred_size, preferred_tags;
+  let brands = [];
+  let tagGroups = [];
+  let tags = [];
+
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => lib.dbHelpers.addAndLoginCustomer('cust', 'pass', custData))
@@ -40,10 +48,51 @@ describe('GET Customer', () => {
         customerObj.cid = res.cid;
         customerObj.jar = res.rpJar;
 
+        brands = [
+          {_id: mongoose.Types.ObjectId(), name: 'Nike'},
+          {_id: mongoose.Types.ObjectId(), name: 'Puma'},
+          {_id: mongoose.Types.ObjectId(), name: 'Addidas'}
+        ];
+        tagGroups = [
+          {_id: mongoose.Types.ObjectId(), name: 'Category'},
+          {_id: mongoose.Types.ObjectId(), name: 'Sub Division'},
+          {_id: mongoose.Types.ObjectId(), name: 'Gender'}
+        ];
+        tags = [
+          {_id: mongoose.Types.ObjectId(), name: 'ACTION SPORTS', tag_group_id: tagGroups[0]._id},
+          {_id: mongoose.Types.ObjectId(), name: 'RUNNING', tag_group_id: tagGroups[0]._id},
+          {_id: mongoose.Types.ObjectId(), name: 'FOOTBALL/SOCCER', tag_group_id: tagGroups[0]._id},
+          {_id: mongoose.Types.ObjectId(), name: 'TRAINING', tag_group_id: tagGroups[0]._id},
+          {_id: mongoose.Types.ObjectId(), name: 'BALL PUMP', tag_group_id: tagGroups[1]._id},
+          {_id: mongoose.Types.ObjectId(), name: 'TOWEL', tag_group_id: tagGroups[1]._id},
+          {_id: mongoose.Types.ObjectId(), name: 'SLIP-ON SHOES', tag_group_id: tagGroups[2]._id},
+          {_id: mongoose.Types.ObjectId(), name: 'BASKETBALL', tag_group_id: tagGroups[2]._id},
+          {_id: mongoose.Types.ObjectId(), name: 'BaseBall', tag_group_id: tagGroups[2]._id}
+        ];
+
+        return Promise.all([
+          models['BrandTest'].insertMany(brands),
+          models['TagGroupTest'].insertMany(tagGroups),
+          models['TagTest'].insertMany(tags),
+        ]);
+      })
+      .then(res => {
+        return models['CustomerTest'].update(
+          {
+            _id: customerObj.cid,
+          }, {
+            $set: {
+              preferred_brands: [brands[0]._id, brands[1]._id],
+              preferred_tags: [tags[0]._id, tags[4]._id, tags[6]._id],
+              preferred_size: '10',
+            }
+          });
+      })
+      .then(res => {
         done();
       })
       .catch(err => {
-        console.log(err);
+        console.error(err);
         done();
       });
   });
@@ -88,5 +137,29 @@ describe('GET Customer', () => {
       }
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should get current preference of custoemr', function (done) {
+    this.done = done;
+    rp({
+      method: 'get',
+      uri: lib.helpers.apiTestURL('customer/preferences'),
+      json: true,
+      jar: customerObj.jar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        res = res.body;
+        console.log('res: ', res);
+        expect(res.preferred_size).toBe('10');
+        expect(res.preferred_brands.map(el => el._id)).toContain(brands[0]._id.toString());
+        expect(res.preferred_brands.map(el => el._id)).toContain(brands[1]._id.toString());
+        expect(res.preferred_tags.map(el => el._id)).toContain(tags[0]._id.toString());
+        expect(res.preferred_tags.map(el => el._id)).toContain(tags[4]._id.toString());
+        expect(res.preferred_tags.map(el => el._id)).toContain(tags[6]._id.toString());
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
   });
 });
