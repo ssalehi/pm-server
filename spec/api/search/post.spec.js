@@ -6,7 +6,7 @@ const error = require('../../../lib/errors.list');
 const _const = require('../../../lib/const.list');
 
 
-xdescribe('POST Search Collection', () => {
+describe('POST Search Collection', () => {
 
   let adminObj = {
     aid: null,
@@ -125,7 +125,7 @@ xdescribe('POST Search Collection', () => {
 
 });
 
-xdescribe('POST Search Page', () => {
+describe('POST Search Page', () => {
 
   let page1, page2, collection1, collection2;
   let adminObj = {
@@ -277,7 +277,7 @@ xdescribe('POST Search Page', () => {
 
 });
 
-xdescribe('POST Order - Search over order lines by tickets', () => {
+escribe('POST Order - Search over order lines by tickets', () => {
 
   let customer1 = {
     cid: null,
@@ -668,7 +668,7 @@ xdescribe('POST Order - Search over order lines by tickets', () => {
   });
 });
 
-xdescribe('POST Suggest Product / Tag / Color', () => {
+describe('POST Suggest Product / Tag / Color', () => {
 
   let productTypeIds = [
     mongoose.Types.ObjectId(),
@@ -847,7 +847,7 @@ xdescribe('POST Suggest Product / Tag / Color', () => {
 
 });
 
-xdescribe('POST Suggest Collection', () => {
+describe('POST Suggest Collection', () => {
 
   let adminObj = {
     aid: null,
@@ -973,7 +973,7 @@ describe('POST Suggest Page Address', () => {
       });
   });
 
-  xit('should give suggestion over page', function (done) {
+  it('should give suggestion over page', function (done) {
         this.done = done;
         rp({
           method: 'POST',
@@ -1018,7 +1018,7 @@ describe('POST Suggest Page Address', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('should get error when some one other than content manager is calling api', function (done) {
+  it('should get error when some one other than content manager is calling api', function (done) {
         this.done = done;
         rp({
           method: "POST",

@@ -6,7 +6,7 @@ const _const = require('../../lib/const.list');
 const Order = require('../../lib/order.model');
 const rp = require('request-promise');
 
-xdescribe('POST Order - verify order', () => {
+describe('POST Order - verify order', () => {
 
   let customer1 = {
     cid: null,
@@ -469,7 +469,7 @@ describe('POST Order - ORP', () => {
       })
   });
 
-  xit('expect should be set ticket for instance if warehouse have enough count and is_collect is false', function (done) {
+  it('expect should be set ticket for instance if warehouse have enough count and is_collect is false', function (done) {
     this.done = done;
     rp({
       method: 'POST',
@@ -504,7 +504,7 @@ describe('POST Order - ORP', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('expect should be set ticket for instance if warehouse have enough count and is_collect is true', function (done) {
+  it('expect should be set ticket for instance if warehouse have enough count and is_collect is true', function (done) {
     this.done = done;
     rp({
       method: 'POST',
@@ -584,7 +584,7 @@ describe('POST Order - ORP', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('should choose a warehouse to deliver order to center warehouse', function (done) {
+  it('should choose a warehouse to deliver order to center warehouse', function (done) {
     this.done = done;
     rp({
       method: 'POST',

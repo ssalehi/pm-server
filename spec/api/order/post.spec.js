@@ -5,7 +5,7 @@ const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 
-xdescribe('POST Order (New Order)', () => {
+describe('POST Order (New Order)', () => {
 
   let customerObj = {
     cid: null,
@@ -220,7 +220,7 @@ xdescribe('POST Order (New Order)', () => {
   });
 });
 
-xdescribe('POST Order (Already-exist Order)', () => {
+describe('POST Order (Already-exist Order)', () => {
 
   let customerObj = {
     cid: null,
@@ -412,7 +412,7 @@ xdescribe('POST Order (Already-exist Order)', () => {
 
 });
 
-xdescribe('POST Order (Fetch cart details)', () => {
+describe('POST Order (Fetch cart details)', () => {
   let product1, product2;
   let type1, type2, brand1, brand2, color1, color2, tagGroup1, tag1, tag2;
   let order1, order2;
@@ -810,7 +810,7 @@ xdescribe('POST Order (Fetch cart details)', () => {
   });
 });
 
-xdescribe('POST Order (Delete Order lines)', () => {
+describe('POST Order (Delete Order lines)', () => {
 
   let customerObj = {
     cid: null,
