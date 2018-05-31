@@ -61,26 +61,26 @@ const googleAuth_callbackUrl = getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL)
  * Mail Config
  */
 const mailConfig = (isDev ? {
-  "host": "smtp.mailgun.org",
-  "port": "465",
-  "secure": true,
-  "auth": {
-    "user": "no-reply@mail.quran.parts",
-    "pass": "2e$e2ha#wed$uQuRe_5p"
+  host: "smtp.mailgun.org",
+  port: "465",
+  secure: true,
+  auth: {
+    user: "no-reply@mail.quran.parts",
+    pass: getEnvValue(process.env.EMAIL_PASSWORD_DEV),
   },
-  "tls": {
-    "rejectUnauthorized": false
+  tls: {
+    rejectUnauthorized: false
   },
-  "from": "Persian Mode <no-reply@mail.quran.parts>"
+  from: `Persian Mode <no-reply@mail.quran.parts>`
 } : {
-  "host": "smtp.mailgun.org",
-  "port": "465",
-  "secure": true,
-  "auth": {
-    "user": "postmaster@mg.bentoak.systems",
-    "pass": "9ac5e5a1c799dace810f36d143989c0d"
+  host: "smtp.mailgun.org",
+  port: "465",
+  secure: true,
+  auth: {
+    user: "postmaster@mg.bentoak.systems",
+    pass: getEnvValue(process.env.EMAIL_PASSWORD),
   },
-  "from": "Persian Mode <postmaster@mg.bentoak.systems>"
+  from: `Persian Mode <postmaster@mg.bentoak.systems>`
 });
 
 /**
@@ -94,7 +94,6 @@ const redisPass = getEnvValue(process.env.REDIS_PASSWORD);
 /**
  * upload files
  */
-
 uploadPath = "public/documents";
 uploadProductImagePath = "public/images/product-image";
 uploadPlacementImagePath = "public/images/placements";
