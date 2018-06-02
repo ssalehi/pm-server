@@ -11,27 +11,45 @@ const _const = require('../../../lib/const.list');
 describe('POST API ', () => {
   let salesManager;
   let loyaltyGroupList = [];
+  let centralWarehouse = {
+    _id: mongoose.Types.ObjectId(),
+    name: 'انبار مرکزی',
+    phone: 'نا مشخص',
+    address: {
+      city: 'تهران',
+      street: 'نامشخص',
+      province: 'تهران'
+    },
+    is_center: true,
+    priority: 0,
+  };
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
-      .then(() => lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager))
+      .then(() => {
+        return new models['WarehouseTest'](centralWarehouse).save();
+      })
+      .then(() => lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, centralWarehouse._id))
       .then(res => {
         salesManager = res;
 
-        loyaltyGroupList.push(models['LoyaltyGroupTest']({
+        loyaltyGroupList.push({
+          _id: mongoose.Types.ObjectId(),
           name: 'Gold',
           min_score: 1000,
-        }));
-        loyaltyGroupList.push(models['LoyaltyGroupTest']({
+        });
+        loyaltyGroupList.push({
+          _id: mongoose.Types.ObjectId(),
           name: 'Silver',
           min_score: 500,
-        }));
-        loyaltyGroupList.push(models['LoyaltyGroupTest']({
+        });
+        loyaltyGroupList.push({
+          _id: mongoose.Types.ObjectId(),
           name: 'Bronze',
           min_score: 100,
-        }));
+        });
 
-        return Promise.all(loyaltyGroupList.map(el => el.save()));
+        return Promise.all(loyaltyGroupList.map(el => models['LoyaltyGroupTest'](el).save()));
       })
       .then(res => {
         done();
@@ -83,7 +101,7 @@ describe('POST API ', () => {
         done();
       })
       .catch(err => {
-        expect(err.statusCode).toBe(errors.dataIsNotCompleted.statusCode);
+        expect(err.statusCode).toBe(errors.dataIsNotCompleted.status);
         expect(err.error).toBe(errors.dataIsNotCompleted.message);
         done();
       });
@@ -118,27 +136,45 @@ describe('POST API ', () => {
 describe('POST API (DELETE)', () => {
   let salesManager;
   let loyaltyGroupList = [];
+  let centralWarehouse = {
+    _id: mongoose.Types.ObjectId(),
+    name: 'انبار مرکزی',
+    phone: 'نا مشخص',
+    address: {
+      city: 'تهران',
+      street: 'نامشخص',
+      province: 'تهران'
+    },
+    is_center: true,
+    priority: 0,
+  };
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
-      .then(() => lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager))
+      .then(() => {
+        return new models['WarehouseTest'](centralWarehouse).save();
+      })
+      .then(() => lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, centralWarehouse._id))
       .then(res => {
         salesManager = res;
 
-        loyaltyGroupList.push(models['LoyaltyGroupTest']({
+        loyaltyGroupList.push({
+          _id: mongoose.Types.ObjectId(),          
           name: 'Gold',
           min_score: 1000,
-        }));
-        loyaltyGroupList.push(models['LoyaltyGroupTest']({
+        });
+        loyaltyGroupList.push({
+          _id: mongoose.Types.ObjectId(),          
           name: 'Silver',
           min_score: 500,
-        }));
-        loyaltyGroupList.push(models['LoyaltyGroupTest']({
+        });
+        loyaltyGroupList.push({
+          _id: mongoose.Types.ObjectId(),          
           name: 'Bronze',
           min_score: 100,
-        }));
+        });
 
-        return Promise.all(loyaltyGroupList.map(el => el.save()));
+        return Promise.all(loyaltyGroupList.map(el => models['LoyaltyGroupTest'](el).save()));
       })
       .then(res => {
         done();
@@ -189,8 +225,8 @@ describe('POST API (DELETE)', () => {
         done();
       })
       .catch(err => {
-        expect(err.statusCode).toBe(error.loyaltyGroupIdIsRequired.statusCode);
-        expect(err.error).toBe(error.loyaltyGroupIdIsRequired.message);
+        expect(err.statusCode).toBe(errors.loyaltyGroupIdIsRequired.status);
+        expect(err.error).toBe(errors.loyaltyGroupIdIsRequired.message);
         done();
       });
   })
