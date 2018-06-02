@@ -347,7 +347,7 @@ describe("GET Tickets", () => {
 
     rp({
       method: 'GET',
-      uri: lib.helpers.apiTestURL(`order/${orderId}/${orderLineId}`),
+      uri: lib.helpers.apiTestURL(`order/ticket/history/${orderId}/${orderLineId}`),
       body: {},
       json: true,
       resolveWithFullResponse: true,
@@ -368,7 +368,7 @@ describe("GET Tickets", () => {
     orderId = orderId + 'A';
     rp({
       method: 'GET',
-      uri: lib.helpers.apiTestURL(`order/${orderId}/${orderLineId}`),
+      uri: lib.helpers.apiTestURL(`order/ticket/history/${orderId}/${orderLineId}`),
       body: {},
       json: true,
       resolveWithFullResponse: true,
@@ -390,7 +390,7 @@ describe("GET Tickets", () => {
     orderLineId = orderLineId + 'A';
     rp({
       method: 'GET',
-      uri: lib.helpers.apiTestURL(`order/${orderId}/${orderLineId}`),
+      uri: lib.helpers.apiTestURL(`order/ticket/history/${orderId}/${orderLineId}`),
       body: {},
       json: true,
       resolveWithFullResponse: true,
