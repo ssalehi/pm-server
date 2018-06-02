@@ -5,10 +5,10 @@ const error = require('../../../lib/errors.list');
 const moment = require('moment');
 const _const = require('../../../lib/const.list');
 const mongoose = require('mongoose');
+const warehouses = require('../../../warehouses');
 
 describe('Person POST API', () => {
-  let warehouseId1, warehouseId2, warehouseId3;
-
+  
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
@@ -83,51 +83,7 @@ describe('Person POST API', () => {
         });
       })
       .then(res => {
-        warehouseId1 = mongoose.Types.ObjectId();
-        warehouseId2 = mongoose.Types.ObjectId();
-        warehouseId3 = mongoose.Types.ObjectId();
-
-        let warehouses = [
-          {
-            _id: warehouseId1,
-            name: 'انبار مرکزی',
-            phone: 'نا مشخص',
-            address: {
-              city: 'تهران',
-              street: 'نامشخص',
-              province: 'تهران'
-            },
-            is_center: true,
-            priority: 0,
-
-          },
-          {
-            _id: warehouseId2,
-            name: 'پالادیوم',
-            phone: ' 021 2201 0600',
-            has_customer_pickup: true,
-            address: {
-              city: 'تهران',
-              street: 'مقدس اردبیلی',
-              province: 'تهران'
-            },
-            priority: 1,
-
-          },
-          {
-            _id: warehouseId3,
-            name: 'سانا',
-            phone: '021 7443 8111',
-            has_customer_pickup: true,
-            address: {
-              province: 'تهران',
-              city: 'تهران',
-              street: 'اندرزگو',
-            },
-            priority: 2,
-          }
-        ];
-
+        
         return models['WarehouseTest'].insertMany(warehouses);
       })
       .then(res => {
@@ -170,7 +126,7 @@ describe('Person POST API', () => {
         username: 'sm@gmail.com',
         password: '123456',
         loginType: _const.ACCESS_LEVEL.SalesManager,
-        warehouse_id: warehouseId1,
+        warehouse_id: warehouses[0]._id,
       },
       json: true,
       uri: lib.helpers.apiTestURL('agent/login'),
@@ -194,7 +150,7 @@ describe('Person POST API', () => {
         username: 'sc@gmail.com',
         password: '123456',
         loginType: _const.ACCESS_LEVEL.ShopClerk,
-        warehouse_id: warehouseId2,
+        warehouse_id: warehouses[2],
       },
       json: true,
       uri: lib.helpers.apiTestURL('agent/login'),
