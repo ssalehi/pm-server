@@ -4,6 +4,8 @@ const rp = require('request-promise');
 const mongoose = require('mongoose');
 const error = require('../../../lib/errors.list');
 const _const = require('../../../lib/const.list');
+const warehouses = require('../../../warehouses');
+
 
 
 describe('POST Search Collection', () => {
@@ -314,59 +316,7 @@ escribe('POST Order - Search over order lines by tickets', () => {
   ];
   let productIds = [];
   let orderIds = [];
-  let warehouses = [
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'انبار مرکزی',
-      phone: 'نا مشخص',
-      address: {
-        city: 'تهران',
-        street: 'نامشخص',
-        province: 'تهران'
-      },
-      is_center: true,
-      priority: 0,
-
-    },
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'پالادیوم',
-      phone: ' 021 2201 0600',
-      has_customer_pickup: true,
-      address: {
-        city: 'تهران',
-        street: 'مقدس اردبیلی',
-        province: 'تهران'
-      },
-      priority: 1,
-
-    },
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'سانا',
-      phone: '021 7443 8111',
-      has_customer_pickup: true,
-      address: {
-        province: 'تهران',
-        city: 'تهران',
-        street: 'اندرزگو',
-      },
-      priority: 2,
-    },
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'ایران مال',
-      phone: 'نا مشخص',
-      has_customer_pickup: true,
-      address: {
-        province: 'تهران',
-        city: 'تهران',
-        street: 'اتوبان خرازی',
-      },
-      priority: 3,
-    }
-  ];
-
+  
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
