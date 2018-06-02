@@ -1,11 +1,10 @@
 const Schema = require('mongoose').Schema;
 let schema_obj = {
-  warehouse_id: Schema.Types.ObjectId,
+  receiver_id: Schema.Types.ObjectId,
   status: Number,
-  desc: String,
+  desc: Schema.Types.Mixed,
   timestamp: {type: Date, default: Date.now},
   is_processed: {type: Boolean, default: false, required: true},
-  referral_advice: {type: Number},
   agent_id: {
     type: Schema.Types.ObjectId,
     ref: 'Agent'

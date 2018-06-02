@@ -49,7 +49,8 @@ let schema_obj = {
     type: Boolean,
     required: true,
     default: false
-  }
+  },
+ 
 };
 
 

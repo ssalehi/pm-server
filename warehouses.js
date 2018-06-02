@@ -16,6 +16,7 @@ let warehouses = [
     address: centralAddress,
     is_hub: true,
     has_customer_pickup: false,
+    priority: 0
   },
   {
     _id: mongoose.Types.ObjectId(),
@@ -24,7 +25,7 @@ let warehouses = [
     address: centralAddress,
     is_hub: false,
     has_customer_pickup: false,
-    priority: 1,
+    priority: 0,
 
   },
   {
@@ -37,7 +38,7 @@ let warehouses = [
       street: 'مقدس اردبیلی',
       province: 'تهران'
     },
-    priority: 2,
+    priority: 1,
     is_hub: false,
     has_customer_pickup: true,
   },
@@ -51,7 +52,7 @@ let warehouses = [
       city: 'تهران',
       street: 'اندرزگو',
     },
-    priority: 3,
+    priority: 2,
     is_hub: false,
     has_customer_pickup: true,
 
@@ -66,7 +67,7 @@ let warehouses = [
       city: 'تهران',
       street: 'اتوبان خرازی',
     },
-    priority: 4,
+    priority: 3,
     is_hub: false,
     has_customer_pickup: true,
 
