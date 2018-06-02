@@ -20,7 +20,6 @@ describe('POST API ', () => {
       street: 'نامشخص',
       province: 'تهران'
     },
-    is_center: true,
     priority: 0,
   };
 
@@ -167,7 +166,6 @@ describe('POST API (DELETE)', () => {
       street: 'نامشخص',
       province: 'تهران'
     },
-    is_center: true,
     priority: 0,
   };
 
