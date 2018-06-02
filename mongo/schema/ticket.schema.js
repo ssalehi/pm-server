@@ -1,14 +1,13 @@
 const Schema = require('mongoose').Schema;
 let schema_obj = {
-  warehouse_id:{
+  receiver_id:{
     type: Schema.Types.ObjectId,
-    ref: 'Warehouse'
+    ref: 'Agent'
   },
   status: Number,
-  desc: {type: Schema.Types.Mixed},
+  desc: Schema.Types.Mixed,
   timestamp: {type: Date, default: Date.now},
   is_processed: {type: Boolean, default: false, required: true},
-  referral_advice: {type: Number},
   agent_id: {
     type: Schema.Types.ObjectId,
     ref: 'Agent'

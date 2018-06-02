@@ -47,7 +47,7 @@ describe("GET Tickets", () => {
         street: 'نامشخص',
         province: 'تهران'
       },
-      is_center: true,
+      is_hub: true,
       priority: 0,
 
     },
@@ -272,7 +272,7 @@ describe("GET Tickets", () => {
         customerObj.cid = res.cid;
         customerObj.jar = res.rpJar;
 
-        return lib.dbHelpers.addAndLoginAgent('bm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
+        return lib.dbHelpers.addAndLoginAgent('bm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_hub)._id)
       })
       .then(res => {
         // SalesManager login
@@ -299,13 +299,13 @@ describe("GET Tickets", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [ 
               {
-                warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
+                receiver_id: warehouses.find(x => x.name === 'سانا')._id,
                 status: _const.ORDER_STATUS.default,
                 agent_id: SalesManager.aid,
                 desc: 'asas##$ sdsd 3423 232'
               },
               {
-                warehouse_id: warehouses.find(x => x.is_center)._id,
+                receiver_id: SalesManager.aid,
                 status: _const.ORDER_STATUS.default,
                 agent_id: SCAgent.aid,
                 desc: 'dfdfdf #$#$ sds sd434343',
@@ -317,7 +317,7 @@ describe("GET Tickets", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [ 
               {
-                warehouse_id: warehouses.find(x => x.is_center)._id,
+                receiver_id: warehouses.find(x => x.is_hub)._id,
                 status: _const.ORDER_STATUS.default,
                 agent_id: SalesManager.aid,
                 desc: 'asas##$ sdsd 3423 232',
@@ -355,9 +355,8 @@ describe("GET Tickets", () => {
     })
     .then(res => {
       expect(res.statusCode).toBe(200);
-      expect(res.body._id).toEqual(orderId.toString());
-      expect(res.body.order_lines[0]._id).toEqual(orderLineId.toString());
-      expect(res.body.order_lines[0].tickets.length).toBe(2);
+      expect(res.body[0]._id).toEqual(orderId.toString());
+      expect(res.body[0].tickets.length).toBe(2);
       done();
     })
     .catch(lib.helpers.errorHandler.bind(this));
