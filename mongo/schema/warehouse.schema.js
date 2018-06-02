@@ -20,7 +20,7 @@ let schema_obj = {
     type: Boolean,
     default: false,
   },
-  is_center: {
+  is_hub: {
     type: Boolean,
     required: true,
     default: false
@@ -30,7 +30,8 @@ let schema_obj = {
     required: true,
     unique: true,
     min: 0
-  }
+  },
+  ip_address: String
 };
 
 
