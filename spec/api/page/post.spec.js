@@ -213,7 +213,7 @@ describe('Post page placements and page info', () => {
           }
         });
 
-        return page.save()
+        return page.save();
       })
       .then(res => {
         archivePlacement1 = models['ArchivePlacementTest']({
@@ -439,6 +439,111 @@ describe('Post page placements and page info', () => {
       .catch(err => {
         expect(err.statusCode).toBe(errors.pageIdRequired.status);
         expect(err.error).toBe(errors.pageIdRequired.message);
+        done();
+      });
+  });
+
+  it("should revert old placements", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        placements: [placementId8],
+        page_id: pageId,
+      },
+      uri: lib.helpers.apiTestURL('placement/revert'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['ArchivePlacementTest'].find().lean();
+      })
+      .then(res => {
+        expect(res.length).toBe(2);
+        return models['PageTest'].find({_id: pageId}).lean();
+      })
+      .then(res => {
+        res = res[0];
+        expect(res.placement.length).toBe(8);
+        expect(res.placement.find(el => el._id.toString() === placementId8.toString()).end_date).toBeUndefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should ignore to revert placements without end_date", function (done) {
+    this.done = done;
+    rp({
+      method: 'post',
+      body: {
+        placements: [placementId8, placementId1, placementId2],
+        page_id: pageId,
+      },
+      uri: lib.helpers.apiTestURL('placement/revert'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models['ArchivePlacementTest'].find().lean();
+      })
+      .then(res => {
+        expect(res.length).toBe(2);
+        return models['PageTest'].find({_id: pageId}).lean();
+      })
+      .then(res => {
+        res = res[0];
+        expect(res.placement.length).toBe(8);
+        expect(res.placement.find(el => el._id.toString() === placementId8.toString()).end_date).toBeUndefined();
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("should get error when page_id is not passed in body", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        placements: [archivePlacement1],
+      },
+      uri: lib.helpers.apiTestURL('placement/revert'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Content Manager can revert some placement items without specifing the page_id');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.pageIdRequired.status);
+        expect(err.error).toBe(errors.pageIdRequired.message);
+        done();
+      });
+  });
+
+  it("should get error when placements is not passed or is empty", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        placements: [],
+        page_id: pageId,
+      },
+      uri: lib.helpers.apiTestURL('placement/revert'),
+      json: true,
+      jar: contentManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Content Manager can revert some placement items with empty placements array');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.placementIdRequired.status);
+        expect(err.error).toBe(errors.placementIdRequired.message);
         done();
       });
   });

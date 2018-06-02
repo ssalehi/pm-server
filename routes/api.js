@@ -152,6 +152,10 @@ router.put('/dictionary', apiResponse('Dictionary', 'addDictionary', false, ['bo
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 
+//Tags
+router.get('/tags/:tagGroupName', apiResponse('Tag', 'getTags', false, ['params.tagGroupName']));
+
+
 // Warehouses
 router.get('/warehouse/all', apiResponse('Warehouse', 'getWarehouses', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getShops', false, []));
@@ -161,6 +165,10 @@ router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', fa
 
 // Customer shoesType
 router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType', false, ['user', 'body']));
+
+// Customer Preferences
+router.get('/customer/preferences', apiResponse('Customer', 'getPreferences', false, ['user.username']));
+router.post('/customer/preferences', apiResponse('Customer', 'setPreferences', false, ['body', 'user.username']));
 
 // Order
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
@@ -284,6 +292,7 @@ router.post('/page/cm/preview', apiResponse('Page', 'getPageByAddress', true, ['
 
 // Search
 router.post('/search/:className', apiResponse('Search', 'search', false, ['params.className', 'body', 'user']));
+router.post('/collectionPages', apiResponse('Collection', 'getCollectionPages', false, ['body']));
 router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body', 'user']));
 
 // upload Data
@@ -333,6 +342,8 @@ router.put('/placement', apiResponse('Page', 'addPlacement', true, ['body'], [_c
 router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/placement/revert', apiResponse('Page', 'revertOldPlacements', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+
 
 router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
   req.is_new = !(req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined");
@@ -365,4 +376,10 @@ router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
 //sold out
 router.post('/soldout/setFlag', apiResponse('SoldOut', 'setSoldOutFlagOnPI', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+
+// LoyaltyGroup
+router.get('/loyaltygroup', apiResponse('LoyaltyGroup', 'getLoyaltyGroups', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/loyaltygroup', apiResponse('LoyaltyGroup', 'upsertLoyaltyGroup', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGroup', true, ['body._id'], [_const.ACCESS_LEVEL.SalesManager]));
+
 module.exports = router;
