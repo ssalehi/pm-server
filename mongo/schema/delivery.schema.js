@@ -1,8 +1,7 @@
 const Schema = require('mongoose').Schema;
 
 
-send_template = {
-
+point_template = {
   customer: {
     id: {
       type: Schema.Types.ObjectId,
@@ -24,31 +23,36 @@ return_template = {
 };
 
 let schema_obj = {
-  order_id: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'Order'
-  },
-  order_line_id: {
-    type: Schema.Types.ObjectId,
-    required: true,
-  },
-  send: send_template,
-  return: return_template,
+  order_details: [{
+    order_id: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'Order'
+    },
+    order_line_ids: [{
+      type: Schema.Types.ObjectId,
+      required: true,
+    }],
+    completed_order: {
+      type: Boolean,
+      default: false,
+    }
+  }],
+  to: point_template,
+  from: point_template,
+  return: point_template,
   processed_by: {
     type: Schema.Types.ObjectId,
-    required: true,
     ref: 'Agent'
   },
-  start_time: {
-    type: Date,
-    required: true
+  sender: {
+    type: Schema.Types.ObjectId,
+    ref: 'Agent'
   },
-  end_time: Date
+  created_at: Date,
+  start_date: Date,
+  end_date: Date
 };
-
-
-
 
 let DeliverySchema = new Schema(schema_obj, {collection: 'delivery', strict: true});
 

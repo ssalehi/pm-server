@@ -382,4 +382,8 @@ router.get('/loyaltygroup', apiResponse('LoyaltyGroup', 'getLoyaltyGroups', true
 router.post('/loyaltygroup', apiResponse('LoyaltyGroup', 'upsertLoyaltyGroup', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGroup', true, ['body._id'], [_const.ACCESS_LEVEL.SalesManager]));
 
+
+// Delivery
+router.post('/delivery/items/:offset/:limit', apiResponse('Delivery', 'getDeliveryItems', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+
 module.exports = router;
