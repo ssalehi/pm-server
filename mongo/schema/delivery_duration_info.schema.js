@@ -12,6 +12,26 @@ duration_cities_template  = {
   }
 };
 
+loyalty_info_template = {
+  _id: {
+    type: Schema.Types.ObjectId,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  } ,
+  price: {
+    type: Number,
+    required: true
+  },
+  discount:{
+    type: Number,
+    required: true,
+  }
+}
+
 
 let schema_obj = {
   name: {
@@ -26,7 +46,7 @@ let schema_obj = {
     unique:true
   },
   duration_cities: [duration_cities_template],
-  // loyalty_points:[{type: Schema.Types.ObjectId, ref: 'loyaltyGroup'}],
+  duration_loyalty_info: [loyalty_info_template]
 };
 
 let deliveryDurationInfoSchema = new Schema(schema_obj, {collection: 'delivery_duration_info', strict: true});
