@@ -1,7 +1,7 @@
 const Schema = require('mongoose').Schema;
 
 
-duration_cities_template  = {
+cities_template  = {
   name: {
     type: String,
     required: true,
@@ -12,7 +12,7 @@ duration_cities_template  = {
   }
 };
 
-loyalty_info_template = {
+loyalty_template = {
   _id: {
     type: Schema.Types.ObjectId,
     required: true
@@ -40,13 +40,13 @@ let schema_obj = {
     trim: true,
     unique: true
   },
-  duration_value: {
+  delivery_days: {
     type: Number,
     required: true,
     unique:true
   },
-  duration_cities: [duration_cities_template],
-  duration_loyalty_info: [loyalty_info_template]
+  cities: [cities_template],
+  delivery_loyalty: [loyalty_template]
 };
 
 let deliveryDurationInfoSchema = new Schema(schema_obj, {collection: 'delivery_duration_info', strict: true});
