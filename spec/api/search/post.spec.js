@@ -279,7 +279,7 @@ describe('POST Search Page', () => {
 
 });
 
-escribe('POST Order - Search over order lines by tickets', () => {
+describe('POST Order - Search over order lines by tickets', () => {
 
   let customer1 = {
     cid: null,
