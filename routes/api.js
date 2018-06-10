@@ -386,6 +386,7 @@ router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGr
 router.get('/deliveryduration', apiResponse('DeliveryDurationInfo', 'getAllDurationInfo', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.get('/deliveryduration/:id', apiResponse('DeliveryDurationInfo', 'getOneDurationInfo', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/deliveryduration', apiResponse('DeliveryDurationInfo', 'upsertDurationInfo', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo', 'deleteDuration', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
 
 
 module.exports = router;
