@@ -8,7 +8,7 @@ const rp = require('request-promise');
 const warehouses = require('../../../warehouses');
 
 
-xdescribe('POST Order - verify order', () => {
+describe('POST Order - verify order', () => {
 
   let customer1 = {
     cid: null,
@@ -228,29 +228,29 @@ describe('POST Order - ORP', () => {
             }
           ],
           instances: [{
-              _id: productInstanceIds[0],
-              product_color_id: colorIds[0],
-              size: "11",
-              price: 2000,
-              barcode: '0394081341',
+            _id: productInstanceIds[0],
+            product_color_id: colorIds[0],
+            size: "11",
+            price: 2000,
+            barcode: '0394081341',
             inventory: [{
-              count: 1,
-              reserved: 0,
+              count: 2,
+              reserved: 1,
               warehouse_id: _warehouses[0]._id
-            },{
+            }, {
               count: 2,
               reserved: 0,
               warehouse_id: _warehouses[1]._id
-            },{
+            }, {
               count: 3,
               reserved: 0,
               warehouse_id: _warehouses[2]._id
-            },{
+            }, {
               count: 4,
               reserved: 0,
               warehouse_id: _warehouses[3]._id
             }]
-            },
+          },
             {
               _id: productInstanceIds[1],
               product_color_id: colorIds[1],
@@ -261,15 +261,15 @@ describe('POST Order - ORP', () => {
                 count: 2,
                 reserved: 2,
                 warehouse_id: _warehouses[0]._id
-              },{
+              }, {
                 count: 3,
                 reserved: 0,
                 warehouse_id: _warehouses[1]._id
-              },{
+              }, {
                 count: 4,
                 reserved: 0,
                 warehouse_id: _warehouses[2]._id
-              },{
+              }, {
                 count: 5,
                 reserved: 0,
                 warehouse_id: _warehouses[3]._id
@@ -299,7 +299,23 @@ describe('POST Order - ORP', () => {
             product_instance_id: productInstanceIds[1],
             tickets: []
           }]
-        },{
+        }, {
+          customer_id: customer1.cid,
+          total_amount: 2,
+          order_time: new Date(),
+          is_cart: false,
+          address: warehouses[1].address,
+          transaction_id: mongoose.Types.ObjectId(),
+          order_lines: [{
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[0],
+            tickets: []
+          }, {
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[1],
+            tickets: []
+          }]
+        }, {
           customer_id: customer1.cid,
           total_amount: 2,
           order_time: new Date(),
@@ -315,33 +331,17 @@ describe('POST Order - ORP', () => {
             product_instance_id: productInstanceIds[1],
             tickets: []
           }]
-        },{
+        }, {
           customer_id: customer1.cid,
           total_amount: 2,
-          order_time: new Date(),
-          is_cart: false,
-          address: warehouses[2].address,
-          transaction_id: mongoose.Types.ObjectId(),
-          order_lines: [{
-            product_id: productIds[0],
-            product_instance_id: productInstanceIds[0],
-            tickets: []
-          }, {
-            product_id: productIds[0],
-            product_instance_id: productInstanceIds[1],
-            tickets: []
-          }]
-        },{
-          customer_id: customer1.cid,
-          total_amount: 3,
           order_time: new Date(),
           is_cart: false,
           address: {
-          _id: mongoose.Types.ObjectId(),
-           province: 'تهران',
-           city: 'تهران',
-           street: 'نامشخص'
-        },
+            _id: mongoose.Types.ObjectId(),
+            province: 'تهران',
+            city: 'تهران',
+            street: 'مطهری'
+          },
           transaction_id: mongoose.Types.ObjectId(),
           order_lines: [{
             product_id: productIds[0],
@@ -349,7 +349,7 @@ describe('POST Order - ORP', () => {
             tickets: []
           }, {
             product_id: productIds[0],
-            product_instance_id: productInstanceIds[0],
+            product_instance_id: productInstanceIds[1],
             tickets: []
           }]
         }];
@@ -402,7 +402,7 @@ describe('POST Order - ORP', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('expect should be set ticket for instance if warehouse have enough count and is_collect is true', function (done) {
+  it('expect should be set ticket for instance if warehouse have enough count and is_collect is true', function (done) {
     this.done = done;
     rp({
       method: 'POST',
@@ -438,71 +438,51 @@ describe('POST Order - ORP', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('Sales Manager should be able to set invoice ticket', function (done) {
+  it('should choose center warehouse to deliver order to customer', function (done) {
     this.done = done;
     rp({
       method: 'POST',
       uri: lib.helpers.apiTestURL(`checkout`),
       body: {
-        order_id: _order[0].id,
-        cartItems: _order[0].order_lines[0],
-        address: _order[0].address,
-        transaction_id: _order[1].transaction_id,
-        used_point: _order[0].used_point,
-        used_balance: _order[0].used_balance,
-        total_amount: _order[0].total_amount,
-        is_collect: _order[0].is_collect
+        order_id: _order[3].id,
+        cartItems: _order[3].order_lines[0],
+        address: {
+          _id: mongoose.Types.ObjectId(),
+          province: 'تهران',
+          city: 'تهران',
+          street: 'مطهری'
+        },
+        transaction_id: _order[3].transaction_id,
+        used_point: _order[3].used_point,
+        used_balance: _order[3].used_balance,
+        total_amount: _order[3].total_amount,
+        is_collect: _order[3].is_collect
       },
       json: true,
       jar: customer1.jar,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['OrderTest'].findById(_order[0]._id).lean()
-    })
-      .then(res => {
-        expect(res.order_lines[0].tickets.length).toBe(1);
-        expect(res.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
-        expect(res.order_lines[0].tickets[0].warehouse_id.toString()).toBe(warehouses.find(x => x.is_center)._id.toString());
+      return models['OrderTest'].findById(_order[3]._id).lean();
 
-        done();
-      })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
-
-  xit('should choose center warehouse to deliver order to customer', function (done) {
-    this.done = done;
-    rp({
-      method: 'POST',
-      uri: lib.helpers.apiTestURL(`checkout`),
-      body: {
-        order_id: _order[0].id,
-        cartItems: _order[0].order_lines[0],
-       // address: _order[0].address,
-        transaction_id: _order[1].transaction_id,
-        used_point: _order[0].used_point,
-        used_balance: _order[0].used_balance,
-        total_amount: _order[0].total_amount,
-        is_collect: _order[0].is_collect
-      },
-      json: true,
-      jar: customer1.jar,
-      resolveWithFullResponse: true
     }).then(res => {
-      expect(res.statusCode).toBe(200);
-      return models['OrderTest'].findById(_order[0]._id).lean()
-    })
-      .then(res => {
         expect(res.order_lines[0].tickets.length).toBe(1);
         expect(res.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
         expect(res.order_lines[0].tickets[0].warehouse_id.toString()).toBe(warehouses.find(x => x.is_center)._id.toString());
+        return models['ProductTest'].findById(productIds[0]).lean();
 
+      }).then(res => {
+        let instanceFind = res.instances.find(x => x._id.toString() === productInstanceIds[0].toString());
+        expect(_warehouses[0]._id.toString()).toEqual(instanceFind.inventory[0].warehouse_id.toString());
+        expect(instanceFind.inventory[0].reserved).toBe(1);
         done();
-      })
+
+        })
+
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('should choose a warehouse to deliver order to center warehouse', function (done) {
+  it('should choose a warehouse to deliver order to center warehouse', function (done) {
     this.done = done;
     rp({
       method: 'POST',
@@ -511,6 +491,7 @@ describe('POST Order - ORP', () => {
         order_id: _order[1].id,
         order_line_id: _order[1].order_lines,
         address: warehouses.find(x => x.name === 'پالادیوم').address,
+        transaction_id: _order[1].transaction_id,
 
       },
       json: true,
@@ -521,9 +502,9 @@ describe('POST Order - ORP', () => {
       return models['OrderTest'].findById(_order[1]._id).lean()
     })
       .then(res => {
-        expect(res.order_lines[1].tickets.length).toBe(1);
-        expect(res.order_lines[1].tickets[0].status).toBe(_const.ORDER_STATUS.default);
-        expect(res.order_lines[1].tickets[0].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'پالادیوم')._id.toString());
+        expect(res.order_lines[0].tickets.length).toBe(1);
+        expect(res.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
+        //expect(res.order_lines[0].tickets[0].warehouseId.toString()).toBe(warehouses.find(x => x.name === 'پالادیوم')._id.toString());
 
         done();
       })
