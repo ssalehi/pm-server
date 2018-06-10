@@ -470,7 +470,7 @@ describe('POST Order - ORP', () => {
         expect(res.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
         expect(res.order_lines[0].tickets[0].warehouse_id.toString()).toBe(warehouses.find(x => x.is_center)._id.toString());
         return models['ProductTest'].findById(productIds[0]).lean();
-        
+
       }).then(res => {
         let instanceFind = res.instances.find(x => x._id.toString() === productInstanceIds[0].toString());
         expect(_warehouses[0]._id.toString()).toEqual(instanceFind.inventory[0].warehouse_id.toString());
