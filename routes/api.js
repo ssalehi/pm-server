@@ -382,4 +382,10 @@ router.get('/loyaltygroup', apiResponse('LoyaltyGroup', 'getLoyaltyGroups', true
 router.post('/loyaltygroup', apiResponse('LoyaltyGroup', 'upsertLoyaltyGroup', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGroup', true, ['body._id'], [_const.ACCESS_LEVEL.SalesManager]));
 
+// Delivery Duration
+router.get('/deliveryduration', apiResponse('DeliveryDurationInfo', 'getAllDurationInfo', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/deliveryduration/:id', apiResponse('DeliveryDurationInfo', 'getOneDurationInfo', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/deliveryduration', apiResponse('DeliveryDurationInfo', 'upsertDurationInfo', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+
+
 module.exports = router;
