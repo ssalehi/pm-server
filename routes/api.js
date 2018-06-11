@@ -177,6 +177,7 @@ router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['us
 
 // Order => Ticket
 router.post('/order/dss/receive', apiResponse('DSS', 'newReceive', true, ['body.barcode', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
+router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistory', true, ['params', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
 
 // Order => api's used by offline system
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
@@ -381,5 +382,12 @@ router.post('/soldout/setFlag', apiResponse('SoldOut', 'setSoldOutFlagOnPI', tru
 router.get('/loyaltygroup', apiResponse('LoyaltyGroup', 'getLoyaltyGroups', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/loyaltygroup', apiResponse('LoyaltyGroup', 'upsertLoyaltyGroup', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGroup', true, ['body._id'], [_const.ACCESS_LEVEL.SalesManager]));
+
+// Delivery Duration
+router.get('/deliveryduration', apiResponse('DeliveryDurationInfo', 'getAllDurationInfo', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/deliveryduration/:id', apiResponse('DeliveryDurationInfo', 'getOneDurationInfo', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/deliveryduration', apiResponse('DeliveryDurationInfo', 'upsertDurationInfo', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo', 'deleteDuration', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
+
 
 module.exports = router;
