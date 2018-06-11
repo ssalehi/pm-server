@@ -7,6 +7,7 @@ const error = require('../../../lib/errors.list');
 
 describe("GET Tickets", () => {
 
+  let customerAddressId;
   let  customerObj = {
     cid: null,
     jar: null
@@ -297,6 +298,10 @@ describe("GET Tickets", () => {
         order = res[0];
         orderLineOne = res[0].order_lines[0];
         orderLineTwo = res[0].order_lines[1];
+      })
+      .then(() => models['CustomerTest'].findOne({username: 'test@test'}))
+      .then((customer) => {
+        customerAddressId = customer.addresses[0]._id
         done();
       })
       .catch(err => {
@@ -315,8 +320,11 @@ describe("GET Tickets", () => {
           order,
           orderLine: orderLineOne,
           desc: {
-            time_slot: '18-22',
-            day: new Date()
+            day: {
+              time_slot: '18-22',
+              day_slot: new Date()
+            },
+            address_id: customerAddressId
           }
         },
         json: true,
@@ -325,10 +333,10 @@ describe("GET Tickets", () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
       })
-      .then(() => models['OrderTest'].findOne({'_id': order._id, 'order_lines._id': orderLine._id}))
+      .then(() => models['OrderTest'].findOne({'_id': order._id, 'order_lines._id': orderLineOne._id}))
       .then((res) => {
         expect(res.order_lines[0].tickets.length).toEqual(1)
-        expect(res.order_lines[0].tickets[0].desc.time_slot).toBe('18-22');
+        expect(res.order_lines[0].tickets[0].desc.day.time_slot).toBe('18-22');
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -344,10 +352,13 @@ describe("GET Tickets", () => {
         uri: lib.helpers.apiTestURL(`order/return`),
         body: {
           order,
-          orderLine,
+          orderLine: orderLineOne,
           desc: {
-            time_slot: '18-22',
-            day: new Date()
+            day: {
+              time_slot: '18-22',
+              day_slot: new Date()
+            },
+            address_id: customerAddressId
           }
         },
         json: true,
@@ -366,18 +377,21 @@ describe("GET Tickets", () => {
 
   it('expect error when orderlineId not valid', function (done) {
     this.done = done;
-    orderLine = JSON.parse(JSON.stringify(orderLine))
-    orderLineOne['_id'] = orderLine._id + 'A';
+    orderLineOne = JSON.parse(JSON.stringify(orderLineOne))
+    orderLineOne['_id'] = orderLineOne._id + 'A';
 
     rp({
         method: "POST",
         uri: lib.helpers.apiTestURL(`order/return`),
         body: {
           order,
-          orderLine,
+          orderLine: orderLineOne,
           desc: {
-            time_slot: '18-22',
-            day: new Date()
+            day: {
+              time_slot: '18-22',
+              day_slot: new Date()
+            },
+            address_id: customerAddressId
           }
         },
         json: true,
@@ -404,8 +418,11 @@ describe("GET Tickets", () => {
           order,
           orderLine: orderLineTwo,
           desc: {
-            time_slot: '18-22',
-            day: new Date()
+            day: {
+              time_slot: '18-22',
+              day_slot: new Date()
+            },
+            address_id: customerAddressId
           }
         },
         json: true,
