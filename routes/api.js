@@ -389,4 +389,7 @@ router.post('/deliveryduration', apiResponse('DeliveryDurationInfo', 'upsertDura
 router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo', 'deleteDuration', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
 
 
+// Customer Delivery Selected
+router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateFinalPrice', false, ['body'])); // body included customer id and delivery_duration id
+
 module.exports = router;
