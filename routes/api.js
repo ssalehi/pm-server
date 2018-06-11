@@ -176,7 +176,7 @@ router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
 
 // Order => Ticket
-router.post('/order/ticket/onlineWarehouse', apiResponse('TicketAction', 'requestOnlineWarehouse', true, ['body', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/dss/receive', apiResponse('DSS', 'newReceive', true, ['body.barcode', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
 router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistory', true, ['params', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
 
 // Order => api's used by offline system
