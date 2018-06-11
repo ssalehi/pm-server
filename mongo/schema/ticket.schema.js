@@ -2,7 +2,6 @@ const Schema = require('mongoose').Schema;
 let schema_obj = {
   receiver_id:{
     type: Schema.Types.ObjectId,
-    ref: 'Agent'
   },
   status: Number,
   desc: Schema.Types.Mixed,
