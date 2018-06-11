@@ -71,7 +71,7 @@ let setRoom = (socket, name) => {
 /**
  *
  * @param name => warehouse id
- * @param message => is an object such as : {type: ... , data: ...}
+ * @param message 
  * @returns {Promise}
  */
 let sendToNS = (name, message = null) => {
