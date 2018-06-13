@@ -386,6 +386,7 @@ router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGr
 // Delivery Duration
 router.get('/deliveryduration', apiResponse('DeliveryDurationInfo', 'getAllDurationInfo', false, []));
 router.get('/deliveryduration/:id', apiResponse('DeliveryDurationInfo', 'getOneDurationInfo', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/deliverycc', apiResponse('DeliveryDurationInfo', 'getClickAndCollect', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/deliveryduration', apiResponse('DeliveryDurationInfo', 'upsertDurationInfo', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo', 'deleteDuration', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
 
