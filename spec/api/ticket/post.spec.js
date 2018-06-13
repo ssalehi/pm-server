@@ -278,7 +278,7 @@ describe("POST Tickets Return", () => {
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
             tickets: [{
-              is_processed : false,
+              is_processed : true,
               status : 4,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
@@ -408,7 +408,7 @@ describe("POST Tickets Return", () => {
       });
   });
 
-  it('expect error when orderline ticket is_process true', function (done) {
+  it('expect error when orderline ticket status is Delivered ', function (done) {
     this.done = done;
     
     rp({
@@ -429,7 +429,7 @@ describe("POST Tickets Return", () => {
         resolveWithFullResponse: true
       })
       .then(res => {
-        this.fail('expect error when orderline ticket is_process true');
+        this.fail('expect error when orderline ticket status is Delivered');
         done();
       })
       .catch(err => {
@@ -712,7 +712,7 @@ describe("POST Tickets Cancel", () => {
             paid_price : 1000,
             product_instance_id: productInstanceIds[0],
             tickets: [{
-              is_processed : false,
+              is_processed : true,
               status : 4,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
@@ -723,13 +723,13 @@ describe("POST Tickets Cancel", () => {
             paid_price : 2000,
             product_instance_id: productInstanceIds[1],
             tickets: [{
-              is_processed : false,
-              status : 4,
+              is_processed : true,
+              status : 3,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
             },{
-              is_processed : false,
+              is_processed : true,
               status : 11,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
@@ -755,7 +755,7 @@ describe("POST Tickets Cancel", () => {
       });
   });
 
-  it('expect set ticket cancel when orderline dont have tickets with status OnDelivery', function (done) {
+  it('expect set ticket cancel when orderline dont have tickets with status is not OnDelivery or Delivered', function (done) {
     this.done = done;
     
     rp({
@@ -781,13 +781,13 @@ describe("POST Tickets Cancel", () => {
       .then(order => {
         expect(order.order_lines[0].paid_price).toBe(1000);
         expect(order.order_lines[0].tickets.length).toBe(2);
-        expect(order.order_lines[0].tickets[1].status).toBe(11);
+        expect(order.order_lines[0].tickets[1].status).toBe(15);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('expect error when orderline have ticket status is OnDelivery', function (done) {
+  it('expect error when orderline have ticket status is OnDelivery or Delivered', function (done) {
     this.done = done;
     
     rp({
@@ -802,7 +802,7 @@ describe("POST Tickets Cancel", () => {
         jar: customerObj.jar
       })
       .then(res => {
-        this.fail('expect error when orderline have ticket status is OnDelivery');
+        this.fail('expect error when orderline have ticket status is OnDelivery or Delivered');
         done()
       })
       .catch(err => {
