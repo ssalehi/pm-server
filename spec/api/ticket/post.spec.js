@@ -273,19 +273,19 @@ describe("POST Tickets Return", () => {
           order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
-            tickets: []
+            tickets: [{
+              is_processed : true,
+              status : 12,
+              desc : null,
+              receiver_id : mongoose.Types.ObjectId(),
+              timestamp : new Date()
+            }]
           },{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
             tickets: [{
               is_processed : true,
               status : 4,
-              desc : null,
-              receiver_id : mongoose.Types.ObjectId(),
-              timestamp : new Date()
-            },{
-              is_processed : true,
-              status : 12,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
@@ -335,8 +335,8 @@ describe("POST Tickets Return", () => {
       })
       .then(() => models['OrderTest'].findOne({'_id': order._id, 'order_lines._id': orderLineOne._id}))
       .then((res) => {
-        expect(res.order_lines[0].tickets.length).toEqual(1)
-        expect(res.order_lines[0].tickets[0].desc.day.time_slot).toBe('18-22');
+        expect(res.order_lines[0].tickets.length).toEqual(2)
+        expect(res.order_lines[0].tickets[1].desc.day.time_slot).toBe('18-22');
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -433,15 +433,15 @@ describe("POST Tickets Return", () => {
         done();
       })
       .catch(err => {
-        expect(err.statusCode).toBe(error.ticketAlreadyInProcess.status);
-        expect(err.error).toBe(error.ticketAlreadyInProcess.message)
+        expect(err.statusCode).toBe(error.ticketStatusNotDelivered.status);
+        expect(err.error).toBe(error.ticketStatusNotDelivered.message)
         done();
       });
   });
   
 });
 
-describe("POST Tickets Cancel", () => {
+xdescribe("POST Tickets Cancel", () => {
 
   let customerAddressId;
   let  customerObj = {
