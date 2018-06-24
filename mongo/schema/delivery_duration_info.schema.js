@@ -60,13 +60,11 @@ let schema_obj = {
   },
   name: {
     type: String,
-    // required: true,
     trim: true,
     unique: true
   },
   delivery_days: {
     type: Number,
-    // required: true,
     unique: true
   },
   cities: [cities_template],
