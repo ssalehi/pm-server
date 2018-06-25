@@ -15,13 +15,6 @@ point_template = {
   }
 };
 
-return_template = {
-  warehouse_id: {
-    type: Schema.Types.ObjectId,
-    ref: 'Warehouse'
-  }
-};
-
 let schema_obj = {
   order_details: [{
     order_id: {
@@ -40,18 +33,23 @@ let schema_obj = {
   }],
   to: point_template,
   from: point_template,
-  return: point_template,
-  processed_by: {
+  is_return: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  completed_by: {
     type: Schema.Types.ObjectId,
     ref: 'Agent'
   },
-  sender: {
+  delivery_agent: {
     type: Schema.Types.ObjectId,
     ref: 'Agent'
   },
-  created_at: Date,
-  start_date: Date,
-  end_date: Date
+  start: Date,
+  end: Date,
+  delivery_start: Date,
+  delivery_end: Date,
 };
 
 let DeliverySchema = new Schema(schema_obj, {collection: 'delivery', strict: true});

@@ -51,6 +51,10 @@ let schema_obj = {
     default: false
   },
   shelf_code: String,
+  delivery_slot: {
+    type: String,
+    required: true,
+  }
 };
 
 
