@@ -10,6 +10,7 @@ let schemas = {
   CustomerSchema: require('./schema/customer.schema'),
   DeliverySchema: require('./schema/delivery.schema'),
   LoyaltyGroupSchema: require('./schema/loyalty_group.schema'),
+  DeliveryDurationInfoSchema: require('./schema/delivery_duration_info.schema'),
   OrderSchema: require('./schema/order.schema'),
   ProductSchema: require('./schema/product.schema'),
   ProductColorSchema: require('./schema/product_color.schema'),
