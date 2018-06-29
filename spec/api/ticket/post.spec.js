@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 const error = require('../../../lib/errors.list');
 
-xdescribe("POST Tickets Return", () => {
+describe("POST Tickets Return", () => {
 
   let customerAddressId;
   let  customerObj = {
@@ -787,7 +787,7 @@ describe("POST Tickets Cancel", () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit('expect error when orderline have ticket status is OnDelivery or Delivered', function (done) {
+  it('expect error when orderline have ticket status is OnDelivery or Delivered', function (done) {
     this.done = done;
     
     rp({
@@ -812,7 +812,7 @@ describe("POST Tickets Cancel", () => {
       });
   });
 
-  xit('expect error when orderId not valid', function (done) {
+  it('expect error when orderId not valid', function (done) {
     this.done = done;
     order = JSON.parse(JSON.stringify(order))
     order['_id'] = order._id + 'A';
@@ -839,7 +839,7 @@ describe("POST Tickets Cancel", () => {
       });
   });
 
-  xit('expect error when orderlineId not valid', function (done) {
+  it('expect error when orderlineId not valid', function (done) {
     this.done = done;
     orderLineOne = JSON.parse(JSON.stringify(orderLineOne))
     orderLineOne['_id'] = orderLineOne._id + 'A';
