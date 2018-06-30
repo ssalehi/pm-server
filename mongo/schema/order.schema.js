@@ -72,7 +72,8 @@ let schema_obj = {
     type: Number,
     trim: true,
   },
-  time_slot: {    // a hard-code string comming from client : 10-18 , 18-22
+  time_slot: {
+    // a hard-code string comming from client : 10-18 , 18-22
     type: String,
     trim: true,
   },
