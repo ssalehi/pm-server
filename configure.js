@@ -96,6 +96,29 @@ db.dbIsReady()
     }))
   })
   .then(res => {
+    return models['LoyaltyGroup'].find().lean();
+  })
+  .then(res => {
+    if (!res || !res.length)
+      return models['LoyaltyGroup'].insertMany([
+        {
+          name: 'Gold',
+          min_score: 10000,
+        },
+        {
+          name: 'Silver',
+          min_score: 5000,
+        },
+        {
+          name: 'Brunze',
+          min_score: 2000,
+        }
+      ], {ordered: false});
+
+    return Promise.resolve();
+  })
+  .then(res => {
+    console.log('-> ', 'loyalty groups are added');
     let query = {address: 'collection/men/shoes'},
       update = {
         address: 'collection/men/shoes',
@@ -107,7 +130,6 @@ db.dbIsReady()
   })
   .then(res => {
     console.log('-> ', 'collection men shoes page is added for app');
-
     let dictionary = JSON.parse(fs.readFileSync('dictionary.json', 'utf8'));
 
     let data = [];
@@ -142,5 +164,3 @@ db.dbIsReady()
     process.exit();
   }
   );
-
-
