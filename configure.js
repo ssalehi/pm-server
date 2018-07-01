@@ -102,16 +102,16 @@ db.dbIsReady()
     if (!res || !res.length)
       return models['LoyaltyGroup'].insertMany([
         {
-          name: 'Gold',
-          min_score: 10000,
+          name: 'White',
+          min_score: 0,
         },
         {
-          name: 'Silver',
+          name: 'Orange',
           min_score: 5000,
         },
         {
-          name: 'Brunze',
-          min_score: 2000,
+          name: 'Black',
+          min_score: 11000,
         }
       ], {ordered: false});
 

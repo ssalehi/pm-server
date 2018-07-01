@@ -15,6 +15,12 @@ point_template = {
   }
 };
 
+status_template = {
+  status: Number,
+  timestamp: {type: Date, default: Date.now},
+  is_processed: {type: Boolean, default: false, required: true}
+}
+
 let schema_obj = {
   order_details: [{
     order_id: {
@@ -51,6 +57,8 @@ let schema_obj = {
   delivery_start: Date,
   delivery_end: Date,
   shelf_code: String,
+  delivered_evidence: String,
+  status_list: [status_template],
 };
 
 let DeliverySchema = new Schema(schema_obj, {collection: 'delivery', strict: true});
