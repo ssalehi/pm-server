@@ -100,18 +100,39 @@ router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
 router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
-router.get('/login/google/callback', passport.authenticate('google', {
-  successRedirect: '/login/oauth',
-  failureRedirect: '/login/oauth'
-}));
+router.get('/login/google/callback', passport.authenticate('google', {}), function (req, res) {
+  if (!req.user) {
+    console.error(error.noUser);
+    res.end();
+  }
+
+  model['Customer' + (personModel.isTest(req) ? 'Test' : '')].findOne({username: req.user.username})
+    .then(obj => {
+      if (!obj.mobile_no || (obj.mobile_no && obj.is_verified !== _const.VERIFICATION.bothVerified)) {
+        model['Customer' + (personModel.isTest(req) ? 'Test' : '')].update({username: req.user.username}, {
+          is_verified: _const.VERIFICATION.emailVerified,
+        }).then(data => {
+          // TODO: remove http://localhost:4200 !
+          res.writeHead(302, {'Location': 'http://127.0.0.1:4200/login/oauth/setMobile'});
+          res.end();
+        }).catch(err => {
+          console.error('error in changing verification level: ', err);
+          res.end();
+        });
+      } else {
+        res.writeHead(302, {'Location': 'http://127.0.0.1:4200/login/oauth/setMobile'});
+        res.end();
+      }
+    });
+});
 router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
 // Person (Customer/Agent) API
 router.put('/register', apiResponse('Customer', 'registration', false, ['body']));
 router.post('/editUserBasicInfo', apiResponse('Customer', 'editUserBasicInfo', false, ['body', 'user.username']));
 router.post('/changePassword', apiResponse('Customer', 'changePassword', false, ['body', 'user.username']));
-router.post('/register/verify', apiResponse('Customer', 'verification', false, ['body.code', 'body.username']));
+router.post('/register/verify', apiResponse('Customer', 'verification', false, ['user', 'body.code']));
 router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
-router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
+router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['user', 'body.mobile_no']));
 router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user', 'body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
 router.get('/user/activate/link/:link', apiResponse('Customer', 'checkActiveLink', false, ['params.link']));
