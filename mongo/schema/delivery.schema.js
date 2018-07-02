@@ -21,6 +21,11 @@ status_template = {
   is_processed: {type: Boolean, default: false, required: true}
 }
 
+min_slot_template = {
+  lower_bound: Number,
+  upper_bound: Number,
+};
+
 let schema_obj = {
   order_details: [{
     order_id: {
@@ -59,6 +64,8 @@ let schema_obj = {
   shelf_code: String,
   delivered_evidence: String,
   status_list: [status_template],
+  min_end: Date,
+  min_slot: min_slot_template,
 };
 
 let DeliverySchema = new Schema(schema_obj, {collection: 'delivery', strict: true});
