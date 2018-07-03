@@ -4,7 +4,7 @@ const error = require('../../lib/errors.list');
 const mongoose = require('mongoose');
 const _const = require('../../lib/const.list');
 const Delivery = require('../../lib/delivery.model');
-const warehouses = require('../../../warehouses');
+const warehouses = require('../../warehouses');
 const moment = require('moment');
 
 
