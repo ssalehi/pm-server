@@ -281,42 +281,40 @@ describe('Initiate Delivery', () => {
 
     delivery.initiate(Orders[0], orderLineIds[1], {warehouse_id: warehouses.find(x => !x.has_customer_pickup && !x.is_hub)._id}, {warehouse_id: warehouses.find(x => x.is_hub)._id})
       .then(res => {
-        console.log('res: ', res);
-
         expect(res.order_details.length).toBe(1);
         expect(res.order_details[0].order_line_ids.length).toBe(2);
         expect(moment(res.min_end).format('YYYY-MM-DD')).toBe('2010-11-18');
-        expect(res.min_slot.uppser_bound).toBe(10);
-        expect(res.min_slot.lower_bound).toBe(18);
+        expect(res.min_slot.lower_bound).toBe(10);
+        expect(res.min_slot.upper_bound).toBe(18);
         done();
       })
       .catch(err => {
-        this.fail(err);
+        fail(err);
         done();
       });
   });
 
-  xit("should update order_details, min_end and min_slot properties", function (done) {
+  it("should update order_details, min_end and min_slot properties", function (done) {
     Delivery.test = true;
     let delivery = new Delivery(true);
 
     delivery.initiate(Orders[1], orderLineIds[2], {warehouse_id: warehouses.find(x => !x.has_customer_pickup && !x.is_hub)._id}, {warehouse_id: warehouses.find(x => x.is_hub)._id})
       .then(res => {
         expect(res.order_details.length).toBe(2);
-        const newOrder = res.order_details.find(x => mongoose.Types.ObjectId(x.order_id) === orderIds[1]);
+        const newOrder = res.order_details.find(x => x.order_id.toString() === orderIds[1].toString());
         expect(newOrder.order_line_ids.length).toBe(1);
-        expect(moment(min_end).format('YYYY-MM-DD')).toBe('2010-11-12');
+        expect(moment(res.min_end).format('YYYY-MM-DD')).toBe('2010-11-12');
         expect(res.min_slot.lower_bound).toBe(18);
         expect(res.min_slot.upper_bound).toBe(22);
         done();
       })
       .catch(err => {
-        this.fail(err);
+        fail(err);
         done();
       });
   });
 
-  xit("should add new delivery", function (done) {
+  it("should add new delivery", function (done) {
     Delivery.test = true;
     let delivery = new Delivery(true);
     delivery.initiate(Orders[2], orderLineIds[3], {warehouse_id: warehouses.find(x => x.is_hub)._id}, {customer: {customer_id: customer1.cid, address_id: mongoose.Types.ObjectId()}})
@@ -329,7 +327,7 @@ describe('Initiate Delivery', () => {
         done();
       })
       .catch(err => {
-        this.fail(err);
+        fail(err);
         done();
       });
   });
