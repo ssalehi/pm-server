@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 const error = require('../../../lib/errors.list');
 
-describe("GET Tickets", () => {
+describe("GET Tickets Orderline", () => {
   let customerObj = {
     cid: null,
     jar: null
@@ -289,6 +289,7 @@ describe("GET Tickets", () => {
         let orders = [{
           customer_id: customerObj.cid,
           total_amount: 2,
+          delivery_slot: 'delivery_slot 003',
           order_time: new Date(),
           is_cart: false,
           address: warehouses[0].address,
@@ -403,7 +404,7 @@ describe("GET Tickets", () => {
   });
 });
 
-describe("GET Tickets By RecieverId", () => {
+describe("GET Tickets Order By RecieverId", () => {
   let customerObj = {
     cid: null,
     jar: null
@@ -687,6 +688,7 @@ describe("GET Tickets By RecieverId", () => {
         let orders = [{
           customer_id: customerObj.cid,
           total_amount: 2,
+          delivery_slot: 'delivery_slot 001',
           order_time: new Date(),
           is_cart: false,
           address: warehouses[0].address,
@@ -746,7 +748,7 @@ describe("GET Tickets By RecieverId", () => {
 
     rp({
         method: 'GET',
-        uri: lib.helpers.apiTestURL(`order/ticket/history/self-service/${orderId}/${orderLineId}`),
+        uri: lib.helpers.apiTestURL(`order/ticket/history/${orderId}`),
         body: {},
         json: true,
         resolveWithFullResponse: true,
@@ -761,12 +763,36 @@ describe("GET Tickets By RecieverId", () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
+  it('expect error when orderId is inValid', function (done) {
+    this.done = done;
+
+    orderId = orderId + 'A';
+
+    rp({
+        method: 'GET',
+        uri: lib.helpers.apiTestURL(`order/ticket/history/${orderId}`),
+        body: {},
+        json: true,
+        resolveWithFullResponse: true,
+        jar: SalesManager.jar
+      })
+      .then(() => {
+        this.fail('expect error when orderId is inValid');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.invalidId.status);
+        expect(err.error).toEqual(error.invalidId.message);
+        done();
+      });
+  });
+
   it('expect error user dont access to this url', function (done) {
     this.done = done;
 
     rp({
         method: 'GET',
-        uri: lib.helpers.apiTestURL(`order/ticket/history/self-service/${orderId}/${orderLineId}`),
+        uri: lib.helpers.apiTestURL(`order/ticket/history/${orderId}`),
         body: {},
         json: true,
         resolveWithFullResponse: true,
