@@ -157,7 +157,7 @@ router.get('/tags/:tagGroupName', apiResponse('Tag', 'getTags', false, ['params.
 
 
 // Warehouses
-router.get('/warehouse/all', apiResponse('Warehouse', 'getWarehouses', false, []));
+router.get('/warehouse/all', apiResponse('Warehouse', 'getAll', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getShops', false, []));
 
 // Customer
@@ -385,6 +385,13 @@ router.post('/soldout/setFlag', apiResponse('SoldOut', 'setSoldOutFlagOnPI', tru
 router.get('/loyaltygroup', apiResponse('LoyaltyGroup', 'getLoyaltyGroups', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/loyaltygroup', apiResponse('LoyaltyGroup', 'upsertLoyaltyGroup', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGroup', true, ['body._id'], [_const.ACCESS_LEVEL.SalesManager]));
+
+
+// Delivery
+router.post('/delivery/items/:offset/:limit', apiResponse('Delivery', 'getDeliveryItems', true, ['user', 'params.offset', 'params.limit', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.get('/delivery/agent', apiResponse('Agent', 'getDeliveryAgents', true, [], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.post('/delivery', apiResponse('Delivery', 'updateDelivery', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.post('/delivery/tracking', apiResponse('Delivery', 'getTrackingDetails', true, ['user', 'body.id', [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]]));
 
 // Delivery Duration
 router.get('/deliveryduration', apiResponse('DeliveryDurationInfo', 'getAllDurationInfo', false, []));
