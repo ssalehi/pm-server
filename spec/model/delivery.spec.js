@@ -69,6 +69,7 @@ describe('making shelf code', () => {
 
   it('should make return AB . First Code after AA', function (done) {
     this.done = done;
+    Delivery.test = true;
     let delivery = new Delivery(true);
     delivery.makeDeliveryShelfCode(deliveries_id[3]).then(data => {
       expect(data.exist).toBe(false);
@@ -80,8 +81,9 @@ describe('making shelf code', () => {
     });
   });
 
-  it('should make return  AA Because Delivery had shelf_id', function (done) {
+  xit('should make return  AA Because Delivery had shelf_id', function (done) {
     this.done = done;
+    Delivery.test = true;
     let delivery = new Delivery(true);
     delivery.makeDeliveryShelfCode(deliveries_id[1]).then(data => {
       expect(data.shelf_code).toBe("AA");
@@ -90,8 +92,9 @@ describe('making shelf code', () => {
       done();
     });
   });
-  it('should make -- Because this Delivery is not from hub', function (done) {
+  xit('should make -- Because this Delivery is not from hub', function (done) {
     this.done = done;
+    Delivery.test = true;
     let delivery = new Delivery(true);
     delivery.makeDeliveryShelfCode(deliveries_id[2]).then(data => {
       expect(data.shelf_code).toBe("--");
@@ -163,8 +166,9 @@ describe('making shelf code', () => {
     });
   });
 
-  it('should make return AA . First possible Code', function (done) {
+  xit('should make return AA . First possible Code', function (done) {
     this.done = done;
+    Delivery.test = true;
     let delivery = new Delivery(true);
     delivery.makeDeliveryShelfCode(deliveries_id[3]).then(data => {
       expect(data.shelf_code).toBe("AA");
