@@ -5,10 +5,6 @@ const mongoose = require('mongoose');
 const error = require('../../../lib/errors.list');
 const _const = require('../../../lib/const.list');
 
-
-
-
-
 describe('POST Search Ticket on Outbox tab', () => {
   let customerObj = {
     cid: null,
@@ -278,13 +274,16 @@ describe('POST Search Ticket on Outbox tab', () => {
 
         productIds = res.map(el => el._id);
         productInstanceIds = res[0].instances.map(el => el._id);
-        let orders = [{
+        let orders = [
+          // order 1
+          {
           customer_id: customerObj.cid,
           total_amount: 2,
           order_time: new Date(),
           is_cart: false,
           address: warehouses[0].address,
           transaction_id: mongoose.Types.ObjectId(),
+          delivery_slot: 'asd',
           order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
@@ -298,87 +297,47 @@ describe('POST Search Ticket on Outbox tab', () => {
               },
               {
                 receiver_id: SalesManager.aid,
-                status: _const.ORDER_STATUS.ReadyToDeliver,
-                desc: 'This is a description',
-              }
-            ]
-          },{
-            product_id: productIds[1],
-            product_instance_id: productInstanceIds[0],
-            tickets: [
-              {
-                receiver_id: warehouses.find(x => x.is_hub)._id,
-                status: _const.ORDER_STATUS.DeliverySet,
-                agent_id: SalesManager.aid,
-                desc: 'This is a description',
-              }
-            ]
-          }, {
-            product_id: productIds[1],
-            product_instance_id: productInstanceIds[0],
-            tickets: [
-              {
-                receiver_id: warehouses.find(x => x.is_hub)._id,
-                status: _const.ORDER_STATUS.InvoiceVerified,
-                agent_id: SalesManager.aid,
+                status: _const.ORDER_STATUS.WaitForInvoice,
                 desc: 'This is a description',
               }
             ]
           }]
-        }, {
-          customer_id: customerObj.cid,
-          total_amount: 1,
-          order_time: new Date(),
-          is_cart: false,
-          address: warehouses[0].address,
-          transaction_id: mongoose.Types.ObjectId(),
-          order_lines: [{
-            product_id: productIds[1],
-            product_instance_id: productInstanceIds[1],
-            tickets: [
-              {
-                receiver_id: warehouses.find(x => x.name === 'پالادیوم')._id,
-                status: _const.ORDER_STATUS.DeliverySet,
-                agent_id: SalesManager.aid,
-                desc: 'This is a description'
-              },
-              {
-                receiver_id: SalesManager.aid,
-                status: _const.ORDER_STATUS.ReadyToDeliver,
-                desc: 'This is a description',
-              }
-            ]
-          },{
-            product_id: productIds[1],
-            product_instance_id: productInstanceIds[0],
-            tickets: [
-              {
-                receiver_id: warehouses.find(x => x.is_hub)._id,
-                status: _const.ORDER_STATUS.DeliverySet,
-                agent_id: SalesManager.aid,
-                desc: 'This is a description',
-              }
-            ]
-          } ,{
-            product_id: productIds[1],
-            product_instance_id: productInstanceIds[0],
-            tickets: [
-              {
-                receiver_id: warehouses.find(x => x.is_hub)._id,
-                status: _const.ORDER_STATUS.InvoiceVerified,
-                agent_id: SalesManager.aid,
-                desc: 'This is a description',
-              }
-            ]
-          }]
-        }];
+        },
+        // order 2
+          {
+            customer_id: customerObj.cid,
+            total_amount: 2,
+            order_time: new Date(),
+            is_cart: false,
+            address: warehouses[0].address,
+            transaction_id: mongoose.Types.ObjectId(),
+            delivery_slot: 'asd',
+            order_lines: [{
+              product_id: productIds[0],
+              product_instance_id: productInstanceIds[0],
+              tickets: [
+                {
+                  receiver_id: warehouses.find(x => x.name === 'سانا')._id,
+                  status: _const.ORDER_STATUS.DeliverySet,
+                  agent_id: SalesManager.aid,
+                  is_processed: false,
+                  desc: 'This is a description'
+                },
+                {
+                  receiver_id: SalesManager.aid,
+                  status: _const.ORDER_STATUS.ReadyToDeliver,
+                  desc: 'This is a description',
+                }
+              ]
+            }]
+          }
+         ];
         return models['OrderTest'].insertMany(orders);
 
       })
       .then(res => {
         orderId = res[0].order_id;
-        orderLineId = res[0].order_lines[0]._id;
-
+        orderLineId = res.order_lines[0]._id;
         done();
       })
       .catch(err => {
@@ -405,41 +364,11 @@ describe('POST Search Ticket on Outbox tab', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        expect(res.body.data[0].order_lines[0].tickets.length).toBe(2);
-        expect(res.body.data[0].order_lines[0].tickets[1].status).toBe(9);
+        expect(res.body.data.length).toBe(1);
         expect(res.body.data[0].order_lines[0].tickets[0].status).toBe(10);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should not show a order line when is processed is true', function (done) {
-    this.done = done;
-    rp({
-      method: 'POST',
-      uri: lib.helpers.apiTestURL(`search/Ticket`),
-      body: {
-        options: {
-          is_processed: 'true',
-          phrase: ''
-        },
-        offset: 0,
-        limit: 10
-      },
-      json: true,
-      resolveWithFullResponse: true,
-      jar: SalesManager.jar
-    })
-      .then(res => {
-      this.fail('can not set ticket when is processed is true');
-      done();
-    })
-      .catch(err => {
-        expect(err.statusCode).toBe(error.invalidSearchQuery.statusCode);
-        expect(err.error).toBe(error.invalidSearchQuery.message);
-
-        done();
-      })
-      .catch(lib.helpers.errorHandler.bind(this));
-  });
 });
