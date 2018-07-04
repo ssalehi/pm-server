@@ -442,7 +442,7 @@ describe("POST Tickets Return", () => {
   
 });
 
-describe("POST Tickets Cancel", () => {
+xdescribe("POST Tickets Cancel", () => {
 
   let customerAddressId;
   let  customerObj = {
@@ -710,6 +710,9 @@ describe("POST Tickets Cancel", () => {
           address: warehouses[0].address,
           transaction_id: mongoose.Types.ObjectId(),
           order_lines: [{
+            // orderline 1  - dont have status delivery or ondelivery 
+            // OnDelivery: 11,
+            // Delivered: 12,
             product_id: productIds[0],
             paid_price : 1000,
             product_instance_id: productInstanceIds[0],
@@ -721,6 +724,7 @@ describe("POST Tickets Cancel", () => {
               timestamp : new Date()
             }]
           },{
+            // orderline 2
             product_id: productIds[0],
             paid_price : 2000,
             product_instance_id: productInstanceIds[1],
