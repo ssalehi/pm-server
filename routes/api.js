@@ -101,10 +101,24 @@ router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 // Open Authentication API
 router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
 router.get('/login/google/callback', passport.authenticate('google', {}), function (req, res) {
+  /*
+   * The logic behind this is that when a user logs in with google, we set its verification to both email and mobile,
+   * so the system accepts their login, but then when he's logged in, we check its mobile verification and if it wasn't
+   * verified, we set it to unverified, and show the setting mobile page in the client to enter their mobile
+   *
+   * the necessity of being logged in at this point is that we need the logged in user object in order to
+   * change (in here, set) their mobile number in the database and not letting some random person comes and
+   * changes the mobile of any unverified user!
+   */
   if (!req.user) {
     console.error(error.noUser);
     res.end();
   }
+
+  // TODO: http://localhost:4200 needs to be changed on the real server !
+  let ClientAddress = 'http://127.0.0.1:4200';
+  let ClientSetMobileRoute = '/login/oauth/setMobile';
+  let ClientSetPreferences = '/login/oauth/setPreferences';
 
   model['Customer' + (personModel.isTest(req) ? 'Test' : '')].findOne({username: req.user.username})
     .then(obj => {
@@ -112,15 +126,18 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
         model['Customer' + (personModel.isTest(req) ? 'Test' : '')].update({username: req.user.username}, {
           is_verified: _const.VERIFICATION.emailVerified,
         }).then(data => {
-          // TODO: remove http://localhost:4200 !
-          res.writeHead(302, {'Location': 'http://127.0.0.1:4200/login/oauth/setMobile'});
+          // redirect client to the setMobile page
+          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
           res.end();
         }).catch(err => {
           console.error('error in changing verification level: ', err);
           res.end();
         });
-      } else {
-        res.writeHead(302, {'Location': 'http://127.0.0.1:4200/login/oauth/setMobile'});
+      } else { // if mobile is already verified
+        if (obj['is_preferences_set'])
+          res.writeHead(302, {'Location': `${ClientAddress}`});
+        else
+          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetPreferences}`});
         res.end();
       }
     });
@@ -130,7 +147,7 @@ router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, [
 router.put('/register', apiResponse('Customer', 'registration', false, ['body']));
 router.post('/editUserBasicInfo', apiResponse('Customer', 'editUserBasicInfo', false, ['body', 'user.username']));
 router.post('/changePassword', apiResponse('Customer', 'changePassword', false, ['body', 'user.username']));
-router.post('/register/verify', apiResponse('Customer', 'verification', false, ['user', 'body.code']));
+router.post('/register/verify', apiResponse('Customer', 'verification', false, ['user', 'body.code', 'body.username']));
 router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['user', 'body.mobile_no']));
 router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user', 'body']));
@@ -189,7 +206,7 @@ router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType
 
 // Customer Preferences
 router.get('/customer/preferences', apiResponse('Customer', 'getPreferences', false, ['user.username']));
-router.post('/customer/preferences', apiResponse('Customer', 'setPreferences', false, ['body', 'user.username']));
+router.post('/customer/preferences', apiResponse('Customer', 'setPreferences', false, ['user', 'body']));
 
 // Order
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));

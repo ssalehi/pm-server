@@ -40,7 +40,7 @@ let schema_obj = {
     enum: ['m', 'f'],
     // required: true,
   },
-  verification_code: { // wether user has verification code or not
+  verification_code: { // wether user has (mobile) verification code or not
     type: Number,
   },
   activation_link: {
@@ -56,6 +56,11 @@ let schema_obj = {
     default: "US",
   },
   is_guest: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  is_preferences_set: {
     type: Boolean,
     required: true,
     default: false,

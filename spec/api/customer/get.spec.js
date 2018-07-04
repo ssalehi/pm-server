@@ -86,6 +86,7 @@ describe('GET Customer', () => {
               preferred_brands: [brands[0]._id, brands[1]._id],
               preferred_tags: [tags[0]._id, tags[4]._id, tags[6]._id],
               preferred_size: '10',
+              is_preferences_set: false,
             }
           });
       })
@@ -140,7 +141,7 @@ describe('GET Customer', () => {
     }).catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should get current preference of custoemr', function (done) {
+  it('should get current preference of customer', function (done) {
     this.done = done;
     rp({
       method: 'get',
@@ -159,6 +160,7 @@ describe('GET Customer', () => {
         expect(res.preferred_tags.map(el => el._id)).toContain(tags[0]._id.toString());
         expect(res.preferred_tags.map(el => el._id)).toContain(tags[4]._id.toString());
         expect(res.preferred_tags.map(el => el._id)).toContain(tags[6]._id.toString());
+        expect(res.is_preferences_set).toBe(false);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
