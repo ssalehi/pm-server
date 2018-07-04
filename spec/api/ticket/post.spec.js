@@ -266,6 +266,7 @@ describe("POST Tickets Return", () => {
         return [{
           customer_id: customerObj.cid,
           total_amount: 2,
+          delivery_slot: 'delivery_slot 001',
           order_time: new Date(),
           is_cart: false,
           address: warehouses[0].address,
@@ -317,8 +318,8 @@ describe("POST Tickets Return", () => {
         method: "POST",
         uri: lib.helpers.apiTestURL(`order/return`),
         body: {
-          order,
-          orderLine: orderLineOne,
+          orderId: order._id,
+          orderLineId: orderLineOne._id,
           desc: {
             day: {
               time_slot: '18-22',
@@ -351,8 +352,8 @@ describe("POST Tickets Return", () => {
         method: "POST",
         uri: lib.helpers.apiTestURL(`order/return`),
         body: {
-          order,
-          orderLine: orderLineOne,
+          orderId: order._id,
+          orderLineId: orderLineOne._id,
           desc: {
             day: {
               time_slot: '18-22',
@@ -384,8 +385,8 @@ describe("POST Tickets Return", () => {
         method: "POST",
         uri: lib.helpers.apiTestURL(`order/return`),
         body: {
-          order,
-          orderLine: orderLineOne,
+          orderId: order._id,
+          orderLineId: orderLineOne._id,
           desc: {
             day: {
               time_slot: '18-22',
@@ -415,8 +416,8 @@ describe("POST Tickets Return", () => {
         method: "POST",
         uri: lib.helpers.apiTestURL(`order/return`),
         body: {
-          order,
-          orderLine: orderLineTwo,
+          orderId: order._id,
+          orderLineId: orderLineTwo._id,
           desc: {
             day: {
               time_slot: '18-22',
@@ -703,6 +704,7 @@ describe("POST Tickets Cancel", () => {
         return [{
           customer_id: customerObj.cid,
           total_amount: 2,
+          delivery_slot: 'delivery_slot 002',
           order_time: new Date(),
           is_cart: false,
           address: warehouses[0].address,
@@ -762,8 +764,8 @@ describe("POST Tickets Cancel", () => {
         method: "POST",
         uri: lib.helpers.apiTestURL(`order/cancel`),
         body: {
-          order,
-          orderLine: orderLineOne,
+          orderId: order._id,
+          orderLineId: orderLineOne._id,
         },
         json: true,
         resolveWithFullResponse: true,
@@ -794,8 +796,8 @@ describe("POST Tickets Cancel", () => {
         method: "POST",
         uri: lib.helpers.apiTestURL(`order/cancel`),
         body: {
-          order,
-          orderLine: orderLineTwo,
+          orderId: order._id,
+          orderLineId: orderLineTwo._id
         },
         json: true,
         resolveWithFullResponse: true,
@@ -821,8 +823,8 @@ describe("POST Tickets Cancel", () => {
         method: "POST",
         uri: lib.helpers.apiTestURL(`order/cancel`),
         body: {
-          order,
-          orderLine: orderLineOne,
+          orderId: order._id,
+          orderLineId: orderLineOne._id,
         },
         json: true,
         resolveWithFullResponse: true,
@@ -848,8 +850,8 @@ describe("POST Tickets Cancel", () => {
         method: "POST",
         uri: lib.helpers.apiTestURL(`order/cancel`),
         body: {
-          order,
-          orderLine: orderLineOne,
+          orderId: order._id,
+          orderLineId: orderLineOne._id,
         },
         json: true,
         resolveWithFullResponse: true,
@@ -865,6 +867,5 @@ describe("POST Tickets Cancel", () => {
         done();
       });
   });
-
   
 });
