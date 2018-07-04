@@ -1,8 +1,7 @@
 const Schema = require('mongoose').Schema;
 
 
-send_template = {
-
+point_template = {
   customer: {
     id: {
       type: Schema.Types.ObjectId,
@@ -16,39 +15,58 @@ send_template = {
   }
 };
 
-return_template = {
-  warehouse_id: {
-    type: Schema.Types.ObjectId,
-    ref: 'Warehouse'
-  }
+status_template = {
+  status: Number,
+  timestamp: {type: Date, default: Date.now},
+  is_processed: {type: Boolean, default: false, required: true}
+}
+
+min_slot_template = {
+  lower_bound: Number,
+  upper_bound: Number,
 };
 
 let schema_obj = {
-  order_id: {
-    type: Schema.Types.ObjectId,
+  order_details: [{
+    order_id: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'Order'
+    },
+    order_line_ids: [{
+      type: Schema.Types.ObjectId,
+      required: true,
+    }],
+    completed_order: {
+      type: Boolean,
+      default: false,
+    }
+  }],
+  to: point_template,
+  from: point_template,
+  is_return: {
+    type: Boolean,
     required: true,
-    ref: 'Order'
+    default: false,
   },
-  order_line_id: {
+  completed_by: {
     type: Schema.Types.ObjectId,
-    required: true,
-  },
-  send: send_template,
-  return: return_template,
-  processed_by: {
-    type: Schema.Types.ObjectId,
-    required: true,
     ref: 'Agent'
   },
-  start_time: {
-    type: Date,
-    required: true
+  delivery_agent: {
+    type: Schema.Types.ObjectId,
+    ref: 'Agent'
   },
-  end_time: Date
+  start: Date,
+  end: Date,
+  delivery_start: Date,
+  delivery_end: Date,
+  shelf_code: String,
+  delivered_evidence: String,
+  status_list: [status_template],
+  min_end: Date,
+  min_slot: min_slot_template,
 };
-
-
-
 
 let DeliverySchema = new Schema(schema_obj, {collection: 'delivery', strict: true});
 
