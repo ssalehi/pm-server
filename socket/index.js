@@ -5,6 +5,7 @@ const passportSocketIO = require('passport.socketio');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const redis = require('../redis');
+const db = require('../mongo/index');
 const error = require('../lib/errors.list');
 
 /**
@@ -38,7 +39,6 @@ let setup = http => {
   io.use(socketSession.parser);
 
   io.on('connection', socket => {
-
     if (socket.session.passport) {
       let user = socket.session.passport.user;
       if (user && user.warehouse_id) {
@@ -46,6 +46,7 @@ let setup = http => {
       }
     }
   });
+
 };
 
 function onAuthorizeSuccess(data, accept) {
@@ -61,8 +62,8 @@ function onAuthorizeFail(data, message, error, accept) {
 }
 
 let setRoom = (socket, name) => {
+  socket.join(name);
   if (name && !rooms.find(x => x === name)) {
-    socket.join(name);
     rooms.push(name);
     console.log(`-> new user has been joined to room: ${name}`);
   }

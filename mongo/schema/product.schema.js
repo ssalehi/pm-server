@@ -76,6 +76,11 @@ let schema_obj = {
     type: Date,
     default: Date.now
   },
+  article_no: {
+    type: String,
+    required: true,
+    unique: true
+  },
   desc: String,
   details: Schema.Types.String,
   tags: [nestedTagSchema],
@@ -87,6 +92,5 @@ let schema_obj = {
 
 
 let ProductSchema = new Schema(schema_obj, {collection: 'product', strict: true});
-ProductSchema.index({name: 1, "product_type.name": 1}, {unique: true});
 
 module.exports = ProductSchema;
