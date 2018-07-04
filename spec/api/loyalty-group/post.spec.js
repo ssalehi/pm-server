@@ -20,7 +20,6 @@ describe('POST API ', () => {
       street: 'نامشخص',
       province: 'تهران'
     },
-    is_center: true,
     priority: 0,
   };
 
@@ -131,6 +130,28 @@ describe('POST API ', () => {
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
+  it("should get error when name or min_score is exist", function (done) {
+    rp({
+      method: 'post',
+      body: {
+        _id: loyaltyGroupList[1]._id.toString(),
+        min_score: 1000,
+      },
+      json: true,
+      uri: lib.helpers.apiTestURL('loyaltygroup'),
+      jar: salesManager.rpJar,
+      resolveWithFullResponse: true,
+    })
+      .then(res => {
+        this.fail('Sales manager can update/insert item with duplicated min_score value');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(500);
+        done();
+      })
+  })
 });
 
 describe('POST API (DELETE)', () => {
@@ -145,7 +166,6 @@ describe('POST API (DELETE)', () => {
       street: 'نامشخص',
       province: 'تهران'
     },
-    is_center: true,
     priority: 0,
   };
 
@@ -159,17 +179,17 @@ describe('POST API (DELETE)', () => {
         salesManager = res;
 
         loyaltyGroupList.push({
-          _id: mongoose.Types.ObjectId(),          
+          _id: mongoose.Types.ObjectId(),
           name: 'Gold',
           min_score: 1000,
         });
         loyaltyGroupList.push({
-          _id: mongoose.Types.ObjectId(),          
+          _id: mongoose.Types.ObjectId(),
           name: 'Silver',
           min_score: 500,
         });
         loyaltyGroupList.push({
-          _id: mongoose.Types.ObjectId(),          
+          _id: mongoose.Types.ObjectId(),
           name: 'Bronze',
           min_score: 100,
         });
