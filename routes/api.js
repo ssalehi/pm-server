@@ -43,7 +43,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
 
   return (function (req, res) {
     (req.jwtToken ?
-      personModel.jwtStrategy(req)
+      personModel.jwtStrategy(req, adminOnly)
       :
       Promise.resolve())
       .then(() => {
@@ -89,7 +89,8 @@ router.get('/', function (req, res) {
 // Login API
 router.post('/agent/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user', () => true]));
 router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user']));
-router.post('/app/login', apiResponse('Person', 'jwtAuth', false, ['body']));
+router.post('/app/login', apiResponse('Person', 'jwtAuth', false, ['body', () => false]));
+router.post('/app/agent/login', apiResponse('Person', 'jwtAuth', false, ['body', () => true]));
 router.post('/loginCheck', apiResponse('Person', 'loginCheck', false, ['body.username', 'body.password']));
 router.get('/logout', (req, res) => {
   req.logout();
