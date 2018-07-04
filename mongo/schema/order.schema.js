@@ -49,6 +49,10 @@ let schema_obj = {
     type: Boolean,
     required: true,
     default: false
+  },
+  delivery_slot: {
+    type: String,
+    required: true,
   }
 };
 

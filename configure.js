@@ -9,6 +9,7 @@ const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
 const mongoose = require('mongoose');
 const copydir = require('copy-dir');
+const warehouses = require('./warehouses');
 
 
 SALT_WORK_FACTOR = 10;
@@ -21,63 +22,10 @@ db.dbIsReady()
   .then(() => {
 
     copydir.sync('assets', 'public/assets');
-    console.log('-> ', 'here');
     return models['Warehouse'].find().lean();
   })
   .then(res => {
     if (!res || res.length === 0) {
-      let warehouses = [
-        {
-          _id: mongoose.Types.ObjectId(),
-          name: 'انبار مرکزی',
-          phone: 'نا مشخص',
-          address: {
-            city: 'تهران',
-            street: 'نامشخص',
-            province: 'تهران'
-          },
-          is_center: true,
-          priority: 0,
-
-        },
-        {
-          _id: mongoose.Types.ObjectId(),
-          name: 'پالادیوم',
-          phone: ' 021 2201 0600',
-          has_customer_pickup: true,
-          address: {
-            city: 'تهران',
-            street: 'مقدس اردبیلی',
-            province: 'تهران'
-          },
-          priority: 1,
-
-        },
-        {
-          _id: mongoose.Types.ObjectId(),
-          name: 'سانا',
-          phone: '021 7443 8111',
-          has_customer_pickup: true,
-          address: {
-            province: 'تهران',
-            city: 'تهران',
-            street: 'اندرزگو',
-          },
-          priority: 2,
-        },
-        {
-          _id: mongoose.Types.ObjectId(),
-          name: 'ایران مال',
-          phone: 'نا مشخص',
-          has_customer_pickup: true,
-          address: {
-            province: 'تهران',
-            city: 'تهران',
-            street: 'اتوبان خرازی',
-          },
-          priority: 3,
-        }
-      ];
 
       return models['Warehouse'].insertMany(warehouses);
     }
@@ -117,6 +65,12 @@ db.dbIsReady()
         access_level: _const.ACCESS_LEVEL.SalesManager,
         first_name: 'Sales',
         surname: 'Manager',
+      }, {
+        username: 'hc@persianmode.com',
+        secret: _hash,
+        access_level: _const.ACCESS_LEVEL.HubClerk,
+        first_name: 'hub',
+        surname: 'clerck',
       }];
 
       return models['Agent'].insertMany(agents);
@@ -142,6 +96,29 @@ db.dbIsReady()
     }))
   })
   .then(res => {
+    return models['LoyaltyGroup'].find().lean();
+  })
+  .then(res => {
+    if (!res || !res.length)
+      return models['LoyaltyGroup'].insertMany([
+        {
+          name: 'White',
+          min_score: 0,
+        },
+        {
+          name: 'Orange',
+          min_score: 5000,
+        },
+        {
+          name: 'Black',
+          min_score: 11000,
+        }
+      ], {ordered: false});
+
+    return Promise.resolve();
+  })
+  .then(res => {
+    console.log('-> ', 'loyalty groups are added');
     let query = {address: 'collection/men/shoes'},
       update = {
         address: 'collection/men/shoes',
@@ -153,7 +130,6 @@ db.dbIsReady()
   })
   .then(res => {
     console.log('-> ', 'collection men shoes page is added for app');
-
     let dictionary = JSON.parse(fs.readFileSync('dictionary.json', 'utf8'));
 
     let data = [];
@@ -179,14 +155,12 @@ db.dbIsReady()
     process.exit();
   })
   .catch(err => {
-      if (err.name !== 'BulkWriteError') {
-        console.log('-> ', err);
-      }
-      else {
-        console.log('-> ', 'dictionary is added');
-      }
-      process.exit();
+    if (err.name !== 'BulkWriteError') {
+      console.log('-> ', err);
     }
+    else {
+      console.log('-> ', 'dictionary is added');
+    }
+    process.exit();
+  }
   );
-
-

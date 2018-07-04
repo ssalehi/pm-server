@@ -4,6 +4,9 @@ const rp = require('request-promise');
 const mongoose = require('mongoose');
 const error = require('../../../lib/errors.list');
 const _const = require('../../../lib/const.list');
+const warehouses = require('../../../warehouses');
+
+
 
 describe('POST Search Collection', () => {
 
@@ -313,59 +316,7 @@ describe('POST Order - Search over order lines by tickets', () => {
   ];
   let productIds = [];
   let orderIds = [];
-  let warehouses = [
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'انبار مرکزی',
-      phone: 'نا مشخص',
-      address: {
-        city: 'تهران',
-        street: 'نامشخص',
-        province: 'تهران'
-      },
-      is_center: true,
-      priority: 0,
-
-    },
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'پالادیوم',
-      phone: ' 021 2201 0600',
-      has_customer_pickup: true,
-      address: {
-        city: 'تهران',
-        street: 'مقدس اردبیلی',
-        province: 'تهران'
-      },
-      priority: 1,
-
-    },
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'سانا',
-      phone: '021 7443 8111',
-      has_customer_pickup: true,
-      address: {
-        province: 'تهران',
-        city: 'تهران',
-        street: 'اندرزگو',
-      },
-      priority: 2,
-    },
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'ایران مال',
-      phone: 'نا مشخص',
-      has_customer_pickup: true,
-      address: {
-        province: 'تهران',
-        city: 'تهران',
-        street: 'اتوبان خرازی',
-      },
-      priority: 3,
-    }
-  ];
-
+  
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
@@ -933,6 +884,112 @@ describe('POST Suggest Collection', () => {
         done();
       });
   });
-
 });
 
+describe('POST Suggest Page Address', () => {
+
+  let page1, page2;
+      let adminObj = {
+        aid: null,
+        jar: null,
+      };
+
+  beforeEach((done) => {
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('admin');
+      })
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
+        let inserts = [];
+        let n = 0;
+        while (n < 5) {
+          let newPage = models['PageTest']({
+            address: `test${n + 1}`,
+            is_app: false,
+          });
+          inserts.push(newPage.save());
+          n++;
+        }
+        return Promise.all(inserts);
+      })
+      .then(res => {
+        done()
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+  it('should give suggestion over page', function (done) {
+        this.done = done;
+        rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL(`/suggest/Page`),
+          body: {
+            phrase: 'test1',
+            options: {
+              exceptionAddress: "test2",
+            }
+          },
+          json: true,
+          jar: adminObj.jar,
+          resolveWithFullResponse: true
+        }).then(res => {
+          expect(res.statusCode).toBe(200);
+          expect(res.body.length).toEqual(1);
+          expect(res.body[0].address).toBe('test1');
+          done();
+        }).catch(lib.helpers.errorHandler.bind(this));
+      });
+
+  it('should return addresses of two pages', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`/suggest/Page`),
+      body: {
+        phrase: 'test',
+        options: {
+          exceptionAddress: "test2",
+        }
+      },
+      json: true,
+      jar: adminObj.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toEqual(4);
+      res.body.forEach(x => expect(x.address).toContain('test'));
+      res.body.forEach(x => expect(x.address).not.toBe('test2'));
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should get error when some one other than content manager is calling api', function (done) {
+        this.done = done;
+        rp({
+          method: "POST",
+          uri: lib.helpers.apiTestURL(`/suggest/Page`),
+          body: {
+            phrase: 'test1',
+            options: {
+              exceptionAddress: "test2",
+            }
+          },
+          json: true,
+          // jar: adminObj.jar,
+          resolveWithFullResponse: true
+        }).then(res => {
+          this.fail('some one other than content manager could call api');
+          done();
+        })
+          .catch(err => {
+            expect(err.statusCode).toBe(error.noAccess.status);
+            expect(err.error).toBe(error.noAccess.message);
+            done();
+          });
+      });
+    });

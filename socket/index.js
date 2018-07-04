@@ -61,22 +61,22 @@ function onAuthorizeFail(data, message, error, accept) {
 }
 
 let setRoom = (socket, name) => {
-  socket.join(name);
-  console.log(`-> new user has been joined to room: ${name}`);
-  if (!rooms.find(x => x === name))
+  if (name && !rooms.find(x => x === name)) {
+    socket.join(name);
     rooms.push(name);
+    console.log(`-> new user has been joined to room: ${name}`);
+  }
 }
 
 /**
  *
  * @param name => warehouse id
- * @param message => is an object such as : {type: ... , data: ...}
+ * @param message 
  * @returns {Promise}
  */
-let sendToNS = (name, message) => {
+let sendToNS = (name, message = null) => {
 
-  if (!message.type || !message.data)
-    return Promise.reject(error.invalidSocketMessageType);
+  name = name.toString();
 
   return new Promise((resolve, reject) => {
     setTimeout(() => {
