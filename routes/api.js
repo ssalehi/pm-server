@@ -407,6 +407,6 @@ router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoic
 router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
 
 
-router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateFinalPrice', false, ['body'])); // body included customer id and delivery_duration id
+router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body'])); // body included customer id and delivery_duration id
 
 module.exports = router;
