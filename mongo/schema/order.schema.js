@@ -50,6 +50,7 @@ let schema_obj = {
     required: true,
     default: false
   },
+  invoice_no: String,
  
 };
 

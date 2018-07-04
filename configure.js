@@ -26,7 +26,7 @@ db.dbIsReady()
   })
   .then(res => {
     if (!res || res.length === 0) {
-      
+
       return models['Warehouse'].insertMany(warehouses);
     }
     else
@@ -65,6 +65,18 @@ db.dbIsReady()
         access_level: _const.ACCESS_LEVEL.SalesManager,
         first_name: 'Sales',
         surname: 'Manager',
+      }, {
+        username: 'hc@persianmode.com',
+        secret: _hash,
+        access_level: _const.ACCESS_LEVEL.HubClerk,
+        first_name: 'hub',
+        surname: 'clerck',
+      }, {
+        username: 'shop@persianmode.com',
+        secret: _hash,
+        access_level: _const.ACCESS_LEVEL.ShopClerk,
+        first_name: 'shop',
+        surname: 'clerck',
       }];
 
       return models['Agent'].insertMany(agents);
@@ -127,14 +139,14 @@ db.dbIsReady()
     process.exit();
   })
   .catch(err => {
-      if (err.name !== 'BulkWriteError') {
-        console.log('-> ', err);
-      }
-      else {
-        console.log('-> ', 'dictionary is added');
-      }
-      process.exit();
+    if (err.name !== 'BulkWriteError') {
+      console.log('-> ', err);
     }
+    else {
+      console.log('-> ', 'dictionary is added');
+    }
+    process.exit();
+  }
   );
 
 
