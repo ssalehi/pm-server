@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const _const = require('../../lib/const.list');
 const Order = require('../../lib/order.model');
 const rp = require('request-promise');
-const warehouses = require('../../../warehouses');
+const warehouses = require('../../warehouses');
 
 
 describe('POST Order - verify order', () => {

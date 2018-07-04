@@ -7,7 +7,6 @@ const _const = require('./lib/const.list');
 const env = require('./env');
 const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
-const mongoose = require('mongoose');
 const copydir = require('copy-dir');
 const warehouses = require('./warehouses');
 
@@ -102,6 +101,29 @@ db.dbIsReady()
     }))
   })
   .then(res => {
+    return models['LoyaltyGroup'].find().lean();
+  })
+  .then(res => {
+    if (!res || !res.length)
+      return models['LoyaltyGroup'].insertMany([
+        {
+          name: 'White',
+          min_score: 0,
+        },
+        {
+          name: 'Orange',
+          min_score: 5000,
+        },
+        {
+          name: 'Black',
+          min_score: 11000,
+        }
+      ], {ordered: false});
+
+    return Promise.resolve();
+  })
+  .then(res => {
+    console.log('-> ', 'loyalty groups are added');
     let query = {address: 'collection/men/shoes'},
       update = {
         address: 'collection/men/shoes',
@@ -113,7 +135,6 @@ db.dbIsReady()
   })
   .then(res => {
     console.log('-> ', 'collection men shoes page is added for app');
-
     let dictionary = JSON.parse(fs.readFileSync('dictionary.json', 'utf8'));
 
     let data = [];

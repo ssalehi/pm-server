@@ -10,13 +10,27 @@ const _const = require('../../../lib/const.list');
 
 describe("GET API", () => {
   let salesManager;
+  let centralWarehouse = {
+    _id: mongoose.Types.ObjectId(),
+    name: 'انبار مرکزی',
+    phone: 'نا مشخص',
+    address: {
+      city: 'تهران',
+      street: 'نامشخص',
+      province: 'تهران'
+    },
+    priority: 0,
+  };
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
-      .then(() => lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.salesManager))
+      .then(() => {
+        return new models['WarehouseTest'](centralWarehouse).save();
+      })
+      .then(() => lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, centralWarehouse._id))
       .then(res => {
         salesManager = res;
-        
+
         let promiseList = [];
         promiseList.push(models['LoyaltyGroupTest']({
           name: 'Gold',
@@ -30,7 +44,7 @@ describe("GET API", () => {
           name: 'Bronze',
           min_score: 100,
         }).save());
-        
+
         return Promise.all(promiseList);
       })
       .then(res => {
@@ -44,6 +58,7 @@ describe("GET API", () => {
 
   it("should get all loyalty groups", function (done) {
     this.done = done;
+
     rp({
       method: 'get',
       uri: lib.helpers.apiTestURL('loyaltygroup'),

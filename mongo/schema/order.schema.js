@@ -2,6 +2,17 @@ const Schema = require('mongoose').Schema;
 const OrderLineSchema = require('./order_line.schema');
 const addressSchema = require('./address.schema');
 
+let time_slot_template = {
+  lower_bound: {
+    type: Number,
+    required: true,
+  },
+  upper_bound: {
+    type: Number, 
+    required: true,
+  },
+}
+
 let schema_obj = {
   customer_id: {
     type: Schema.Types.ObjectId,
@@ -52,6 +63,11 @@ let schema_obj = {
   },
   invoice_no: String,
  
+  duration_days: {      // delivery-periode-days references to delivery_duration_info schema
+    type: Number,
+    trim: true,
+  },
+  time_slot: time_slot_template,
 };
 
 
