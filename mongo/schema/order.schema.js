@@ -50,7 +50,10 @@ let schema_obj = {
     required: true,
     default: false
   },
- 
+  delivery_slot: {
+    type: String,
+    required: true,
+  }
 };
 
 
