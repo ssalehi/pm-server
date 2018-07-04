@@ -363,7 +363,7 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 
 // checkout
 router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address', 'body.customerData', 'body.transaction_id', 'body.used_point',
-  'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.selectedPaymentType']));
+  'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.paymentType']));
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
 //sold out
