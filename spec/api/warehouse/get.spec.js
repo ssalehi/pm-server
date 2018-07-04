@@ -1,6 +1,8 @@
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
+const warehouses = require('../../../warehouses');
+
 describe("Get Warehouse", () => {
 
   let warehouseIds = [];
@@ -9,14 +11,7 @@ describe("Get Warehouse", () => {
     lib.dbHelpers.dropAll()
       .then(res => {
 
-        let warehouses = [
-          {name: 'warehouse 1', address: {province: 'x', city: 'y', street: 'z', no: '10', unit: '1'}, phone: 'some phone 1'},
-          {name: 'warehouse 2', address: {province: 'x', city: 'y', street: 'z', no: '10', unit: '1'}, phone: 'some phone 2'},
-          {name: 'warehouse 3', address: {province: 'x', city: 'y', street: 'z', no: '10', unit: '1'}, phone: 'some phone 3', has_customer_pickup: true},
-          {name: 'warehouse 4', address: {province: 'x', city: 'y', street: 'z', no: '10', unit: '1'}, phone: 'some phone 4', has_customer_pickup: true},
-          {name: 'warehouse 5', address: {province: 'x', city: 'y', street: 'z', no: '10', unit: '1'}, phone: 'some phone 5', has_customer_pickup: true},
-        ];
-
+       
         return models['WarehouseTest'].insertMany(warehouses);
 
       })

@@ -178,8 +178,8 @@ router.get('/tags/:tagGroupName', apiResponse('Tag', 'getTags', false, ['params.
 
 
 // Warehouses
-router.get('/warehouse/all', apiResponse('Warehouse', 'getAllWarehouses', false, []));
-router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
+router.get('/warehouse/all', apiResponse('Warehouse', 'getWarehouses', false, []));
+router.get('/warehouse', apiResponse('Warehouse', 'getShops', false, []));
 
 // Customer
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
@@ -195,11 +195,10 @@ router.post('/customer/preferences', apiResponse('Customer', 'setPreferences', f
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
-router.post('/order/ticket/:type', apiResponse('Order', 'setManualTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
 
-// Order => direct request to offline system
-router.post('/order/offline/requestInvoice', apiResponse('Offline', 'manualRequestInvoice', true, ['body.orderId', 'body.orderLineId', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/offline/requestOnlineWarehouse', apiResponse('Offline', 'manualRequestOnlineWarehouse', true, ['body.orderId', 'body.orderLineId', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+// Order => Ticket
+router.post('/order/dss/receive', apiResponse('DSS', 'newReceive', true, ['body.barcode', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
+router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistory', true, ['params', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
 
 // Order => api's used by offline system
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
@@ -357,9 +356,6 @@ router.get('/cart/items', apiResponse('Order', 'getCartItems', false, ['user']))
 router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', false, ['user', 'body']));
 router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false, ['user', 'body']));
 
-//ticket
-router.put('/order/ticket', apiResponse('Order', 'setTicket', true, ['body'], _const.ACCESS_LEVEL.SalesManager));
-
 // Customer Address
 router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
 
@@ -402,4 +398,22 @@ router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
 //sold out
 router.post('/soldout/setFlag', apiResponse('SoldOut', 'setSoldOutFlagOnPI', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+
+// LoyaltyGroup
+router.get('/loyaltygroup', apiResponse('LoyaltyGroup', 'getLoyaltyGroups', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/loyaltygroup', apiResponse('LoyaltyGroup', 'upsertLoyaltyGroup', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGroup', true, ['body._id'], [_const.ACCESS_LEVEL.SalesManager]));
+
+// Delivery Duration
+router.get('/deliveryduration', apiResponse('DeliveryDurationInfo', 'getAllDurationInfo', false, []));
+router.get('/deliveryduration/:id', apiResponse('DeliveryDurationInfo', 'getOneDurationInfo', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/deliverycc', apiResponse('DeliveryDurationInfo', 'getClickAndCollect', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/deliveryduration', apiResponse('DeliveryDurationInfo', 'upsertDurationInfo', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/deliverycc', apiResponse('DeliveryDurationInfo', 'upsertCAndC', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo', 'deleteDuration', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
+
+
+// Customer Delivery Selected
+router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateFinalPrice', false, ['body'])); // body included customer id and delivery_duration id
+
 module.exports = router;
