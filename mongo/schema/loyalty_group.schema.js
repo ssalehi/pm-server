@@ -11,6 +11,7 @@ let schema_obj = {
   min_score: {
     type: Number,
     required: true,
+    unique: true,
   },
 };
 

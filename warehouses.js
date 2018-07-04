@@ -17,6 +17,7 @@ let warehouses = [
     is_hub: true,
     has_customer_pickup: false,
     priority: 4
+
   },
   {
     _id: mongoose.Types.ObjectId(),
