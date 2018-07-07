@@ -171,7 +171,21 @@ router.get('/customer/preferences', apiResponse('Customer', 'getPreferences', fa
 router.post('/customer/preferences', apiResponse('Customer', 'setPreferences', false, ['body', 'user.username']));
 
 // Order
+router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
+router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
+router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
 
+// Order => Ticket
+router.post('/order/ticket/scan', apiResponse('TicketAction', 'newScan', true, ['body.barcode', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/ticket/invoice', apiResponse('TicketAction', 'requestInvoice', true, ['body.orderId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
+router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistoryOrderLine', true, ['params'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+router.get('/order/ticket/history/:orderId', apiResponse('Ticket', 'getHistoryOrderByReceiver', true, ['params', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/return', apiResponse('TicketAction', 'returnOrderLine', false, ['body', 'user']));
+router.post('/order/cancel', apiResponse('TicketAction', 'cancelOrderLine', false, ['body', 'user']));
+
+// Order => api's used by offline system
+router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
+router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
 
 // Wish List
 router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
@@ -394,19 +408,6 @@ router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo'
 
 
 // Customer Delivery Selected
-router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
-router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
-router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
-
-// Order => Ticket
-router.post('/order/dss/receive', apiResponse('DSS', 'newReceive', true, ['body.barcode', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
-router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistory', true, ['params', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-
-// Order => api's used by offline system
-router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
-router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
-
-
-router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body'])); // body included customer id and delivery_duration id
+router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateFinalPrice', false, ['body'])); // body included customer id and delivery_duration id
 
 module.exports = router;

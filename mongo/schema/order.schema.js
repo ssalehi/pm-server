@@ -68,6 +68,7 @@ let schema_obj = {
     required: true,
     default: false
   },
+  invoice_no: String,
   duration_days: {      // delivery-periode-days references to delivery_duration_info schema
     type: Number,
     trim: true,
