@@ -292,10 +292,9 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
 
 getProducts = async (articles) => {
   try {
-console.log(articles);
     return models['Product'].find({
       article_no: {
-        $in: [articles]
+        $in: articles
       }
     }, {
         article_no: 1,
