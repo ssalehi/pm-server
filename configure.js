@@ -7,7 +7,6 @@ const _const = require('./lib/const.list');
 const env = require('./env');
 const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
-const mongoose = require('mongoose');
 const copydir = require('copy-dir');
 const warehouses = require('./warehouses');
 
@@ -33,6 +32,7 @@ db.dbIsReady()
       return Promise.resolve();
   })
   .then(() => {
+    console.log('-> ', 'warehouses are added');
 
     return new Promise((resolve, reject) => {
       env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
@@ -71,6 +71,12 @@ db.dbIsReady()
         access_level: _const.ACCESS_LEVEL.HubClerk,
         first_name: 'hub',
         surname: 'clerck',
+      }, {
+        username: 'shop@persianmode.com',
+        secret: _hash,
+        access_level: _const.ACCESS_LEVEL.ShopClerk,
+        first_name: 'shop',
+        surname: 'clerck',
       }];
 
       return models['Agent'].insertMany(agents);
@@ -96,6 +102,7 @@ db.dbIsReady()
     }))
   })
   .then(res => {
+    console.log('-> ', 'defult palacements are added!');
     return models['LoyaltyGroup'].find().lean();
   })
   .then(res => {
@@ -164,3 +171,5 @@ db.dbIsReady()
     process.exit();
   }
   );
+
+
