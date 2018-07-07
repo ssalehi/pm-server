@@ -278,7 +278,7 @@ describe('POST Search Ticket on Outbox tab', () => {
           // order 1
           {
           customer_id: customerObj.cid,
-          total_amount: 2,
+          total_amount:11111,
           order_time: new Date(),
           is_cart: false,
           address: warehouses[0].address,
@@ -288,25 +288,26 @@ describe('POST Search Ticket on Outbox tab', () => {
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
             tickets: [
-              {
-                receiver_id: warehouses.find(x => x.name === 'سانا')._id,
-                status: _const.ORDER_STATUS.DeliverySet,
-                agent_id: SalesManager.aid,
-                is_processed: false,
+            {
+                receiver_id: SalesManager.aid,
+                status: _const.ORDER_STATUS.OnDelivery,
                 desc: 'This is a description'
               },
-              {
-                receiver_id: SalesManager.aid,
-                status: _const.ORDER_STATUS.WaitForInvoice,
-                desc: 'This is a description',
-              }
+              // {
+              //   receiver_id: warehouses.find(x => x.name === 'سانا')._id,
+              //   status: _const.ORDER_STATUS.InvoiceVerified,
+              //   agent_id: SalesManager.aid,
+              //   is_processed: false,
+              //   desc: 'This is a description'
+              // },
+
             ]
           }]
         },
         // order 2
           {
             customer_id: customerObj.cid,
-            total_amount: 2,
+            total_amount: 222222,
             order_time: new Date(),
             is_cart: false,
             address: warehouses[0].address,
@@ -317,18 +318,48 @@ describe('POST Search Ticket on Outbox tab', () => {
               product_instance_id: productInstanceIds[0],
               tickets: [
                 {
-                  receiver_id: warehouses.find(x => x.name === 'سانا')._id,
-                  status: _const.ORDER_STATUS.DeliverySet,
-                  agent_id: SalesManager.aid,
-                  is_processed: false,
-                  desc: 'This is a description'
+                  receiver_id: SalesManager.aid,
+                  status: _const.ORDER_STATUS.default,
+                  desc: 'This is a description',
                 },
                 {
                   receiver_id: SalesManager.aid,
-                  status: _const.ORDER_STATUS.ReadyToDeliver,
-                  desc: 'This is a description',
-                }
+                  status: _const.ORDER_STATUS.DeliverySet,
+                  desc: 'This is a description'
+                },
+
               ]
+            }]
+          },
+          // order 3
+          {
+            customer_id: customerObj.cid,
+            total_amount: 33333,
+            order_time: new Date(),
+            is_cart: false,
+            address: warehouses[0].address,
+            transaction_id: mongoose.Types.ObjectId(),
+            delivery_slot: 'asd',
+            order_lines: [{
+              product_id: productIds[0],
+              product_instance_id: productInstanceIds[0],
+              tickets: [ {
+                receiver_id: SalesManager.aid,
+                status: _const.ORDER_STATUS.ReadyToDeliver,
+                desc: 'This is a description',
+              }, {
+                  receiver_id: SalesManager.aid,
+                  status: _const.ORDER_STATUS.default,
+                  desc: 'This is a description',
+                },
+                // {
+                //   receiver_id: warehouses.find(x => x.name === 'پالادیوم')._id,
+                //   status: _const.ORDER_STATUS.default,
+                //   agent_id: SalesManager.aid,
+                //   is_processed: false,
+                //   desc: 'This is a description'
+                // },
+            ]
             }]
           }
          ];
@@ -352,7 +383,7 @@ describe('POST Search Ticket on Outbox tab', () => {
       uri: lib.helpers.apiTestURL(`search/Ticket`),
       body: {
           options: {
-            type: 'readyToDeliver',
+            type: 'outbox',
             phrase: ''
           },
           offset: 0,
@@ -363,9 +394,10 @@ describe('POST Search Ticket on Outbox tab', () => {
       jar: SalesManager.jar
     })
       .then(res => {
+        console.log('@@@', res.body);
         expect(res.statusCode).toBe(200);
-        expect(res.body.data.length).toBe(1);
-        expect(res.body.data[0].order_lines[0].tickets[0].status).toBe(10);
+        expect(res.body.data.length).toBe(3);
+        // expect(res.body.data[0].order_lines[0].tickets[0].status).toBe(10);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
