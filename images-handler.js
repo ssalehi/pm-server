@@ -1,11 +1,15 @@
 const models = require('./mongo/models.mongo');
 const db = require('./mongo/index');
+const _const = require('./lib/const.list');
 const fs = require('fs');
 const mongoose = require('mongoose');
+const copydir = require('copy-dir');
 const path = require('path');
 const Jimp = require("jimp");
 const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
+
+
 const BASE_TEMP = './public/images/temp'
 const BASE_DEST = './public/images/product-image'
 
@@ -248,10 +252,6 @@ makeReport = () => {
 
   });
 
-  rimraf(BASE_TEMP, function () {
-    console.log('-> ', 'temp folder removed succesfully !!!');
-  });
-
 }
 
 updateProductImages = async (productId, colorId, image, isThumbnail) => {
@@ -329,8 +329,6 @@ imageResizing = async (orig, dest) => {
 
 
 }
-
-
 
 main();
 
