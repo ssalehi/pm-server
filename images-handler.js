@@ -8,6 +8,8 @@ const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
 const BASE_TEMP = './public/images/temp'
 const BASE_DEST = './public/images/product-image'
+const rimraf = require('rimraf');
+
 
 let products;
 
@@ -59,7 +61,7 @@ main = async () => {
 
       if (dirInfo && dirInfo.length) {
 
-        products = await getProducts();
+        products = await getProducts(dirArticles);
 
         if (products && products.length) {
           for (let i = 0; i < products.length; i++) {
@@ -209,11 +211,11 @@ makeReport = () => {
     let dbCodesDiff = new Set( // db codes - dir codes
       [...dbArticleCodes].filter(x => !dirArticleCodes.has(x)));
 
-    dirArticleCodes.forEach(code => {
+    dirCodesDiff.forEach(code => {
       newJointArticle.codes.push({code, status: 'only in DIR'})
     })
 
-    dbArticleCodes.forEach(code => {
+    dbCodesDiff.forEach(code => {
       newJointArticle.codes.push({code, status: 'only in DB'})
     })
   });
@@ -265,8 +267,7 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
     if (isThumbnail) {
       return models['Product'].update(query, {
         $set: {
-          'colors.$.image.thumbnail': image,
-          'colors.$.images_imported': true
+          'colors.$.image.thumbnail': image
         }
       }, {multi: true});
     } else {
@@ -284,30 +285,17 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
   }
 }
 
-getProducts = async () => {
+getProducts = async (articles) => {
   try {
 
-    return models['Product'].aggregate([
-      {
-        $unwind: {
-          path: '$colors',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $match: {
-          'colors.images_imported': false
-        }
-      },
-      {
-        $group: {
-          _id: '$_id',
-          article_no: {$first: '$article_no'},
-          colors: {$push: '$colors'}
-        }
+    return models['product'].find({
+      article_no: {
+        $in: [articles]
       }
-
-    ]);
+    }, {
+        article_no: 1,
+        colors: 1
+      })
   } catch (err) {
     console.log('-> could not get products', err);
   }
