@@ -2,8 +2,6 @@ const env = require('../env');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
-let testConnection, prodConnection;
-
 if (env.isDev) {
   // mongoose.set('debug', true);
 
@@ -16,10 +14,10 @@ let dbIsReady = () => {
     if (env.isDev) {
 
       function connect() {
-        testConnection = mongoose.createConnection(env.db_uri_test);
+       const testConnection = mongoose.createConnection(env.db_uri_test);
         testConnection.on('connected', function () {
           console.log('-> ', 'Mongoose test has been connected!');
-          resolve();
+          resolve({testConnection});
         });
         testConnection.on('error', function (err) {
           console.log('-> ', 'test connection error trying to reconnect ...');
@@ -37,10 +35,10 @@ let dbIsReady = () => {
   let prodDb = new Promise((resolve, reject) => {
 
     function connect() {
-      prodConnection = mongoose.createConnection(env.db_uri);
+      const prodConnection = mongoose.createConnection(env.db_uri);
       prodConnection.on('connected', function () {
         console.log('-> ', 'Mongoose product has been connected!');
-        resolve();
+        resolve({prodConnection});
       });
       prodConnection.on('error', function (err) {
         console.log('-> ', 'prod connection error trying to reconnect ...');
@@ -59,7 +57,5 @@ let dbIsReady = () => {
 
 
 module.exports = {
-  prodConnection,
-  testConnection,
   dbIsReady,
 };
