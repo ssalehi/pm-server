@@ -393,6 +393,29 @@ router.post('/delivery', apiResponse('Delivery', 'updateDelivery', true, ['user'
 router.post('/delivery/tracking', apiResponse('Delivery', 'getTrackingDetails', true, ['user', 'body.id'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/delivery/agent/items', apiResponse('Delivery', 'getDeliveryAgentItems', true, ['user', 'body.is_delivered', 'body.delivery_status'], [_const.ACCESS_LEVEL.DeliveryAgent]));
 router.post('/delivery/status', apiResponse('Delivery', 'changeStatus', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.use('/delivery/evidence', function (req, res, next) {
+  const id = new mongoose.Types.ObjectId();
+
+  const destination = env.uploadDeliveryEvidencePath + (req.test ? path.sep + 'test' : '')
+    + path.sep + req.params.pageId + path.sep + id;
+
+  req.delivery_evidence_id = id;
+
+  let deliveryStorage = multer.diskStorage({
+    destination,
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    }
+  });
+
+  let deliveryUpload = multer({storage: deliveryStorage});
+  deliveryUpload.single('file')(req, res, err => {
+    if (!err) {
+      next();
+    }
+  });
+});
+router.post('/delivery/evidence', apiResponse('Delivery', 'setEvidence', true, ['user', 'body', 'file', 'delivery_evidence_id'], [_const.ACCESS_LEVEL.DeliveryAgent]));
 
 // Delivery Duration
 router.get('/deliveryduration', apiResponse('DeliveryDurationInfo', 'getAllDurationInfo', false, []));
