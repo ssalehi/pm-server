@@ -267,8 +267,7 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
     if (isThumbnail) {
       return models['Product'].update(query, {
         $set: {
-          'colors.$.image.thumbnail': image,
-          'colors.$.images_imported': true
+          'colors.$.image.thumbnail': image
         }
       }, {multi: true});
     } else {
