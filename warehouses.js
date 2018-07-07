@@ -4,7 +4,13 @@ const mongoose = require('mongoose');
 centralAddress = {
   _id: mongoose.Types.ObjectId(),
   city: 'تهران',
-  street: 'نامشخص',
+  street: 'نامشخص مرکزی',
+  province: 'تهران'
+}
+hubAddress = {
+  _id: mongoose.Types.ObjectId(),
+  city: 'تهران',
+  street: 'نامشخص هاب',
   province: 'تهران'
 }
 
@@ -13,10 +19,10 @@ let warehouses = [
     _id: mongoose.Types.ObjectId(),
     name: 'مرکز تجمیع',
     phone: 'نا مشخص',
-    address: centralAddress,
+    address: hubAddress,
     is_hub: true,
     has_customer_pickup: false,
-    priority: 0
+    priority: 0,
   },
   {
     _id: mongoose.Types.ObjectId(),
@@ -26,6 +32,7 @@ let warehouses = [
     is_hub: false,
     has_customer_pickup: false,
     priority: 0,
+    ip_address: 'localhost:3001'
 
   },
   {
@@ -41,6 +48,8 @@ let warehouses = [
     priority: 1,
     is_hub: false,
     has_customer_pickup: true,
+    ip_address: 'localhost:3001'
+
   },
   {
     _id: mongoose.Types.ObjectId(),
@@ -55,6 +64,7 @@ let warehouses = [
     priority: 2,
     is_hub: false,
     has_customer_pickup: true,
+    ip_address: 'localhost:3001'
 
   },
   {
@@ -70,6 +80,7 @@ let warehouses = [
     priority: 3,
     is_hub: false,
     has_customer_pickup: true,
+    ip_address: 'localhost:3001'
 
   }
 ];

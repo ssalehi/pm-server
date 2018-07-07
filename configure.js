@@ -7,7 +7,6 @@ const _const = require('./lib/const.list');
 const env = require('./env');
 const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
-const mongoose = require('mongoose');
 const copydir = require('copy-dir');
 const warehouses = require('./warehouses');
 
@@ -70,6 +69,12 @@ db.dbIsReady()
         secret: _hash,
         access_level: _const.ACCESS_LEVEL.HubClerk,
         first_name: 'hub',
+        surname: 'clerck',
+      }, {
+        username: 'shop@persianmode.com',
+        secret: _hash,
+        access_level: _const.ACCESS_LEVEL.ShopClerk,
+        first_name: 'shop',
         surname: 'clerck',
       }];
 
@@ -164,3 +169,5 @@ db.dbIsReady()
     process.exit();
   }
   );
+
+
