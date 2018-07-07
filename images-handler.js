@@ -20,6 +20,7 @@ main = async () => {
 
   try {
     await db.dbIsReady();
+    console.log('-> ', 'is ready...');
   }
   catch (err) {
     process.exit();
@@ -292,7 +293,7 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
 getProducts = async (articles) => {
   try {
 
-    return models['product'].find({
+    return models['Product'].find({
       article_no: {
         $in: [articles]
       }
