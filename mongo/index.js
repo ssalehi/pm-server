@@ -57,5 +57,5 @@ let dbIsReady = () => {
 
 
 module.exports = {
-  dbIsReady,
+  dbIsReady
 };
