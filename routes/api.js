@@ -396,8 +396,7 @@ router.post('/delivery/status', apiResponse('Delivery', 'changeStatus', true, ['
 router.use('/delivery/evidence', function (req, res, next) {
   const id = new mongoose.Types.ObjectId();
 
-  const destination = env.uploadDeliveryEvidencePath + (req.test ? path.sep + 'test' : '')
-    + path.sep + req.params.pageId + path.sep + id;
+  const destination = env.uploadDeliveryEvidencePath + (req.test ? path.sep + 'test' : '') + path.sep + id;
 
   req.delivery_evidence_id = id;
 
@@ -412,6 +411,9 @@ router.use('/delivery/evidence', function (req, res, next) {
   deliveryUpload.single('file')(req, res, err => {
     if (!err) {
       next();
+    } else {
+      res.status(500)
+        .send(err);
     }
   });
 });
