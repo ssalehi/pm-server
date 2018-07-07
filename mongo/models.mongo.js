@@ -59,7 +59,7 @@ preSaveFunction = function (next) {
 };
 
 
-soldOutPreSaveFunction = function(next){
+soldOutPreSaveFunction = function (next) {
   const soldOut = this;
   let insertionDate = new Date();
   soldOut.sold_out_date = insertionDate;
@@ -96,6 +96,7 @@ db.dbIsReady().then(() => {
       models[newKey + 'Test'] = db.testConnection.model(newKey, schemas[key]);
     }
   }
+}).catch(err => {
 });
 
 module.exports = models;
