@@ -1,4 +1,3 @@
-const models = require('./mongo/models.mongo');
 const db = require('./mongo/index');
 const fs = require('fs');
 const mongoose = require('mongoose');
@@ -9,6 +8,7 @@ const dateTime = require('node-datetime');
 const BASE_TEMP = './public/images/temp'
 const BASE_DEST = './public/images/product-image'
 const rimraf = require('rimraf');
+const models = require('./mongo/models.mongo');
 
 
 let products;
