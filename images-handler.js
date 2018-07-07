@@ -18,8 +18,12 @@ let dirInfo = [];
 
 main = async () => {
 
-  await db.dbIsReady();
-
+  try {
+    await db.dbIsReady();
+  }
+  catch (err) {
+    process.exit();
+  }
   try {
 
     const dirArticles = getDirInfo(BASE_TEMP).dirs;
