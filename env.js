@@ -60,28 +60,18 @@ const googleAuth_callbackUrl = getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL)
 /**
  * Mail Config
  */
-const mailConfig = (isDev ? {
+const mailConfig = {
   host: "smtp.mailgun.org",
   port: "465",
   secure: true,
   auth: {
-    user: "no-reply@mail.quran.parts",
-    pass: getEnvValue(process.env.EMAIL_PASSWORD_DEV),
+    user: getEnvValue(isDev ? process.env.EMAIL_USERNAME_DEV : process.env.EMAIL_USERNAME),
+    pass: getEnvValue(isDev ? process.env.EMAIL_PASSWORD_DEV : process.env.EMAIL_PASSWORD)
   },
-  tls: {
-    rejectUnauthorized: false
-  },
-  from: `Persian Mode <no-reply@mail.quran.parts>`
-} : {
-  host: "smtp.mailgun.org",
-  port: "465",
-  secure: true,
-  auth: {
-    user: "postmaster@mg.bentoak.systems",
-    pass: getEnvValue(process.env.EMAIL_PASSWORD),
-  },
-  from: `Persian Mode <postmaster@mg.bentoak.systems>`
-});
+  from: `Bank of Style <${getEnvValue(isDev ? process.env.EMAIL_USERNAME_DEV : process.env.EMAIL_USERNAME)}>`
+};
+if (isDev)
+  mailConfig['tls'] = {rejectUnauthorized: false};
 
 /**
  * Redis
