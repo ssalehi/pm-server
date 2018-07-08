@@ -1,17 +1,15 @@
-const models = require('./mongo/models.mongo');
 const db = require('./mongo/index');
-const _const = require('./lib/const.list');
 const fs = require('fs');
 const mongoose = require('mongoose');
-const copydir = require('copy-dir');
 const path = require('path');
 const Jimp = require("jimp");
 const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
-
-
 const BASE_TEMP = './public/images/temp'
 const BASE_DEST = './public/images/product-image'
+const rimraf = require('rimraf');
+const models = require('./mongo/models.mongo');
+
 
 let products;
 
@@ -20,8 +18,13 @@ let dirInfo = [];
 
 main = async () => {
 
-  await db.dbIsReady();
-
+  try {
+    await db.dbIsReady();
+    console.log('-> ', 'is ready...');
+  }
+  catch (err) {
+    process.exit();
+  }
   try {
 
     const dirArticles = getDirInfo(BASE_TEMP).dirs;
@@ -63,7 +66,7 @@ main = async () => {
 
       if (dirInfo && dirInfo.length) {
 
-        products = await getProducts();
+        products = await getProducts(dirArticles);
 
         if (products && products.length) {
           for (let i = 0; i < products.length; i++) {
@@ -213,11 +216,11 @@ makeReport = () => {
     let dbCodesDiff = new Set( // db codes - dir codes
       [...dbArticleCodes].filter(x => !dirArticleCodes.has(x)));
 
-    dirArticleCodes.forEach(code => {
+    dirCodesDiff.forEach(code => {
       newJointArticle.codes.push({code, status: 'only in DIR'})
     })
 
-    dbArticleCodes.forEach(code => {
+    dbCodesDiff.forEach(code => {
       newJointArticle.codes.push({code, status: 'only in DB'})
     })
   });
@@ -252,6 +255,10 @@ makeReport = () => {
 
   });
 
+  rimraf(BASE_TEMP, function () {
+    console.log('-> ', 'temp folder removed succesfully !!!');
+  });
+
 }
 
 updateProductImages = async (productId, colorId, image, isThumbnail) => {
@@ -265,8 +272,7 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
     if (isThumbnail) {
       return models['Product'].update(query, {
         $set: {
-          'colors.$.image.thumbnail': image,
-          'colors.$.images_imported': true
+          'colors.$.image.thumbnail': image
         }
       }, {multi: true});
     } else {
@@ -284,30 +290,16 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
   }
 }
 
-getProducts = async () => {
+getProducts = async (articles) => {
   try {
-
-    return models['Product'].aggregate([
-      {
-        $unwind: {
-          path: '$colors',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $match: {
-          'colors.images_imported': false
-        }
-      },
-      {
-        $group: {
-          _id: '$_id',
-          article_no: {$first: '$article_no'},
-          colors: {$push: '$colors'}
-        }
+    return models['Product'].find({
+      article_no: {
+        $in: articles
       }
-
-    ]);
+    }, {
+        article_no: 1,
+        colors: 1
+      })
   } catch (err) {
     console.log('-> could not get products', err);
   }
@@ -329,6 +321,8 @@ imageResizing = async (orig, dest) => {
 
 
 }
+
+
 
 main();
 
