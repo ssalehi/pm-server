@@ -68,7 +68,7 @@ describe('PUT Upload', () => {
       done();
 
     }).catch(lib.helpers.errorHandler.bind(this));
-  }, 30000);
+  });
 
 
 });
