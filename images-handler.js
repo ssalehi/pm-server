@@ -1,4 +1,3 @@
-const models = require('./mongo/models.mongo');
 const db = require('./mongo/index');
 const fs = require('fs');
 const mongoose = require('mongoose');
@@ -9,6 +8,7 @@ const dateTime = require('node-datetime');
 const BASE_TEMP = './public/images/temp'
 const BASE_DEST = './public/images/product-image'
 const rimraf = require('rimraf');
+const models = require('./mongo/models.mongo');
 
 
 let products;
@@ -18,8 +18,13 @@ let dirInfo = [];
 
 main = async () => {
 
-  await db.dbIsReady();
-
+  try {
+    await db.dbIsReady();
+    console.log('-> ', 'is ready...');
+  }
+  catch (err) {
+    process.exit();
+  }
   try {
 
     const dirArticles = getDirInfo(BASE_TEMP).dirs;
@@ -287,10 +292,9 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
 
 getProducts = async (articles) => {
   try {
-
-    return models['product'].find({
+    return models['Product'].find({
       article_no: {
-        $in: [articles]
+        $in: articles
       }
     }, {
         article_no: 1,
