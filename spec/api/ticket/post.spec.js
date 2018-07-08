@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 const error = require('../../../lib/errors.list');
 
-xdescribe("POST Tickets Return", () => {
+describe("POST Tickets Return", () => {
 
   let customerAddressId;
   let  customerObj = {
@@ -276,7 +276,7 @@ xdescribe("POST Tickets Return", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [{
               is_processed : true,
-              status : 12,
+              status : _const.ORDER_STATUS.Delivered,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
@@ -286,7 +286,7 @@ xdescribe("POST Tickets Return", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [{
               is_processed : true,
-              status : 4,
+              status : _const.ORDER_STATUS.WaitForInvoice,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
@@ -717,7 +717,7 @@ describe("POST Tickets Cancel", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [{
               is_processed : true,
-              status : 4,
+              status : _const.ORDER_STATUS.ReadyForInvoice,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
@@ -729,13 +729,13 @@ describe("POST Tickets Cancel", () => {
             product_instance_id: productInstanceIds[1],
             tickets: [{
               is_processed : true,
-              status : 3,
+              status : _const.ORDER_STATUS.InvoiceVerified,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
             },{
               is_processed : true,
-              status : 11,
+              status : _const.ORDER_STATUS.OnDelivery,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
@@ -786,7 +786,7 @@ describe("POST Tickets Cancel", () => {
       .then(order => {
         expect(order.order_lines[0].paid_price).toBe(1000);
         expect(order.order_lines[0].tickets.length).toBe(2);
-        expect(order.order_lines[0].tickets[1].status).toBe(15);
+        expect(order.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.Cancel);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
