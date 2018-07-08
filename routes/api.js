@@ -408,6 +408,6 @@ router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo'
 
 
 // Customer Delivery Selected
-router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateFinalPrice', false, ['body'])); // body included customer id and delivery_duration id
+router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body'])); // body included customer id and delivery_duration id
 
 module.exports = router;
