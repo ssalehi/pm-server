@@ -96,6 +96,9 @@ db.dbIsReady().then(() => {
       models[newKey + 'Test'] = db.testConnection.model(newKey, schemas[key]);
     }
   }
-});
+})
+  .catch(err => {
+    console.error('ErrrrrrrrrrroRRRRRRRRRRRRRR: ', err);
+  });
 
 module.exports = models;
