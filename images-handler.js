@@ -18,12 +18,17 @@ let dirInfo = [];
 
 main = async () => {
 
+<<<<<<< HEAD
   try {
     await db.dbIsReady();
   }
   catch (err) {
     process.exit();
   }
+=======
+  await db.dbIsReady();
+
+>>>>>>> master
   try {
 
     const dirArticles = getDirInfo(BASE_TEMP).dirs;
@@ -271,7 +276,8 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
     if (isThumbnail) {
       return models['Product'].update(query, {
         $set: {
-          'colors.$.image.thumbnail': image
+          'colors.$.image.thumbnail': image,
+          'colors.$.images_imported': true
         }
       }, {multi: true});
     } else {
@@ -292,7 +298,7 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
 getProducts = async (articles) => {
   try {
 
-    return models['Product'].find({
+    return models['product'].find({
       article_no: {
         $in: articles
       }

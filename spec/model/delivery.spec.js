@@ -316,7 +316,7 @@ describe('Initiate Delivery', () => {
   it("should add new delivery", function (done) {
     Delivery.test = true;
     let delivery = new Delivery(true);
-    delivery.initiate(Orders[2], orderLineIds[3], {warehouse_id: warehouses.find(x => x.is_hub)._id}, {customer: {customer_id: customer1.cid, address_id: mongoose.Types.ObjectId()}})
+    delivery.initiate(Orders[2], orderLineIds[3], {warehouse_id: warehouses.find(x => x.is_hub)._id}, {customer: {id: customer1.cid, address_id: mongoose.Types.ObjectId()}})
       .then(res => {
         expect(res.order_details.length).toBe(1);
         expect(res.order_details[0].order_line_ids.length).toBe(1);
