@@ -1,5 +1,5 @@
-const models = require('./mongo/models.mongo');
 const db = require('./mongo/index');
+const models = require('./mongo/models.mongo');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -20,7 +20,6 @@ main = async () => {
 
   try {
     await db.dbIsReady();
-    console.log('-> ', 'is ready...');
   }
   catch (err) {
     process.exit();
@@ -295,7 +294,7 @@ getProducts = async (articles) => {
 
     return models['Product'].find({
       article_no: {
-        $in: [articles]
+        $in: articles
       }
     }, {
         article_no: 1,
