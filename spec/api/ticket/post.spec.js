@@ -881,7 +881,6 @@ xdescribe("POST Tickets Cancel", () => {
 
 describe("POST Tickets outbox", () => {
 
-  let customerAddressId;
   let customerObj = {
     cid: null,
     jar: null
@@ -1234,16 +1233,13 @@ describe("POST Tickets outbox", () => {
       .then((orders) => models['OrderTest'].insertMany(orders))
       .then(res => {
         order = res[0];
-        orderLineOne = res[0].order_lines[0];
-        orderLineTwo = res[0].order_lines[1];
-        done()
+        done();
       })
       .catch(err => {
         console.log(err);
         done();
       });
   }, 15000);
-
 
   it('show last ticket with ReadyToDeliver status', function (done) {
     this.done = done;
@@ -1273,7 +1269,7 @@ describe("POST Tickets outbox", () => {
 
   });
 
-  it('show last tickets without ReadyToDeliver status  ', function (done) {
+  it('show last tickets without ReadyToDeliver status', function (done) {
     this.done = done;
     rp({
       method: 'POST',
