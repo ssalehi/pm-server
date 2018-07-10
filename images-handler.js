@@ -254,6 +254,9 @@ makeReport = () => {
 
   });
 
+  rimraf(BASE_TEMP, function () {
+    console.log('-> ', 'temp folder removed succesfully !!!');
+  });
 }
 
 updateProductImages = async (productId, colorId, image, isThumbnail) => {
