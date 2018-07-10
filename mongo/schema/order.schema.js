@@ -2,6 +2,17 @@ const Schema = require('mongoose').Schema;
 const OrderLineSchema = require('./order_line.schema');
 const addressSchema = require('./address.schema');
 
+let time_slot_template = {
+  lower_bound: {
+    type: Number,
+    required: true,
+  },
+  upper_bound: {
+    type: Number,
+    required: true,
+  },
+};
+
 loyalty_template = {
   delivery_spent : {
     type: Number,
@@ -69,15 +80,12 @@ let schema_obj = {
     default: false
   },
   invoice_no: String,
+
   duration_days: {      // delivery-periode-days references to delivery_duration_info schema
     type: Number,
     trim: true,
   },
-  time_slot: {
-    // a hard-code string comming from client : 10-18 , 18-22
-    type: String,
-    trim: true,
-  },
+  time_slot: time_slot_template,
   // delivery_duration: delivery_duration_template,
   loyalty: loyalty_template,
 };

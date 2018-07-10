@@ -410,4 +410,7 @@ router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo'
 // Customer Delivery Selected
 router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body'])); // body included customer id and delivery_duration id
 
+
+router.get('/test/find/product', apiResponse('Product', 'testFunction', false));
+
 module.exports = router;
