@@ -32,6 +32,7 @@ db.dbIsReady()
       return Promise.resolve();
   })
   .then(() => {
+    console.log('-> ', 'warehouses are added');
 
     return new Promise((resolve, reject) => {
       env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
@@ -101,6 +102,7 @@ db.dbIsReady()
     }))
   })
   .then(res => {
+    console.log('-> ', 'defult palacements are added!');
     return models['LoyaltyGroup'].find().lean();
   })
   .then(res => {
