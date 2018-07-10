@@ -48,7 +48,8 @@ main = async () => {
               images: [],
             }
             newArticleInfo.codes.push(newCodeInfo);
-            const images = getDirInfo(path.join(BASE_TEMP, article, code)).files
+            let images = getDirInfo(path.join(BASE_TEMP, article, code)).files;
+
             if (images && images.length) {
               images.forEach(image => {
                 const parts = image.split('.');
@@ -166,11 +167,24 @@ getDirInfo = (_path) => {
       items.forEach(item => {
         const itemPath = path.join(_path, item);
         try {
-          fs.lstatSync(itemPath).isDirectory() ? result.dirs.push(item) : result.files.push(item);
+          if (fs.lstatSync(itemPath).isDirectory()) {
+            result.dirs.push(item)
+          } else {
+
+            const stats = fs.statSync(path.join(_path, item));
+            const size = stats["size"]
+            result.files.push({name: item, size})
+          };
         } catch (err) {
           console.log('-> ', err);
         }
       })
+
+      if (result.files && result.files.length) {
+        result.files = result.files.filter((obj, pos, arr) => {
+          return arr.map(mapObj => mapObj.size).indexOf(obj.size) === pos;
+        }).map(x => x.name);
+      }
     }
     return result;
   }
