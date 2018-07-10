@@ -52,6 +52,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
         else
           return Promise.resolve();
       })
+
       .then(rs => {
         if (adminOnly && (!rs || rs.length < 1))
           return Promise.reject(error.adminOnly);
