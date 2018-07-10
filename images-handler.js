@@ -1,15 +1,11 @@
-const models = require('./mongo/models.mongo');
 const db = require('./mongo/index');
-const _const = require('./lib/const.list');
+const models = require('./mongo/models.mongo');
 const fs = require('fs');
 const mongoose = require('mongoose');
-const copydir = require('copy-dir');
 const path = require('path');
 const Jimp = require("jimp");
 const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
-
-
 const BASE_TEMP = './public/images/temp'
 const BASE_DEST = './public/images/product-image'
 const rimraf = require('rimraf');
@@ -22,8 +18,12 @@ let dirInfo = [];
 
 main = async () => {
 
-  await db.dbIsReady();
-
+  try {
+    await db.dbIsReady();
+  }
+  catch (err) {
+    process.exit();
+  }
   try {
 
     const dirArticles = getDirInfo(BASE_TEMP).dirs;
@@ -257,6 +257,7 @@ makeReport = () => {
   rimraf(BASE_TEMP, function () {
     console.log('-> ', 'temp folder removed succesfully !!!');
   });
+
 }
 
 updateProductImages = async (productId, colorId, image, isThumbnail) => {
@@ -294,7 +295,7 @@ getProducts = async (articles) => {
 
     return models['product'].find({
       article_no: {
-        $in: [articles]
+        $in: articles
       }
     }, {
         article_no: 1,
@@ -321,8 +322,4 @@ imageResizing = async (orig, dest) => {
 
 
 }
-
 main();
-
-
-
