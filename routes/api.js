@@ -395,7 +395,7 @@ router.post('/delivery/items/:offset/:limit', apiResponse('Delivery', 'getDelive
 router.get('/delivery/agent', apiResponse('Agent', 'getDeliveryAgents', true, [], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/delivery', apiResponse('Delivery', 'updateDelivery', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/delivery/tracking', apiResponse('Delivery', 'getTrackingDetails', true, ['user', 'body.id'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.post('/delivery/agent/items', apiResponse('Delivery', 'getDeliveryAgentItems', true, ['user', 'body.is_delivered', 'body.delivery_status'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/agent/items', apiResponse('Delivery', 'getDeliveryAgentItems', true, ['user', 'body.is_delivered', 'body.delivery_status_list'], [_const.ACCESS_LEVEL.DeliveryAgent]));
 router.post('/delivery/status', apiResponse('Delivery', 'changeStatus', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
 router.use('/delivery/evidence', function (req, res, next) {
   const id = new mongoose.Types.ObjectId();
@@ -421,7 +421,8 @@ router.use('/delivery/evidence', function (req, res, next) {
     }
   });
 });
-router.post('/delivery/evidence', apiResponse('Delivery', 'setEvidence', true, ['user', 'body', 'file', 'delivery_evidence_id'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/evidence', apiResponse('Delivery', 'setEvidence', true, ['body', 'file', 'delivery_evidence_id'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/finish', apiResponse('Delivery', 'finishDelivery', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
 
 // Delivery Duration
 router.get('/deliveryduration', apiResponse('DeliveryDurationInfo', 'getAllDurationInfo', false, []));
