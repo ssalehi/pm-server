@@ -565,14 +565,13 @@ describe('POST Customer / ', () => {
   let preferred_brands = [];
   let preferred_tags = [];
   let preferred_size;
-  
+  let customerObj = {cid: null, jar: null};
+
   beforeEach(done => {
-    let customerObj = {
+    let info = {
       first_name: 'mohammadali',
       surname: 'farhad',
-      username: 'farhad@yahoo.com',
       active: true,
-      is_verified: true,
       shoesType: 'US',
       is_guest: false
     };
@@ -591,12 +590,11 @@ describe('POST Customer / ', () => {
       name: 'Gender'
     }];
     lib.dbHelpers.dropAll()
-      .then(() => {
-        return models['CustomerTest'].create(customerObj);
-      })
-      .then((customer) => {
-        username = customer.username;
-        
+      .then(() => lib.dbHelpers.addAndLoginCustomer('cust', 'pass', info))
+      .then((res) => {
+        customerObj.cid = res.cid;
+        customerObj.jar = res.rpJar;
+
         return models['TagGroupTest'].insertMany(tagGroupArr);
       }).then(tag_group => {
         return models['TagTest'].insertMany([{
@@ -645,25 +643,26 @@ describe('POST Customer / ', () => {
 
   it('expect preferences customer update', function (done) {
     this.done = done;
-    
+
     rp({
       method: 'POST',
       uri: lib.helpers.apiTestURL(`customer/preferences`),
       body: {
-        username,
         preferred_brands,
         preferred_tags,
         preferred_size
       },
       json: true,
+      jar: customerObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['CustomerTest'].findOne({username});
+      return models['CustomerTest'].findOne({});
     }).then(res => {
       expect(res.preferred_size).toEqual('7.5');
       expect(res.preferred_tags.length).toBe(4);
       expect(res.preferred_brands.length).toBe(1);
+      expect(res.is_preferences_set).toBe(true);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
