@@ -1,6 +1,7 @@
 const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
+const _const = require('../../../lib/const.list');
 const error = require('../../../lib/errors.list');
 const moment = require('moment');
 
@@ -46,7 +47,8 @@ describe('Person PUT API', () => {
         expect(res.surname.toLowerCase()).toBe('alavi');
         expect(moment(res.dob).format('YYYY-MM-DD')).toBe('1993-03-02');
         expect(res.gender).toBe('m');
-        expect(res.is_verified).toBe(false);
+        expect(res.is_verified).toBe(_const.VERIFICATION.notVerified);
+        expect(res.activation_link).not.toBeNull();
         expect(res.verification_code).toBeDefined();
         done();
       })
@@ -88,7 +90,7 @@ describe('Person PUT API', () => {
       dob: '1993-03-02',
       gender: 'm',
       mobile_no: '1234567890',
-      is_verified: true,
+      is_verified: _const.VERIFICATION.bothVerified,
     })).save()
       .then(res => {
         return rp({
@@ -127,7 +129,7 @@ describe('Person PUT API', () => {
       dob: '1993-03-02',
       gender: 'm',
       mobile_no: '1234567890',
-      is_verified: true,
+      is_verified: _const.VERIFICATION.bothVerified,
     })).save()
       .then(res => {
         return rp({
