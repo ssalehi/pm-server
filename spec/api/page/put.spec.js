@@ -45,7 +45,7 @@ describe("Put page basics", () => {
       expect(res.body.address).toBe('testAddress');
       expect(res.body.is_app).toBe(false);
       expect(mongoose.Types.ObjectId.isValid(res.body._id)).toBeTruthy();
-      return models['PageTest'].find({}).lean();
+      return models()['PageTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(1);
@@ -74,7 +74,7 @@ describe("Put page basics", () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
 
-      return models['PageTest'].find({}).lean();
+      return models()['PageTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(1);
@@ -89,7 +89,7 @@ describe("Put page basics", () => {
 
     this.done = done;
 
-    let page = new models['PageTest']({
+    let page = new models()['PageTest']({
       address: 'testAddress1',
       is_app: false
     });
@@ -108,7 +108,7 @@ describe("Put page basics", () => {
         })).then(res => {
           expect(res.statusCode).toBe(200);
 
-          return models['PageTest'].find({}).lean();
+          return models()['PageTest'].find({}).lean();
 
         }).then(res => {
           expect(res.length).toBe(2);
@@ -171,7 +171,7 @@ describe("Put page basics", () => {
 
     this.done = done;
 
-    let page = new models['PageTest']({
+    let page = new models()['PageTest']({
       address: 'testAddress',
       is_app: false
     });
@@ -212,7 +212,7 @@ describe("Put Placement Api", () => {
 
         collection_id = new mongoose.Types.ObjectId();
 
-        page = models['PageTest']({
+        page = models()['PageTest']({
           address: 'test',
           is_app: false,
           placement: [
@@ -322,7 +322,7 @@ describe("Put Placement Api", () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({
+        return models()['PageTest'].find({
           '_id': page._id,
         }).lean();
       })

@@ -17,15 +17,15 @@ describe("Delete Product", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].insertMany({name: 'Nike'});
+        return models()['BrandTest'].insertMany({name: 'Nike'});
       })
       .then(res => {
         brandId = res[0]._id;
-        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+        return models()['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
         typeId = res[0]._id;
-        let product = models['ProductTest']({
+        let product = models()['ProductTest']({
           name: 'sample name',
           product_type: {
             name: 'Shoes',
@@ -65,7 +65,7 @@ describe("Delete Product", () => {
       let result = JSON.parse(res.body);
       expect(result['n']).toBe(1);
       expect(result['ok']).toBe(1);
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(0);
@@ -91,16 +91,16 @@ describe("Delete Product tags", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].insertMany({name: 'Nike'});
+        return models()['BrandTest'].insertMany({name: 'Nike'});
       })
       .then(res => {
         brandId = res[0]._id;
-        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+        return models()['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
         typeId = res[0]._id;
 
-        return models['TagGroupTest'].insertMany([
+        return models()['TagGroupTest'].insertMany([
           {name: 'tag group 1'},
           {name: 'tag group 2'}
         ]);
@@ -108,7 +108,7 @@ describe("Delete Product tags", () => {
       })
       .then(res => {
         tagGroupIds = res.map(x => x._id);
-        return models['TagTest'].insertMany([
+        return models()['TagTest'].insertMany([
           {name: 'tag 1', tag_group_id: tagGroupIds[0]},
           {name: 'tag 2', tag_group_id: tagGroupIds[1]}
         ]);
@@ -117,7 +117,7 @@ describe("Delete Product tags", () => {
       .then(res => {
         tagIds = res.map(x => x._id);
 
-        let product = models['ProductTest']({
+        let product = models()['ProductTest']({
           name: 'sample name',
           product_type: {
             name: 'Shoes',
@@ -163,7 +163,7 @@ describe("Delete Product tags", () => {
       let result = JSON.parse(res.body);
       expect(result['nModified']).toBe(1);
       expect(result['ok']).toBe(1);
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
 
@@ -189,7 +189,7 @@ describe("Delete Product tags", () => {
       console.log('-> ', result);
       expect(result['nModified']).toBe(0);
       expect(result['ok']).toBe(1);
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res[0].tags.length).toBe(2);
@@ -215,11 +215,11 @@ describe("Delete Product colors", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].insertMany({name: 'Nike'});
+        return models()['BrandTest'].insertMany({name: 'Nike'});
       })
       .then(res => {
         brandId = res[0]._id;
-        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+        return models()['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
         typeId = res[0]._id;
@@ -231,7 +231,7 @@ describe("Delete Product colors", () => {
         imageURL3 = 'some url 3';
         imageURL4 = 'some url 4';
 
-        let product = models['ProductTest']({
+        let product = models()['ProductTest']({
           name: 'sample name',
           product_type: {
             name: 'Shoes',
@@ -290,7 +290,7 @@ describe("Delete Product colors", () => {
       let result = JSON.parse(res.body);
       expect(result['nModified']).toBe(1);
       expect(result['ok']).toBe(1);
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res[0].colors.length).toBe(1);
@@ -336,11 +336,11 @@ describe("Delete Product instances and inventory", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].insertMany({name: 'Nike'});
+        return models()['BrandTest'].insertMany({name: 'Nike'});
       })
       .then(res => {
         brandId = res[0]._id;
-        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+        return models()['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
         typeId = res[0]._id;
@@ -350,7 +350,7 @@ describe("Delete Product instances and inventory", () => {
         warehouseId1 = mongoose.Types.ObjectId();
         warehouseId2 = mongoose.Types.ObjectId();
 
-        let product = models['ProductTest']({
+        let product = models()['ProductTest']({
           name: 'sample name',
           product_type: {
             name: 'Shoes',
@@ -422,7 +422,7 @@ describe("Delete Product instances and inventory", () => {
       expect(result['n']).toBe(1);
       expect(result['nModified']).toBe(1);
       expect(result['ok']).toBe(1);
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res[0].instances.length).toBe(1);
@@ -447,7 +447,7 @@ describe("Delete Product instances and inventory", () => {
       expect(result['n']).toBe(1);
       expect(result['nModified']).toBe(0);
       expect(result['ok']).toBe(1);
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res[0].instances.length).toBe(2);
@@ -469,7 +469,7 @@ describe("Delete Product instances and inventory", () => {
       expect(result['n']).toBe(1);
       expect(result['nModified']).toBe(1);
       expect(result['ok']).toBe(1);
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res[0].instances.length).toBe(2);

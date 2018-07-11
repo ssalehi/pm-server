@@ -17,7 +17,7 @@ describe("Get Color", () => {
           {name : 'color 5'},
         ];
 
-        return models['ColorTest'].insertMany(colors);
+        return models()['ColorTest'].insertMany(colors);
 
       })
       .then(res => {

@@ -25,7 +25,7 @@ describe("Dictionary GET", () => {
         },
       ];
 
-      return models['DictionaryTest'].insertMany(dictionaries);
+      return models()['DictionaryTest'].insertMany(dictionaries);
 
     }).then(res => {
 

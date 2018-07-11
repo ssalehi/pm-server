@@ -252,7 +252,7 @@ describe("GET Tickets Orderline", () => {
     lib.dbHelpers.dropAll()
       .then((res) => {
         // create warehouses
-        return models['WarehouseTest'].insertMany(warehouses);
+        return models()['WarehouseTest'].insertMany(warehouses);
       })
       .then(() => {
         return lib.dbHelpers.addAndLoginAgent('sc', _const.ACCESS_LEVEL.ShopClerk, warehouses.find(x => x.name === 'سانا')._id)
@@ -278,7 +278,7 @@ describe("GET Tickets Orderline", () => {
         SalesManager.aid = res.aid;
         SalesManager.jar = res.rpJar;
 
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
 
 
       })
@@ -323,7 +323,7 @@ describe("GET Tickets Orderline", () => {
             }]
           }]
         }];
-        return models['OrderTest'].insertMany(orders);
+        return models()['OrderTest'].insertMany(orders);
 
       })
       .then(res => {
@@ -651,7 +651,7 @@ describe("GET Tickets Order By RecieverId", () => {
     lib.dbHelpers.dropAll()
       .then((res) => {
         // create warehouses
-        return models['WarehouseTest'].insertMany(warehouses);
+        return models()['WarehouseTest'].insertMany(warehouses);
       })
       .then(() => {
         return lib.dbHelpers.addAndLoginAgent('sc', _const.ACCESS_LEVEL.ShopClerk, warehouses.find(x => x.name === 'سانا')._id)
@@ -677,7 +677,7 @@ describe("GET Tickets Order By RecieverId", () => {
         SalesManager.aid = res.aid;
         SalesManager.jar = res.rpJar;
 
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
 
 
       })
@@ -727,7 +727,7 @@ describe("GET Tickets Order By RecieverId", () => {
             }]
           }]
         }];
-        return models['OrderTest'].insertMany(orders);
+        return models()['OrderTest'].insertMany(orders);
 
       })
       .then(res => {

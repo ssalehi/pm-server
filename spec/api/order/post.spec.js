@@ -37,17 +37,17 @@ describe('POST Order (New Order)', () => {
         customerObj.cid = res.cid;
         customerObj.jar = res.rpJar;
 
-        type1 = models['ProductTypeTest']({
+        type1 = models()['ProductTypeTest']({
           name: 'myType'
         });
-        brand1 = models['BrandTest']({
+        brand1 = models()['BrandTest']({
           name: 'Nike'
         });
 
         return Promise.all([type1.save(), brand1.save()]);
       })
       .then(res => {
-        productArr.push(models['ProductTest']({
+        productArr.push(models()['ProductTest']({
           _id: productIds[0],
           name: 'sample name',
           product_type: {
@@ -77,7 +77,7 @@ describe('POST Order (New Order)', () => {
             }
           ]
         }));
-        productArr.push(models['ProductTest']({
+        productArr.push(models()['ProductTest']({
           _id: productIds[1],
           name: 'another simple name',
           product_type: {
@@ -115,7 +115,7 @@ describe('POST Order (New Order)', () => {
           }]
         };
 
-        return models['OrderTest'].insertMany([existingOrderForSecondCustomer]);
+        return models()['OrderTest'].insertMany([existingOrderForSecondCustomer]);
       })
       .then(res => {
         existingOrderId = res[0]._id;
@@ -143,7 +143,7 @@ describe('POST Order (New Order)', () => {
     })
       .catch(res => {
         expect(res.statusCode).toBe(404);
-        return models['OrderTest'].find({}).lean();
+        return models()['OrderTest'].find({}).lean();
       })
       .then(res => {
         expect(res.length).toEqual(1);
@@ -169,7 +169,7 @@ describe('POST Order (New Order)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['OrderTest'].find({_id: res.body.upserted[0]._id}).lean();
+        return models()['OrderTest'].find({_id: res.body.upserted[0]._id}).lean();
       })
       .then(res => {
         expect(res.length).toEqual(1);
@@ -200,7 +200,7 @@ describe('POST Order (New Order)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['OrderTest'].find({_id: res.body.upserted[0]._id}).lean();
+        return models()['OrderTest'].find({_id: res.body.upserted[0]._id}).lean();
       })
       .then(res => {
         expect(res.length).toEqual(1);
@@ -252,17 +252,17 @@ describe('POST Order (Already-exist Order)', () => {
         customerObj.cid = res.cid;
         customerObj.jar = res.rpJar;
 
-        type1 = models['ProductTypeTest']({
+        type1 = models()['ProductTypeTest']({
           name: 'myType'
         });
-        brand1 = models['BrandTest']({
+        brand1 = models()['BrandTest']({
           name: 'Nike'
         });
 
         return Promise.all([type1.save(), brand1.save()]);
       })
       .then(res => {
-        productArr.push(models['ProductTest']({
+        productArr.push(models()['ProductTest']({
           _id: productIds[0],
           name: 'sample name',
           product_type: {
@@ -292,7 +292,7 @@ describe('POST Order (Already-exist Order)', () => {
             }
           ]
         }));
-        productArr.push(models['ProductTest']({
+        productArr.push(models()['ProductTest']({
           _id: productIds[1],
           name: 'another simple name',
           product_type: {
@@ -331,7 +331,7 @@ describe('POST Order (Already-exist Order)', () => {
           }]
         };
 
-        return models['OrderTest'].insertMany([existingOrderForSecondCustomer]);
+        return models()['OrderTest'].insertMany([existingOrderForSecondCustomer]);
       })
       .then(res => {
         existingOrderId = res[0]._id;
@@ -360,7 +360,7 @@ describe('POST Order (Already-exist Order)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['OrderTest'].find({}).lean();
+        return models()['OrderTest'].find({}).lean();
       })
       .then(res => {
         expect(res.length).toEqual(1);
@@ -392,7 +392,7 @@ describe('POST Order (Already-exist Order)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['OrderTest'].find({}).lean();
+        return models()['OrderTest'].find({}).lean();
       })
       .then(res => {
         expect(res.length).toEqual(1);
@@ -453,44 +453,44 @@ describe('POST Order (Fetch cart details)', () => {
           jar: res.rpJar,
         };
 
-        type1 = models['ProductTypeTest']({
+        type1 = models()['ProductTypeTest']({
           name: 'Shoe'
         });
-        type2 = models['ProductTypeTest']({
+        type2 = models()['ProductTypeTest']({
           name: 'Shirt'
         });
 
-        brand1 = models['BrandTest']({
+        brand1 = models()['BrandTest']({
           name: 'Nike'
         });
-        brand2 = models['BrandTest']({
+        brand2 = models()['BrandTest']({
           name: 'Puma'
         });
 
-        color1 = models['ColorTest']({
+        color1 = models()['ColorTest']({
           name: 'Green',
           color_id: 101
         });
-        color2 = models['ColorTest']({
+        color2 = models()['ColorTest']({
           name: 'Red',
           color_id: 202
         });
 
-        tagGroup1 = models['TagGroupTest']({
+        tagGroup1 = models()['TagGroupTest']({
           name: 'tag group 1',
           is_required: false,
         });
 
-        tag1 = models['TagTest']({
+        tag1 = models()['TagTest']({
           name: 'tag 1',
           tag_group_id: tagGroup1._id,
         });
-        tag2 = models['TagTest']({
+        tag2 = models()['TagTest']({
           name: 'tag 2',
           tag_group_id: tagGroup1._id,
         });
 
-        product1 = models['ProductTest']({
+        product1 = models()['ProductTest']({
           name: 'sample name 1',
           product_type: {
             name: type1.name,
@@ -581,7 +581,7 @@ describe('POST Order (Fetch cart details)', () => {
             tag_id: tag2._id
           }]
         });
-        product2 = models['ProductTest']({
+        product2 = models()['ProductTest']({
           name: 'sample name 2',
           product_type: {
             name: type2.name,
@@ -617,20 +617,20 @@ describe('POST Order (Fetch cart details)', () => {
           ]
         });
 
-        collection1 = models['CollectionTest']({
+        collection1 = models()['CollectionTest']({
           name: 'collection 1',
           name_fa: 'مجموعه 1',
           productIds: [product1._id],
         });
 
-        campaign1 = models['CampaignTest']({
+        campaign1 = models()['CampaignTest']({
           name: 'new year sales',
           discount_ref: 10,
           campaign_collection_ids: [{
             collection_id: collection1._id,
           }],
         });
-        campaign2 = models['CampaignTest']({
+        campaign2 = models()['CampaignTest']({
           name: '2000 winter sales',
           discount_ref: 20,
           start_date: new Date(2000, 10, 10),
@@ -641,7 +641,7 @@ describe('POST Order (Fetch cart details)', () => {
           }],
         });
 
-        order1 = models['OrderTest']({
+        order1 = models()['OrderTest']({
           is_cart: true,
           _id: orderId1,
           customer_id: customerObj.cid,
@@ -669,7 +669,7 @@ describe('POST Order (Fetch cart details)', () => {
             adding_time: new Date(),
           }]
         });
-        order2 = models['OrderTest']({
+        order2 = models()['OrderTest']({
           _id: orderId2,
           customer_id: customerObj.cid,
           order_time: new Date(),
@@ -844,17 +844,17 @@ describe('POST Order (Delete Order lines)', () => {
         customerObj.cid = res.cid;
         customerObj.jar = res.rpJar;
 
-        type1 = models['ProductTypeTest']({
+        type1 = models()['ProductTypeTest']({
           name: 'type1',
         });
-        brand1 = models['BrandTest']({
+        brand1 = models()['BrandTest']({
           name: 'Nike',
         });
 
         return Promise.all([type1.save(), brand1.save()]);
       })
       .then(res => {
-        productArr.push(models['ProductTest']({
+        productArr.push(models()['ProductTest']({
           _id: productIds[0],
           name: 'sample name',
           product_type: {
@@ -894,7 +894,7 @@ describe('POST Order (Delete Order lines)', () => {
             }
           ]
         }));
-        productArr.push(models['ProductTest']({
+        productArr.push(models()['ProductTest']({
           _id: productIds[1],
           name: "another simple name",
           product_type: {
@@ -942,7 +942,7 @@ describe('POST Order (Delete Order lines)', () => {
           }]
         };
 
-        return models['OrderTest'].insertMany([existingOrderForSecondCustomer]);
+        return models()['OrderTest'].insertMany([existingOrderForSecondCustomer]);
       })
       .then(res => {
         existingOrderId = res[0]._id;
@@ -969,7 +969,7 @@ describe('POST Order (Delete Order lines)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['OrderTest'].find({}).lean()
+        return models()['OrderTest'].find({}).lean()
       })
       .then(res => {
         expect(res.length).toEqual(1);
@@ -997,7 +997,7 @@ describe('POST Order (Delete Order lines)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['OrderTest'].find({}).lean()
+        return models()['OrderTest'].find({}).lean()
       })
       .then(res => {
         expect(res.length).toEqual(1);
@@ -1027,7 +1027,7 @@ describe('POST Order (Delete Order lines)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['OrderTest'].find({}).lean()
+        return models()['OrderTest'].find({}).lean()
       })
       .then(res => {
         expect(res.length).toEqual(1);
@@ -1073,7 +1073,7 @@ describe('POST Order - (Set Ticket)', () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
-        return models['WarehouseTest'].insertMany(warehouses)
+        return models()['WarehouseTest'].insertMany(warehouses)
       })
       .then(() => {
         return lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
@@ -1180,7 +1180,7 @@ describe('POST Order - (Set Ticket)', () => {
               }
             ]
           }];
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
       })
       .then(res => {
 
@@ -1245,7 +1245,7 @@ describe('POST Order - (Set Ticket)', () => {
           }]
         }];
 
-        return models['OrderTest'].insertMany(_orders);
+        return models()['OrderTest'].insertMany(_orders);
       })
       .then(res => {
         orders = res;
@@ -1261,7 +1261,7 @@ describe('POST Order - (Set Ticket)', () => {
   it('sales manager should be able to set refer ticket for a c&c order and send to shop clerk ', function (done) {
     this.done = done;
 
-    let cANDcOrder = new models['OrderTest']({ // C&C order
+    let cANDcOrder = new models()['OrderTest']({ // C&C order
       customer_id: mongoose.Types.ObjectId(),
       total_amount: 2,
       order_time: new Date(),
@@ -1297,7 +1297,7 @@ describe('POST Order - (Set Ticket)', () => {
           expect(res.statusCode).toBe(200);
           expect(res.body.n).toBe(1);
           expect(res.body.nModified).toBe(1);
-          return models['OrderTest'].findById(cANDcOrder._id).lean()
+          return models()['OrderTest'].findById(cANDcOrder._id).lean()
 
         })
           .then(res => {
@@ -1332,7 +1332,7 @@ describe('POST Order - (Set Ticket)', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.n).toBe(1);
       expect(res.body.nModified).toBe(1);
-      return models['OrderTest'].findById(orders[0]._id).lean()
+      return models()['OrderTest'].findById(orders[0]._id).lean()
     })
       .then(res => {
         expect(res.order_lines[0].tickets.length).toBe(2);
@@ -1372,7 +1372,7 @@ describe('POST Order - (Set Ticket)', () => {
   });
   it('sales manager should not be able to make a refer ticket with referral advice for a c&c order', function (done) {
     this.done = done;
-    let cANDcOrder = new models['OrderTest']({ // C&C order
+    let cANDcOrder = new models()['OrderTest']({ // C&C order
       customer_id: mongoose.Types.ObjectId(),
       total_amount: 2,
       order_time: new Date(),
@@ -1419,7 +1419,7 @@ describe('POST Order - (Set Ticket)', () => {
   });
   it('sales manager should not be able to change warehouse id for a c&c order', function (done) {
     this.done = done;
-    let cANDcOrder = new models['OrderTest']({ // C&C order
+    let cANDcOrder = new models()['OrderTest']({ // C&C order
       customer_id: mongoose.Types.ObjectId(),
       total_amount: 2,
       order_time: new Date(),
@@ -1458,7 +1458,7 @@ describe('POST Order - (Set Ticket)', () => {
         expect(res.statusCode).toBe(200);
         expect(res.body.n).toBe(1);
         expect(res.body.nModified).toBe(1);
-        return models['OrderTest'].findById(cANDcOrder._id).lean()
+        return models()['OrderTest'].findById(cANDcOrder._id).lean()
       })
       .then(res => {
         expect(res.order_lines[0].tickets.length).toBe(2);
@@ -1473,7 +1473,7 @@ describe('POST Order - (Set Ticket)', () => {
   });
   it('sales manager should not be able to make duplicate refer ticket', function (done) {
     this.done = done;
-    let newOrder = new models['OrderTest']({
+    let newOrder = new models()['OrderTest']({
       customer_id: mongoose.Types.ObjectId(),
       total_amount: 3,
       order_time: new Date(),
@@ -1546,7 +1546,7 @@ describe('POST Order - (Set Ticket)', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.n).toBe(1);
       expect(res.body.nModified).toBe(1);
-      return models['OrderTest'].findById(orders[0]._id).lean()
+      return models()['OrderTest'].findById(orders[0]._id).lean()
     })
       .then(res => {
         expect(res.order_lines[0].tickets.length).toBe(2);
@@ -1575,7 +1575,7 @@ describe('POST Order - (Set Ticket)', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.n).toBe(1);
       expect(res.body.nModified).toBe(1);
-      return models['OrderTest'].findById(orders[0]._id).lean()
+      return models()['OrderTest'].findById(orders[0]._id).lean()
     })
       .then(res => {
         expect(res.order_lines[0].tickets.length).toBe(2);
@@ -1590,7 +1590,7 @@ describe('POST Order - (Set Ticket)', () => {
   });
   it('sales manager should not be able to make a invoice ticket for a c&c order', function (done) {
     this.done = done;
-    let cANDcOrder = new models['OrderTest']({ // C&C order
+    let cANDcOrder = new models()['OrderTest']({ // C&C order
       customer_id: mongoose.Types.ObjectId(),
       total_amount: 2,
       order_time: new Date(),
@@ -1635,7 +1635,7 @@ describe('POST Order - (Set Ticket)', () => {
   });
   it('sales manager should be able to request for invoice for second time', function (done) {
     this.done = done;
-    let newOrder = new models['OrderTest']({
+    let newOrder = new models()['OrderTest']({
       customer_id: mongoose.Types.ObjectId(),
       total_amount: 3,
       order_time: new Date(),
@@ -1686,7 +1686,7 @@ describe('POST Order - (Set Ticket)', () => {
   });
   it('sales manager should not be able to request for invoice for second time when previous active invoice ticket is not exists', function (done) {
     this.done = done;
-    let newOrder = new models['OrderTest']({
+    let newOrder = new models()['OrderTest']({
       customer_id: mongoose.Types.ObjectId(),
       total_amount: 3,
       order_time: new Date(),
@@ -1753,7 +1753,7 @@ describe('POST Order - (Set Ticket)', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.n).toBe(1);
       expect(res.body.nModified).toBe(1);
-      return models['OrderTest'].findById(orders[0]._id).lean()
+      return models()['OrderTest'].findById(orders[0]._id).lean()
     })
       .then(res => {
         expect(res.order_lines[0].tickets.length).toBe(2);
@@ -1789,7 +1789,7 @@ describe('POST Order - (Set Ticket)', () => {
   });
   it('sales manager should not be able to make duplicate refund ticket', function (done) {
     this.done = done;
-    let newOrder = new models['OrderTest']({
+    let newOrder = new models()['OrderTest']({
       customer_id: mongoose.Types.ObjectId(),
       total_amount: 3,
       order_time: new Date(),
@@ -1848,7 +1848,7 @@ describe('POST Order - (Set Ticket)', () => {
     this.done = done;
 
     let order;
-    new models['CustomerTest']({
+    new models()['CustomerTest']({
       _id: orders[0].customer_id,
       username: 'test@test',
       password: '1234556',
@@ -1875,7 +1875,7 @@ describe('POST Order - (Set Ticket)', () => {
         }))
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['OrderTest'].findById(orders[0]._id).lean()
+        return models()['OrderTest'].findById(orders[0]._id).lean()
       })
       .then(res => {
         order = res;
@@ -1885,7 +1885,7 @@ describe('POST Order - (Set Ticket)', () => {
         expect(res.order_lines[2].tickets[3].status).toBe(_const.ORDER_STATUS.ReadyToDeliver);
         expect(res.order_lines[2].tickets[3].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
 
-        return models['CustomerTest'].findById(res.customer_id).lean();
+        return models()['CustomerTest'].findById(res.customer_id).lean();
 
       })
       .then(res => {
@@ -1893,7 +1893,7 @@ describe('POST Order - (Set Ticket)', () => {
         expect(res.loyalty_points).toBe(100);
         expect(res.balance).toBe(6500);
 
-        return models['ProductTest'].findById(order.order_lines[2].product_id)
+        return models()['ProductTest'].findById(order.order_lines[2].product_id)
 
       })
       .then(res => {
@@ -1912,7 +1912,7 @@ describe('POST Order - (Set Ticket)', () => {
   });
   it('offline system should not be able to make duplicate verify invoice ticket', function (done) {
     this.done = done;
-    let newOrder = new models['OrderTest']({
+    let newOrder = new models()['OrderTest']({
       customer_id: mongoose.Types.ObjectId(),
       total_amount: 3,
       order_time: new Date(),

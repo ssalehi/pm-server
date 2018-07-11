@@ -25,7 +25,7 @@ describe('PUT Dictionary ', () => {
                     type: 'type 3'
                 },
             ];
-            return models['DictionaryTest'].insertMany(dictionaries);
+            return models()['DictionaryTest'].insertMany(dictionaries);
 
         }).then(res => {
             dictionaryId = res[0]._id;
@@ -52,7 +52,7 @@ describe('PUT Dictionary ', () => {
             resolveWithFullResponse: true
         }).then(res => {
             expect(res.statusCode).toBe(200);
-            return models['DictionaryTest'].find();
+            return models()['DictionaryTest'].find();
         }).then((res) => {
             expect(res.length).toEqual(4)
             done();

@@ -41,7 +41,7 @@ describe('PUT Collection', () => {
     }).then(res => {
       collectionId = res.body._id;
       expect(res.statusCode).toBe(200);
-      return models['CollectionTest'].find();
+      return models()['CollectionTest'].find();
     }).then(res => {
       expect(res.length).toEqual(1);
       expect(res[0]._id.toString()).toBe(collectionId.toString());
