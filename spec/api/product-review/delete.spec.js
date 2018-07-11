@@ -18,11 +18,11 @@ describe('POST / Product Reviews -', () => {
       .then((res) => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].create({name: 'Nike'})
+        return models()['BrandTest'].create({name: 'Nike'})
           .then(res => {
             brandId = res._id;
             //create product
-            return models['ProductTest'].create({
+            return models()['ProductTest'].create({
               name: 'product test',
               base_price: 1000,
               brand: {
@@ -30,7 +30,7 @@ describe('POST / Product Reviews -', () => {
                 brand_id: brandId
               },
             }).then(res => {
-              return models['ProductTest'].findOneAndUpdate({
+              return models()['ProductTest'].findOneAndUpdate({
                 '_id': res._id,
                 'reviews.customer_id': {$ne: mongoose.Types.ObjectId(adminObj.aid)}
               }, {
@@ -133,7 +133,7 @@ describe('POST / Product Reviews -', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['ProductTest'].findById(productId);
+      return models()['ProductTest'].findById(productId);
     }).then(res => {
       expect(res.reviews.length).toBe(0);
       done();

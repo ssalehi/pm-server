@@ -100,24 +100,62 @@ router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
 router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
-router.get('/login/google/callback', passport.authenticate('google', {
-  successRedirect: '/login/oauth',
-  failureRedirect: '/login/oauth'
-}));
+router.get('/login/google/callback', passport.authenticate('google', {}), function (req, res) {
+  /*
+   * The logic behind this is that when a user logs in with google, we set its verification to both email and mobile,
+   * so the system accepts their login, but then when he's logged in, we check its mobile verification and if it wasn't
+   * verified, we set it to unverified, and show the setting mobile page in the client to enter their mobile
+   *
+   * the necessity of being logged in at this point is that we need the logged in user object in order to
+   * change (in here, set) their mobile number in the database and not letting some random person comes and
+   * changes the mobile of any unverified user!
+   */
+  if (!req.user) {
+    console.error(error.noUser);
+    res.end();
+  }
+
+  // TODO: http://localhost:4200 needs to be changed on the real server !
+  let ClientAddress = 'http://127.0.0.1:4200';
+  let ClientSetMobileRoute = '/login/oauth/setMobile';
+  let ClientSetPreferences = '/login/oauth/setPreferences';
+
+  model['Customer' + (personModel.isTest(req) ? 'Test' : '')].findOne({username: req.user.username})
+    .then(obj => {
+      if (!obj.mobile_no || (obj.mobile_no && obj.is_verified !== _const.VERIFICATION.bothVerified)) {
+        model['Customer' + (personModel.isTest(req) ? 'Test' : '')].update({username: req.user.username}, {
+          is_verified: _const.VERIFICATION.emailVerified,
+        }).then(data => {
+          // redirect client to the setMobile page
+          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
+          res.end();
+        }).catch(err => {
+          console.error('error in changing verification level: ', err);
+          res.end();
+        });
+      } else { // if mobile is already verified
+        if (obj['is_preferences_set'])
+          res.writeHead(302, {'Location': `${ClientAddress}`});
+        else
+          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetPreferences}`});
+        res.end();
+      }
+    });
+});
 router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
 // Person (Customer/Agent) API
 router.put('/register', apiResponse('Customer', 'registration', false, ['body']));
 router.post('/editUserBasicInfo', apiResponse('Customer', 'editUserBasicInfo', false, ['body', 'user.username']));
 router.post('/changePassword', apiResponse('Customer', 'changePassword', false, ['body', 'user.username']));
-router.post('/register/verify', apiResponse('Customer', 'verification', false, ['body.code', 'body.username']));
+router.post('/register/verify', apiResponse('Customer', 'verification', false, ['user', 'body.code', 'body.username']));
 router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
-router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
+router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['user', 'body.mobile_no']));
 router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user', 'body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
+router.get('/user/activate/link/:link', apiResponse('Customer', 'checkActiveLink', false, ['params.link']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
-router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
-router.post('/user/auth/local/:link', apiResponse('Person', 'completeAuth', false, ['params.link', 'body']));
-router.post('/user/auth/link', apiResponse('Person', 'sendActivationMail', false, ['body.email', 'body.is_forgot_mail']));
+// router.post('/user/auth/local/:link', apiResponse('Person', 'completeAuth', false, ['params.link', 'body']));
+router.post('/user/auth/link', apiResponse('Customer', 'sendActivationMail', false, ['body.username', 'body.is_forgot_mail']));
 router.post('/profile/image/:pid', upload.single('image'), apiResponse('Person', 'setProfileImage', false, ['user.pid', 'params.pid', 'file']));
 router.post('/profile/image/:username/:pid', upload.single('image'), apiResponse('Person', 'setProfileImage', true, ['user.pid', 'params.pid', 'file']));
 router.get('/profile/image/:pid', apiResponse('Person', 'getProfileImage', false, ['params.pid']));
@@ -168,7 +206,7 @@ router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType
 
 // Customer Preferences
 router.get('/customer/preferences', apiResponse('Customer', 'getPreferences', false, ['user.username']));
-router.post('/customer/preferences', apiResponse('Customer', 'setPreferences', false, ['body', 'user.username']));
+router.post('/customer/preferences', apiResponse('Customer', 'setPreferences', false, ['user', 'body']));
 
 // Order
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
@@ -326,7 +364,7 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-    });
+  });
 
 });
 
@@ -389,7 +427,6 @@ router.get('/loyaltygroup', apiResponse('LoyaltyGroup', 'getLoyaltyGroups', fals
 router.post('/loyaltygroup', apiResponse('LoyaltyGroup', 'upsertLoyaltyGroup', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGroup', true, ['body._id'], [_const.ACCESS_LEVEL.SalesManager]));
 
-
 // Delivery
 router.get('/delivery/:id', apiResponse('Delivery', 'getDeliveryData', false, ['params.id']));
 router.post('/delivery/items/:offset/:limit', apiResponse('Delivery', 'getDeliveryItems', true, ['user', 'params.offset', 'params.limit', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
@@ -405,7 +442,6 @@ router.get('/deliverycc', apiResponse('DeliveryDurationInfo', 'getClickAndCollec
 router.post('/deliveryduration', apiResponse('DeliveryDurationInfo', 'upsertDurationInfo', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/deliverycc', apiResponse('DeliveryDurationInfo', 'upsertCAndC', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo', 'deleteDuration', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
-
 
 // Customer Delivery Selected
 router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body'])); // body included customer id and delivery_duration id

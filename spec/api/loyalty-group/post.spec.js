@@ -26,7 +26,7 @@ describe('POST API ', () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
-        return new models['WarehouseTest'](centralWarehouse).save();
+        return new models()['WarehouseTest'](centralWarehouse).save();
       })
       .then(() => lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, centralWarehouse._id))
       .then(res => {
@@ -48,7 +48,7 @@ describe('POST API ', () => {
           min_score: 100,
         });
 
-        return Promise.all(loyaltyGroupList.map(el => models['LoyaltyGroupTest'](el).save()));
+        return Promise.all(loyaltyGroupList.map(el => models()['LoyaltyGroupTest'](el).save()));
       })
       .then(res => {
         done();
@@ -74,7 +74,7 @@ describe('POST API ', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['LoyaltyGroupTest'].find({name: 'Blue'}).lean();
+        return models()['LoyaltyGroupTest'].find({name: 'Blue'}).lean();
       })
       .then(res => {
         expect(res.length).toBe(1);
@@ -121,7 +121,7 @@ describe('POST API ', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['LoyaltyGroupTest'].find().lean();
+        return models()['LoyaltyGroupTest'].find().lean();
       })
       .then(res => {
         expect(res.length).toBe(3);
@@ -172,7 +172,7 @@ describe('POST API (DELETE)', () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
-        return new models['WarehouseTest'](centralWarehouse).save();
+        return new models()['WarehouseTest'](centralWarehouse).save();
       })
       .then(() => lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, centralWarehouse._id))
       .then(res => {
@@ -194,7 +194,7 @@ describe('POST API (DELETE)', () => {
           min_score: 100,
         });
 
-        return Promise.all(loyaltyGroupList.map(el => models['LoyaltyGroupTest'](el).save()));
+        return Promise.all(loyaltyGroupList.map(el => models()['LoyaltyGroupTest'](el).save()));
       })
       .then(res => {
         done();
@@ -219,7 +219,7 @@ describe('POST API (DELETE)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['LoyaltyGroupTest'].find().lean();
+        return models()['LoyaltyGroupTest'].find().lean();
       })
       .then(res => {
         expect(res.length).toBe(2);
