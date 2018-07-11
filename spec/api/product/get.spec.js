@@ -27,35 +27,35 @@ describe("Get products", () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(res => {
-        return models['ProductTypeTest'].insertMany([
+        return models()['ProductTypeTest'].insertMany([
           {name: 'Shoes'},
           {name: 'Caps'},
         ])
       })
       .then(res => {
         typeIds = res.map(x => x._id);
-        return models['BrandTest'].insertMany([
+        return models()['BrandTest'].insertMany([
           {name: 'Nike'},
           {name: 'Puma'},
         ])
       })
       .then(res => {
         brandIds = res.map(x => x._id);
-        return models['ColorTest'].insertMany([
+        return models()['ColorTest'].insertMany([
           {name: 'green'},
           {name: 'red'},
         ])
       })
       .then(res => {
         colorIds = res.map(x => x._id);
-        return models['TagGroupTest'].insertMany([
+        return models()['TagGroupTest'].insertMany([
           {name: 'tg 1'},
           {name: 'tg 2'},
         ])
       })
       .then(res => {
         tgIds = res.map(x => x._id);
-        return models['TagTest'].insertMany([
+        return models()['TagTest'].insertMany([
           {name: 'tag 1'},
           {name: 'tag 2'},
         ])
@@ -149,7 +149,7 @@ describe("Get products", () => {
           details: 'some details for this product',
         };
 
-        return models['ProductTest'].insertMany([
+        return models()['ProductTest'].insertMany([
           product1,
           product2
         ]);

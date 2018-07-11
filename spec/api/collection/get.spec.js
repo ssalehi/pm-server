@@ -53,24 +53,24 @@ describe('GET Collection', () => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
 
-        return models['TagGroupTest'].insertMany(tagGroupsArr)
+        return models()['TagGroupTest'].insertMany(tagGroupsArr)
       })
       .then(res => {
-        return models['ProductTypeTest'].insertMany(productTypeArr)
+        return models()['ProductTypeTest'].insertMany(productTypeArr)
       })
       .then(res => {
 
         productTypeIds = res.map(x => x._id);
 
-        return models['ColorTest'].insertMany(colorArr)
+        return models()['ColorTest'].insertMany(colorArr)
       })
       .then(res => {
         colorIds = res.map(x => x._id);
-        return models['BrandTest'].insertMany(brandArr)
+        return models()['BrandTest'].insertMany(brandArr)
       })
       .then(res => {
         brandIds = res.map(x => x._id);
-        return models['TagTest'].insertMany(tagsArr)
+        return models()['TagTest'].insertMany(tagsArr)
       })
       .then(res => {
         tagIds = res.map(x => x._id);
@@ -102,7 +102,7 @@ describe('GET Collection', () => {
             base_price: 1000
           }
         ];
-        return models['ProductTest'].insertMany(productArr)
+        return models()['ProductTest'].insertMany(productArr)
       })
       .then(res => {
         productIds = res.map(x => x._id);
@@ -114,7 +114,7 @@ describe('GET Collection', () => {
           tagIds: tagIds,
           typeIds: productTypeIds
         }];
-        return models['CollectionTest'].insertMany(collectionArr)
+        return models()['CollectionTest'].insertMany(collectionArr)
       })
       .then(res => {
         collectionIds = res.map(x => x._id);
@@ -227,7 +227,7 @@ describe('GET Collection', () => {
   it('should return app page products', function (done) {
     this.done = done;
 
-    let appPage = new models['PageTest']({
+    let appPage = new models()['PageTest']({
 
       address: 'testAddress',
       is_app: true,
@@ -273,7 +273,7 @@ describe('GET Collection', () => {
   it('should get error when request for products of page which is not for app', function (done) {
     this.done = done;
 
-    let appPage = new models['PageTest']({
+    let appPage = new models()['PageTest']({
 
       address: 'testAddress',
       is_app: false,
@@ -331,7 +331,7 @@ describe('GET Collection', () => {
   it('should get error when request for products of page which have no page info collection id', function (done) {
     this.done = done;
 
-    let appPage = new models['PageTest']({
+    let appPage = new models()['PageTest']({
 
       address: 'testAddress',
       is_app: false,

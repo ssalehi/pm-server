@@ -99,4 +99,4 @@ db.dbIsReady().then((res) => {
 }).catch(err => {
 });
 
-module.exports = models;
+module.exports = () => models;

@@ -1,4 +1,5 @@
 const db = require('./mongo/index');
+const models = require('./mongo/models.mongo');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -8,7 +9,6 @@ const dateTime = require('node-datetime');
 const BASE_TEMP = './public/images/temp'
 const BASE_DEST = './public/images/product-image'
 const rimraf = require('rimraf');
-const models = require('./mongo/models.mongo');
 
 
 let products;
@@ -20,7 +20,6 @@ main = async () => {
 
   try {
     await db.dbIsReady();
-    console.log('-> ', 'is ready...');
   }
   catch (err) {
     process.exit();
@@ -49,7 +48,8 @@ main = async () => {
               images: [],
             }
             newArticleInfo.codes.push(newCodeInfo);
-            const images = getDirInfo(path.join(BASE_TEMP, article, code)).files
+            let images = getDirInfo(path.join(BASE_TEMP, article, code)).files;
+
             if (images && images.length) {
               images.forEach(image => {
                 const parts = image.split('.');
@@ -167,11 +167,24 @@ getDirInfo = (_path) => {
       items.forEach(item => {
         const itemPath = path.join(_path, item);
         try {
-          fs.lstatSync(itemPath).isDirectory() ? result.dirs.push(item) : result.files.push(item);
+          if (fs.lstatSync(itemPath).isDirectory()) {
+            result.dirs.push(item)
+          } else {
+
+            const stats = fs.statSync(path.join(_path, item));
+            const size = stats["size"]
+            result.files.push({name: item, size})
+          };
         } catch (err) {
           console.log('-> ', err);
         }
       })
+
+      if (result.files && result.files.length) {
+        result.files = result.files.filter((obj, pos, arr) => {
+          return arr.map(mapObj => mapObj.size).indexOf(obj.size) === pos;
+        }).map(x => x.name);
+      }
     }
     return result;
   }
@@ -270,13 +283,14 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
     };
 
     if (isThumbnail) {
-      return models['Product'].update(query, {
+      return models()['Product'].update(query, {
         $set: {
-          'colors.$.image.thumbnail': image
+          'colors.$.image.thumbnail': image,
+          'colors.$.images_imported': true
         }
       }, {multi: true});
     } else {
-      return models['Product'].update(query, {
+      return models()['Product'].update(query, {
         $addToSet: {
           'colors.$.image.angles': image
         }
@@ -292,7 +306,8 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
 
 getProducts = async (articles) => {
   try {
-    return models['Product'].find({
+
+    return models()['Product'].find({
       article_no: {
         $in: articles
       }

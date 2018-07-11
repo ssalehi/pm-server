@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 const error = require('../../../lib/errors.list');
 
-describe("POST Tickets Return", () => {
+xdescribe("POST Tickets Return", () => {
 
   let customerAddressId;
   let  customerObj = {
@@ -252,13 +252,13 @@ describe("POST Tickets Return", () => {
   beforeEach(done => {
 
     lib.dbHelpers.dropAll()
-      .then(() => models['WarehouseTest'].insertMany(warehouses))
-      .then(() => models['AgentTest'].create(salesManagerObject))
+      .then(() => models()['WarehouseTest'].insertMany(warehouses))
+      .then(() => models()['AgentTest'].create(salesManagerObject))
       .then(() => lib.dbHelpers.addAndLoginCustomer('test@test', "123456", {addresses: [address]}))
       .then((customer) => {
         customerObj.cid = customer.cid;
         customerObj.jar = customer.rpJar;
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
       })
       .then(res => {
         productIds = res.map(el => el._id);
@@ -276,7 +276,7 @@ describe("POST Tickets Return", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [{
               is_processed : true,
-              status : _const.ORDER_STATUS.Delivered,
+              status : 12,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
@@ -286,7 +286,7 @@ describe("POST Tickets Return", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [{
               is_processed : true,
-              status : _const.ORDER_STATUS.WaitForInvoice,
+              status : 4,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
@@ -294,13 +294,13 @@ describe("POST Tickets Return", () => {
           }]
         }];
       })
-      .then((orders) => models['OrderTest'].insertMany(orders))
+      .then((orders) => models()['OrderTest'].insertMany(orders))
       .then(res => {
         order = res[0];
         orderLineOne = res[0].order_lines[0];
         orderLineTwo = res[0].order_lines[1];
       })
-      .then(() => models['CustomerTest'].findOne({username: 'test@test'}))
+      .then(() => models()['CustomerTest'].findOne({username: 'test@test'}))
       .then((customer) => {
         customerAddressId = customer.addresses[0]._id
         done();
@@ -334,7 +334,7 @@ describe("POST Tickets Return", () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
       })
-      .then(() => models['OrderTest'].findOne({'_id': order._id, 'order_lines._id': orderLineOne._id}))
+      .then(() => models()['OrderTest'].findOne({'_id': order._id, 'order_lines._id': orderLineOne._id}))
       .then((res) => {
         expect(res.order_lines[0].tickets.length).toEqual(2)
         expect(res.order_lines[0].tickets[1].desc.day.time_slot).toBe('18-22');
@@ -689,13 +689,13 @@ describe("POST Tickets Cancel", () => {
   beforeEach(done => {
 
     lib.dbHelpers.dropAll()
-      .then(() => models['WarehouseTest'].insertMany(warehouses))
-      .then(() => models['AgentTest'].create(salesManagerObject))
+      .then(() => models()['WarehouseTest'].insertMany(warehouses))
+      .then(() => models()['AgentTest'].create(salesManagerObject))
       .then(() => lib.dbHelpers.addAndLoginCustomer('test@test', "123456", {balance: 500, mobile_no: '09123456789', loyalty_points: 10, addresses: [address]}))
       .then((customer) => {
         customerObj.cid = customer.cid;
         customerObj.jar = customer.rpJar;
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
       })
       .then(res => {
         productIds = res.map(el => el._id);
@@ -717,7 +717,7 @@ describe("POST Tickets Cancel", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [{
               is_processed : true,
-              status : _const.ORDER_STATUS.ReadyForInvoice,
+              status : 4,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
@@ -729,13 +729,13 @@ describe("POST Tickets Cancel", () => {
             product_instance_id: productInstanceIds[1],
             tickets: [{
               is_processed : true,
-              status : _const.ORDER_STATUS.InvoiceVerified,
+              status : 3,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
             },{
               is_processed : true,
-              status : _const.ORDER_STATUS.OnDelivery,
+              status : 11,
               desc : null,
               receiver_id : mongoose.Types.ObjectId(),
               timestamp : new Date()
@@ -743,13 +743,13 @@ describe("POST Tickets Cancel", () => {
           }]
         }];
       })
-      .then((orders) => models['OrderTest'].insertMany(orders))
+      .then((orders) => models()['OrderTest'].insertMany(orders))
       .then(res => {
         order = res[0];
         orderLineOne = res[0].order_lines[0];
         orderLineTwo = res[0].order_lines[1];
       })
-      .then(() => models['CustomerTest'].findOne({username: 'test@test'}))
+      .then(() => models()['CustomerTest'].findOne({username: 'test@test'}))
       .then((customer) => {
         customerAddressId = customer.addresses[0]._id
         done();
@@ -777,16 +777,16 @@ describe("POST Tickets Cancel", () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
       })
-      .then(() => models['CustomerTest'].findById(customerObj.cid))
+      .then(() => models()['CustomerTest'].findById(customerObj.cid))
       .then((customer) => {
         expect(customer.first_name).toBe('test first name');
         expect(customer.balance).toBe(1500);
       })
-      .then(() => models['OrderTest'].findOne({'_id': order._id, 'order_lines._id': orderLineOne._id}))
+      .then(() => models()['OrderTest'].findOne({'_id': order._id, 'order_lines._id': orderLineOne._id}))
       .then(order => {
         expect(order.order_lines[0].paid_price).toBe(1000);
         expect(order.order_lines[0].tickets.length).toBe(2);
-        expect(order.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.Cancel);
+        expect(order.order_lines[0].tickets[1].status).toBe(15);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
