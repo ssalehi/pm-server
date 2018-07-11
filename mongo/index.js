@@ -4,7 +4,6 @@ mongoose.Promise = require('bluebird');
 
 if (env.isDev) {
   // mongoose.set('debug', true);
-
 }
 
 let dbIsReady = () => {
