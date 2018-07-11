@@ -411,6 +411,6 @@ router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo'
 router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body'])); // body included customer id and delivery_duration id
 
 
-router.get('/test/find/product', apiResponse('Product', 'testFunction', false));
+router.get('/test/find/product', apiResponse('Product', 'filterProductCollection', false));
 
 module.exports = router;
