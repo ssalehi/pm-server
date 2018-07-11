@@ -40,13 +40,16 @@ let schema_obj = {
     enum: ['m', 'f'],
     // required: true,
   },
-  verification_code: { // weather user has verification code or not
+  verification_code: { // wether user has (mobile) verification code or not
     type: Number,
   },
-  is_verified: {
-    type: Boolean,
+  activation_link: {
+    type: String,
+  },
+  is_verified: { // 0: unverified | 1: mobile | 2: email | 3: both
+    type: Number,
     required: true,
-    default: false,
+    default: 0,
   },
   shoesType: {
     type: String,
@@ -57,13 +60,18 @@ let schema_obj = {
     required: true,
     default: false,
   },
+  is_preferences_set: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   preferred_brands: [{type: Schema.Types.ObjectId, ref: 'Brand'}],
   wish_list: [wishListItemSchema],
   preferred_tags: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
   preferred_size: {type: String},
   orders: [{type: Schema.Types.ObjectId, ref: 'Order'}],
   addresses: [addressSchema],
-  active: { // weather user can system or not
+  active: { // wether user can system (?!) or not
     type: Boolean,
     default: true,
     required: true
