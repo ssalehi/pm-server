@@ -18,11 +18,11 @@ describe("Put product basics", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].insertMany({name: 'Nike'});
+        return models()['BrandTest'].insertMany({name: 'Nike'});
       })
       .then(res => {
         brandId = res[0]._id;
-        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+        return models()['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
         typeId = res[0]._id;
@@ -57,7 +57,7 @@ describe("Put product basics", () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
 
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(1);
@@ -70,7 +70,7 @@ describe("Put product basics", () => {
 
     this.done = done;
 
-    let product = new models['ProductTest']({
+    let product = new models()['ProductTest']({
       name: 'sample name 1',
       product_type: {
         name: 'Shoes',
@@ -103,7 +103,7 @@ describe("Put product basics", () => {
         })).then(res => {
       expect(res.statusCode).toBe(200);
 
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(2);
@@ -247,15 +247,15 @@ describe("Put product instance basics", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].insertMany({name: 'Nike'});
+        return models()['BrandTest'].insertMany({name: 'Nike'});
       })
       .then(res => {
         brandId = res[0]._id;
-        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+        return models()['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
         typeId = res[0]._id;
-        let product = models['ProductTest']({
+        let product = models()['ProductTest']({
           name: 'sample name',
           product_type: {
             name: 'Shoes',
@@ -302,7 +302,7 @@ describe("Put product instance basics", () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
 
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(1);

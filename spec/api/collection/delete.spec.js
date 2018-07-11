@@ -21,7 +21,7 @@ describe('DELETE Collection', () => {
         let collectionArr = [{
           name: 'man1',
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           collectionIds[0] = res[0]._id;
           done();
         }).catch(err => {
@@ -45,7 +45,7 @@ describe('DELETE Collection', () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
       console.log('-> ',res.body);
-      return models['CollectionTest'].find();
+      return models()['CollectionTest'].find();
     }).then(res => {
       expect(res.length).toEqual(0);
       done();
@@ -111,7 +111,7 @@ describe('DELETE Collection Type', () => {
           name: 'man1',
           typeIds
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           collectionIds[0] = res[0]._id;
           done();
         }).catch(err => {
@@ -135,7 +135,7 @@ describe('DELETE Collection Type', () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
       expect(res.body.n).toBe(1);
-      return models['CollectionTest'].find();
+      return models()['CollectionTest'].find();
     }).then(res => {
       expect(res.length).toEqual(1);
       expect(res[0].typeIds.length).toBe(2);
@@ -222,7 +222,7 @@ describe('DELETE Collection Tag', () => {
           name: 'man1',
           tagIds
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           collectionIds[0] = res[0]._id;
           done();
         }).catch(err => {
@@ -246,7 +246,7 @@ describe('DELETE Collection Tag', () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
       expect(res.body.n).toBe(1);
-      return models['CollectionTest'].find();
+      return models()['CollectionTest'].find();
     }).then(res => {
       expect(res.length).toEqual(1);
       expect(res[0].tagIds.length).toBe(2);
@@ -334,7 +334,7 @@ describe('DELETE Collection', () => {
           name: 'man1',
           productIds: [productIds[0], productIds[1], productIds[2]]
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           collectionIds[0] = res[0]._id;
           done();
         }).catch(err => {
@@ -359,7 +359,7 @@ describe('DELETE Collection', () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
       expect(res.body.n).toBe(1);
-      return models['CollectionTest'].findById(collectionIds[0]);
+      return models()['CollectionTest'].findById(collectionIds[0]);
     }).then(res => {
       expect(res.productIds.length).toBe(2);
       expect(res.productIds.map(x => x.toString())).not.toContain(productIds[0].toString());

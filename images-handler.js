@@ -283,14 +283,14 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
     };
 
     if (isThumbnail) {
-      return models['Product'].update(query, {
+      return models()['Product'].update(query, {
         $set: {
           'colors.$.image.thumbnail': image,
           'colors.$.images_imported': true
         }
       }, {multi: true});
     } else {
-      return models['Product'].update(query, {
+      return models()['Product'].update(query, {
         $addToSet: {
           'colors.$.image.angles': image
         }
@@ -307,7 +307,7 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
 getProducts = async (articles) => {
   try {
 
-    return models['Product'].find({
+    return models()['Product'].find({
       article_no: {
         $in: articles
       }

@@ -12,7 +12,7 @@ describe("Get Warehouse", () => {
       .then(res => {
 
        
-        return models['WarehouseTest'].insertMany(warehouses);
+        return models()['WarehouseTest'].insertMany(warehouses);
 
       })
       .then(res => {

@@ -25,15 +25,15 @@ describe("Post product basics", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].insertMany({name: 'Nike'});
+        return models()['BrandTest'].insertMany({name: 'Nike'});
       })
       .then(res => {
         brandId = res[0]._id;
-        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+        return models()['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
         typeId = res[0]._id;
-        let product = models['ProductTest']({
+        let product = models()['ProductTest']({
           name: 'sample name',
           product_type: {
             name: 'Shoes',
@@ -83,7 +83,7 @@ describe("Post product basics", () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
 
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(1);
@@ -111,19 +111,19 @@ describe("Post product colors & images", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].insertMany({name: 'Nike'});
+        return models()['BrandTest'].insertMany({name: 'Nike'});
       })
       .then(res => {
         brandId = res[0]._id;
-        return models['ColorTest'].insertMany({name: 'green'});
+        return models()['ColorTest'].insertMany({name: 'green'});
       })
       .then(res => {
         color = res[0];
-        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+        return models()['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
         typeId = res[0]._id;
-        let product = models['ProductTest']({
+        let product = models()['ProductTest']({
           name: 'sample name',
           product_type: {
             name: 'Shoes',
@@ -165,7 +165,7 @@ describe("Post product colors & images", () => {
 
     this.done = done;
 
-    return models['ProductTest'].findOneAndUpdate({
+    return models()['ProductTest'].findOneAndUpdate({
       "_id": productId,
     },
       {
@@ -197,7 +197,7 @@ describe("Post product colors & images", () => {
         let result = JSON.parse(res.body);
         expect(result.downloadURL).toContain('test1');
         expect(result.downloadURL).toContain('jpeg');
-        return models['ProductTest'].find({}).lean();
+        return models()['ProductTest'].find({}).lean();
 
       }).then(res => {
         expect(res[0].colors.length).toBe(1);
@@ -226,7 +226,7 @@ describe("Post product colors & images", () => {
         thumbnail: 'test1.jpeg'
       }
     };
-    return models['ProductTest'].findOneAndUpdate({
+    return models()['ProductTest'].findOneAndUpdate({
       "_id": productId,
     },
       {
@@ -256,7 +256,7 @@ describe("Post product colors & images", () => {
         expect(result.downloadURL).toContain('test2');
         expect(result.downloadURL).toContain('jpeg');
         expect(result.downloadURL).toContain('-');
-        return models['ProductTest'].find({}).lean();
+        return models()['ProductTest'].find({}).lean();
 
       }).then(res => {
         expect(res[0].colors.length).toBe(1);
@@ -312,7 +312,7 @@ describe("Post product colors & images", () => {
       color_id: color._id,
 
     };
-    return models['ProductTest'].findOneAndUpdate({
+    return models()['ProductTest'].findOneAndUpdate({
       "_id": productId,
     },
       {
@@ -364,15 +364,15 @@ describe("Post product instances", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].insertMany({name: 'Nike'});
+        return models()['BrandTest'].insertMany({name: 'Nike'});
       })
       .then(res => {
         brandId = res[0]._id;
-        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+        return models()['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
         typeId = res[0]._id;
-        let product = models['ProductTest']({
+        let product = models()['ProductTest']({
           name: 'sample name',
           product_type: {
             name: 'Shoes',
@@ -432,7 +432,7 @@ describe("Post product instances", () => {
     }).then(res => {
 
       expect(res.statusCode).toBe(200);
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(1);
@@ -464,16 +464,16 @@ describe("Post Product instance inventories", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].insertMany({name: 'Nike'});
+        return models()['BrandTest'].insertMany({name: 'Nike'});
       })
       .then(res => {
         brandId = res[0]._id;
-        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+        return models()['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
         typeId = res[0]._id;
 
-        let product = models['ProductTest']({
+        let product = models()['ProductTest']({
           name: 'sample name',
           product_type: {
             name: 'Shoes',
@@ -518,7 +518,7 @@ describe("Post Product instance inventories", () => {
     this.done = done;
     let warehouseId = mongoose.Types.ObjectId();
 
-    models['ProductTest'].findOneAndUpdate({_id: productId},
+    models()['ProductTest'].findOneAndUpdate({_id: productId},
       {
         $push: {
           "instances.0.inventory": {
@@ -545,7 +545,7 @@ describe("Post Product instance inventories", () => {
       })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['ProductTest'].find({}).lean();
+        return models()['ProductTest'].find({}).lean();
       }).then(res => {
         expect(res.length).toBe(1);
         expect(res[0].instances.length).toBe(1);
@@ -678,16 +678,16 @@ describe("Post Product tags", () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['BrandTest'].insertMany({name: 'Nike'});
+        return models()['BrandTest'].insertMany({name: 'Nike'});
       })
       .then(res => {
         brandId = res[0]._id;
-        return models['ProductTypeTest'].insertMany({name: 'Shoes'});
+        return models()['ProductTypeTest'].insertMany({name: 'Shoes'});
       })
       .then(res => {
         typeId = res[0]._id;
 
-        return models['TagGroupTest'].insertMany([
+        return models()['TagGroupTest'].insertMany([
           {name: 'tag group 1'},
           {name: 'tag group 2'}
         ]);
@@ -695,7 +695,7 @@ describe("Post Product tags", () => {
       })
       .then(res => {
         tagGroupIds = res.map(x => x._id);
-        return models['TagTest'].insertMany([
+        return models()['TagTest'].insertMany([
           {name: 'tag 1', tag_group_id: tagGroupIds[0]},
           {name: 'tag 2', tag_group_id: tagGroupIds[1]}
         ]);
@@ -704,7 +704,7 @@ describe("Post Product tags", () => {
       .then(res => {
         tagIds = res.map(x => x._id);
 
-        let product = models['ProductTest']({
+        let product = models()['ProductTest']({
           name: 'sample name',
           product_type: {
             name: 'Shoes',
@@ -747,7 +747,7 @@ describe("Post Product tags", () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
 
-      return models['ProductTest'].find({}).lean();
+      return models()['ProductTest'].find({}).lean();
 
     }).then(res => {
 
@@ -763,7 +763,7 @@ describe("Post Product tags", () => {
 
     this.done = done;
 
-    models['ProductTest'].update({
+    models()['ProductTest'].update({
       "_id": productId,
     },
       {
@@ -788,7 +788,7 @@ describe("Post Product tags", () => {
         }))
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['ProductTest'].find({}).lean();
+        return models()['ProductTest'].find({}).lean();
 
       })
       .then(res => {

@@ -23,7 +23,7 @@ describe('Dictionary POST', () => {
                     type: 'type 3'
                 },
             ];
-            return models['DictionaryTest'].insertMany(dictionaries);
+            return models()['DictionaryTest'].insertMany(dictionaries);
         }).then(res => {
             dictionaryId = res[0]._id;
             done();
@@ -47,7 +47,7 @@ describe('Dictionary POST', () => {
             json: true
         }).then(res => {
             expect(res.statusCode).toBe(200);
-            return models['DictionaryTest'].findById(dictionaryId)
+            return models()['DictionaryTest'].findById(dictionaryId)
         }).then(res => {
             expect(res._id).toEqual(dictionaryId);
             expect(res.name).toEqual('update name ha ha!!');

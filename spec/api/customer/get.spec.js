@@ -71,13 +71,13 @@ describe('GET Customer', () => {
         ];
 
         return Promise.all([
-          models['BrandTest'].insertMany(brands),
-          models['TagGroupTest'].insertMany(tagGroups),
-          models['TagTest'].insertMany(tags),
+          models()['BrandTest'].insertMany(brands),
+          models()['TagGroupTest'].insertMany(tagGroups),
+          models()['TagTest'].insertMany(tags),
         ]);
       })
       .then(res => {
-        return models['CustomerTest'].update(
+        return models()['CustomerTest'].update(
           {
             _id: customerObj.cid,
           }, {

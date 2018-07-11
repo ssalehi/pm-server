@@ -44,7 +44,7 @@ describe("Delivery POST API", () => {
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
-      .then(() => models['WarehouseTest'].insertMany(warehouses))
+      .then(() => models()['WarehouseTest'].insertMany(warehouses))
       .then(() => lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(el => !el.is_hub && !el.has_customer_pickup)))
       .then(res => {
         salesManager = res;
@@ -136,7 +136,7 @@ describe("Delivery POST API", () => {
           processed_by: shopClerk2._id,
         }];
 
-        return models['DeliveryTest'].insertMany(deliveryItems);
+        return models()['DeliveryTest'].insertMany(deliveryItems);
       })
       .then(res => {
         done();
