@@ -443,6 +443,4 @@ router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo'
 // Customer Delivery Selected
 router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateFinalPrice', false, ['body'])); // body included customer id and delivery_duration id
 
-router.get('/filter/products', apiResponse('Product', 'filterProductCollection', false, []));
-
 module.exports = router;
