@@ -1,3 +1,6 @@
+/**
+ * Created by SSalehi on 11/07/2018.
+ */
 const Base = require('./lib/base.model');
 const error = require('./lib/errors.list');
 const rmPromise = require('rimraf-promise');
