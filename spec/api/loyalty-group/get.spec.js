@@ -25,22 +25,22 @@ describe("GET API", () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
-        return new models['WarehouseTest'](centralWarehouse).save();
+        return new models()['WarehouseTest'](centralWarehouse).save();
       })
       .then(() => lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, centralWarehouse._id))
       .then(res => {
         salesManager = res;
 
         let promiseList = [];
-        promiseList.push(models['LoyaltyGroupTest']({
+        promiseList.push(models()['LoyaltyGroupTest']({
           name: 'Gold',
           min_score: 1000,
         }).save());
-        promiseList.push(models['LoyaltyGroupTest']({
+        promiseList.push(models()['LoyaltyGroupTest']({
           name: 'Silver',
           min_score: 500,
         }).save());
-        promiseList.push(models['LoyaltyGroupTest']({
+        promiseList.push(models()['LoyaltyGroupTest']({
           name: 'Bronze',
           min_score: 100,
         }).save());

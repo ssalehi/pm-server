@@ -21,7 +21,7 @@ describe('Post page basics', () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        let basicPage = models['PageTest']({
+        let basicPage = models()['PageTest']({
           address: 'sampleAddress',
           is_app: false,
 
@@ -56,7 +56,7 @@ describe('Post page basics', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['PageTest'].find({}).lean();
+      return models()['PageTest'].find({}).lean();
 
     }).then(res => {
       expect(res[0].address).toBe('changedAddress');
@@ -94,7 +94,7 @@ describe('Post page placements and page info', () => {
 
         collection_id = new mongoose.Types.ObjectId();
 
-        page = models['PageTest']({
+        page = models()['PageTest']({
           _id: pageId,
           address: 'test',
           is_app: false,
@@ -216,7 +216,7 @@ describe('Post page placements and page info', () => {
         return page.save();
       })
       .then(res => {
-        archivePlacement1 = models['ArchivePlacementTest']({
+        archivePlacement1 = models()['ArchivePlacementTest']({
           _id: placementId8,
           page_id: pageId,
           component_name: "main",
@@ -238,7 +238,7 @@ describe('Post page placements and page info', () => {
         return archivePlacement1.save();
       })
       .then(res => {
-        archivePlacement2 = models['ArchivePlacementTest']({
+        archivePlacement2 = models()['ArchivePlacementTest']({
           _id: placementId9,
           page_id: pageId,
           component_name: "footer",
@@ -350,14 +350,14 @@ describe('Post page placements and page info', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models()['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(6);
         res = res[0].placement;
         expect(res.find(el => el._id.toString() === placementId7.toString()).info.text).toBe('پرفروش‌ها');
         expect(moment(res.find(el => el._id.toString() === placementId7.toString()).start_date).format('YYYY-MM-DD HH:MM')).toBe(moment(new Date()).format('YYYY-MM-DD HH:MM'));
-        return models['ArchivePlacementTest'].find({page_id: page._id}).lean();
+        return models()['ArchivePlacementTest'].find({page_id: page._id}).lean();
       })
       .then(res => {
         expect(res.length).toBe(3);
@@ -380,7 +380,7 @@ describe('Post page placements and page info', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models()['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(6);
@@ -406,7 +406,7 @@ describe('Post page placements and page info', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models()['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(4);
@@ -458,11 +458,11 @@ describe('Post page placements and page info', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['ArchivePlacementTest'].find().lean();
+        return models()['ArchivePlacementTest'].find().lean();
       })
       .then(res => {
         expect(res.length).toBe(2);
-        return models['PageTest'].find({_id: pageId}).lean();
+        return models()['PageTest'].find({_id: pageId}).lean();
       })
       .then(res => {
         res = res[0];
@@ -488,11 +488,11 @@ describe('Post page placements and page info', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['ArchivePlacementTest'].find().lean();
+        return models()['ArchivePlacementTest'].find().lean();
       })
       .then(res => {
         expect(res.length).toBe(2);
-        return models['PageTest'].find({_id: pageId}).lean();
+        return models()['PageTest'].find({_id: pageId}).lean();
       })
       .then(res => {
         res = res[0];
@@ -572,7 +572,7 @@ describe('POST placement (top menu and some other placements)', () => {
 
         collection_id = new mongoose.Types.ObjectId();
 
-        page = models['PageTest']({
+        page = models()['PageTest']({
           address: 'test',
           is_app: false,
           placement: [
@@ -777,7 +777,7 @@ describe('POST placement (top menu and some other placements)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models()['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(9);
@@ -906,7 +906,7 @@ describe('POST placement (top menu and some other placements)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models()['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(9);
@@ -936,7 +936,7 @@ describe('POST placement (top menu and some other placements)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models()['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(8);
@@ -965,7 +965,7 @@ describe('POST placement (top menu and some other placements)', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({_id: page._id}).lean();
+        return models()['PageTest'].find({_id: page._id}).lean();
       })
       .then(res => {
         expect(res[0].placement.length).toBe(8);
@@ -1044,7 +1044,7 @@ describe('POST placement images (slider)', () => {
       .then(res => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
-        return models['PageTest']({
+        return models()['PageTest']({
           address: 'sampleAddress',
           is_app: false,
           placement: [
@@ -1117,7 +1117,7 @@ describe('POST placement images (slider)', () => {
       expect(res.statusCode).toBe(200);
       res = JSON.parse(res.body);
       expect(res.downloadURL).toContain(_path);
-      return models['PageTest'].find({_id: pageId}).lean();
+      return models()['PageTest'].find({_id: pageId}).lean();
     })
       .then(res => {
         const pl = res[0].placement.find(el => el._id.toString() === placementIds[0].toString());
@@ -1151,7 +1151,7 @@ describe('POST placement images (slider)', () => {
       expect(res.statusCode).toBe(200);
       res = JSON.parse(res.body);
       expect(res.downloadURL).toContain(_path);
-      return models['PageTest'].find({_id: pageId}).lean();
+      return models()['PageTest'].find({_id: pageId}).lean();
     })
       .then(res => {
         const pl = res[0].placement.find(el => el._id.toString() === placementIds[2].toString());
@@ -1185,7 +1185,7 @@ describe('POST placement images (slider)', () => {
       expect(res.statusCode).toBe(200);
       res = JSON.parse(res.body);
       expect(res.downloadURL).toContain(_path);
-      return models['PageTest'].find({_id: pageId}).lean();
+      return models()['PageTest'].find({_id: pageId}).lean();
     })
       .then(res => {
         const pl = res[0].placement.find(el => el._id.toString() === placementIds[1].toString());
@@ -1223,7 +1223,7 @@ describe('POST placement images (slider)', () => {
 
         expect(res.placementId).toBeDefined();
         expect(res.downloadURL).toContain(semiPath);
-        return models['PageTest'].find({_id: res.placementId}).lean();
+        return models()['PageTest'].find({_id: res.placementId}).lean();
       })
       .then(res => {
         expect(res.length).toBe(0);

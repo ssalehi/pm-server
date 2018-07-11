@@ -31,7 +31,7 @@ describe('POST Order - verify order', () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
-        return models['WarehouseTest'].insertMany(warehouses)
+        return models()['WarehouseTest'].insertMany(warehouses)
       })
       .then(res => {
         return lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
@@ -86,7 +86,7 @@ describe('POST Order - verify order', () => {
             }
           ]
         }];
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
       })
       .then(res => {
 
@@ -115,7 +115,7 @@ describe('POST Order - verify order', () => {
           }]
         }];
 
-        return models['OrderTest'].insertMany(orders);
+        return models()['OrderTest'].insertMany(orders);
       })
       .then(res => {
         orderIds = res.map(x => x._id);
@@ -139,7 +139,7 @@ describe('POST Order - verify order', () => {
 
     order.verifyOrder(orderIds[0].toString(), addressId.toString(), transactionId.toString())
       .then(res => {
-        return models['OrderTest'].find().lean();
+        return models()['OrderTest'].find().lean();
       }).then(res => {
       res = res[0];
       expect(res.address._id.toString()).toEqual(addressId.toString());
@@ -188,7 +188,7 @@ describe('POST Order - ORP', () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
-        return models['WarehouseTest'].insertMany(warehouses)
+        return models()['WarehouseTest'].insertMany(warehouses)
       })
       .then(res => {
         _warehouses = res;
@@ -277,7 +277,7 @@ describe('POST Order - ORP', () => {
             }
           ]
         }];
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
       })
       .then(res => {
         _products = res;
@@ -354,7 +354,7 @@ describe('POST Order - ORP', () => {
           }]
         }];
 
-        return models['OrderTest'].insertMany(orders);
+        return models()['OrderTest'].insertMany(orders);
       })
       .then(res => {
         _order = res;
@@ -387,13 +387,13 @@ describe('POST Order - ORP', () => {
       jar: customer1.jar
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['OrderTest'].findById(_order[0]._id);
+      return models()['OrderTest'].findById(_order[0]._id);
     }).then(res => {
       expect(res._id).toEqual(_order[0]._id);
       expect(res.order_lines[0]._id).toEqual(_order[0].order_lines[0]._id);
       expect(res.order_lines[0].tickets.length).toBe(1);
       expect(res.order_lines[0].tickets[0].status).toBe(1);
-      return models['ProductTest'].findById(productIds[0]).lean();
+      return models()['ProductTest'].findById(productIds[0]).lean();
     }).then(res => {
       let _instanceFind = res.instances.find(x => x._id.toString() === productInstanceIds[0].toString());
       expect(_warehouses[0]._id.toString()).toEqual(_instanceFind.inventory[0].warehouse_id.toString());
@@ -422,13 +422,13 @@ describe('POST Order - ORP', () => {
       jar: customer1.jar
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['OrderTest'].findById(_order[1]._id);
+      return models()['OrderTest'].findById(_order[1]._id);
     }).then(res => {
       expect(res._id).toEqual(_order[1]._id);
       expect(res.order_lines[0]._id).toEqual(_order[1].order_lines[0]._id);
       expect(res.order_lines[0].tickets.length).toBe(1);
       expect(res.order_lines[0].tickets[0].status).toBe(1);
-      return models['ProductTest'].findById(productIds[0]).lean();
+      return models()['ProductTest'].findById(productIds[0]).lean();
     }).then(res => {
       let _instanceFind = res.instances.find(x => x._id.toString() === productInstanceIds[1].toString());
       expect(_warehouses[1]._id.toString()).toEqual(_instanceFind.inventory[1].warehouse_id.toString());
@@ -463,13 +463,13 @@ describe('POST Order - ORP', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['OrderTest'].findById(_order[3]._id).lean();
+      return models()['OrderTest'].findById(_order[3]._id).lean();
 
     }).then(res => {
         expect(res.order_lines[0].tickets.length).toBe(1);
         expect(res.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
         expect(res.order_lines[0].tickets[0].warehouse_id.toString()).toBe(warehouses.find(x => x.is_center)._id.toString());
-        return models['ProductTest'].findById(productIds[0]).lean();
+        return models()['ProductTest'].findById(productIds[0]).lean();
 
       }).then(res => {
         let instanceFind = res.instances.find(x => x._id.toString() === productInstanceIds[0].toString());
@@ -499,7 +499,7 @@ describe('POST Order - ORP', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['OrderTest'].findById(_order[1]._id).lean()
+      return models()['OrderTest'].findById(_order[1]._id).lean()
     })
       .then(res => {
         expect(res.order_lines[0].tickets.length).toBe(1);

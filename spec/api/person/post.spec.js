@@ -84,7 +84,7 @@ describe('Person POST API', () => {
       })
       .then(res => {
         
-        return models['WarehouseTest'].insertMany(warehouses);
+        return models()['WarehouseTest'].insertMany(warehouses);
       })
       .then(res => {
         done();
@@ -304,7 +304,7 @@ describe('Person POST API', () => {
 
   it('normal user should be able to verify his phone number', function (done) {
     this.done = done;
-    (models['CustomerTest'].update({'username': 'aa@gmail.com'}, {
+    (models()['CustomerTest'].update({'username': 'aa@gmail.com'}, {
       $set: {
         verification_code: '123456',
         is_verified: _const.VERIFICATION.notVerified
@@ -324,7 +324,7 @@ describe('Person POST API', () => {
       })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].find({username: 'aa@gmail.com'}).lean();
+        return models()['CustomerTest'].find({username: 'aa@gmail.com'}).lean();
       })
       .then(res => {
         expect(res.length).toBe(1);
@@ -367,7 +367,7 @@ describe('Person POST API', () => {
   });
 
   it('should reject when code not found in registerVerification collection', function (done) {
-    (models['CustomerTest'].update({'username': 'aa@gmail.com'}, {
+    (models()['CustomerTest'].update({'username': 'aa@gmail.com'}, {
       $set: {
         verification_code: '123465',
         is_verified: _const.VERIFICATION.notVerified
@@ -397,7 +397,7 @@ describe('Person POST API', () => {
   });
 
   it('should get error when username is not defined', function (done) {
-    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {
+    (models()['CustomerTest'].update({username: 'aa@gmail.com'}, {
       $set: {
         verification_code: '123456',
         is_verified: _const.VERIFICATION.notVerified
@@ -426,7 +426,7 @@ describe('Person POST API', () => {
   });
 
   it('should get error when code is not defined', function (done) {
-    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {
+    (models()['CustomerTest'].update({username: 'aa@gmail.com'}, {
       $set: {
         verification_code: '123465',
         is_verified: _const.VERIFICATION.notVerified
@@ -456,7 +456,7 @@ describe('Person POST API', () => {
 
   it('should apply for new code', function (done) {
     this.done = done;
-    (models['CustomerTest'].update({username: 'aa@gmail.com'}, {
+    (models()['CustomerTest'].update({username: 'aa@gmail.com'}, {
       $set: {
         verification_code: '123456',
         is_verified: _const.VERIFICATION.notVerified
@@ -475,7 +475,7 @@ describe('Person POST API', () => {
       })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].find({'username': 'aa@gmail.com'}).lean();
+        return models()['CustomerTest'].find({'username': 'aa@gmail.com'}).lean();
       })
       .then(res => {
         expect(res.verification_code).not.toBe('123456');
@@ -486,7 +486,7 @@ describe('Person POST API', () => {
 
   it("should set mobile number for user who login with google", function (done) {
     this.done = done;
-    (new models['CustomerTest']({
+    (new models()['CustomerTest']({
       first_name: 'ABC',
       surname: 'DEF',
       username: 'ab@ba.com',
@@ -508,7 +508,7 @@ describe('Person POST API', () => {
       })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].find({username: 'ab@ba.com'}).lean();
+        return models()['CustomerTest'].find({username: 'ab@ba.com'}).lean();
       })
       .then(res => {
         expect(res.length).toBe(1);
@@ -524,7 +524,7 @@ describe('Person POST API', () => {
 
   it("should get error when username is not set (in setting mobile number)", function (done) {
     this.done = done;
-    (new models['CustomerTest']({
+    (new models()['CustomerTest']({
       first_name: 'ABC',
       surname: 'DEF',
       username: 'ab@ba.com',
@@ -555,7 +555,7 @@ describe('Person POST API', () => {
 
   it("should get error when mobile number is not set (in setting mobile number)", function (done) {
     this.done = done;
-    (new models['CustomerTest']({
+    (new models()['CustomerTest']({
       first_name: 'ABC',
       surname: 'DEF',
       username: 'ab@ba.com',
@@ -586,7 +586,7 @@ describe('Person POST API', () => {
 
   it("should get error when user with passed username not found (in setting mobile number)", function (done) {
     this.done = done;
-    (new models['CustomerTest']({
+    (new models()['CustomerTest']({
       first_name: 'ABC',
       surname: 'DEF',
       username: 'ab@ba.com',
@@ -619,7 +619,7 @@ describe('Person POST API', () => {
 
   it("should not be able to set mobile number for user who is verified (by registration api)", function (done) {
     this.done = done;
-    (new models['CustomerTest']({
+    (new models()['CustomerTest']({
       first_name: 'ABC',
       surname: 'DEF',
       username: 'ab@ba.com',
@@ -663,7 +663,7 @@ describe('Person POST API', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({mobile_no: '+989391993730'}).lean();
+        return models()['CustomerTest'].findOne({mobile_no: '+989391993730'}).lean();
       })
       .then(res => {
         expect(res.is_verified).toBe(_const.VERIFICATION.bothVerified);
@@ -714,7 +714,7 @@ describe('Person POST API', () => {
   });
 
   it("should get error when customer is not verified yet", function (done) {
-    models['CustomerTest'].update({
+    models()['CustomerTest'].update({
       mobile_no: '+989391993730',
     }, {
         $set: {
@@ -745,7 +745,7 @@ describe('Person POST API', () => {
 
   it("should set new password (in forgetting password condition)", function (done) {
     this.done = done;
-    models['CustomerTest'].update({
+    models()['CustomerTest'].update({
       mobile_no: '+989391993730',
     }, {
         $set: {
@@ -767,7 +767,7 @@ describe('Person POST API', () => {
       })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({
+        return models()['CustomerTest'].findOne({
           mobile_no: '+989391993730',
         }).lean();
       })

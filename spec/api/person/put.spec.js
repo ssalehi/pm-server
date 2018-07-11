@@ -36,7 +36,7 @@ describe('Person PUT API', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].find({}).lean();
+        return models()['CustomerTest'].find({}).lean();
       })
       .then(res => {
         expect(res.length).toBe(1);
@@ -82,7 +82,7 @@ describe('Person PUT API', () => {
   });
 
   it("should get error when username is exist", function (done) {
-    (new models['CustomerTest']({
+    (new models()['CustomerTest']({
       username: 'aa@gmail.com',
       password: '123456',
       first_name: 'Ali',
@@ -121,7 +121,7 @@ describe('Person PUT API', () => {
   });
 
   it("should get error when mobile_no is exist", function (done) {
-    (new models['CustomerTest']({
+    (new models()['CustomerTest']({
       username: 'aa@gmail.COM',
       password: '123456',
       first_name: 'Ali',
