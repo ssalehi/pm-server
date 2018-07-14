@@ -8,7 +8,7 @@ const error = require('../../../lib/errors.list');
 xdescribe("POST Tickets Return", () => {
 
   let customerAddressId;
-  let customerObj = {
+  let  customerObj = {
     cid: null,
     jar: null
   }
@@ -97,9 +97,9 @@ xdescribe("POST Tickets Return", () => {
     base_price: 30000,
     desc: 'some description for this product',
     colors: [{
-      color_id: mongoose.Types.ObjectId(),
-      name: 'green'
-    },
+        color_id: mongoose.Types.ObjectId(),
+        name: 'green'
+      },
       {
         color_id: mongoose.Types.ObjectId(),
         name: 'yellow'
@@ -110,30 +110,30 @@ xdescribe("POST Tickets Return", () => {
       }
     ],
     instances: [{
-      _id: mongoose.Types.ObjectId(),
-      product_color_id: mongoose.Types.ObjectId(),
-      size: "11",
-      article_no: "aaaa",
-      price: 2000,
-      barcode: '0394081341',
-      inventory: [{
-        count: 1,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }, {
-        count: 2,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }, {
-        count: 3,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }, {
-        count: 4,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }]
-    },
+        _id: mongoose.Types.ObjectId(),
+        product_color_id: mongoose.Types.ObjectId(),
+        size: "11",
+        article_no: "aaaa",
+        price: 2000,
+        barcode: '0394081341',
+        inventory: [{
+          count: 1,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }, {
+          count: 2,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }, {
+          count: 3,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }, {
+          count: 4,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }]
+      },
       {
         _id: mongoose.Types.ObjectId(),
         product_color_id: mongoose.Types.ObjectId(),
