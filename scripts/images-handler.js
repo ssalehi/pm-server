@@ -6,8 +6,8 @@ const path = require('path');
 const Jimp = require("jimp");
 const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
-const BASE_TEMP = '../public/images/temp'
-const BASE_DEST = '../public/images/product-image'
+const BASE_TEMP = 'public/images/temp'
+const BASE_DEST = 'public/images/product-image'
 const rimraf = require('rimraf');
 
 
