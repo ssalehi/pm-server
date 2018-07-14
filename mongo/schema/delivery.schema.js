@@ -3,7 +3,7 @@ const Schema = require('mongoose').Schema;
 
 point_template = {
   customer: {
-    id: {
+    _id: {
       type: Schema.Types.ObjectId,
       ref: 'Customer'
     },

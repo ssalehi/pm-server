@@ -335,10 +335,4 @@ imageResizing = async (orig, dest) => {
 
 
 }
-
-
-
 main();
-
-
-
