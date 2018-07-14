@@ -1,14 +1,14 @@
 /**
  * Created by Eabasir on 31/01/2017.
  */
-const models = require('./mongo/models.mongo');
-const db = require('./mongo/index');
+const models = require('../mongo/models.mongo');
+const db = require('../mongo/index');
 const _const = require('./lib/const.list');
-const env = require('./env');
+const env = require('../env');
 const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
 const copydir = require('copy-dir');
-const warehouses = require('./warehouses');
+const warehouses = require('../warehouses');
 
 
 SALT_WORK_FACTOR = 10;
