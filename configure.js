@@ -21,12 +21,12 @@ db.dbIsReady()
   .then(() => {
 
     copydir.sync('assets', 'public/assets');
-    return models['Warehouse'].find().lean();
+    return models()['Warehouse'].find().lean();
   })
   .then(res => {
     if (!res || res.length === 0) {
 
-      return models['Warehouse'].insertMany(warehouses);
+      return models()['Warehouse'].insertMany(warehouses);
     }
     else
       return Promise.resolve();
@@ -48,7 +48,7 @@ db.dbIsReady()
   })
   .then(hash => {
     _hash = hash;
-    return models['Agent'].find().lean();
+    return models()['Agent'].find().lean();
 
   })
   .then(res => {
@@ -79,7 +79,7 @@ db.dbIsReady()
         surname: 'clerck',
       }];
 
-      return models['Agent'].insertMany(agents);
+      return models()['Agent'].insertMany(agents);
     } else
       return Promise.resolve()
   })
@@ -98,16 +98,16 @@ db.dbIsReady()
         },
 
         options = {upsert: true, new: true, setDefaultsOnInsert: true};
-      return models['Page'].findOneAndUpdate(query, update, options);
+      return models()['Page'].findOneAndUpdate(query, update, options);
     }))
   })
   .then(res => {
     console.log('-> ', 'defult palacements are added!');
-    return models['LoyaltyGroup'].find().lean();
+    return models()['LoyaltyGroup'].find().lean();
   })
   .then(res => {
     if (!res || !res.length)
-      return models['LoyaltyGroup'].insertMany([
+      return models()['LoyaltyGroup'].insertMany([
         {
           name: 'White',
           min_score: 0,
@@ -133,7 +133,7 @@ db.dbIsReady()
         placement: PLACEMENTS.men,
       },
       options = {upsert: true, new: true, setDefaultsOnInsert: true};
-    return models['Page'].findOneAndUpdate(query, update, options);
+    return models()['Page'].findOneAndUpdate(query, update, options);
   })
   .then(res => {
     console.log('-> ', 'collection men shoes page is added for app');
@@ -155,7 +155,7 @@ db.dbIsReady()
     });
 
 
-    return models['Dictionary'].insertMany(data, {ordered: false});
+    return models()['Dictionary'].insertMany(data, {ordered: false});
   })
   .then(res => {
     console.log('-> ', 'dictionary is added');

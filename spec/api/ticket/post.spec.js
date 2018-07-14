@@ -4,12 +4,11 @@ const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 const error = require('../../../lib/errors.list');
-// const warehouses = require('../../../warehouses');
 
 xdescribe("POST Tickets Return", () => {
 
   let customerAddressId;
-  let customerObj = {
+  let  customerObj = {
     cid: null,
     jar: null
   }
@@ -98,9 +97,9 @@ xdescribe("POST Tickets Return", () => {
     base_price: 30000,
     desc: 'some description for this product',
     colors: [{
-      color_id: mongoose.Types.ObjectId(),
-      name: 'green'
-    },
+        color_id: mongoose.Types.ObjectId(),
+        name: 'green'
+      },
       {
         color_id: mongoose.Types.ObjectId(),
         name: 'yellow'
@@ -111,30 +110,30 @@ xdescribe("POST Tickets Return", () => {
       }
     ],
     instances: [{
-      _id: mongoose.Types.ObjectId(),
-      product_color_id: mongoose.Types.ObjectId(),
-      size: "11",
-      article_no: "aaaa",
-      price: 2000,
-      barcode: '0394081341',
-      inventory: [{
-        count: 1,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }, {
-        count: 2,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }, {
-        count: 3,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }, {
-        count: 4,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }]
-    },
+        _id: mongoose.Types.ObjectId(),
+        product_color_id: mongoose.Types.ObjectId(),
+        size: "11",
+        article_no: "aaaa",
+        price: 2000,
+        barcode: '0394081341',
+        inventory: [{
+          count: 1,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }, {
+          count: 2,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }, {
+          count: 3,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }, {
+          count: 4,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }]
+      },
       {
         _id: mongoose.Types.ObjectId(),
         product_color_id: mongoose.Types.ObjectId(),
@@ -176,9 +175,9 @@ xdescribe("POST Tickets Return", () => {
     base_price: 100000,
     desc: 'some description for this product 2',
     colors: [{
-      color_id: mongoose.Types.ObjectId(),
-      name: 'green'
-    },
+        color_id: mongoose.Types.ObjectId(),
+        name: 'green'
+      },
       {
         color_id: mongoose.Types.ObjectId(),
         name: 'yellow'
@@ -189,30 +188,30 @@ xdescribe("POST Tickets Return", () => {
       }
     ],
     instances: [{
-      _id: mongoose.Types.ObjectId(),
-      product_color_id: mongoose.Types.ObjectId(),
-      size: "20",
-      article_no: "ssss",
-      price: 2000,
-      barcode: '99999999',
-      inventory: [{
-        count: 1,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }, {
-        count: 2,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }, {
-        count: 3,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }, {
-        count: 4,
-        reserved: 0,
-        warehouse_id: mongoose.Types.ObjectId()
-      }]
-    },
+        _id: mongoose.Types.ObjectId(),
+        product_color_id: mongoose.Types.ObjectId(),
+        size: "20",
+        article_no: "ssss",
+        price: 2000,
+        barcode: '99999999',
+        inventory: [{
+          count: 1,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }, {
+          count: 2,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }, {
+          count: 3,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }, {
+          count: 4,
+          reserved: 0,
+          warehouse_id: mongoose.Types.ObjectId()
+        }]
+      },
       {
         _id: mongoose.Types.ObjectId(),
         product_color_id: mongoose.Types.ObjectId(),
@@ -240,26 +239,26 @@ xdescribe("POST Tickets Return", () => {
       }
     ]
   }];
-
+  
   let salesManagerObject = {
-    active: true,
-    username: "admin@persianmode.com",
-    secret: "123456789",
-    access_level: 1,
-    first_name: "Sales",
-    surname: "Manager",
+    active : true,
+    username : "admin@persianmode.com",
+    secret : "123456789",
+    access_level : 1,
+    first_name : "Sales",
+    surname : "Manager",
   }
 
   beforeEach(done => {
 
     lib.dbHelpers.dropAll()
-      .then(() => models['WarehouseTest'].insertMany(warehouses))
-      .then(() => models['AgentTest'].create(salesManagerObject))
+      .then(() => models()['WarehouseTest'].insertMany(warehouses))
+      .then(() => models()['AgentTest'].create(salesManagerObject))
       .then(() => lib.dbHelpers.addAndLoginCustomer('test@test', "123456", {addresses: [address]}))
       .then((customer) => {
         customerObj.cid = customer.cid;
         customerObj.jar = customer.rpJar;
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
       })
       .then(res => {
         productIds = res.map(el => el._id);
@@ -295,13 +294,13 @@ xdescribe("POST Tickets Return", () => {
           }]
         }];
       })
-      .then((orders) => models['OrderTest'].insertMany(orders))
+      .then((orders) => models()['OrderTest'].insertMany(orders))
       .then(res => {
         order = res[0];
         orderLineOne = res[0].order_lines[0];
         orderLineTwo = res[0].order_lines[1];
       })
-      .then(() => models['CustomerTest'].findOne({username: 'test@test'}))
+      .then(() => models()['CustomerTest'].findOne({username: 'test@test'}))
       .then((customer) => {
         customerAddressId = customer.addresses[0]._id
         done();
@@ -335,7 +334,7 @@ xdescribe("POST Tickets Return", () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
       })
-      .then(() => models['OrderTest'].findOne({'_id': order._id, 'order_lines._id': orderLineOne._id}))
+      .then(() => models()['OrderTest'].findOne({'_id': order._id, 'order_lines._id': orderLineOne._id}))
       .then((res) => {
         expect(res.order_lines[0].tickets.length).toEqual(2)
         expect(res.order_lines[0].tickets[1].desc.day.time_slot).toBe('18-22');
@@ -690,18 +689,13 @@ xdescribe("POST Tickets Cancel", () => {
   beforeEach(done => {
 
     lib.dbHelpers.dropAll()
-      .then(() => models['WarehouseTest'].insertMany(warehouses))
-      .then(() => models['AgentTest'].create(salesManagerObject))
-      .then(() => lib.dbHelpers.addAndLoginCustomer('test@test', "123456", {
-        balance: 500,
-        mobile_no: '09123456789',
-        loyalty_points: 10,
-        addresses: [address]
-      }))
+      .then(() => models()['WarehouseTest'].insertMany(warehouses))
+      .then(() => models()['AgentTest'].create(salesManagerObject))
+      .then(() => lib.dbHelpers.addAndLoginCustomer('test@test', "123456", {balance: 500, mobile_no: '09123456789', loyalty_points: 10, addresses: [address]}))
       .then((customer) => {
         customerObj.cid = customer.cid;
         customerObj.jar = customer.rpJar;
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
       })
       .then(res => {
         productIds = res.map(el => el._id);
@@ -749,13 +743,13 @@ xdescribe("POST Tickets Cancel", () => {
           }]
         }];
       })
-      .then((orders) => models['OrderTest'].insertMany(orders))
+      .then((orders) => models()['OrderTest'].insertMany(orders))
       .then(res => {
         order = res[0];
         orderLineOne = res[0].order_lines[0];
         orderLineTwo = res[0].order_lines[1];
       })
-      .then(() => models['CustomerTest'].findOne({username: 'test@test'}))
+      .then(() => models()['CustomerTest'].findOne({username: 'test@test'}))
       .then((customer) => {
         customerAddressId = customer.addresses[0]._id
         done();
@@ -783,12 +777,12 @@ xdescribe("POST Tickets Cancel", () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
       })
-      .then(() => models['CustomerTest'].findById(customerObj.cid))
+      .then(() => models()['CustomerTest'].findById(customerObj.cid))
       .then((customer) => {
         expect(customer.first_name).toBe('test first name');
         expect(customer.balance).toBe(1500);
       })
-      .then(() => models['OrderTest'].findOne({'_id': order._id, 'order_lines._id': orderLineOne._id}))
+      .then(() => models()['OrderTest'].findOne({'_id': order._id, 'order_lines._id': orderLineOne._id}))
       .then(order => {
         expect(order.order_lines[0].paid_price).toBe(1000);
         expect(order.order_lines[0].tickets.length).toBe(2);

@@ -55,7 +55,7 @@ const error = require('../../../lib/errors.list');
 //       resolveWithFullResponse: true,
 //     }).then(res => {
 //       expect(res.statusCode).toBe(200);
-//       return models['CustomerTest'].findOne({username: 'sa'})
+//       return models()['CustomerTest'].findOne({username: 'sa'})
 //     }).then(res => {
 //       expect(res.addresses.length).toBe(1);
 //       expect(res.addresses[0].city).toBe('Tehran');
@@ -65,7 +65,7 @@ const error = require('../../../lib/errors.list');
 //
 //   it('should add second address for customer', function (done) {
 //     this.done = done;
-//     models['CustomerTest'].update({
+//     models()['CustomerTest'].update({
 //       username: 'sa',
 //     }, {
 //       $addToSet: {
@@ -110,7 +110,7 @@ const error = require('../../../lib/errors.list');
 //       )
 //       .then(res => {
 //         expect(res.statusCode).toBe(200);
-//         return models['CustomerTest'].findOne({username: 'sa'})
+//         return models()['CustomerTest'].findOne({username: 'sa'})
 //       }).then(res => {
 //       expect(res.addresses.length).toBe(2);
 //       expect(res.addresses[0].city).toBe('Rasht');
@@ -124,7 +124,7 @@ const error = require('../../../lib/errors.list');
 //   it('should edit address for customer', function (done) {
 //     this.done = done;
 //     let tempId = 1;
-//     models['CustomerTest'].update({
+//     models()['CustomerTest'].update({
 //       username: 'sa',
 //     }, {
 //       $addToSet: {
@@ -145,7 +145,7 @@ const error = require('../../../lib/errors.list');
 //       }
 //     })
 //       .then(res => {
-//         return models['CustomerTest'].findOne({username: 'sa'})
+//         return models()['CustomerTest'].findOne({username: 'sa'})
 //       })
 //       .then(res => {
 //           expect(res.addresses.length).toBe(1);
@@ -179,7 +179,7 @@ const error = require('../../../lib/errors.list');
 //       )
 //       .then(res => {
 //         expect(res.statusCode).toBe(200);
-//         return models['CustomerTest'].findOne({username: 'sa'})
+//         return models()['CustomerTest'].findOne({username: 'sa'})
 //       }).then(res => {
 //       expect(res.addresses.length).toBe(1);
 //       expect(res.addresses[0].city).toBe('Rasht');
@@ -192,7 +192,7 @@ const error = require('../../../lib/errors.list');
 //
 //   it('should add new address for another logged in customer', function (done) {
 //     this.done = done;
-//     return models['CustomerTest'].find()
+//     return models()['CustomerTest'].find()
 //       .then(res => {
 //         expect(res.length).toBe(2);
 //         return rp({
@@ -219,7 +219,7 @@ const error = require('../../../lib/errors.list');
 //       })
 //       .then(res => {
 //         expect(res.statusCode).toBe(200);
-//         return models['CustomerTest'].findOne({username: 'sareh'})
+//         return models()['CustomerTest'].findOne({username: 'sareh'})
 //       }).then(res => {
 //         expect(res.addresses.length).toBe(1);
 //         expect(res.addresses[0].city).toBe('Qom');
@@ -266,7 +266,7 @@ const error = require('../../../lib/errors.list');
 //
 //   it("should get error when email exist", function (done) {
 //     this.done = done;
-//     (new models['CustomerTest']({ // add a verified user (not guest) to database first
+//     (new models()['CustomerTest']({ // add a verified user (not guest) to database first
 //       username: 'sam@gmail.com',
 //       first_name: 'saman',
 //       surname: 'vaziri',
@@ -319,7 +319,7 @@ const error = require('../../../lib/errors.list');
 //
 //   it('should update guest information that already exist', function (done) {
 //     this.done = done;
-//     models['CustomerTest'].update({
+//     models()['CustomerTest'].update({
 //         username: 'sareh@gmail.com',
 //         is_verified: false,
 //         is_guest: true,
@@ -358,7 +358,7 @@ const error = require('../../../lib/errors.list');
 //     )
 //       .then(res => {
 //         expect(res.statusCode).toBe(200);
-//         return models['CustomerTest'].find().lean();
+//         return models()['CustomerTest'].find().lean();
 //       }).then(res => {
 //       expect(res.length).toBe(1);
 //       res = res[0];
@@ -419,7 +419,7 @@ const error = require('../../../lib/errors.list');
 //       resolveWithFullResponse: true,
 //     }).then(res => {
 //       expect(res.statusCode).toBe(200);
-//       return models['CustomerTest'].find().lean();
+//       return models()['CustomerTest'].find().lean();
 //     }).then(res => {
 //       expect(res.length).toBe(2);
 //       expect(res[1].username).toBe('saman@gmail.com');
@@ -529,7 +529,7 @@ describe('Set User Favorite Shoes Type', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({_id: customerObj.cid}, 'shoesType')
+        return models()['CustomerTest'].findOne({_id: customerObj.cid}, 'shoesType')
       })
       .then(res => {
         expect(res.shoesType).toBe("EU");
@@ -551,7 +551,7 @@ describe('Set User Favorite Shoes Type', () => {
       resolveWithFullResponse: true,
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['CustomerTest'].findOne({_id: customerObj2.cid}, 'shoesType')
+      return models()['CustomerTest'].findOne({_id: customerObj2.cid}, 'shoesType')
     }).then(res => {
       expect(res.shoesType).toBe("US");
       done();
@@ -565,14 +565,13 @@ describe('POST Customer / ', () => {
   let preferred_brands = [];
   let preferred_tags = [];
   let preferred_size;
-  
+  let customerObj = {cid: null, jar: null};
+
   beforeEach(done => {
-    let customerObj = {
+    let info = {
       first_name: 'mohammadali',
       surname: 'farhad',
-      username: 'farhad@yahoo.com',
       active: true,
-      is_verified: true,
       shoesType: 'US',
       is_guest: false
     };
@@ -591,15 +590,13 @@ describe('POST Customer / ', () => {
       name: 'Gender'
     }];
     lib.dbHelpers.dropAll()
-      .then(() => {
-        return models['CustomerTest'].create(customerObj);
-      })
-      .then((customer) => {
-        username = customer.username;
-        
-        return models['TagGroupTest'].insertMany(tagGroupArr);
+      .then(() => lib.dbHelpers.addAndLoginCustomer('cust', 'pass', info))
+      .then((res) => {
+        customerObj.cid = res.cid;
+        customerObj.jar = res.rpJar;
+        return models()['TagGroupTest'].insertMany(tagGroupArr);
       }).then(tag_group => {
-        return models['TagTest'].insertMany([{
+        return models()['TagTest'].insertMany([{
           name: 'ACTION SPORTS',
           tag_group_id: tag_group[0]._id
         }, {
@@ -630,7 +627,7 @@ describe('POST Customer / ', () => {
       })
       .then(res => {
         preferred_tags = res.slice(0, 4).map(el => el._id);
-        return models['BrandTest'].insertMany(brandArr);
+        return models()['BrandTest'].insertMany(brandArr);
       })
       .then(res => {
         preferred_size = '7.5';
@@ -645,25 +642,26 @@ describe('POST Customer / ', () => {
 
   it('expect preferences customer update', function (done) {
     this.done = done;
-    
+
     rp({
       method: 'POST',
       uri: lib.helpers.apiTestURL(`customer/preferences`),
       body: {
-        username,
         preferred_brands,
         preferred_tags,
         preferred_size
       },
       json: true,
+      jar: customerObj.jar,
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['CustomerTest'].findOne({username});
+      return models()['CustomerTest'].findOne({username});
     }).then(res => {
       expect(res.preferred_size).toEqual('7.5');
       expect(res.preferred_tags.length).toBe(4);
       expect(res.preferred_brands.length).toBe(1);
+      expect(res.is_preferences_set).toBe(true);
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });

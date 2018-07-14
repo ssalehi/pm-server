@@ -12,7 +12,7 @@ describe("Get Page", () => {
         let inserts = [];
         let n = 0;
         while (n < 5) {
-          let newPage = models['PageTest']({
+          let newPage = models()['PageTest']({
             address: `testAddress${n + 1}`,
             is_app: false,
           });
@@ -20,21 +20,21 @@ describe("Get Page", () => {
           n++;
         }
 
-        collection1 = models['CollectionTest']({
+        collection1 = models()['CollectionTest']({
           name: 'collection1'
         });
-        collection2 = models['CollectionTest']({
+        collection2 = models()['CollectionTest']({
           name: 'collection2'
         });
 
-        page1 = models['PageTest']({
+        page1 = models()['PageTest']({
           address: 'testAddress6',
           is_app: false,
           page_info: {
             collection_id: collection1._id
           }
         });
-        page2 = models['PageTest']({
+        page2 = models()['PageTest']({
           address: 'testAddress7',
           is_app: true,
           page_info: {
