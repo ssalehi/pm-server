@@ -204,7 +204,7 @@ describe('GET Customer Activation Email', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].find({username: 'cust'}).lean();
+        return models()['CustomerTest'].find({username: 'cust'}).lean();
       })
       .then(res => {
         expect(res.length).toBe(1);
