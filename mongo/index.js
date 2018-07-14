@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
 if (env.isDev) {
-  // mongoose.set('debug', true);
+  mongoose.set('debug', true);
 
 }
 
