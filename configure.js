@@ -19,6 +19,9 @@ let _hash;
 
 db.dbIsReady()
   .then(() => {
+    return modelIsReady();
+  })
+  .then(() => {
 
     copydir.sync('assets', 'public/assets');
     return models()['Warehouse'].find().lean();
@@ -102,7 +105,7 @@ db.dbIsReady()
     }))
   })
   .then(res => {
-    console.log('-> ', 'defult palacements are added!');
+    console.log('-> ', 'default placements are added!');
     return models()['LoyaltyGroup'].find().lean();
   })
   .then(res => {
@@ -171,5 +174,27 @@ db.dbIsReady()
     process.exit();
   }
   );
+
+
+
+modelIsReady = () => {
+  return new Promise((resolve, reject) => {
+
+    getModels = () => {
+
+      setTimeout(() => {
+        if (!models() || models().length)
+          getModels();
+        else
+          resolve();
+      }, 500);
+
+    }
+    getModels();
+  })
+
+}
+
+
 
 
