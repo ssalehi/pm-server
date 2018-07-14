@@ -26,6 +26,10 @@ main = async () => {
   catch (err) {
     process.exit();
   }
+
+  await modelIsReady();
+
+
   try {
 
     const dirArticles = getDirInfo(BASE_TEMP).dirs;
@@ -339,4 +343,26 @@ imageResizing = async (orig, dest) => {
 
 
 }
+modelIsReady = async () => {
+  return new Promise((resolve, reject) => {
+
+    getModels = () => {
+
+      setTimeout(() => {
+        if (!models() || models().length)
+          getModels();
+        else
+          resolve();
+      }, 500);
+
+    }
+    getModels();
+  })
+
+}
+
+
+
+
 main();
+
