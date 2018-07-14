@@ -19,6 +19,7 @@ let dirInfo = [];
 
 main = async () => {
 
+  console.log('-> ', process.cwd()); 
   try {
     await db.dbIsReady();
   }
