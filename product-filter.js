@@ -93,6 +93,29 @@ function filterProductCollection() {
 }
 
 db.dbIsReady()
+  .then(() => {
+    return modelIsReady();
+  })
   .then(res => {
-    filterProductCollection();
+    return filterProductCollection();
   });
+
+
+modelIsReady = () => {
+  return new Promise((resolve, reject) => {
+
+    getModels = () => {
+
+      setTimeout(() => {
+        if (!models() || models().length)
+          getModels();
+        else
+          resolve();
+      }, 500);
+
+    }
+    getModels();
+  })
+
+}
+
