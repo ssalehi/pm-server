@@ -8,7 +8,7 @@ const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
 const BASE_TEMP = './public/images/temp'
 const BASE_DEST = './public/images/product-image'
-const REPORT_PATH='./public/report'
+const REPORT_PATH = './public/report'
 const rimraf = require('rimraf');
 
 
@@ -19,7 +19,7 @@ let dirInfo = [];
 
 main = async () => {
 
-  console.log('-> ', process.cwd()); 
+  console.log('-> ', process.cwd());
   try {
     await db.dbIsReady();
   }
@@ -110,6 +110,8 @@ main = async () => {
                             // await imageResizing(imageOrig, imageDest)
                             fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
                             await updateProductImages(product._id, color._id, image, true);
+                            if (foundDirCode.images.length === 1)
+                              await updateProductImages(product._id, color._id, image, false);
 
                           } else {
                             fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
