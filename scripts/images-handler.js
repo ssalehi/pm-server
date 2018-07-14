@@ -8,6 +8,7 @@ const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
 const BASE_TEMP = 'public/images/temp'
 const BASE_DEST = 'public/images/product-image'
+const REPORT_PATH='public/report'
 const rimraf = require('rimraf');
 
 
@@ -255,13 +256,13 @@ makeReport = () => {
   jsonexport(result, function (err, csv) {
     if (err) return console.log(err);
 
-    if (!fs.existsSync('public/report')) {
-      fs.mkdirSync('public/report');
+    if (!fs.existsSync(REPORT_PATH)) {
+      fs.mkdirSync(REPORT_PATH);
     }
 
     const dt = dateTime.create();
     const formatted = dt.format('Y-m-d');
-    fs.writeFileSync(path.join('public/report', `image-import-report-${formatted}.csv`), csv, 'utf8');
+    fs.writeFileSync(path.join(REPORT_PATH, `image-import-report-${formatted}.csv`), csv, 'utf8');
 
     console.log('-> ', 'report is generated !!!');
 
