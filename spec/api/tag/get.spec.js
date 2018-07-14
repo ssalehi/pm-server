@@ -13,7 +13,7 @@ describe("GET Tags", () => {
         }, {
           name: 'Gender'
         }];
-        return models['TagGroupTest'].insertMany(tagGroupArr);
+        return models()['TagGroupTest'].insertMany(tagGroupArr);
       }).then(tag_group => {
         let tagsArr = [{
           name: 'ACTION SPORTS',
@@ -43,7 +43,7 @@ describe("GET Tags", () => {
           name: 'BaseBall',
           tag_group_id: tag_group[2]._id
         }];
-        return models['TagTest'].insertMany(tagsArr);
+        return models()['TagTest'].insertMany(tagsArr);
       }).then(res => {
         done();
       }).catch(err => {

@@ -22,7 +22,7 @@ describe('POST Collection', () => {
           name: 'collection 1',
           name_fa: 'کالکشن 1'
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           collectionIds[0] = res[0]._id;
           done();
         });
@@ -46,7 +46,7 @@ describe('POST Collection', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['CollectionTest'].findById(res.body._id);
+      return models()['CollectionTest'].findById(res.body._id);
     }).then(res => {
 
       expect(res.name).toBe('changed name');
@@ -169,7 +169,7 @@ describe('POST Collection Tag', () => {
           name_fa: 'کالکشن 1',
           tagIds
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           collectionIds[0] = res[0]._id;
           done();
         });
@@ -198,7 +198,7 @@ describe('POST Collection Tag', () => {
 
       expect(res.body.n).toBe(1);
 
-      return models['CollectionTest'].findById(collectionIds[0]);
+      return models()['CollectionTest'].findById(collectionIds[0]);
     }).then(res => {
       expect(res.tagIds.length).toEqual(3);
       expect(res.tagIds).toContain(newTagId);
@@ -272,7 +272,7 @@ describe('POST Collection Type', () => {
           name_fa: 'کالکشن 1',
           typeIds
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           collectionIds[0] = res[0]._id;
           done();
         });
@@ -301,7 +301,7 @@ describe('POST Collection Type', () => {
 
       expect(res.body.n).toBe(1);
 
-      return models['CollectionTest'].findById(collectionIds[0]);
+      return models()['CollectionTest'].findById(collectionIds[0]);
     }).then(res => {
       expect(res.typeIds.length).toEqual(3);
       expect(res.typeIds).toContain(newTypeId);
@@ -379,7 +379,7 @@ describe('POST Collection Product', () => {
           name_fa: 'کالکشن 1',
           productIds: productIdsArr
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           collectionIds[0] = res[0]._id;
           done();
         });
@@ -403,7 +403,7 @@ describe('POST Collection Product', () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
       expect(res.body.n).toBe(1);
-      return models['CollectionTest'].findById(collectionIds[0]);
+      return models()['CollectionTest'].findById(collectionIds[0]);
     }).then(res => {
 
       expect(res.productIds.length).toEqual(4);

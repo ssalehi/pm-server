@@ -42,7 +42,7 @@ describe('POST Search Collection', () => {
           name: 'collection 006',
           name_fa: 'کالکشن 6',
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           done();
         });
       }).catch(err => {
@@ -146,7 +146,7 @@ describe('POST Search Page', () => {
         let inserts = [];
         let n = 0;
         while (n < 5) {
-          let newPage = models['PageTest']({
+          let newPage = models()['PageTest']({
             address: `testAddress${n + 1}`,
             is_app: false,
           });
@@ -154,21 +154,21 @@ describe('POST Search Page', () => {
           n++;
         }
 
-        collection1 = models['CollectionTest']({
+        collection1 = models()['CollectionTest']({
           name: 'collection1', name_fa: 'کالکشن 1'
         });
-        collection2 = models['CollectionTest']({
+        collection2 = models()['CollectionTest']({
           name: 'collection2', name_fa: 'کالکشن 2'
         });
 
-        page1 = models['PageTest']({
+        page1 = models()['PageTest']({
           address: 'testAddress6',
           is_app: false,
           page_info: {
             collection_id: collection1._id
           }
         });
-        page2 = models['PageTest']({
+        page2 = models()['PageTest']({
           address: 'testAddress7',
           is_app: true,
           page_info: {
@@ -320,7 +320,7 @@ describe('POST Order - Search over order lines by tickets', () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
-        return models['WarehouseTest'].insertMany(warehouses)
+        return models()['WarehouseTest'].insertMany(warehouses)
       })
       .then(() => {
         return lib.dbHelpers.addAndLoginAgent('bm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
@@ -440,7 +440,7 @@ describe('POST Order - Search over order lines by tickets', () => {
               }
             ]
           }];
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
       })
       .then(res => {
 
@@ -511,7 +511,7 @@ describe('POST Order - Search over order lines by tickets', () => {
           }]
         }];
 
-        return models['OrderTest'].insertMany(orders);
+        return models()['OrderTest'].insertMany(orders);
       })
       .then(res => {
         orderIds = res.map(x => x._id);
@@ -682,19 +682,19 @@ describe('POST Suggest Product / Tag / Color', () => {
           {name: 'col2'},
           {name: 'roloc3'}
         ];
-        models['ProductTest'].insertMany(products).then(res => {
+        models()['ProductTest'].insertMany(products).then(res => {
           productIds[0] = res[0]._id;
           productIds[1] = res[1]._id;
           productIds[2] = res[2]._id;
           productIds[3] = res[3]._id;
 
-          models['TagTest'].insertMany(tags).then(res => {
+          models()['TagTest'].insertMany(tags).then(res => {
             tagIds[0] = res[0]._id;
             tagIds[1] = res[1]._id;
             tagIds[2] = res[2]._id;
             tagIds[3] = res[3]._id;
 
-            models['ColorTest'].insertMany(colors).then(res => {
+            models()['ColorTest'].insertMany(colors).then(res => {
               colorIds[0] = res[0]._id;
               colorIds[1] = res[1]._id;
               colorIds[2] = res[2]._id;
@@ -831,7 +831,7 @@ describe('POST Suggest Collection', () => {
           name: 'collection 006',
           name_fa: 'کالکشن 6',
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           done();
         });
       }).catch(err => {
@@ -905,7 +905,7 @@ describe('POST Suggest Page Address', () => {
         let inserts = [];
         let n = 0;
         while (n < 5) {
-          let newPage = models['PageTest']({
+          let newPage = models()['PageTest']({
             address: `test${n + 1}`,
             is_app: false,
           });

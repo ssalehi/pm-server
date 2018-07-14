@@ -24,7 +24,7 @@ describe('Dictionary DELETE', () => {
                 },
             ];
 
-            return models['DictionaryTest'].insertMany(dictionaries);
+            return models()['DictionaryTest'].insertMany(dictionaries);
         }).then((res) => {
             dictionaryId = res[0]._id;
             done();
@@ -45,7 +45,7 @@ describe('Dictionary DELETE', () => {
             resolveWithFullResponse: true
         }).then(res => {
             expect(res.statusCode).toBe(200);
-            return models['DictionaryTest'].find();
+            return models()['DictionaryTest'].find();
         }).then(res => {
             expect(res.length).toBe(2);
             done();

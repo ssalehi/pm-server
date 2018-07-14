@@ -13,7 +13,7 @@ describe("it should get delivery's data", () => {
   let customers;
   beforeEach(done => {
     lib.dbHelpers.dropAll().then(() => {
-      return models['WarehouseTest'].insertMany(warehouses)
+      return models()['WarehouseTest'].insertMany(warehouses)
     }).then((res) => {
       centerWareHouse_id = res.find(w => !w.has_customer_pickup && !w.is_hub);
       hub_id = res.find(w => w.is_hub === true)._id;
@@ -62,7 +62,7 @@ describe("it should get delivery's data", () => {
           ]
         },
       ];
-      return models['CustomerTest'].insertMany(customers)
+      return models()['CustomerTest'].insertMany(customers)
     }).then(() => {
       deliveries = [
         {
@@ -116,7 +116,7 @@ describe("it should get delivery's data", () => {
           to: {warehouse_id: centerWareHouse_id},
         }
       ];
-      return models['DeliveryTest'].insertMany(deliveries)
+      return models()['DeliveryTest'].insertMany(deliveries)
     }).then(() => {
       done();
     }).catch(err => {

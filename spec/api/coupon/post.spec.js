@@ -46,45 +46,45 @@ describe('POST Coupon', () => {
           jar: res.rpJar,
         };
 
-        type1 = models['ProductTypeTest']({
+        type1 = models()['ProductTypeTest']({
           name: 'Shoe'
         });
-        type2 = models['ProductTypeTest']({
+        type2 = models()['ProductTypeTest']({
           name: 'Shirt'
         });
 
-        brand1 = models['BrandTest']({
+        brand1 = models()['BrandTest']({
           name: 'Nike'
         });
-        brand2 = models['BrandTest']({
+        brand2 = models()['BrandTest']({
           name: 'Puma'
         });
 
-        color1 = models['ColorTest']({
+        color1 = models()['ColorTest']({
           name: 'Green',
           color_id: 101
         });
-        color2 = models['ColorTest']({
+        color2 = models()['ColorTest']({
           name: 'Red',
           color_id: 202
         });
 
-        tagGroup1 = models['TagGroupTest']({
+        tagGroup1 = models()['TagGroupTest']({
           name: 'tag group 1',
           is_required: false,
         });
 
-        tag1 = models['TagTest']({
+        tag1 = models()['TagTest']({
           name: 'tag 1',
           tag_group_id: tagGroup1._id,
         });
-        tag2 = models['TagTest']({
+        tag2 = models()['TagTest']({
           name: 'tag 2',
           tag_group_id: tagGroup1._id,
         });
 
 
-        product1 = models['ProductTest']({
+        product1 = models()['ProductTest']({
           name: 'sample name 1',
           product_type: {
             name: type1.name,
@@ -176,7 +176,7 @@ describe('POST Coupon', () => {
             tag_id: tag2._id
           }]
         });
-        product2 = models['ProductTest']({
+        product2 = models()['ProductTest']({
           name: 'sample name 2',
           product_type: {
             name: type2.name,
@@ -213,13 +213,13 @@ describe('POST Coupon', () => {
           ]
         });
 
-        collection1 = models['CollectionTest']({
+        collection1 = models()['CollectionTest']({
           name: 'collection 1',
           name_fa: 'مجموعه 1',
           productIds: [product1._id],
         });
 
-        campaign1 = models['CampaignTest']({
+        campaign1 = models()['CampaignTest']({
           _id: campaignId1,
           name: 'new year sales',
           discount_ref: 0.1,
@@ -228,7 +228,7 @@ describe('POST Coupon', () => {
             collection_id: collection1._id,
           }],
         });
-        campaign2 = models['CampaignTest']({
+        campaign2 = models()['CampaignTest']({
           _id: campaignId2,
           name: '2000 winter sales',
           discount_ref: 0.2,
@@ -240,7 +240,7 @@ describe('POST Coupon', () => {
           }],
         });
 
-        order1 = models['OrderTest']({
+        order1 = models()['OrderTest']({
           is_cart: true,
           _id: orderId1,
           customer_id: customerObj.cid,
@@ -268,7 +268,7 @@ describe('POST Coupon', () => {
             adding_time: new Date(),
           }]
         });
-        order2 = models['OrderTest']({
+        order2 = models()['OrderTest']({
           _id: orderId2,
           customer_id: customerObj.cid,
           transaction_id: new mongoose.Types.ObjectId(),
@@ -366,7 +366,7 @@ describe('POST Coupon', () => {
   });
 
   it('should ignore coupon code when used', function (done) {
-    models['OrderTest'].update({
+    models()['OrderTest'].update({
       _id: orderId1,
     }, {
       $set: {
@@ -481,7 +481,7 @@ describe('POST Coupon', () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
 
-        return models['OrderTest'].findOne({_id: orderId1}).lean();
+        return models()['OrderTest'].findOne({_id: orderId1}).lean();
       })
       .then(res => {
         expect(res.coupon_code).toBe('xyz');

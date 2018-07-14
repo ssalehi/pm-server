@@ -19,11 +19,11 @@ describe('PUT / Product Reviews -', () => {
         customerObj.cid = res.cid;
         customerObj.jar = res.rpJar;
         // create brand
-        return models['BrandTest'].create({name: 'Nike'})
+        return models()['BrandTest'].create({name: 'Nike'})
           .then(res => {
             brandId = res._id;
             //create product
-            return models['ProductTest'].create({
+            return models()['ProductTest'].create({
               name: 'product test',
               base_price: 1000,
               brand: {
@@ -34,7 +34,7 @@ describe('PUT / Product Reviews -', () => {
           });
       }).then((res) => {
       productId = res._id;
-      return models['ProductTest'].update({'_id': res._id}, {
+      return models()['ProductTest'].update({'_id': res._id}, {
         $addToSet: {
           'reviews': {
             customer_id: customerObj.cid,
@@ -155,7 +155,7 @@ describe('PUT / Product Reviews -', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['ProductTest'].findById(productId);
+      return models()['ProductTest'].findById(productId);
     }).then(res => {
       expect(res._id).toEqual(productId);
       expect(res.reviews.length).toBe(1);
@@ -177,7 +177,7 @@ describe('PUT / Product Reviews -', () => {
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
-      return models['ProductTest'].findById(productId);
+      return models()['ProductTest'].findById(productId);
     }).then(res => {
       expect(res._id).toEqual(productId);
       expect(res.reviews[0].stars_count).not.toEqual(starsCount);
