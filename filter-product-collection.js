@@ -25,7 +25,7 @@ let instance_ids = [];
 
 
 function filterProductCollection() {
-  return models['Product'].find({'colors.image.thumbnail': {$exists: true}}).lean()
+  return models()['Product'].find({'colors.image.thumbnail': {$exists: true}}).lean()
     .then(res => {
       imageProd = res;
       multiColorProd = res.filter(el => el.colors.length > 1);
@@ -73,10 +73,10 @@ function filterProductCollection() {
           el.instance_array.forEach(item => instance_ids.push(item._id.toString()));
           el.color_id.forEach(item => color_ids.push(item.toString()));
         });
-      return models['Product'].remove({_id: {$nin: product_ids}})
+      return models()['Product'].remove({_id: {$nin: product_ids}})
     })
     .then(() => {
-      return models['Product'].update(
+      return models()['Product'].update(
         {},
         {$pull: {instances: {_id: {$in: instance_ids}}, colors: {_id: {$in: color_ids}}}},
         {multi: true}

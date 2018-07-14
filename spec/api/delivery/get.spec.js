@@ -129,7 +129,7 @@ describe("it should get delivery's data", () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`delivery/${deliveries[1]._id}`),
+      uri: lib.helpers.apiTestURL(`delivery/by_id/${deliveries[1]._id}`),
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
@@ -146,7 +146,7 @@ describe("it should get delivery's data", () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`delivery/${deliveries[0]._id}`),
+      uri: lib.helpers.apiTestURL(`delivery/by_id/${deliveries[0]._id}`),
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
