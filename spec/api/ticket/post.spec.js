@@ -175,9 +175,9 @@ xdescribe("POST Tickets Return", () => {
     base_price: 100000,
     desc: 'some description for this product 2',
     colors: [{
-        color_id: mongoose.Types.ObjectId(),
-        name: 'green'
-      },
+      color_id: mongoose.Types.ObjectId(),
+      name: 'green'
+    },
       {
         color_id: mongoose.Types.ObjectId(),
         name: 'yellow'
@@ -188,30 +188,30 @@ xdescribe("POST Tickets Return", () => {
       }
     ],
     instances: [{
-        _id: mongoose.Types.ObjectId(),
-        product_color_id: mongoose.Types.ObjectId(),
-        size: "20",
-        article_no: "ssss",
-        price: 2000,
-        barcode: '99999999',
-        inventory: [{
-          count: 1,
-          reserved: 0,
-          warehouse_id: mongoose.Types.ObjectId()
-        }, {
-          count: 2,
-          reserved: 0,
-          warehouse_id: mongoose.Types.ObjectId()
-        }, {
-          count: 3,
-          reserved: 0,
-          warehouse_id: mongoose.Types.ObjectId()
-        }, {
-          count: 4,
-          reserved: 0,
-          warehouse_id: mongoose.Types.ObjectId()
-        }]
-      },
+      _id: mongoose.Types.ObjectId(),
+      product_color_id: mongoose.Types.ObjectId(),
+      size: "20",
+      article_no: "ssss",
+      price: 2000,
+      barcode: '99999999',
+      inventory: [{
+        count: 1,
+        reserved: 0,
+        warehouse_id: mongoose.Types.ObjectId()
+      }, {
+        count: 2,
+        reserved: 0,
+        warehouse_id: mongoose.Types.ObjectId()
+      }, {
+        count: 3,
+        reserved: 0,
+        warehouse_id: mongoose.Types.ObjectId()
+      }, {
+        count: 4,
+        reserved: 0,
+        warehouse_id: mongoose.Types.ObjectId()
+      }]
+    },
       {
         _id: mongoose.Types.ObjectId(),
         product_color_id: mongoose.Types.ObjectId(),
@@ -239,14 +239,14 @@ xdescribe("POST Tickets Return", () => {
       }
     ]
   }];
-  
+
   let salesManagerObject = {
-    active : true,
-    username : "admin@persianmode.com",
-    secret : "123456789",
-    access_level : 1,
-    first_name : "Sales",
-    surname : "Manager",
+    active: true,
+    username: "admin@persianmode.com",
+    secret: "123456789",
+    access_level: 1,
+    first_name: "Sales",
+    surname: "Manager",
   }
 
   beforeEach(done => {
@@ -689,9 +689,11 @@ xdescribe("POST Tickets Cancel", () => {
   beforeEach(done => {
 
     lib.dbHelpers.dropAll()
+
       .then(() => models()['WarehouseTest'].insertMany(warehouses))
       .then(() => models()['AgentTest'].create(salesManagerObject))
       .then(() => lib.dbHelpers.addAndLoginCustomer('test@test', "123456", {balance: 500, mobile_no: '09123456789', loyalty_points: 10, addresses: [address]}))
+
       .then((customer) => {
         customerObj.cid = customer.cid;
         customerObj.jar = customer.rpJar;
