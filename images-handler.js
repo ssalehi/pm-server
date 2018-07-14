@@ -8,7 +8,7 @@ const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
 const BASE_TEMP = './public/images/temp'
 const BASE_DEST = './public/images/product-image'
-const REPORT_PATH='./public/report'
+const REPORT_PATH = './public/report'
 const rimraf = require('rimraf');
 
 
@@ -19,13 +19,17 @@ let dirInfo = [];
 
 main = async () => {
 
-  console.log('-> ', process.cwd()); 
+  console.log('-> ', process.cwd());
   try {
     await db.dbIsReady();
   }
   catch (err) {
     process.exit();
   }
+
+  await modelIsReady();
+
+
   try {
 
     const dirArticles = getDirInfo(BASE_TEMP).dirs;
@@ -110,6 +114,8 @@ main = async () => {
                             // await imageResizing(imageOrig, imageDest)
                             fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
                             await updateProductImages(product._id, color._id, image, true);
+                            if (foundDirCode.images.length === 1)
+                              await updateProductImages(product._id, color._id, image, false);
 
                           } else {
                             fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
@@ -337,4 +343,26 @@ imageResizing = async (orig, dest) => {
 
 
 }
+modelIsReady = async () => {
+  return new Promise((resolve, reject) => {
+
+    getModels = () => {
+
+      setTimeout(() => {
+        if (!models() || models().length)
+          getModels();
+        else
+          resolve();
+      }, 500);
+
+    }
+    getModels();
+  })
+
+}
+
+
+
+
 main();
+
