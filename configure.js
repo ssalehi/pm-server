@@ -161,6 +161,8 @@ db.dbIsReady()
     process.exit();
   })
   .catch(err => {
+    console.log(err);
+
     if (err.name !== 'BulkWriteError') {
       console.log('-> ', err);
     }
