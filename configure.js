@@ -105,7 +105,7 @@ db.dbIsReady()
     }))
   })
   .then(res => {
-    console.log('-> ', 'defult palacements are added!');
+    console.log('-> ', 'default placements are added!');
     return models()['LoyaltyGroup'].find().lean();
   })
   .then(res => {
