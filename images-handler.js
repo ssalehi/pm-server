@@ -1,13 +1,14 @@
-const db = require('../mongo/index');
-const models = require('../mongo/models.mongo');
+const db = require('./mongo/index');
+const models = require('./mongo/models.mongo');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const path = require('path');
 const Jimp = require("jimp");
 const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
-const BASE_TEMP = 'public/images/temp'
-const BASE_DEST = 'public/images/product-image'
+const BASE_TEMP = './public/images/temp'
+const BASE_DEST = './public/images/product-image'
+const REPORT_PATH = './public/report'
 const rimraf = require('rimraf');
 
 
@@ -18,12 +19,17 @@ let dirInfo = [];
 
 main = async () => {
 
+  console.log('-> ', process.cwd());
   try {
     await db.dbIsReady();
   }
   catch (err) {
     process.exit();
   }
+
+  await modelIsReady();
+
+
   try {
 
     const dirArticles = getDirInfo(BASE_TEMP).dirs;
@@ -104,16 +110,18 @@ main = async () => {
                         const imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
 
                         try {
-                          // if (k === 0) {
-                          //   await imageResizing(imageOrig, imageDest)
-                          //   fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
-                          //   await updateProductImages(product._id, color._id, image, true);
+                          if (k === 0) {
+                            // await imageResizing(imageOrig, imageDest)
+                            fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
+                            await updateProductImages(product._id, color._id, image, true);
+                            if (foundDirCode.images.length === 1)
+                              await updateProductImages(product._id, color._id, image, false);
 
-                          // } else {
+                          } else {
                             fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
                             await updateProductImages(product._id, color._id, image, false);
 
-                          // }
+                          }
                           console.log('-> ', `${image} is succesfuly added to path: ${path.join(product._id.toString(), color._id.toString())} ${k === 0 ? 'as thumbnail' : ''} `);
                         } catch (err) {
                           console.log('-> ', `error on copying file ${image} from temp folder to destination ${k === 0 ? 'as thumbnail' : ''}`);
@@ -255,13 +263,13 @@ makeReport = () => {
   jsonexport(result, function (err, csv) {
     if (err) return console.log(err);
 
-    if (!fs.existsSync('public/report')) {
-      fs.mkdirSync('public/report');
+    if (!fs.existsSync(REPORT_PATH)) {
+      fs.mkdirSync(REPORT_PATH);
     }
 
     const dt = dateTime.create();
     const formatted = dt.format('Y-m-d');
-    fs.writeFileSync(path.join('public/report', `image-import-report-${formatted}.csv`), csv, 'utf8');
+    fs.writeFileSync(path.join(REPORT_PATH, `image-import-report-${formatted}.csv`), csv, 'utf8');
 
     console.log('-> ', 'report is generated !!!');
 
@@ -335,4 +343,26 @@ imageResizing = async (orig, dest) => {
 
 
 }
+modelIsReady = async () => {
+  return new Promise((resolve, reject) => {
+
+    getModels = () => {
+
+      setTimeout(() => {
+        if (!models() || models().length)
+          getModels();
+        else
+          resolve();
+      }, 500);
+
+    }
+    getModels();
+  })
+
+}
+
+
+
+
 main();
+

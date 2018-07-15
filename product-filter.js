@@ -1,13 +1,13 @@
 /**
  * Created by SSalehi on 11/07/2018.
  */
-const Base = require('../lib/base.model');
-const error = require('../lib/errors.list');
+const Base = require('./lib/base.model');
+const error = require('./lib/errors.list');
 const rmPromise = require('rimraf-promise');
-const env = require('../env');
+const env = require('./env');
 const path = require('path');
-const db = require('../mongo');
-const models = require('../mongo/models.mongo');
+const db = require('./mongo');
+const models = require('./mongo/models.mongo');
 const mongoose = require('mongoose');
 
 
@@ -93,6 +93,29 @@ function filterProductCollection() {
 }
 
 db.dbIsReady()
+  .then(() => {
+    return modelIsReady();
+  })
   .then(res => {
-    filterProductCollection();
+    return filterProductCollection();
   });
+
+
+modelIsReady = () => {
+  return new Promise((resolve, reject) => {
+
+    getModels = () => {
+
+      setTimeout(() => {
+        if (!models() || models().length)
+          getModels();
+        else
+          resolve();
+      }, 500);
+
+    }
+    getModels();
+  })
+
+}
+
