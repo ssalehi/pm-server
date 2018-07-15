@@ -3,7 +3,7 @@ const Schema = require('mongoose').Schema;
 
 point_template = {
   customer: {
-    id: {
+    _id: {
       type: Schema.Types.ObjectId,
       ref: 'Customer'
     },
@@ -18,7 +18,8 @@ point_template = {
 status_template = {
   status: Number,
   timestamp: {type: Date, default: Date.now},
-  is_processed: {type: Boolean, default: false, required: true}
+  is_processed: {type: Boolean, default: false, required: true},
+  agent_id: {type: Schema.Types.ObjectId, ref: 'Agent'},
 }
 
 min_slot_template = {
