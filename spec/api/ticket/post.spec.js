@@ -1116,7 +1116,7 @@ describe("POST Tickets outbox", () => {
   beforeEach(done => {
 
     lib.dbHelpers.dropAll()
-      .then(() => models['WarehouseTest'].insertMany(warehouses))
+      .then(() => models()['WarehouseTest'].insertMany(warehouses))
       .then(() => lib.dbHelpers.addAndLoginAgent('sc', _const.ACCESS_LEVEL.ShopClerk, warehouses.find(x => x.name === 'سانا')._id))
       .then((res) => {
         SCAgent.aid = res.aid;
@@ -1131,7 +1131,7 @@ describe("POST Tickets outbox", () => {
       .then((customer) => {
         customerObj.cid = customer.cid;
         customerObj.jar = customer.rpJar;
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
       })
       .then(res => {
         productIds = res.map(el => el._id);
@@ -1226,7 +1226,7 @@ describe("POST Tickets outbox", () => {
           }
         ]
       })
-      .then((orders) => models['OrderTest'].insertMany(orders))
+      .then((orders) => models()['OrderTest'].insertMany(orders))
       .then(res => {
         order = res[0];
         done();
