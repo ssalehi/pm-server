@@ -8,10 +8,28 @@ let time_slot_template = {
     required: true,
   },
   upper_bound: {
-    type: Number, 
+    type: Number,
     required: true,
   },
-}
+};
+
+loyalty_template = {
+  delivery_spent : {
+    type: Number,
+  },
+  shop_spent: {
+    type:Number,
+  },
+  delivery_value: {
+    type: Number,
+  },
+  shop_value: {
+    type: Number,
+  },
+  earn_point: {
+    type: Number,
+  }
+};
 
 let schema_obj = {
   customer_id: {
@@ -62,12 +80,14 @@ let schema_obj = {
     default: false
   },
   invoice_no: String,
- 
+
   duration_days: {      // delivery-periode-days references to delivery_duration_info schema
     type: Number,
     trim: true,
   },
   time_slot: time_slot_template,
+  // delivery_duration: delivery_duration_template,
+  loyalty: loyalty_template,
 };
 
 
