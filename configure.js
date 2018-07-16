@@ -88,6 +88,13 @@ db.dbIsReady()
   })
   .then(() => {
     console.log('-> ', 'default agents has been added!');
+
+    return models()['Page'].find().lean();
+  })
+  .then(res => {
+    if (res && res.length)
+      return Promise.resolve();
+
     PLACEMENTS = JSON.parse(fs.readFileSync('placements.json', 'utf8'));
     pKeys = Object.keys(PLACEMENTS);
     return Promise.all(pKeys.map((r, i) => {
@@ -104,7 +111,7 @@ db.dbIsReady()
       return models()['Page'].findOneAndUpdate(query, update, options);
     }))
   })
-  .then(res => {
+  .then(() => {
     console.log('-> ', 'default placements are added!');
     return models()['LoyaltyGroup'].find().lean();
   })
@@ -129,17 +136,6 @@ db.dbIsReady()
   })
   .then(res => {
     console.log('-> ', 'loyalty groups are added');
-    let query = {address: 'collection/men/shoes'},
-      update = {
-        address: 'collection/men/shoes',
-        is_app: true,
-        placement: PLACEMENTS.men,
-      },
-      options = {upsert: true, new: true, setDefaultsOnInsert: true};
-    return models()['Page'].findOneAndUpdate(query, update, options);
-  })
-  .then(res => {
-    console.log('-> ', 'collection men shoes page is added for app');
     let dictionary = JSON.parse(fs.readFileSync('dictionary.json', 'utf8'));
 
     let data = [];
@@ -165,6 +161,8 @@ db.dbIsReady()
     process.exit();
   })
   .catch(err => {
+    console.log(err);
+
     if (err.name !== 'BulkWriteError') {
       console.log('-> ', err);
     }
