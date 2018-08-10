@@ -33,7 +33,6 @@ let dbIsReady = () => {
 
   let prodDb = new Promise((resolve, reject) => {
 
-    console.log('-> ', env.db_uri);
     function connect() {
       const prodConnection = mongoose.createConnection(env.db_uri);
       prodConnection.on('connected', function () {
