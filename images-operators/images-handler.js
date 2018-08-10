@@ -110,17 +110,14 @@ main = async () => {
                         const imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
 
                         try {
+                          fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
                           if (k === 0) {
                             // await imageResizing(imageOrig, imageDest)
-                            fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
                             await updateProductImages(product._id, color._id, image, true);
                             if (foundDirCode.images.length === 1)
                               await updateProductImages(product._id, color._id, image, false);
-
                           } else {
-                            fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
                             await updateProductImages(product._id, color._id, image, false);
-
                           }
                           console.log('-> ', `${image} is succesfuly added to path: ${path.join(product._id.toString(), color._id.toString())} ${k === 0 ? 'as thumbnail' : ''} `);
                         } catch (err) {
