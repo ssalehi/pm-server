@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DATE=`date '+%Y-%m-%d'`
+DATE=`date '+%Y-%m-%d-%H-%M-%S'`
 cd ../../
 mkdir -p Images/Archive/${DATE}
 mkdir -p Images/storage
