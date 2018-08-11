@@ -40,7 +40,7 @@ let dbIsReady = () => {
         resolve({prodConnection});
       });
       prodConnection.on('error', function (err) {
-        console.log('-> ', 'prod connection error trying to reconnect ...');
+        console.log('-> ', 'prod connection error trying to reconnect ...',err);
         setTimeout(connect, 1000);
 
       });
