@@ -113,7 +113,8 @@ main = async () => {
                         const imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
 
                         try {
-                          await fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
+                          await fs.copy(imageOrig, imageDest)  
+                          // fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
                           if (k === 0) {
                             // await imageResizing(imageOrig, imageDest)
                             await updateProductImages(product._id, color._id, image, true);
