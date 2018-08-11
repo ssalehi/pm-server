@@ -1,6 +1,6 @@
 const db = require('./mongo/index');
 const models = require('./mongo/models.mongo');
-const fs = require('fs');
+// const fs = require('fs');
 const mongoose = require('mongoose');
 const path = require('path');
 const Jimp = require("jimp");
@@ -10,7 +10,7 @@ const BASE_TEMP = './public/images/temp'
 const BASE_DEST = './public/images/product-image'
 const REPORT_PATH = './public/report'
 const rimraf = require('rimraf');
-
+const fs = require('fs-extra')
 
 let products;
 
@@ -113,7 +113,8 @@ main = async () => {
                         const imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
 
                         try {
-                          await fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
+                          await fs.copy(imageOrig, imageDest)  
+                          // fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
                           if (k === 0) {
                             // await imageResizing(imageOrig, imageDest)
                             await updateProductImages(product._id, color._id, image, true);
@@ -360,9 +361,6 @@ modelIsReady = async () => {
   })
 
 }
-
-
-
 
 main();
 
