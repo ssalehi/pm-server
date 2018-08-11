@@ -4,7 +4,10 @@ DATE=`date '+%Y-%m-%d'`
 cd ../../
 mkdir -p Images/Archive/${DATE}
 mkdir -p Images/storage
+mkdir -p server/public/temp
+
 cd Images
+
 wget --save-cookies cookies.txt --keep-session-cookies $1
 wget --load-cookies cookies.txt -O chunk.zip $2
 
