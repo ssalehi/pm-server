@@ -1,14 +1,14 @@
-const db = require('../mongo/index');
-const models = require('../mongo/models.mongo');
+const db = require('./mongo/index');
+const models = require('./mongo/models.mongo');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const path = require('path');
 const Jimp = require("jimp");
 const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
-const BASE_TEMP = '../public/images/temp'
-const BASE_DEST = '../public/images/product-image'
-const REPORT_PATH = '../public/report'
+const BASE_TEMP = './public/images/temp'
+const BASE_DEST = './public/images/product-image'
+const REPORT_PATH = './public/report'
 const rimraf = require('rimraf');
 
 
