@@ -19,7 +19,6 @@ let dirInfo = [];
 
 main = async () => {
 
-  console.log('-> ', process.cwd());
   try {
     await db.dbIsReady();
   }
@@ -33,6 +32,8 @@ main = async () => {
   try {
 
     const dirArticles = getDirInfo(BASE_TEMP).dirs;
+
+    console.log('-> ', ` ${dirArticles.length} articles exists in dir`);
 
     if (dirArticles && dirArticles.length) {
       dirArticles.forEach(article => {
@@ -73,6 +74,8 @@ main = async () => {
       if (dirInfo && dirInfo.length) {
 
         products = await getProducts(dirArticles);
+
+        console.log('-> ', ` ${products.length} related product exists in database`);
 
         if (products && products.length) {
           for (let i = 0; i < products.length; i++) {
