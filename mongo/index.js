@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
 if (env.isDev) {
-  // mongoose.set('debug', true);
+   mongoose.set('debug', true);
 }
 
 let dbIsReady = () => {
@@ -40,7 +40,7 @@ let dbIsReady = () => {
         resolve({prodConnection});
       });
       prodConnection.on('error', function (err) {
-        console.log('-> ', 'prod connection error trying to reconnect ...',err);
+        console.log('-> ', 'prod connection error trying to reconnect ...');
         setTimeout(connect, 1000);
 
       });
