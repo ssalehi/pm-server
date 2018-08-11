@@ -17,6 +17,11 @@ cp -R chunk/*/* Archive/${DATE}/
 echo start conversion of png images to jpeg
 find ./chunk -name "*.png" -exec mogrify -format jpeg {} \;
 find ./chunk -name "*.png" -exec rm {} \;
+
+for i in $(find ./chunk -name *.jpeg); do 
+    jpegoptim --size=200k $i
+done
+
 find ./chunk -type f -iname '*.jpeg' -exec jpegoptim size=200k {} +
 echo transfering images to temp directory
 cp -R chunk/*/* ../server/public/images/temp/
