@@ -4,7 +4,7 @@ DATE=`date '+%Y-%m-%d-%H-%M-%S'`
 cd ../../
 mkdir -p Images/Archive/${DATE}
 mkdir -p Images/storage
-mkdir -p server/public/temp
+mkdir -p server/public/images/temp
 
 cd Images
 
@@ -19,6 +19,6 @@ find ./chunk -name "*.png" -exec mogrify -format jpeg {} \;
 find ./chunk -name "*.png" -exec rm {} \;
 find ./chunk -type f -iname '*.jpeg' -exec jpegoptim size=200k {} +
 echo transfering images to temp directory
-cp -R chunk/*/* ../server/public/temp/
+cp -R chunk/*/* ../server/public/images/temp/
 rm cookies.txt Ef*
 rm -r chunk
