@@ -50,5 +50,10 @@ docker-compose.yml
 # dump
 dump.rdb
 
-# execution
-*.sh
+# images operators
+/images-operators/*
+!/images-operators/images-handler.js
+!/images-operators/downloader.sh
+
+# csv reports
+*.csv
