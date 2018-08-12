@@ -174,7 +174,6 @@ db.dbIsReady()
   );
 
 
-
 modelIsReady = () => {
   return new Promise((resolve, reject) => {
 
@@ -190,7 +189,6 @@ modelIsReady = () => {
     }
     getModels();
   })
-
 }
 
 
