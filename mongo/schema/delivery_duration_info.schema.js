@@ -49,7 +49,7 @@ add_point_template = {
     default: 0,
     trim: true,
   }
-}
+};
 
 
 let schema_obj = {
