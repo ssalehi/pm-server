@@ -92,8 +92,8 @@ router.get('/outTest', function (req, res) {
   const helpers = require('../lib/helpers');
 
   return helpers.httpPost('http://httpbin.org/post', {})
-    .then(res => {
-      res.json(res);
+    .then(result => {
+      res.json(result);
     })
     .catch(err => {
       console.error('-> ', err);
