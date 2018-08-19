@@ -87,6 +87,20 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
 router.get('/', function (req, res) {
   res.send('respond with a resource');
 });
+
+router.get('/outTest', function (req, res) {
+  const helpers = require('../lib/helpers');
+
+  return helpers.httpPost('http://httpbin.org/post', {})
+    .then(result => {
+      res.json(result);
+    })
+    .catch(err => {
+      console.error('-> ', err);
+      res.send(err);
+    })
+});
+
 // Login API
 router.post('/agent/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user', () => true]));
 router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user']));
@@ -366,7 +380,7 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-  });
+    });
 
 });
 
@@ -424,7 +438,6 @@ router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 router.post('/soldout/setFlag', apiResponse('SoldOut', 'setSoldOutFlagOnPI', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // LoyaltyGroup
-// router.get('/loyaltygroup', apiResponse('LoyaltyGroup', 'getLoyaltyGroups', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.get('/loyaltygroup', apiResponse('LoyaltyGroup', 'getLoyaltyGroups', false, []));
 router.post('/loyaltygroup', apiResponse('LoyaltyGroup', 'upsertLoyaltyGroup', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGroup', true, ['body._id'], [_const.ACCESS_LEVEL.SalesManager]));
@@ -471,6 +484,7 @@ router.get('/deliveryduration', apiResponse('DeliveryDurationInfo', 'getAllDurat
 router.get('/deliveryduration/:id', apiResponse('DeliveryDurationInfo', 'getOneDurationInfo', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
 // router.get('/deliverycc', apiResponse('DeliveryDurationInfo', 'getClickAndCollect', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.get('/deliverycc', apiResponse('DeliveryDurationInfo', 'getClickAndCollect', false, []));
+
 router.post('/deliveryduration', apiResponse('DeliveryDurationInfo', 'upsertDurationInfo', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/deliverycc', apiResponse('DeliveryDurationInfo', 'upsertCAndC', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo', 'deleteDuration', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
