@@ -91,15 +91,12 @@ router.get('/', function (req, res) {
 router.get('/outTest', function (req, res) {
   const helpers = require('../lib/helpers');
 
-  let result;
+  
   return helpers.httpPost('http://httpbin.org/post', {})
-    .then(_result => {
-      result = _result;
-
-      console.log('-> ', JSON.stringify(require('../env').mailConfig, null, 2));
-      helpers.sendMail('test content', '<p>test content<p>', 'test subject', 'eabasir@gmail.com')
-    })
     .then(res => {
+      return helpers.httpPost('http://web:81/test', {})
+    })
+    .then(result => {
       res.json(result);
     })
     .catch(err => {
