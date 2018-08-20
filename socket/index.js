@@ -58,7 +58,7 @@ function onAuthorizeFail(data, message, error, accept) {
   if (error)
     accept(new Error(message));
 
-  console.log('Failed connection  to socket.io', message);
+  console.log('Failed connection  to socket.io', error);
   accept(null, false);
 }
 
