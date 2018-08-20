@@ -94,7 +94,7 @@ router.get('/outTest', function (req, res) {
   
   return helpers.httpPost('http://httpbin.org/post', {})
     .then(res => {
-      return helpers.httpPost('http://localhost:3001/test', {})
+      return helpers.httpPost('http://mock:81/test', {})
     })
     .then(result => {
       res.json(result);
