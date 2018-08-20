@@ -40,6 +40,8 @@ let setup = http => {
 
   io.on('connection', socket => {
     console.log('-> ', 'connection made...');
+
+    console.log('----> socket ', JSON.stringify(socket, null, 2) );
     if (socket.session.passport) {
       let user = socket.session.passport.user;
       if (user && user.warehouse_id) {
@@ -58,7 +60,7 @@ function onAuthorizeFail(data, message, error, accept) {
   if (error)
     accept(new Error(message));
 
-  console.log('Failed connection  to socket.io', error);
+  console.log('Failed connection  to socket.io', message);
   accept(null, false);
 }
 
