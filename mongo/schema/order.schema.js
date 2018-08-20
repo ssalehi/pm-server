@@ -5,11 +5,11 @@ const addressSchema = require('./address.schema');
 let time_slot_template = {
   lower_bound: {
     type: Number,
-    required: true,
+    // required: true,
   },
   upper_bound: {
     type: Number,
-    required: true,
+    // required: true,
   },
 };
 
@@ -41,7 +41,7 @@ let schema_obj = {
   },
   address: {
     type: addressSchema,
-    required: true
+    // required: true
   },
   total_amount: {
     type: Number,
@@ -61,7 +61,7 @@ let schema_obj = {
   discount: Number,
   order_time: {
     type: Date,
-    required: true,
+    // required: true,
   },
   is_collect: {
     type: Boolean,
