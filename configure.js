@@ -18,6 +18,7 @@ let _hash;
 
 
 db.dbIsReady()
+db.dbIsReady()
   .then(() => {
     return modelIsReady();
   })
