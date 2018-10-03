@@ -19,19 +19,23 @@ let _hash;
 
 db.dbIsReady()
   .then(() => {
+    return modelIsReady();
+  })
+  .then(() => {
 
     copydir.sync('assets', 'public/assets');
-    return models['Warehouse'].find().lean();
+    return models()['Warehouse'].find().lean();
   })
   .then(res => {
     if (!res || res.length === 0) {
 
-      return models['Warehouse'].insertMany(warehouses);
+      return models()['Warehouse'].insertMany(warehouses);
     }
     else
       return Promise.resolve();
   })
   .then(() => {
+    console.log('-> ', 'warehouses are added');
 
     return new Promise((resolve, reject) => {
       env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
@@ -47,7 +51,7 @@ db.dbIsReady()
   })
   .then(hash => {
     _hash = hash;
-    return models['Agent'].find().lean();
+    return models()['Agent'].find().lean();
 
   })
   .then(res => {
@@ -78,12 +82,19 @@ db.dbIsReady()
         surname: 'clerck',
       }];
 
-      return models['Agent'].insertMany(agents);
+      return models()['Agent'].insertMany(agents);
     } else
       return Promise.resolve()
   })
   .then(() => {
     console.log('-> ', 'default agents has been added!');
+
+    return models()['Page'].find().lean();
+  })
+  .then(res => {
+    if (res && res.length)
+      return Promise.resolve();
+
     PLACEMENTS = JSON.parse(fs.readFileSync('placements.json', 'utf8'));
     pKeys = Object.keys(PLACEMENTS);
     return Promise.all(pKeys.map((r, i) => {
@@ -97,15 +108,16 @@ db.dbIsReady()
         },
 
         options = {upsert: true, new: true, setDefaultsOnInsert: true};
-      return models['Page'].findOneAndUpdate(query, update, options);
+      return models()['Page'].findOneAndUpdate(query, update, options);
     }))
   })
-  .then(res => {
-    return models['LoyaltyGroup'].find().lean();
+  .then(() => {
+    console.log('-> ', 'default placements are added!');
+    return models()['LoyaltyGroup'].find().lean();
   })
   .then(res => {
     if (!res || !res.length)
-      return models['LoyaltyGroup'].insertMany([
+      return models()['LoyaltyGroup'].insertMany([
         {
           name: 'White',
           min_score: 0,
@@ -124,17 +136,6 @@ db.dbIsReady()
   })
   .then(res => {
     console.log('-> ', 'loyalty groups are added');
-    let query = {address: 'collection/men/shoes'},
-      update = {
-        address: 'collection/men/shoes',
-        is_app: true,
-        placement: PLACEMENTS.men,
-      },
-      options = {upsert: true, new: true, setDefaultsOnInsert: true};
-    return models['Page'].findOneAndUpdate(query, update, options);
-  })
-  .then(res => {
-    console.log('-> ', 'collection men shoes page is added for app');
     let dictionary = JSON.parse(fs.readFileSync('dictionary.json', 'utf8'));
 
     let data = [];
@@ -153,13 +154,15 @@ db.dbIsReady()
     });
 
 
-    return models['Dictionary'].insertMany(data, {ordered: false});
+    return models()['Dictionary'].insertMany(data, {ordered: false});
   })
   .then(res => {
     console.log('-> ', 'dictionary is added');
     process.exit();
   })
   .catch(err => {
+    console.log(err);
+
     if (err.name !== 'BulkWriteError') {
       console.log('-> ', err);
     }
@@ -169,5 +172,27 @@ db.dbIsReady()
     process.exit();
   }
   );
+
+
+
+modelIsReady = () => {
+  return new Promise((resolve, reject) => {
+
+    getModels = () => {
+
+      setTimeout(() => {
+        if (!models() || models().length)
+          getModels();
+        else
+          resolve();
+      }, 500);
+
+    }
+    getModels();
+  })
+
+}
+
+
 
 

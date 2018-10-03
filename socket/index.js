@@ -39,6 +39,9 @@ let setup = http => {
   io.use(socketSession.parser);
 
   io.on('connection', socket => {
+    console.log('-> ', 'connection made...');
+
+    console.log('----> socket ', socket );
     if (socket.session.passport) {
       let user = socket.session.passport.user;
       if (user && user.warehouse_id) {

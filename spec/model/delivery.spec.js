@@ -47,7 +47,7 @@ describe('Initiate Delivery', () => {
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
-        return models['WarehouseTest'].insertMany(warehouses)
+        return models()['WarehouseTest'].insertMany(warehouses)
       })
       .then(res => {
         return lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
@@ -106,7 +106,7 @@ describe('Initiate Delivery', () => {
             }
           ]
         }];
-        return models['ProductTest'].insertMany(products);
+        return models()['ProductTest'].insertMany(products);
       })
       .then(res => {
         Orders = [{
@@ -239,10 +239,10 @@ describe('Initiate Delivery', () => {
           }
         }];
 
-        return models['OrderTest'].insertMany(Orders);
+        return models()['OrderTest'].insertMany(Orders);
       })
       .then(res => {
-        return models['DeliveryTest'].insertMany([
+        return models()['DeliveryTest'].insertMany([
           {
             _id: mongoose.Types.ObjectId(),
             order_details: [
@@ -316,7 +316,7 @@ describe('Initiate Delivery', () => {
   it("should add new delivery", function (done) {
     Delivery.test = true;
     let delivery = new Delivery(true);
-    delivery.initiate(Orders[2], orderLineIds[3], {warehouse_id: warehouses.find(x => x.is_hub)._id}, {customer: {customer_id: customer1.cid, address_id: mongoose.Types.ObjectId()}})
+    delivery.initiate(Orders[2], orderLineIds[3], {warehouse_id: warehouses.find(x => x.is_hub)._id}, {customer: {id: customer1.cid, address_id: mongoose.Types.ObjectId()}})
       .then(res => {
         expect(res.order_details.length).toBe(1);
         expect(res.order_details[0].order_line_ids.length).toBe(1);
@@ -338,7 +338,7 @@ describe('making shelf code', () => {
   let deliveries_id;
   beforeEach(done => {
     lib.dbHelpers.dropAll().then(() => {
-      return models['WarehouseTest'].insertMany(warehouses)
+      return models()['WarehouseTest'].insertMany(warehouses)
     }).then((res) => {
       hub_id = res.find(w => w.is_hub === true)._id;
       deliveries = [
@@ -385,7 +385,7 @@ describe('making shelf code', () => {
       ];
 
       deliveries_id = deliveries.map(d => d._id);
-      return models['DeliveryTest'].insertMany(deliveries)
+      return models()['DeliveryTest'].insertMany(deliveries)
     }).then(() => {
       done();
     }).catch(err => {
@@ -438,7 +438,7 @@ describe('making shelf code', () => {
   let deliveries_id;
   beforeEach(done => {
     lib.dbHelpers.dropAll().then(() => {
-      return models['WarehouseTest'].insertMany(warehouses)
+      return models()['WarehouseTest'].insertMany(warehouses)
     }).then((res) => {
       hub_id = res.find(w => w.is_hub === true)._id;
       deliveries = [
@@ -484,7 +484,7 @@ describe('making shelf code', () => {
         }
       ];
       deliveries_id = deliveries.map(d => d._id);
-      return models['DeliveryTest'].insertMany(deliveries)
+      return models()['DeliveryTest'].insertMany(deliveries)
     }).then(() => {
       done();
     }).catch(err => {

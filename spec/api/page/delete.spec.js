@@ -17,7 +17,7 @@ describe("Delete a Page", () => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
 
-        let page = models['PageTest']({
+        let page = models()['PageTest']({
           address: 'testAddress',
           is_app: true,
         });
@@ -48,7 +48,7 @@ describe("Delete a Page", () => {
       let result = JSON.parse(res.body);
       expect(result['n']).toBe(1);
       expect(result['ok']).toBe(1);
-      return models['PageTest'].find({}).lean();
+      return models()['PageTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(0);
@@ -71,7 +71,7 @@ describe("Delete a Page", () => {
       let result = JSON.parse(res.body);
       expect(result['n']).toBe(0);
       expect(result['ok']).toBe(1);
-      return models['PageTest'].find({}).lean();
+      return models()['PageTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(1);

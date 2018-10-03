@@ -55,28 +55,28 @@ describe('Set Wish-List', () => {
       .then(res => {
         customerObj2.cid = res.cid;
         customerObj2.jar = res.rpJar;
-        type1 = models['ProductTypeTest']({
+        type1 = models()['ProductTypeTest']({
           name: 'testType'
         });
-        brand1 = models['BrandTest']({
+        brand1 = models()['BrandTest']({
           name: 'testBrand'
         });
         return Promise.all([type1.save(), brand1.save()]);
       })
       .then((res) => {
-        colorArr.push(models['ColorTest']({
+        colorArr.push(models()['ColorTest']({
           name: 'testColor1'
         }));
-        colorArr.push(models['ColorTest']({
+        colorArr.push(models()['ColorTest']({
           name: 'testColor2'
         }));
-        colorArr.push(models['ColorTest']({
+        colorArr.push(models()['ColorTest']({
           name: 'testColor3'
         }));
         return Promise.all([colorArr[0].save(), colorArr[1].save(), colorArr[2].save()]);
       })
       .then(res => {
-        productArr.push(models['ProductTest']({
+        productArr.push(models()['ProductTest']({
           _id: productIds[0],
           name: 'testProductName1',
           product_Type: {
@@ -117,7 +117,7 @@ describe('Set Wish-List', () => {
             }
           ]
         }));
-        productArr.push(models['ProductTest']({
+        productArr.push(models()['ProductTest']({
           _id: productIds[1],
           name: 'testProductName2',
           product_Type: {
@@ -179,7 +179,7 @@ describe('Set Wish-List', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
+        return models()['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
       })
       .then(res => {
         expect(res.wish_list.length).toBe(1);
@@ -229,7 +229,7 @@ describe('Set Wish-List', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj2.cid)}).lean()
+        return models()['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj2.cid)}).lean()
       })
       .then(res => {
         expect(res.wish_list.length).toBe(1);
@@ -276,7 +276,7 @@ describe('Set Wish-List', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
+        return models()['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
       })
       .then(res => {
         expect(res.wish_list.length).toBe(1);
@@ -296,7 +296,7 @@ describe('Set Wish-List', () => {
       })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
+        return models()['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
       })
       .then(res => {
         expect(res.wish_list.length).toBe(2);
@@ -325,7 +325,7 @@ describe('Set Wish-List', () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
+        return models()['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
       })
       .then(res => {
         expect(res.wish_list.length).toBe(1);

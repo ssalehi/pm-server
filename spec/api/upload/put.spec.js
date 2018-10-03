@@ -22,7 +22,7 @@ describe('PUT Upload', () => {
         adminObj.aid = res.aid;
         adminObj.jar = res.rpJar;
 
-        return models['WarehouseTest'].insertMany(warehouses)
+        return models()['WarehouseTest'].insertMany(warehouses)
       })
       .then(res => {
         done();
@@ -68,7 +68,7 @@ describe('PUT Upload', () => {
       done();
 
     }).catch(lib.helpers.errorHandler.bind(this));
-  }, 30000);
+  });
 
 
 });

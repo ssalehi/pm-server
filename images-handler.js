@@ -1,17 +1,16 @@
-const models = require('./mongo/models.mongo');
 const db = require('./mongo/index');
-const _const = require('./lib/const.list');
-const fs = require('fs');
+const models = require('./mongo/models.mongo');
+// const fs = require('fs');
 const mongoose = require('mongoose');
-const copydir = require('copy-dir');
 const path = require('path');
 const Jimp = require("jimp");
 const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
-
-
 const BASE_TEMP = './public/images/temp'
 const BASE_DEST = './public/images/product-image'
+const REPORT_PATH = './public/report'
+const rimraf = require('rimraf');
+const fs = require('fs-extra')
 
 let products;
 
@@ -20,11 +19,21 @@ let dirInfo = [];
 
 main = async () => {
 
-  await db.dbIsReady();
+  try {
+    await db.dbIsReady();
+  }
+  catch (err) {
+    process.exit();
+  }
+
+  await modelIsReady();
+
 
   try {
 
     const dirArticles = getDirInfo(BASE_TEMP).dirs;
+
+    console.log('-> ', ` ${dirArticles.length} articles exists in dir`);
 
     if (dirArticles && dirArticles.length) {
       dirArticles.forEach(article => {
@@ -46,7 +55,8 @@ main = async () => {
               images: [],
             }
             newArticleInfo.codes.push(newCodeInfo);
-            const images = getDirInfo(path.join(BASE_TEMP, article, code)).files
+            let images = getDirInfo(path.join(BASE_TEMP, article, code)).files;
+
             if (images && images.length) {
               images.forEach(image => {
                 const parts = image.split('.');
@@ -63,7 +73,9 @@ main = async () => {
 
       if (dirInfo && dirInfo.length) {
 
-        products = await getProducts();
+        products = await getProducts(dirArticles);
+
+        console.log('-> ', ` ${products.length} related product exists in database`);
 
         if (products && products.length) {
           for (let i = 0; i < products.length; i++) {
@@ -83,7 +95,6 @@ main = async () => {
                   fs.mkdirSync(path.join(BASE_DEST, product._id.toString()));
                 }
 
-
                 for (let j = 0; j < product.colors.length; j++) {
                   const color = product.colors[j];
 
@@ -102,15 +113,15 @@ main = async () => {
                         const imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
 
                         try {
+                          await fs.copy(imageOrig, imageDest)  
+                          // fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
                           if (k === 0) {
-                            await imageResizing(imageOrig, imageDest)
-                            fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
+                            // await imageResizing(imageOrig, imageDest)
                             await updateProductImages(product._id, color._id, image, true);
-
+                            if (foundDirCode.images.length === 1)
+                              await updateProductImages(product._id, color._id, image, false);
                           } else {
-                            fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
                             await updateProductImages(product._id, color._id, image, false);
-
                           }
                           console.log('-> ', `${image} is succesfuly added to path: ${path.join(product._id.toString(), color._id.toString())} ${k === 0 ? 'as thumbnail' : ''} `);
                         } catch (err) {
@@ -164,11 +175,24 @@ getDirInfo = (_path) => {
       items.forEach(item => {
         const itemPath = path.join(_path, item);
         try {
-          fs.lstatSync(itemPath).isDirectory() ? result.dirs.push(item) : result.files.push(item);
+          if (fs.lstatSync(itemPath).isDirectory()) {
+            result.dirs.push(item)
+          } else {
+
+            const stats = fs.statSync(path.join(_path, item));
+            const size = stats["size"]
+            result.files.push({name: item, size})
+          };
         } catch (err) {
           console.log('-> ', err);
         }
       })
+
+      if (result.files && result.files.length) {
+        result.files = result.files.filter((obj, pos, arr) => {
+          return arr.map(mapObj => mapObj.size).indexOf(obj.size) === pos;
+        }).map(x => x.name);
+      }
     }
     return result;
   }
@@ -213,11 +237,11 @@ makeReport = () => {
     let dbCodesDiff = new Set( // db codes - dir codes
       [...dbArticleCodes].filter(x => !dirArticleCodes.has(x)));
 
-    dirArticleCodes.forEach(code => {
+    dirCodesDiff.forEach(code => {
       newJointArticle.codes.push({code, status: 'only in DIR'})
     })
 
-    dbArticleCodes.forEach(code => {
+    dbCodesDiff.forEach(code => {
       newJointArticle.codes.push({code, status: 'only in DB'})
     })
   });
@@ -240,16 +264,20 @@ makeReport = () => {
   jsonexport(result, function (err, csv) {
     if (err) return console.log(err);
 
-    if (!fs.existsSync('public/report')) {
-      fs.mkdirSync('public/report');
+    if (!fs.existsSync(REPORT_PATH)) {
+      fs.mkdirSync(REPORT_PATH);
     }
 
     const dt = dateTime.create();
     const formatted = dt.format('Y-m-d');
-    fs.writeFileSync(path.join('public/report', `image-import-report-${formatted}.csv`), csv, 'utf8');
+    fs.writeFileSync(path.join(REPORT_PATH, `image-import-report-${formatted}.csv`), csv, 'utf8');
 
     console.log('-> ', 'report is generated !!!');
 
+  });
+
+  rimraf(BASE_TEMP, function () {
+    console.log('-> ', 'temp folder removed succesfully !!!');
   });
 
 }
@@ -263,14 +291,14 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
     };
 
     if (isThumbnail) {
-      return models['Product'].update(query, {
+      return models()['Product'].update(query, {
         $set: {
           'colors.$.image.thumbnail': image,
           'colors.$.images_imported': true
         }
       }, {multi: true});
     } else {
-      return models['Product'].update(query, {
+      return models()['Product'].update(query, {
         $addToSet: {
           'colors.$.image.angles': image
         }
@@ -284,30 +312,17 @@ updateProductImages = async (productId, colorId, image, isThumbnail) => {
   }
 }
 
-getProducts = async () => {
+getProducts = async (articles) => {
   try {
 
-    return models['Product'].aggregate([
-      {
-        $unwind: {
-          path: '$colors',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $match: {
-          'colors.images_imported': false
-        }
-      },
-      {
-        $group: {
-          _id: '$_id',
-          article_no: {$first: '$article_no'},
-          colors: {$push: '$colors'}
-        }
+    return models()['Product'].find({
+      article_no: {
+        $in: articles
       }
-
-    ]);
+    }, {
+        article_no: 1,
+        colors: 1
+      })
   } catch (err) {
     console.log('-> could not get products', err);
   }
@@ -329,8 +344,23 @@ imageResizing = async (orig, dest) => {
 
 
 }
+modelIsReady = async () => {
+  return new Promise((resolve, reject) => {
+
+    getModels = () => {
+
+      setTimeout(() => {
+        if (!models() || models().length)
+          getModels();
+        else
+          resolve();
+      }, 500);
+
+    }
+    getModels();
+  })
+
+}
 
 main();
-
-
 

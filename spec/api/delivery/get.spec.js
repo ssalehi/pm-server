@@ -13,7 +13,7 @@ describe("it should get delivery's data", () => {
   let customers;
   beforeEach(done => {
     lib.dbHelpers.dropAll().then(() => {
-      return models['WarehouseTest'].insertMany(warehouses)
+      return models()['WarehouseTest'].insertMany(warehouses)
     }).then((res) => {
       centerWareHouse_id = res.find(w => !w.has_customer_pickup && !w.is_hub);
       hub_id = res.find(w => w.is_hub === true)._id;
@@ -62,7 +62,7 @@ describe("it should get delivery's data", () => {
           ]
         },
       ];
-      return models['CustomerTest'].insertMany(customers)
+      return models()['CustomerTest'].insertMany(customers)
     }).then(() => {
       deliveries = [
         {
@@ -116,7 +116,7 @@ describe("it should get delivery's data", () => {
           to: {warehouse_id: centerWareHouse_id},
         }
       ];
-      return models['DeliveryTest'].insertMany(deliveries)
+      return models()['DeliveryTest'].insertMany(deliveries)
     }).then(() => {
       done();
     }).catch(err => {
@@ -129,7 +129,7 @@ describe("it should get delivery's data", () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`delivery/${deliveries[1]._id}`),
+      uri: lib.helpers.apiTestURL(`delivery/by_id/${deliveries[1]._id}`),
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);
@@ -146,7 +146,7 @@ describe("it should get delivery's data", () => {
     this.done = done;
     rp({
       method: 'get',
-      uri: lib.helpers.apiTestURL(`delivery/${deliveries[0]._id}`),
+      uri: lib.helpers.apiTestURL(`delivery/by_id/${deliveries[0]._id}`),
       resolveWithFullResponse: true
     }).then(res => {
       expect(res.statusCode).toBe(200);

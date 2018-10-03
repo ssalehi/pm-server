@@ -16,11 +16,6 @@ let schema_obj = {
   image: {
     thumbnail: {type: String, trim: true},
     angles: [{type: String, trim: true}]
-  },
-  images_imported: {
-    type: Boolean,
-    required: true,
-    default: false
   }
 };
 

@@ -17,7 +17,7 @@ describe("Get Product Type", () => {
           {name : 'type 5'},
         ];
 
-        return models['ProductTypeTest'].insertMany(types);
+        return models()['ProductTypeTest'].insertMany(types);
 
       })
       .then(res => {
