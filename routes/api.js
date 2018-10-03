@@ -87,6 +87,24 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
 router.get('/', function (req, res) {
   res.send('respond with a resource');
 });
+
+router.get('/outTest', function (req, res) {
+  const helpers = require('../lib/helpers');
+
+  
+  return helpers.httpPost('http://httpbin.org/post', {})
+    .then(res => {
+      return helpers.httpPost('http://mock:3001/test', {})
+    })
+    .then(result => {
+      res.json(result);
+    })
+    .catch(err => {
+      console.error('-> ', err);
+      res.send(err);
+    })
+});
+
 // Login API
 router.post('/agent/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user', () => true]));
 router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user']));
@@ -218,9 +236,8 @@ router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['us
 // Order => Ticket
 router.post('/order/ticket/scan', apiResponse('TicketAction', 'newScan', true, ['body.barcode', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
 router.post('/order/ticket/invoice', apiResponse('TicketAction', 'requestInvoice', true, ['body.orderId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
-router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistory', true, ['params', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistoryOrderLine', true, ['params'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.get('/order/ticket/history/:orderId', apiResponse('Ticket', 'getHistoryOrderByReceiver', true, ['params', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistoryOrderLine', true, ['params'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.get('/order/ticket/history/:orderId', apiResponse('Ticket', 'getHistoryOrderByReceiver', true, ['params', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/order/return', apiResponse('TicketAction', 'returnOrderLine', false, ['body', 'user']));
 router.post('/order/cancel', apiResponse('TicketAction', 'cancelOrderLine', false, ['body', 'user']));
 
@@ -367,7 +384,7 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-  });
+    });
 
 });
 
@@ -437,6 +454,8 @@ router.post('/delivery', apiResponse('Delivery', 'updateDelivery', true, ['user'
 router.post('/delivery/tracking', apiResponse('Delivery', 'getTrackingDetails', true, ['user', 'body.id'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/delivery/agent/items', apiResponse('Delivery', 'getDeliveryAgentItems', true, ['user', 'body.is_delivered', 'body.delivery_status', 'body.is_processed'], [_const.ACCESS_LEVEL.DeliveryAgent]));
 router.post('/delivery/status', apiResponse('Delivery', 'changeStatus', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/by_order', apiResponse('Delivery', 'getDeliveryByOrderLine', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+
 router.use('/delivery/evidence', function (req, res, next) {
   const id = new mongoose.Types.ObjectId();
 
