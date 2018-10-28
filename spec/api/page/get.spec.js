@@ -55,7 +55,6 @@ describe("Get Page", () => {
       });
   });
 
-
   it("should get specific page by its id", function (done) {
 
     this.done = done;
@@ -74,6 +73,7 @@ describe("Get Page", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
   it("should get page info of a page by its id", function (done) {
 
     this.done = done;
@@ -93,4 +93,5 @@ describe("Get Page", () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
+  // ToDo: Should get placements (current and previouse placements)
 });
