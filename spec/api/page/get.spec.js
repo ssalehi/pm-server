@@ -21,9 +21,11 @@ describe("Get Page", () => {
         }
 
         collection1 = models()['CollectionTest']({
+          name_fa: 'مجموعه 1',
           name: 'collection1'
         });
         collection2 = models()['CollectionTest']({
+          name_fa: 'مجموعه 2',
           name: 'collection2'
         });
 
@@ -67,7 +69,7 @@ describe("Get Page", () => {
       expect(res.statusCode).toBe(200);
       let result = JSON.parse(res.body);
       expect(result[0]._id).toBe(page1._id.toString());
-     expect(result[0].collection.name).toBe(collection1.name);
+      expect(result[0].collection.name).toBe(collection1.name);
       done();
 
     })
