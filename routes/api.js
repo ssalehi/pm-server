@@ -118,7 +118,7 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
   }
 
   // TODO: http://127.0.0.1:4200 needs to be changed on the real server !
-  let ClientAddress = 'http://127.0.0.1:4200';
+  let ClientAddress = env.isProd ? env.appAddress : 'http://127.0.0.1:4200';
   let ClientSetMobileRoute = '/login/oauth/setMobile';
   let ClientSetPreferences = '/login/oauth/setPreferences';
 
