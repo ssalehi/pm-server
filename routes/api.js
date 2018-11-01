@@ -91,7 +91,7 @@ router.get('/', function (req, res) {
 router.get('/outTest', function (req, res) {
   const helpers = require('../lib/helpers');
 
-  
+
   return helpers.httpPost('http://httpbin.org/post', {})
     .then(res => {
       return helpers.httpPost('http://mock:3001/test', {})
@@ -135,7 +135,7 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
     res.end();
   }
 
-  // TODO: http://127.0.0.1:4200 needs to be changed on the real server !
+  // TODO: needs to be checked on the real server to see functionality !
   let ClientAddress = env.isProd ? env.appAddress : 'http://127.0.0.1:4200';
   let ClientSetMobileRoute = '/login/oauth/setMobile';
   let ClientSetPreferences = '/login/oauth/setPreferences';
