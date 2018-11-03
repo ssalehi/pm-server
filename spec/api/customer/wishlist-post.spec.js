@@ -160,7 +160,7 @@ describe('Set Wish-List', () => {
       });
   }); // now I have 1 customers, 2 products
 
-  it('should add a product to valid customer wish-list(wishlist is empty)', function (done) {
+  xit('should add a product to valid customer wish-list(wishlist is empty)', function (done) {
     this.done = done;
     rp({
       method: 'POST',
@@ -188,7 +188,7 @@ describe('Set Wish-List', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it('should get error when product_color_id is not passed', function (done) {
+  xit('should get error when product_color_id is not passed', function (done) {
     rp({
       method: 'post',
       body: {
@@ -211,7 +211,7 @@ describe('Set Wish-List', () => {
       });
   });
 
-  it('should not be able to add a product to customer wishlist that has been added before', function (done) {
+  xit('should not be able to add a product to customer wishlist that has been added before', function (done) {
     rp({
       method: 'POST',
       uri: lib.helpers.apiTestURL('wishlist'),
@@ -256,7 +256,7 @@ describe('Set Wish-List', () => {
       });
   });
 
-  it('should add a product to customer wishlist and another one after it', function (done) {
+  xit('should add a product to customer wishlist and another one after it', function (done) {
     this.done = done;
 
     rp({
@@ -308,7 +308,7 @@ describe('Set Wish-List', () => {
       });
   });
 
-  it('should override new product instance size if this product has been added before with another size(color is same)', function (done) {
+  xit('should override new product instance size if this product has been added before with another size(color is same)', function (done) {
     this.done = done;
     rp({
       method: 'POST',
@@ -368,7 +368,7 @@ describe('Set Wish-List', () => {
       });
   })
 
-  xit('should be able to add one product withe diffrent colors', function (done) {
+  it('should be able to add one product withe diffrent colors', function (done) {
     this.done = done;
     rp({
       method: 'POST',
@@ -422,7 +422,7 @@ describe('Set Wish-List', () => {
       });
   })
 
-  it('should add product to wish list without specified product_instance_id', function (done) {
+  xit('should add product to wish list without specified product_instance_id', function (done) {
     this.done = done;
     rp({
       method: 'POST',
