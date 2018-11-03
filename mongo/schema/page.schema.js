@@ -1,4 +1,4 @@
-const Schema = require('mongoose').Schema;
+ const Schema = require('mongoose').Schema;
 const PlacementSchema = require('./placement.schema');
 const PageInfoSchema = require('./page_info.schema');
 
