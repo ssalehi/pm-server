@@ -21,7 +21,6 @@ describe("Get Brand", () => {
 
       })
       .then(res => {
-
         brandIds = res.map(p => p._id.toString());
         done();
       })
