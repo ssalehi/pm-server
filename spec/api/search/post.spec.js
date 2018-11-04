@@ -1008,7 +1008,7 @@ describe('POST Search Order Tickets', () => {
 
 
 
-  let products, orders = [];
+  let products, orders = [], customer;
 
   let counter = 0;
   beforeEach(async (done) => {
@@ -1029,6 +1029,7 @@ describe('POST Search Order Tickets', () => {
       PAClerk.aid = res.aid;
       PAClerk.jar = res.rpJar;
 
+      cusotmer
 
       products = await models()['ProductTest'].insertMany([
         {
@@ -1075,7 +1076,7 @@ describe('POST Search Order Tickets', () => {
       */
 
       orders = [];
-      
+
       orders.push({
         customer_id: mongoose.Types.ObjectId(),
         is_cart: false,
@@ -1249,7 +1250,6 @@ describe('POST Search Order Tickets', () => {
         jar: CWClerk.jar,
         resolveWithFullResponse: true
       });
-
       expect(res.statusCode).toBe(200);
       expect(res.body.data.length).toBe(5);
       expect(res.body.total).toBe(7);
@@ -1267,25 +1267,59 @@ describe('POST Search Order Tickets', () => {
     try {
       this.done = done;
 
-      // let res = await rp({
-      //   method: 'post',
-      //   uri: lib.helpers.apiTestURL(`search/Ticket`),
-      //   body: {
-      //     options: {
-      //       type: 'inbox',
-      //     },
-      //     offset: 0,
-      //     limit: 5
-      //   },
-      //   json: true,
-      //   jar: PAClerk.jar,
-      //   resolveWithFullResponse: true
-      // });
-      // expect(res.statusCode).toBe(200);
-      // expect(res.body.data.length).toBe(1);
-      // expect(res.body.total).toBe(1);
-      // expect(res.body.data[0]._id).toBe(orders[0].id.toString());
-      // expect(res.body.data[0].is_collect).toBeFalsy();
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`search/Ticket`),
+        body: {
+          options: {
+            type: 'inbox',
+          },
+          offset: 0,
+          limit: 5
+        },
+        json: true,
+        jar: PAClerk.jar,
+        resolveWithFullResponse: true
+      });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(1);
+      expect(res.body.total).toBe(1);
+      expect(res.body.data[0]._id).toBe(orders[0].id.toString());
+      expect(res.body.data[0].is_collect).toBeFalsy();
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+  it('paladium warehoues clerck should get c&c inbox (2 order line collapsed in one order (order 3)', async function (done) {
+    try {
+      this.done = done;
+
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`search/Ticket`),
+        body: {
+          options: {
+            type: 'inbox',
+            isCollect: true
+          },
+          offset: 0,
+          limit: 5
+        },
+        json: true,
+        jar: PAClerk.jar,
+        resolveWithFullResponse: true
+      });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(1);
+      expect(res.body.total).toBe(1);
+      expect(res.body.data[0]._id).toBe(orders[2]._id.toString());
+      expect(res.body.data[0].is_collect).toBeTruthy();
+
+      res.body.data[0].order_lines.forEach(x => {
+        expect(orders[2].order_lines.map(y => y._id.toString()).includes(x.order_line_id)).toBeTruthy();
+      })
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
