@@ -16,8 +16,6 @@ let PLACEMENTS = null;
 let pKeys = [];
 let _hash;
 
-
-db.dbIsReady()
 db.dbIsReady()
   .then(() => {
     return modelIsReady();
