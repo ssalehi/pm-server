@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
 if (env.isDev) {
-  //  mongoose.set('debug', true);
+  // mongoose.set('debug', true);
 }
 
 let dbIsReady = () => {
@@ -13,7 +13,7 @@ let dbIsReady = () => {
     if (env.isDev) {
 
       function connect() {
-       const testConnection = mongoose.createConnection(env.db_uri_test);
+        const testConnection = mongoose.createConnection(env.db_uri_test);
         testConnection.on('connected', function () {
           console.log('-> ', 'Mongoose test has been connected!');
           resolve({testConnection});
