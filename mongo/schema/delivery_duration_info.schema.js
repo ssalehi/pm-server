@@ -43,11 +43,29 @@ add_point_template = {
     required: true,
     trim: true,
   },
+  
   added_point: {
     type: String,
     required: true,
     default: 0,
     trim: true,
+  }
+};
+
+free_delivery_template = {
+  _id: {
+    type: Schema.Types.ObjectId,
+    required: true
+  },
+  province: {
+    type: String,
+    required: true,
+    trim: true,
+    unique: true,
+  },
+  min_price: {
+    type: Number,
+    required: true,
   }
 };
 
@@ -70,6 +88,7 @@ let schema_obj = {
   cities: [cities_template],
   delivery_loyalty: [loyalty_template],
   add_point: [add_point_template],
+  free_delivery_options: [free_delivery_template]
 };
 
 let deliveryDurationInfoSchema = new Schema(schema_obj, {collection: 'delivery_duration_info', strict: true});
