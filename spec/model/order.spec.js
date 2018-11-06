@@ -7,8 +7,7 @@ const Order = require('../../lib/order.model');
 const rp = require('request-promise');
 const warehouses = require('../../warehouses');
 
-
-describe('POST Order - verify order', () => {
+describe('POST Order - verify order', async () => {
 
   let customer1 = {
     cid: null,
@@ -27,104 +26,94 @@ describe('POST Order - verify order', () => {
   ];
   let productIds = [];
   let orderIds = [];
-  
+
   beforeEach(done => {
-    lib.dbHelpers.dropAll()
-      .then(() => {
-        return models()['WarehouseTest'].insertMany(warehouses)
+    try {
+      await lib.dbHelpers.dropAll()
+      await models()['WarehouseTest'].insertMany(warehouses)
+      let res = await lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
+        first_name: 'test 1',
+        surname: 'test 1',
       })
-      .then(res => {
-        return lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
-          first_name: 'test 1',
-          surname: 'test 1',
-        })
-      })
-      .then(res => {
-        customer1.cid = res.cid;
-        customer1.jar = res.rpJar;
-        let products = [{
-          _id: productIds[0],
-          name: 'sample 1',
-          product_type: {
-            name: 'sample type',
-            product_type_id: mongoose.Types.ObjectId()
+      customer1.cid = res.cid;
+      customer1.jar = res.rpJar;
+      let products = [{
+        _id: productIds[0],
+        name: 'sample 1',
+        product_type: {
+          name: 'sample type',
+          product_type_id: mongoose.Types.ObjectId()
+        },
+        brand: {
+          name: 'sample brand',
+          brand_id: mongoose.Types.ObjectId()
+        },
+        base_price: 30000,
+        desc: 'some description for this product',
+        colors: [
+          {
+            color_id: colorIds[0],
+            name: 'green'
           },
-          brand: {
-            name: 'sample brand',
-            brand_id: mongoose.Types.ObjectId()
+          {
+            color_id: colorIds[1],
+            name: 'yellow'
           },
-          base_price: 30000,
-          desc: 'some description for this product',
-          colors: [
+          {
+            color_id: colorIds[2],
+            name: 'red'
+          }
+        ],
+        instances: [
+          {
+            _id: productInstanceIds[0],
+            product_color_id: colorIds[0],
+            size: "9",
+            price: 2000,
+            barcode: '0394081341'
+          },
+          {
+            _id: productInstanceIds[1],
+            product_color_id: colorIds[1],
+            size: "10",
+            price: 4000,
+            barcode: '19231213123'
+          }
+        ]
+      }];
+      res = await models()['ProductTest'].insertMany(products);
+      productIds = res.map(x => x._id);
+
+      let orders = [{
+        customer_id: customer1.cid,
+        total_amount: 2,
+        order_time: new Date(),
+        is_cart: false,
+        address: warehouses[0].address,
+        transaction_id: mongoose.Types.ObjectId(),
+        order_lines: [{
+          product_id: productIds[0],
+          product_instance_id: productInstanceIds[0],
+          tickets: [ // sales manager ticket
             {
-              color_id: colorIds[0],
-              name: 'green'
-            },
-            {
-              color_id: colorIds[1],
-              name: 'yellow'
-            },
-            {
-              color_id: colorIds[2],
-              name: 'red'
-            }
-          ],
-          instances: [
-            {
-              _id: productInstanceIds[0],
-              product_color_id: colorIds[0],
-              size: "9",
-              price: 2000,
-              barcode: '0394081341'
-            },
-            {
-              _id: productInstanceIds[1],
-              product_color_id: colorIds[1],
-              size: "10",
-              price: 4000,
-              barcode: '19231213123'
+              warehouse_id: warehouses.find(x => x.is_center)._id,
+              status: _const.ORDER_STATUS.default
             }
           ]
-        }];
-        return models()['ProductTest'].insertMany(products);
-      })
-      .then(res => {
+        }, { // shop clerk ticket
+          product_id: productIds[0],
+          product_instance_id: productInstanceIds[1],
+          tickets: []
+        }]
+      }];
 
-        productIds = res.map(x => x._id);
-
-        let orders = [{
-          customer_id: customer1.cid,
-          total_amount: 2,
-          order_time: new Date(),
-          is_cart: false,
-          address: warehouses[0].address,
-          transaction_id: mongoose.Types.ObjectId(),
-          order_lines: [{
-            product_id: productIds[0],
-            product_instance_id: productInstanceIds[0],
-            tickets: [ // sales manager ticket
-              {
-                warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default
-              }
-            ]
-          }, { // shop clerk ticket
-            product_id: productIds[0],
-            product_instance_id: productInstanceIds[1],
-            tickets: []
-          }]
-        }];
-
-        return models()['OrderTest'].insertMany(orders);
-      })
-      .then(res => {
-        orderIds = res.map(x => x._id);
-        done();
-      })
-      .catch(err => {
-        console.log(err);
-        done();
-      })
+      res = await models()['OrderTest'].insertMany(orders);
+      orderIds = res.map(x => x._id);
+      done();
+    } catch (err) {
+      console.log(err);
+      done();
+    }
   });
 
 
@@ -141,19 +130,19 @@ describe('POST Order - verify order', () => {
       .then(res => {
         return models()['OrderTest'].find().lean();
       }).then(res => {
-      res = res[0];
-      expect(res.address._id.toString()).toEqual(addressId.toString());
-      expect(res.transaction_id.toString()).toEqual(transactionId.toString());
-      expect(res.is_cart).toBeFalsy();
-      res.order_lines.forEach(x => {
-        expect(x.tickets.length).toBe(1);
-        expect(x.tickets[0].warehouse_id.toString()).toEqual(warehouses.find(x => x.is_center)._id.toString());
-        expect(x.tickets[0].status).toBe(_const.ORDER_STATUS.default);
-        expect(x.tickets[0].is_processed).toBe(true);
-      });
-      done();
+        res = res[0];
+        expect(res.address._id.toString()).toEqual(addressId.toString());
+        expect(res.transaction_id.toString()).toEqual(transactionId.toString());
+        expect(res.is_cart).toBeFalsy();
+        res.order_lines.forEach(x => {
+          expect(x.tickets.length).toBe(1);
+          expect(x.tickets[0].warehouse_id.toString()).toEqual(warehouses.find(x => x.is_center)._id.toString());
+          expect(x.tickets[0].status).toBe(_const.ORDER_STATUS.default);
+          expect(x.tickets[0].is_processed).toBe(true);
+        });
+        done();
 
-    })
+      })
       .catch(err => {
         console.log('-> ', err);
       });
@@ -184,7 +173,7 @@ describe('POST Order - ORP', () => {
   ];
   let productIds = [];
   let orderIds = [];
-  
+
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
@@ -251,30 +240,30 @@ describe('POST Order - ORP', () => {
               warehouse_id: _warehouses[3]._id
             }]
           },
-            {
-              _id: productInstanceIds[1],
-              product_color_id: colorIds[1],
-              size: "10",
-              price: 4000,
-              barcode: '19231213123',
-              inventory: [{
-                count: 2,
-                reserved: 2,
-                warehouse_id: _warehouses[0]._id
-              }, {
-                count: 3,
-                reserved: 0,
-                warehouse_id: _warehouses[1]._id
-              }, {
-                count: 4,
-                reserved: 0,
-                warehouse_id: _warehouses[2]._id
-              }, {
-                count: 5,
-                reserved: 0,
-                warehouse_id: _warehouses[3]._id
-              }]
-            }
+          {
+            _id: productInstanceIds[1],
+            product_color_id: colorIds[1],
+            size: "10",
+            price: 4000,
+            barcode: '19231213123',
+            inventory: [{
+              count: 2,
+              reserved: 2,
+              warehouse_id: _warehouses[0]._id
+            }, {
+              count: 3,
+              reserved: 0,
+              warehouse_id: _warehouses[1]._id
+            }, {
+              count: 4,
+              reserved: 0,
+              warehouse_id: _warehouses[2]._id
+            }, {
+              count: 5,
+              reserved: 0,
+              warehouse_id: _warehouses[3]._id
+            }]
+          }
           ]
         }];
         return models()['ProductTest'].insertMany(products);
@@ -466,18 +455,18 @@ describe('POST Order - ORP', () => {
       return models()['OrderTest'].findById(_order[3]._id).lean();
 
     }).then(res => {
-        expect(res.order_lines[0].tickets.length).toBe(1);
-        expect(res.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
-        expect(res.order_lines[0].tickets[0].warehouse_id.toString()).toBe(warehouses.find(x => x.is_center)._id.toString());
-        return models()['ProductTest'].findById(productIds[0]).lean();
+      expect(res.order_lines[0].tickets.length).toBe(1);
+      expect(res.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
+      expect(res.order_lines[0].tickets[0].warehouse_id.toString()).toBe(warehouses.find(x => x.is_center)._id.toString());
+      return models()['ProductTest'].findById(productIds[0]).lean();
 
-      }).then(res => {
-        let instanceFind = res.instances.find(x => x._id.toString() === productInstanceIds[0].toString());
-        expect(_warehouses[0]._id.toString()).toEqual(instanceFind.inventory[0].warehouse_id.toString());
-        expect(instanceFind.inventory[0].reserved).toBe(1);
-        done();
+    }).then(res => {
+      let instanceFind = res.instances.find(x => x._id.toString() === productInstanceIds[0].toString());
+      expect(_warehouses[0]._id.toString()).toEqual(instanceFind.inventory[0].warehouse_id.toString());
+      expect(instanceFind.inventory[0].reserved).toBe(1);
+      done();
 
-        })
+    })
 
       .catch(lib.helpers.errorHandler.bind(this));
   });
@@ -511,3 +500,7 @@ describe('POST Order - ORP', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 });
+
+
+
+

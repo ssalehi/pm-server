@@ -1007,29 +1007,29 @@ describe('POST Search Order Tickets', () => {
   };
 
 
-
   let products, orders = [], customer;
 
-  let counter = 0;
   beforeEach(async (done) => {
     try {
 
       await lib.dbHelpers.dropAll()
 
       let warehouses = await models()['WarehouseTest'].insertMany(_warehouses);
+      warehouses = JSON.parse(JSON.stringify(warehouses));
 
       let centralWarehouse = warehouses.find(x => !x.is_hub && !x.has_customer_pickup);
-      let paladiumWarehoue = warehouses.find(x => x.name === 'پالادیوم');
+      let paladiumWarehouse = warehouses.find(x => x.name === 'پالادیوم');
 
-      let res = await lib.dbHelpers.addAndLoginAgent('cwclerk', _const.ACCESS_LEVEL.ShopClerk, centralWarehouse.id);
+
+      let res = await lib.dbHelpers.addAndLoginAgent('cwclerk', _const.ACCESS_LEVEL.ShopClerk, centralWarehouse._id);
       CWClerk.aid = res.aid;
       CWClerk.jar = res.rpJar;
 
-      res = await lib.dbHelpers.addAndLoginAgent('paclerk', _const.ACCESS_LEVEL.ShopClerk, paladiumWarehoue.id);
+      res = await lib.dbHelpers.addAndLoginAgent('paclerk', _const.ACCESS_LEVEL.ShopClerk, paladiumWarehouse._id);
       PAClerk.aid = res.aid;
       PAClerk.jar = res.rpJar;
 
-      cusotmer
+      customer = await lib.dbHelpers.addAndLoginCustomer('customer');
 
       products = await models()['ProductTest'].insertMany([
         {
@@ -1085,8 +1085,16 @@ describe('POST Search Order Tickets', () => {
         address: {
           province: "تهران",
           city: "تهران",
-          street: 'دولت'
-
+          street: 'دولت',
+          recipient_name: 'احسان',
+          recipient_surname: 'انصاری بصیر',
+          recipient_national_id: '0010684281',
+          recipient_mobile_no: '09125975886',
+          postal_code: "123456789",
+          loc: {
+            long: 51.111,
+            lat: 35.555
+          }
         },
         duration_days: 1,
         is_collect: false,
@@ -1113,7 +1121,7 @@ describe('POST Search Order Tickets', () => {
               is_processed: false,
               status: 1,
               desc: null,
-              receiver_id: centralWarehouse.id,
+              receiver_id: centralWarehouse._id,
               timestamp: moment()
             }
           ]
@@ -1131,7 +1139,7 @@ describe('POST Search Order Tickets', () => {
             is_processed: false,
             status: 1,
             desc: null,
-            receiver_id: paladiumWarehoue.id,
+            receiver_id: paladiumWarehouse._id,
             timestamp: moment()
           }
         ]
@@ -1142,7 +1150,6 @@ describe('POST Search Order Tickets', () => {
        order 2 => has 4 different order lines (not C&C)
       
       */
-
       orders.push({
         customer_id: mongoose.Types.ObjectId(),
         is_cart: false,
@@ -1151,7 +1158,16 @@ describe('POST Search Order Tickets', () => {
         address: {
           province: "تهران",
           city: "تهران",
-          street: 'دولت'
+          street: 'دولت',
+          recipient_name: 'احسان',
+          recipient_surname: 'انصاری بصیر',
+          recipient_national_id: '0010684281',
+          recipient_mobile_no: '09125975886',
+          postal_code: "123456789",
+          loc: {
+            long: 51.111,
+            lat: 35.555
+          }
         },
         duration_days: 3,
         is_collect: false,
@@ -1170,7 +1186,7 @@ describe('POST Search Order Tickets', () => {
         for (let j = 0; j < 2; j++) {
           orders[1].order_lines.push({
             paid_price: 0,
-            product_id: products[0].id,
+            product_id: products[i].id,
             product_instance_id: products[i].instances[j].id,
             adding_time: moment(),
             tickets: [
@@ -1178,7 +1194,7 @@ describe('POST Search Order Tickets', () => {
                 is_processed: false,
                 status: 1,
                 desc: null,
-                receiver_id: centralWarehouse.id,
+                receiver_id: centralWarehouse._id,
                 timestamp: moment()
               }
             ]
@@ -1187,7 +1203,7 @@ describe('POST Search Order Tickets', () => {
       }
 
       /*
-      order 3 => has 2 different order lines (C&C from paladium) 
+      order 3 => has 2 different order lines with default ticket and another order line with ticket 'Delivered'(C&C from paladium) 
    
       */
 
@@ -1196,7 +1212,12 @@ describe('POST Search Order Tickets', () => {
         is_cart: false,
         transaction_id: "xyz12213",
         order_lines: [],
-        address: paladiumWarehoue.address,
+        address: Object.assign({
+          recipient_name: 'احسان',
+          recipient_surname: 'انصاری بصیر',
+          recipient_national_id: '0010684281',
+          recipient_mobile_no: '09125975886',
+        }, paladiumWarehouse.address),
         duration_days: 3,
         is_collect: true,
         order_time: moment(),
@@ -1210,20 +1231,40 @@ describe('POST Search Order Tickets', () => {
           paid_price: 0,
           product_id: products[0].id,
           product_instance_id: products[0].instances[i].id,
+          customer_id: customer._id,
           adding_time: moment(),
           tickets: [
             {
               is_processed: false,
-              status: 1,
+              status: _const.ORDER_STATUS.Delivered,
               desc: null,
-              receiver_id: paladiumWarehoue.id,
+              receiver_id: paladiumWarehouse._id,
               timestamp: moment()
             }
           ]
         })
       };
 
+      orders[2].order_lines.push({
+        paid_price: 0,
+        product_id: products[0].id,
+        product_instance_id: products[0].instances[i].id,
+        customer_id: customer._id,
+        adding_time: moment(),
+        tickets: [
+          {
+            is_processed: false,
+            status: 1,
+            desc: null,
+            receiver_id: paladiumWarehouse._id,
+            timestamp: moment()
+          }
+        ]
+      })
+
       orders = await models()['OrderTest'].insertMany(orders);
+      orders = JSON.parse(JSON.stringify(orders));
+
       done()
     }
     catch (err) {
@@ -1232,7 +1273,7 @@ describe('POST Search Order Tickets', () => {
   }, 15000);
 
 
-  it('central warehoues clerck should get not c&c inbox (7 order lines)', async function (done) {
+  it('central warehoues clerck should get inbox (4 order lines with total 7 count)', async function (done) {
     try {
       this.done = done;
 
@@ -1251,19 +1292,22 @@ describe('POST Search Order Tickets', () => {
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(5);
-      expect(res.body.total).toBe(7);
+      expect(res.body.data.length).toBe(4);
+      expect(res.body.total).toBe(4);
       res.body.data.forEach(x => {
-        expect([orders[0], orders[1]].map(y => y.id).includes(x._id)).toBeTruthy();
+        expect([orders[0], orders[1]].map(y => y._id).includes(x.order_id)).toBeTruthy();
         expect(x.is_collect).toBeFalsy();
       });
+      let foundOrderLine = res.body.data.find(x => x.order_id === orders[0]._id);
+
+      expect(foundOrderLine.count).toBe(4);
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
     }
   });
 
-  it('paladium warehoues clerck should get not c&c inbox (1 order line from order 1)', async function (done) {
+  it('paladium warehoues clerck should get inbox (1 order line from order 1 and "Delivered" order line from order 3)', async function (done) {
     try {
       this.done = done;
 
@@ -1282,10 +1326,19 @@ describe('POST Search Order Tickets', () => {
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(1);
-      expect(res.body.total).toBe(1);
-      expect(res.body.data[0]._id).toBe(orders[0].id.toString());
-      expect(res.body.data[0].is_collect).toBeFalsy();
+      expect(res.body.data.length).toBe(2);
+      expect(res.body.total).toBe(2);
+
+      let normalOrder = res.body.data.find(x => x.order_id === orders[0]._id);
+      let ccOrder = res.body.data.find(x => x.order_id === orders[2]._id);
+
+
+      expect(normalOrder).toBeDefined();
+      expect(ccOrder).toBeDefined();
+
+      expect(normalOrder.is_collect).toBeFalsy();
+      expect(ccOrder.is_collect).toBeTruthy();
+      
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
@@ -1325,5 +1378,47 @@ describe('POST Search Order Tickets', () => {
       lib.helpers.errorHandler.bind(this)(err);
     }
   });
+
+  it('customer, total order lines & recipient info should exists on c&c order info', async function (done) {
+    try {
+      this.done = done;
+
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`search/Ticket`),
+        body: {
+          options: {
+            type: 'inbox',
+            isCollect: true
+          },
+          offset: 0,
+          limit: 5
+        },
+        json: true,
+        jar: PAClerk.jar,
+        resolveWithFullResponse: true
+      });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data[0].is_collect).toBeTruthy();
+      expect(res.body.data[0].customer).not.toBeUndefined();
+      expect(res.body.data[0].customer.name).toBe(customer.name);
+      expect(res.body.data[0].customer.surname).toBe(customer.surname);
+      expect(res.body.data[0].customer.mobile).toBe(customer.mobile);
+      expect(res.body.data[0].customer.gender).toBe(customer.gender);
+
+      expect(res.body.data[0].address).not.toBeUndefined();
+      expect(res.body.data[0].address.recipient_name).toBe(orders[2].address.recipient_name);
+      expect(res.body.data[0].address.recipient_surname).toBe(orders[2].address.recipient_surname);
+      expect(res.body.data[0].address.recipient_national_id).toBe(orders[2].address.recipient_national_id);
+      expect(res.body.data[0].address.recipient_mobile_no).toBe(orders[2].address.recipient_mobile_no);
+
+      expect(res.body.data[0].total_order_lines).toBe(2);
+
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
 
 });
