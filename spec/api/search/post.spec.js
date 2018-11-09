@@ -1068,10 +1068,8 @@ describe('POST Search Order Tickets', () => {
         }
       ])
 
-
-
       /*
-       order 1 => has 4 same order lines which 3 of them have ticket for central warehouse agent (not C&C) 
+       order 1 => has 4 same order lines which 3 of them have ticket for central warehouse agent (scan base) 
       
       */
 
@@ -1109,7 +1107,13 @@ describe('POST Search Order Tickets', () => {
 
       });
 
-      // add 3 same order line
+      let tickets = [ // tickets for scan base inbox
+        _const.ORDER_STATUS.default,
+        _const.ORDER_STATUS.Renew,
+        _const.ORDER_STATUS.WaitForOnlineWarehouse,
+
+      ];
+      // add 3 same scan base order line
       for (let i = 0; i < 3; i++) {
         orders[0].order_lines.push({
           paid_price: 0,
@@ -1119,7 +1123,7 @@ describe('POST Search Order Tickets', () => {
           tickets: [
             {
               is_processed: false,
-              status: 1,
+              status: tickets[Math.floor(Math.random() * tickets.length)],
               desc: null,
               receiver_id: centralWarehouse._id,
               timestamp: moment()
@@ -1128,7 +1132,7 @@ describe('POST Search Order Tickets', () => {
         })
       }
 
-      // add 1 different order line
+      // add 1 different scan base order line
       orders[0].order_lines.push({
         paid_price: 0,
         product_id: products[1].id,
@@ -1137,7 +1141,7 @@ describe('POST Search Order Tickets', () => {
         tickets: [
           {
             is_processed: false,
-            status: 1,
+            status: _const.ORDER_STATUS.default,
             desc: null,
             receiver_id: paladiumWarehouse._id,
             timestamp: moment()
@@ -1145,10 +1149,8 @@ describe('POST Search Order Tickets', () => {
         ]
       })
 
-
       /*
-       order 2 => has 4 different order lines (not C&C)
-      
+       order 2 => has 4 different scan base order lines
       */
       orders.push({
         customer_id: mongoose.Types.ObjectId(),
@@ -1182,6 +1184,7 @@ describe('POST Search Order Tickets', () => {
 
       });
 
+
       for (let i = 0; i < 2; i++) {
         for (let j = 0; j < 2; j++) {
           orders[1].order_lines.push({
@@ -1192,7 +1195,7 @@ describe('POST Search Order Tickets', () => {
             tickets: [
               {
                 is_processed: false,
-                status: 1,
+                status: _const.ORDER_STATUS.default,
                 desc: null,
                 receiver_id: centralWarehouse._id,
                 timestamp: moment()
@@ -1203,8 +1206,7 @@ describe('POST Search Order Tickets', () => {
       }
 
       /*
-      order 3 => has 2 different order lines with default ticket and another order line with ticket 'Delivered'(C&C from paladium) 
-   
+      order 3 => has 4 different manual base order lines 
       */
 
       orders.push({
@@ -1226,41 +1228,33 @@ describe('POST Search Order Tickets', () => {
         used_point: 0
       });
 
-      for (let i = 0; i < 2; i++) {
-        orders[2].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[i].id,
-          customer_id: customer._id,
-          adding_time: moment(),
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_STATUS.Delivered,
-              desc: null,
-              receiver_id: paladiumWarehouse._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      };
 
-      orders[2].order_lines.push({
-        paid_price: 0,
-        product_id: products[0].id,
-        product_instance_id: products[0].instances[i].id,
-        customer_id: customer._id,
-        adding_time: moment(),
-        tickets: [
-          {
-            is_processed: false,
-            status: 1,
-            desc: null,
-            receiver_id: paladiumWarehouse._id,
-            timestamp: moment()
-          }
-        ]
-      })
+      tickets = [ // tickets for manual base inbox
+        _const.ORDER_STATUS.WaitForAggregation,
+        _const.ORDER_STATUS.WaitForInvoice,
+        _const.ORDER_STATUS.ReadyForInvoice,
+
+      ];
+
+      for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
+          orders[2].order_lines.push({
+            paid_price: 0,
+            product_id: products[i].id,
+            product_instance_id: products[i].instances[j].id,
+            adding_time: moment(),
+            tickets: [
+              {
+                is_processed: false,
+                status: tickets[Math.floor(Math.random() * tickets.length)],
+                desc: null,
+                receiver_id: paladiumWarehouse._id,
+                timestamp: moment()
+              }
+            ]
+          })
+        }
+      }
 
       orders = await models()['OrderTest'].insertMany(orders);
       orders = JSON.parse(JSON.stringify(orders));
@@ -1273,7 +1267,7 @@ describe('POST Search Order Tickets', () => {
   }, 15000);
 
 
-  it('central warehoues clerck should get inbox (4 order lines with total 7 count)', async function (done) {
+  it('central warehoues clerck should get scan base inbox (4 order lines with total 7 count)', async function (done) {
     try {
       this.done = done;
 
@@ -1283,6 +1277,7 @@ describe('POST Search Order Tickets', () => {
         body: {
           options: {
             type: 'inbox',
+            manual: false
           },
           offset: 0,
           limit: 5
@@ -1294,11 +1289,22 @@ describe('POST Search Order Tickets', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.data.length).toBe(4);
       expect(res.body.total).toBe(4);
+
+      let count = 0;
+
+      let validTickets = [
+        _const.ORDER_STATUS.default,
+        _const.ORDER_STATUS.Renew,
+        _const.ORDER_STATUS.WaitForOnlineWarehouse,
+      ]
       res.body.data.forEach(x => {
         expect([orders[0], orders[1]].map(y => y._id).includes(x.order_id)).toBeTruthy();
-        expect(x.is_collect).toBeFalsy();
+        expect(validTickets.includes(x.tickets[x.tickets.length - 1].status)).toBeTruthy();
+        count += x.count;
       });
       let foundOrderLine = res.body.data.find(x => x.order_id === orders[0]._id);
+      expect(count).toBe(7);
+
 
       expect(foundOrderLine.count).toBe(4);
       done();
@@ -1307,7 +1313,7 @@ describe('POST Search Order Tickets', () => {
     }
   });
 
-  it('paladium warehoues clerck should get inbox (1 order line from order 1 and "Delivered" order line from order 3)', async function (done) {
+  it('paladium warehoues clerck should get manual inbox (4 order line collapsed in one order (order 3)', async function (done) {
     try {
       this.done = done;
 
@@ -1317,45 +1323,7 @@ describe('POST Search Order Tickets', () => {
         body: {
           options: {
             type: 'inbox',
-          },
-          offset: 0,
-          limit: 5
-        },
-        json: true,
-        jar: PAClerk.jar,
-        resolveWithFullResponse: true
-      });
-      expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(2);
-      expect(res.body.total).toBe(2);
-
-      let normalOrder = res.body.data.find(x => x.order_id === orders[0]._id);
-      let ccOrder = res.body.data.find(x => x.order_id === orders[2]._id);
-
-
-      expect(normalOrder).toBeDefined();
-      expect(ccOrder).toBeDefined();
-
-      expect(normalOrder.is_collect).toBeFalsy();
-      expect(ccOrder.is_collect).toBeTruthy();
-      
-      done();
-    } catch (err) {
-      lib.helpers.errorHandler.bind(this)(err);
-    }
-  });
-
-  it('paladium warehoues clerck should get c&c inbox (2 order line collapsed in one order (order 3)', async function (done) {
-    try {
-      this.done = done;
-
-      let res = await rp({
-        method: 'post',
-        uri: lib.helpers.apiTestURL(`search/Ticket`),
-        body: {
-          options: {
-            type: 'inbox',
-            isCollect: true
+            manual: true
           },
           offset: 0,
           limit: 5
@@ -1368,10 +1336,16 @@ describe('POST Search Order Tickets', () => {
       expect(res.body.data.length).toBe(1);
       expect(res.body.total).toBe(1);
       expect(res.body.data[0]._id).toBe(orders[2]._id.toString());
-      expect(res.body.data[0].is_collect).toBeTruthy();
-
+      
+      let validTickets = [
+        _const.ORDER_STATUS.WaitForAggregation,
+        _const.ORDER_STATUS.ReadyForInvoice,
+        _const.ORDER_STATUS.WaitForInvoice,
+      ]
+    
       res.body.data[0].order_lines.forEach(x => {
         expect(orders[2].order_lines.map(y => y._id.toString()).includes(x.order_line_id)).toBeTruthy();
+        expect(validTickets.includes(x.tickets[x.tickets.length - 1].status)).toBeTruthy();
       })
       done();
     } catch (err) {
@@ -1379,7 +1353,7 @@ describe('POST Search Order Tickets', () => {
     }
   });
 
-  it('customer, total order lines & recipient info should exists on c&c order info', async function (done) {
+  it('customer, total order lines & recipient info should exists on manual inbox', async function (done) {
     try {
       this.done = done;
 
@@ -1389,7 +1363,7 @@ describe('POST Search Order Tickets', () => {
         body: {
           options: {
             type: 'inbox',
-            isCollect: true
+            manual: true
           },
           offset: 0,
           limit: 5
@@ -1399,7 +1373,6 @@ describe('POST Search Order Tickets', () => {
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.data[0].is_collect).toBeTruthy();
       expect(res.body.data[0].customer).not.toBeUndefined();
       expect(res.body.data[0].customer.name).toBe(customer.name);
       expect(res.body.data[0].customer.surname).toBe(customer.surname);
@@ -1412,7 +1385,7 @@ describe('POST Search Order Tickets', () => {
       expect(res.body.data[0].address.recipient_national_id).toBe(orders[2].address.recipient_national_id);
       expect(res.body.data[0].address.recipient_mobile_no).toBe(orders[2].address.recipient_mobile_no);
 
-      expect(res.body.data[0].total_order_lines).toBe(2);
+      expect(res.body.data[0].total_order_lines).toBe(4);
 
       done();
     } catch (err) {
