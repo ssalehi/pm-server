@@ -142,14 +142,15 @@ describe("Delivery POST API", () => {
         });
       })
       .then(res => {
-        expect(res.length).toBe();
-        
+        expect(res.length).toBe(2);
+        expect(res.map(el => el._id)).toContain(deliveries[1]._id);
+        expect(res.map(el => el._id)).toContain(deliveries[3]._id);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it("Should get nothing when passed id already was assigned to current delivery agent (not another perosn)", function(done) {
+  it("Should get nothing when passed id already was assigned to current delivery agent (not another perosn)", function (done) {
     rp({
       method: 'post',
       uri: lib.helpers.apiTestURL(`/delivery/assign`),
@@ -160,18 +161,46 @@ describe("Delivery POST API", () => {
       json: true,
       resolveWithFullResponse: true
     })
-    .then(res => {
-      expect(res.statusCode).toBe(200);
-      return models()['DeliveryAgent'].find({
-        delivery_agent: deliveryAgents[0]._id,
-      });
-    })
-    .then(res => {
-
-      done();
-    })
-    .catch(lib.helpers.errorHandler.bind(this));
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models()['DeliveryAgent'].find({
+          delivery_agent: deliveryAgents[0]._id,
+        });
+      })
+      .then(res => {
+        expect(res.length).toBe(4);
+        expect(res.map(el => el._id)).toContain(deliveries[0]._id);
+        expect(res.map(el => el._id)).toContain(deliveries[1]._id);
+        expect(res.map(el => el._id)).toContain(deliveries[2]._id);
+        expect(res.map(el => el._id)).toContain(deliveries[4]._id);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
   });
+
+  it("Should do nothing when passed list ids is empty", function(done) {
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`/delivery/assign`),
+      body: {
+        delivery_ids: []
+      },
+      jar: deliveryAgents[0].rpJar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models()['DeliveryAgent'].find({
+          delivery_agent: deliveryAgents[1]._id,
+        });
+      })
+      .then(res => {
+        expect(res.length).toBe(0);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  })
 
   it("Should get error when passed id already was assigned to another delivery agent", function (done) {
     rp({
