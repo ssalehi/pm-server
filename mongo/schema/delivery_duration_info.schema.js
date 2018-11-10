@@ -13,10 +13,10 @@ cities_template = {
 };
 
 loyalty_template = {
-  _id: {
-    type: Schema.Types.ObjectId,
-    required: true
-  },
+  // _id: {
+  //   type: Schema.Types.ObjectId,
+  //   required: true
+  // },
   name: {
     type: String,
     required: true,
@@ -34,10 +34,10 @@ loyalty_template = {
 
 
 add_point_template = {
-  _id: {
-    type: Schema.Types.ObjectId,
-    required: true
-  },
+  // _id: {
+  //   type: Schema.Types.ObjectId,
+  //   required: true
+  // },
   name: {
     type: String,
     required: true,
