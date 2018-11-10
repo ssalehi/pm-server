@@ -10,6 +10,7 @@ describe("Delivery POST API", () => {
   let deliveryAgents = [], deliveries = [];
 
   beforeEach(done => {
+    deliveryAgents = [];
     lib.dbHelpers.dropAll()
       .then(() => models()['WarehouseTest'].insertMany(warehouses))
       .then(() => lib.dbHelpers.addAndLoginAgent('da1', _const.ACCESS_LEVEL.DeliveryAgent))
@@ -27,6 +28,7 @@ describe("Delivery POST API", () => {
 
         deliveries = [
           {
+            _id: mongoose.Types.ObjectId(),
             order_id: orderIds[0],
             order_line_id: mongoose.Types.ObjectId(),
             from: {
@@ -38,11 +40,11 @@ describe("Delivery POST API", () => {
                 address_id: addressId,
               }
             },
-            processed_by: salesManager._id,
             start: Date(2010, 10, 10),
             end: Date(2010, 10, 15)
           },
           {
+            _id: mongoose.Types.ObjectId(),
             order_id: orderIds[0],
             order_line_id: mongoose.Types.ObjectId(),
             from: {
@@ -54,11 +56,11 @@ describe("Delivery POST API", () => {
                 address_id: addressId,
               }
             },
-            processed_by: agentList[1]._id,
             start: Date(2010, 10, 10),
             end: Date(2010, 10, 15)
           },
           {
+            _id: mongoose.Types.ObjectId(),
             order_id: orderIds[1],
             order_line_id: mongoose.Types.ObjectId(),
             from: {
@@ -70,12 +72,12 @@ describe("Delivery POST API", () => {
                 address_id: addressId,
               }
             },
-            processed_by: salesManager._id,
             delivery_agent: deliveryAgents[0].aid,
             start: Date(2010, 10, 10),
             end: Date(2010, 10, 15)
           },
           {
+            _id: mongoose.Types.ObjectId(),
             order_id: orderIds[0],
             order_line_id: mongoose.Types.ObjectId(),
             from: {
@@ -88,11 +90,11 @@ describe("Delivery POST API", () => {
               warehouse_id: hubId
             },
             is_return: true,
-            processed_by: agentList[1]._id,
             start: Date(2010, 11, 10),
             end: Date(2010, 11, 15)
           },
           {
+            _id: mongoose.Types.ObjectId(),
             order_id: orderIds[2],
             order_line_id: mongoose.Types.ObjectId(),
             from: {
@@ -105,8 +107,7 @@ describe("Delivery POST API", () => {
               warehouse_id: hubId
             },
             is_return: true,
-            processed_by: shopClerk2._id,
-            delivery_agent: deliveryAgents[0]._id,
+            delivery_agent: deliveryAgents[0].aid,
             start: new Date(),
           },
         ];
@@ -120,7 +121,7 @@ describe("Delivery POST API", () => {
         console.error(err);
         done();
       });
-  });
+  }, 10000);
 
   it("Delivery agent should choose (and assign to himself) multiple delivery items", function (done) {
     this.done = done;
@@ -138,19 +139,21 @@ describe("Delivery POST API", () => {
       .then(res => {
         expect(res.statusCode).toBe(200);
         return models()['DeliveryTest'].find({
-          delivery_agent: deliveryAgents[1]._id
+          delivery_agent: deliveryAgents[1].aid
         });
       })
       .then(res => {
         expect(res.length).toBe(2);
-        expect(res.map(el => el._id)).toContain(deliveries[1]._id);
-        expect(res.map(el => el._id)).toContain(deliveries[3]._id);
+        expect(res.map(el => el._id.toString())).toContain(deliveries[1]._id.toString());
+        expect(res.map(el => el._id.toString())).toContain(deliveries[3]._id.toString());
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
   it("Should get nothing when passed id already was assigned to current delivery agent (not another perosn)", function (done) {
+    this.done = done;
+
     rp({
       method: 'post',
       uri: lib.helpers.apiTestURL(`/delivery/assign`),
@@ -163,36 +166,38 @@ describe("Delivery POST API", () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models()['DeliveryAgent'].find({
-          delivery_agent: deliveryAgents[0]._id,
+        return models()['DeliveryTest'].find({
+          delivery_agent: deliveryAgents[0].aid,
         });
       })
       .then(res => {
         expect(res.length).toBe(4);
-        expect(res.map(el => el._id)).toContain(deliveries[0]._id);
-        expect(res.map(el => el._id)).toContain(deliveries[1]._id);
-        expect(res.map(el => el._id)).toContain(deliveries[2]._id);
-        expect(res.map(el => el._id)).toContain(deliveries[4]._id);
+        expect(res.map(el => el._id.toString())).toContain(deliveries[0]._id.toString());
+        expect(res.map(el => el._id.toString())).toContain(deliveries[1]._id.toString());
+        expect(res.map(el => el._id.toString())).toContain(deliveries[2]._id.toString());
+        expect(res.map(el => el._id.toString())).toContain(deliveries[4]._id.toString());
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
   it("Should do nothing when passed list ids is empty", function (done) {
+    this.done = done;
+
     rp({
       method: 'post',
       uri: lib.helpers.apiTestURL(`/delivery/assign`),
       body: {
         delivery_ids: []
       },
-      jar: deliveryAgents[0].rpJar,
+      jar: deliveryAgents[1].rpJar,
       json: true,
       resolveWithFullResponse: true
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models()['DeliveryAgent'].find({
-          delivery_agent: deliveryAgents[1]._id,
+        return models()['DeliveryTest'].find({
+          delivery_agent: deliveryAgents[1].aid,
         });
       })
       .then(res => {
@@ -218,8 +223,30 @@ describe("Delivery POST API", () => {
         done();
       })
       .catch(err => {
-        expect(err.statusCode).toBe();
-        expect(err.error).toBe();
+        expect(err.statusCode).toBe(errors.deliveryItemIsAlreadyAssigned.status);
+        expect(err.error).toBe(errors.deliveryItemIsAlreadyAssigned.message);
+        done();
+      });
+  });
+
+  it("Should get error passed data is incomplete", function (done) {
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`/delivery/assign`),
+      body: {
+
+      },
+      jar: deliveryAgents[1].rpJar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        this.fail('Delivery agent can assign some deliveries with incomplete passed data');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.dataIsNotCompleted.status);
+        expect(err.error).toBe(errors.dataIsNotCompleted.message);
         done();
       });
   });
