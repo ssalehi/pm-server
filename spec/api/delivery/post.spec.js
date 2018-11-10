@@ -29,7 +29,7 @@ describe("Delivery POST API", () => {
           street: 'Zafar'
         };
         const ticket = {
-          status: _const.ORDER_STATUS.ReadyToDeliver,
+          status: _const.ORDER_STATUS.DeliverySet,
           desc: "descccc",
           timeStamp: new Date(),
           is_processed: false,
@@ -131,6 +131,12 @@ describe("Delivery POST API", () => {
         orders = res;
 
         const hubId = warehouses.find(el => el.is_hub)._id;
+        deliveryStatus = {
+          agent_id: mongoose.Types.ObjectId(),
+          status: _const.ORDER_STATUS.DeliverySet,
+          is_processed: false,
+          timeStamp: new Date()
+        }
 
         deliveries = [
           {
@@ -145,6 +151,7 @@ describe("Delivery POST API", () => {
                 order_line_ids: orders[0].order_lines.map(el => el._id)
               }
             ],
+            status_list: [deliveryStatus],
             from: {
               warehouse_id: hubId
             },
@@ -174,6 +181,7 @@ describe("Delivery POST API", () => {
                 address_id: orders[0].address._id,
               }
             },
+            status_list: [deliveryStatus],
             start: Date(2010, 10, 10),
             end: Date(2010, 10, 15)
           },
@@ -195,6 +203,7 @@ describe("Delivery POST API", () => {
               }
             },
             delivery_agent: deliveryAgents[0].aid,
+            status_list: [deliveryStatus],
             start: Date(2010, 10, 10),
             end: Date(2010, 10, 15)
           },
@@ -216,6 +225,7 @@ describe("Delivery POST API", () => {
               warehouse_id: hubId
             },
             is_return: true,
+            status_list: [deliveryStatus],
             start: Date(2010, 11, 10),
             end: Date(2010, 11, 15)
           },
@@ -237,6 +247,7 @@ describe("Delivery POST API", () => {
               warehouse_id: hubId
             },
             is_return: true,
+            status_list: [deliveryStatus],
             delivery_agent: deliveryAgents[0].aid,
             start: new Date(),
           },
@@ -276,6 +287,9 @@ describe("Delivery POST API", () => {
         expect(res.length).toBe(2);
         expect(res.map(el => el._id.toString())).toContain(deliveries[1]._id.toString());
         expect(res.map(el => el._id.toString())).toContain(deliveries[3]._id.toString());
+        res.map(el => el.status_list[el.status_list.length - 1]).reduce((a, b) => a.concat(b), []).forEach(t => {
+          expect(t.status).toBe(_const.ORDER_STATUS.ReadyToDeliver);
+        });
 
         return models()['OrderTest'].find({
           _id: {
@@ -289,7 +303,7 @@ describe("Delivery POST API", () => {
           .map(el => el.order_lines.map(i => i.tickets[i.tickets.length - 1])
           .reduce((a, b) => a.concat(b), []))
           .reduce((a, b) => a.concat(b), [])
-          .map(el => el.status)).toContain(_const.ORDER_STATUS.DeliverySet);
+          .map(el => el.status)).toContain(_const.ORDER_STATUS.ReadyToDeliver);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -332,7 +346,7 @@ describe("Delivery POST API", () => {
           .map(el => el.order_lines.map(i => i.tickets[i.tickets.length - 1])
           .reduce((a, b) => a.concat(b), []))
           .reduce((a, b) => a.concat(b), [])
-          .map(el => el.status)).toContain(_const.ORDER_STATUS.DeliverySet);
+          .map(el => el.status)).toContain(_const.ORDER_STATUS.ReadyToDeliver);
         done();
         done();
       })
