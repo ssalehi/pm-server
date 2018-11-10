@@ -492,6 +492,9 @@ router.get('/deliverycc', apiResponse('DeliveryDurationInfo', 'getClickAndCollec
 router.post('/deliveryduration', apiResponse('DeliveryDurationInfo', 'upsertDurationInfo', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/deliverycc', apiResponse('DeliveryDurationInfo', 'upsertCAndC', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo', 'deleteDuration', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/delivery/cost/free', apiResponse('Delivery', 'getFreeDeliveryOption', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/delivery/cost/free', apiResponse('Delivery', 'upsertFreeDeliveryOption', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/delivery/cost/free/delete', apiResponse('Delivery', 'deleteFreeDeliveryOption', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 
 // Customer Delivery Selected
 router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body'])); // body included customer id and delivery_duration id
