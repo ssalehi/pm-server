@@ -7,7 +7,7 @@ const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 
 describe("Delivery POST API", () => {
-  let deliveryAgents = [], deliveries = [];
+  let deliveryAgents = [], deliveries = [], orders = [];
 
   beforeEach(done => {
     deliveryAgents = [];
@@ -22,22 +22,136 @@ describe("Delivery POST API", () => {
         deliveryAgents.push(res);
 
         const customerId = mongoose.Types.ObjectId();
-        const addressId = mongoose.Types.ObjectId();
+        const address = {
+          _id: mongoose.Types.ObjectId(),
+          province: 'Tehran',
+          city: 'Tehran',
+          street: 'Zafar'
+        };
+        const ticket = {
+          status: _const.ORDER_STATUS.ReadyToDeliver,
+          desc: "descccc",
+          timeStamp: new Date(),
+          is_processed: false,
+          referral_advice: 1123,
+          agent_id: mongoose.Types.ObjectId()
+        };
+
+        return models()['OrderTest'].insertMany([
+          {
+            _id: mongoose.Types.ObjectId(),
+            customer_id: customerId,
+            address: address,
+            order_lines: [{
+              _id: mongoose.Types.ObjectId(),
+              tickets: [ticket],
+              product_id: mongoose.Types.ObjectId(),
+              product_instance_id: mongoose.Types.ObjectId(),
+            }, {
+              _id: mongoose.Types.ObjectId(),
+              tickets: [ticket],
+              product_id: mongoose.Types.ObjectId(),
+              product_instance_id: mongoose.Types.ObjectId(),
+            }],
+            adding_time: new Date(),
+          },
+          {
+            _id: mongoose.Types.ObjectId(),
+            customer_id: customerId,
+            address: address,
+            order_lines: [{
+              _id: mongoose.Types.ObjectId(),
+              tickets: [ticket],
+              product_id: mongoose.Types.ObjectId(),
+              product_instance_id: mongoose.Types.ObjectId(),
+            }, {
+              _id: mongoose.Types.ObjectId(),
+              tickets: [ticket],
+              product_id: mongoose.Types.ObjectId(),
+              product_instance_id: mongoose.Types.ObjectId(),
+            }],
+            adding_time: new Date(),
+          },
+          {
+            _id: mongoose.Types.ObjectId(),
+            customer_id: customerId,
+            address: address,
+            order_lines: [{
+              _id: mongoose.Types.ObjectId(),
+              tickets: [ticket],
+              product_id: mongoose.Types.ObjectId(),
+              product_instance_id: mongoose.Types.ObjectId(),
+            }],
+            adding_time: new Date(),
+          },
+          {
+            _id: mongoose.Types.ObjectId(),
+            customer_id: customerId,
+            address: address,
+            order_lines: [{
+              _id: mongoose.Types.ObjectId(),
+              tickets: [ticket],
+              product_id: mongoose.Types.ObjectId(),
+              product_instance_id: mongoose.Types.ObjectId(),
+            }, {
+              _id: mongoose.Types.ObjectId(),
+              tickets: [ticket],
+              product_id: mongoose.Types.ObjectId(),
+              product_instance_id: mongoose.Types.ObjectId(),
+            }],
+            adding_time: new Date(),
+          },
+          {
+            _id: mongoose.Types.ObjectId(),
+            customer_id: customerId,
+            address: address,
+            order_lines: [{
+              _id: mongoose.Types.ObjectId(),
+              tickets: [ticket],
+              product_id: mongoose.Types.ObjectId(),
+              product_instance_id: mongoose.Types.ObjectId(),
+            }],
+            adding_time: new Date(),
+          },
+          {
+            _id: mongoose.Types.ObjectId(),
+            customer_id: customerId,
+            address: address,
+            order_lines: [{
+              _id: mongoose.Types.ObjectId(),
+              tickets: [ticket],
+              product_id: mongoose.Types.ObjectId(),
+              product_instance_id: mongoose.Types.ObjectId(),
+            }],
+            adding_time: new Date(),
+          },
+        ]);
+      })
+      .then(res => {
+        orders = res;
+
         const hubId = warehouses.find(el => el.is_hub)._id;
-        const orderIds = [mongoose.Types.ObjectId(), mongoose.Types.ObjectId(), mongoose.Types.ObjectId()];
 
         deliveries = [
           {
             _id: mongoose.Types.ObjectId(),
-            order_id: orderIds[0],
-            order_line_id: mongoose.Types.ObjectId(),
+            order_details: [
+              {
+                order_id: orders[0]._id,
+                order_line_ids: orders[0].order_lines.map(el => el._id)
+              },
+              {
+                order_id: orders[1]._id,
+                order_line_ids: orders[0].order_lines.map(el => el._id)
+              }
+            ],
             from: {
               warehouse_id: hubId
             },
             to: {
               customer: {
-                id: customerId,
-                address_id: addressId,
+                id: orders[0].customer_id,
+                address_id: orders[0].address._id,
               }
             },
             start: Date(2010, 10, 10),
@@ -45,15 +159,19 @@ describe("Delivery POST API", () => {
           },
           {
             _id: mongoose.Types.ObjectId(),
-            order_id: orderIds[0],
-            order_line_id: mongoose.Types.ObjectId(),
+            order_details: [
+              {
+                order_id: orders[2]._id,
+                order_line_ids: orders[2].order_lines.map(el => el._id)
+              }
+            ],
             from: {
               warehouse_id: hubId
             },
             to: {
               customer: {
-                id: customerId,
-                address_id: addressId,
+                id: orders[0].customer_id,
+                address_id: orders[0].address._id,
               }
             },
             start: Date(2010, 10, 10),
@@ -61,15 +179,19 @@ describe("Delivery POST API", () => {
           },
           {
             _id: mongoose.Types.ObjectId(),
-            order_id: orderIds[1],
-            order_line_id: mongoose.Types.ObjectId(),
+            order_details: [
+              {
+                order_id: orders[3]._id,
+                order_line_ids: orders[3].order_lines.map(el => el._id)
+              },
+            ],
             from: {
               warehouse_id: hubId
             },
             to: {
               customer: {
-                id: customerId,
-                address_id: addressId,
+                id: orders[0].customer_id,
+                address_id: orders[0].address._id,
               }
             },
             delivery_agent: deliveryAgents[0].aid,
@@ -78,12 +200,16 @@ describe("Delivery POST API", () => {
           },
           {
             _id: mongoose.Types.ObjectId(),
-            order_id: orderIds[0],
-            order_line_id: mongoose.Types.ObjectId(),
+            order_details: [
+              {
+                order_id: orders[4]._id,
+                order_line_ids: orders[4].order_lines.map(el => el._id)
+              }
+            ],
             from: {
               customer: {
-                id: customerId,
-                address_id: addressId,
+                id: orders[4].customer_id,
+                address_id: orders[4].address._id,
               }
             },
             to: {
@@ -95,12 +221,16 @@ describe("Delivery POST API", () => {
           },
           {
             _id: mongoose.Types.ObjectId(),
-            order_id: orderIds[2],
-            order_line_id: mongoose.Types.ObjectId(),
+            order_details: [
+              {
+                order_id: orders[5]._id,
+                order_line_ids: orders[5].order_lines.map(el => el._id)
+              }
+            ],
             from: {
               customer: {
-                id: customerId,
-                address_id: addressId,
+                id: orders[0].customer_id,
+                address_id: orders[0].address._id,
               }
             },
             to: {
@@ -146,6 +276,20 @@ describe("Delivery POST API", () => {
         expect(res.length).toBe(2);
         expect(res.map(el => el._id.toString())).toContain(deliveries[1]._id.toString());
         expect(res.map(el => el._id.toString())).toContain(deliveries[3]._id.toString());
+
+        return models()['OrderTest'].find({
+          _id: {
+            $in: [orders[0]._id, orders[1]._id, orders[4]._id]
+          }
+        });
+      })
+      .then(res => {
+        expect(res.length).toBe(3);
+        expect(res
+          .map(el => el.order_lines.map(i => i.tickets[i.tickets.length - 1])
+          .reduce((a, b) => a.concat(b), []))
+          .reduce((a, b) => a.concat(b), [])
+          .map(el => el.status)).toContain(_const.ORDER_STATUS.DeliverySet);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -176,6 +320,20 @@ describe("Delivery POST API", () => {
         expect(res.map(el => el._id.toString())).toContain(deliveries[1]._id.toString());
         expect(res.map(el => el._id.toString())).toContain(deliveries[2]._id.toString());
         expect(res.map(el => el._id.toString())).toContain(deliveries[4]._id.toString());
+        return models()['OrderTest'].find({
+          _id: {
+            $in: [orders[0]._id, orders[1]._id, orders[2]._id, orders[3]._id]
+          }
+        });
+      })
+      .then(res => {
+        expect(res.length).toBe(4);
+        expect(res
+          .map(el => el.order_lines.map(i => i.tickets[i.tickets.length - 1])
+          .reduce((a, b) => a.concat(b), []))
+          .reduce((a, b) => a.concat(b), [])
+          .map(el => el.status)).toContain(_const.ORDER_STATUS.DeliverySet);
+        done();
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
