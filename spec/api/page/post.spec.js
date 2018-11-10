@@ -948,37 +948,43 @@ describe('POST placement (top menu and some other placements)', () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  xit("Content manager should delete not finalized placement with image", function (done) {
+  it("Content manager should delete not finalized placement with image", function (done) {
     this.done = done;
-    fs.mkdirSync(`public/images/placements/test/${pageId}/${placementId9}`);
-    fs.copyFileSync('spec/api/page/test1.jpeg', `public/images/placements/test/${pageId}/${placementId9}/test1.jpeg`);
-    rp({
-      method: 'post',
-      body: {
-        page_id: page._id,
-        placement_id: placementId9,
-      },
-      json: true,
-      jar: contentManager.rpJar,
-      uri: lib.helpers.apiTestURL('placement/delete'),
-      resolveWithFullResponse: true,
-    })
-      .then(res => {
-        expect(res.statusCode).toBe(200);
-        return models()['PageTest'].find({_id: page._id}).lean();
-      })
-      .then(res => {
-        expect(res[0].placement.length).toBe(8);
-        res = res[0].placement.filter(el => el.component_name === 'main');
-        expect(res.length).toBe(1);
-        expect(res.find(el => el.info.href === '#first' && el._id.toString() === placementId1.toString()).info.areas[0].text).toBe("حرکت رو به جلو ...");
-        expect(res.find(el => el.info.href === '#first' && el._id.toString() === placementId1.toString()).updated_value).toBeUndefined();
-        expect(res.find(el => el.info.href === '#second' && el._id.toString() === placementId1.toString())).toBeUndefined();
-        expect(fs.existsSync(`images/placements/test/${pageId}/${placementId9}`)).toBe(false);
-        done();
-      })
-      .catch(lib.helpers.errorHandler.bind(this));
-  })
+    fs.mkdir(`${__dirname}/../../../public/images/placements/test/${pageId}/${placementId9}`, () => {
+      fs.copyFile('spec/api/page/test1.jpeg', `public/images/placements/test/${pageId}/${placementId9}/test1.jpeg`, () => {
+        rp({
+          method: 'post',
+          body: {
+            page_id: page._id,
+            placement_id: placementId9,
+          },
+          json: true,
+          jar: contentManager.rpJar,
+          uri: lib.helpers.apiTestURL('placement/delete'),
+          resolveWithFullResponse: true,
+        })
+          .then(res => {
+            expect(res.statusCode).toBe(200);
+            return models()['PageTest'].find({_id: page._id}).lean();
+          })
+          .then(res => {
+            expect(res[0].placement.length).toBe(8);
+            res = res[0].placement.filter(el => el.component_name === 'main');
+            expect(res.length).toBe(1);
+
+            console.log(' ==> placementId1 ==> ', placementId1);
+            console.log(' ==> res ==> ', res);
+
+            expect(res.find(el => el.info.href === '#first' && el._id.toString() === placementId8.toString()).info.areas[0].text).toBe("حرکت رو به جلو ...");
+            expect(res.find(el => el.info.href === '#first' && el._id.toString() === placementId8.toString()).updated_value).toBeUndefined();
+            expect(res.find(el => el.info.href === '#second' && el._id.toString() === placementId9.toString())).toBeUndefined();
+            expect(fs.existsSync(`images/placements/test/${pageId}/${placementId9}`)).toBe(false);
+            done();
+          })
+          .catch(lib.helpers.errorHandler.bind(this));
+      });
+    });
+  }, 20000);
 
   it("should get error when no page's id is not specified (delete placement)", function (done) {
     rp({

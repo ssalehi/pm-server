@@ -41,6 +41,7 @@ let warehouses = [
     phone: ' 021 2201 0600',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       city: 'تهران',
       street: 'مقدس اردبیلی',
       province: 'تهران'
@@ -57,6 +58,7 @@ let warehouses = [
     phone: '021 7443 8111',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'اندرزگو',
@@ -73,6 +75,7 @@ let warehouses = [
     phone: 'نا مشخص',
     has_customer_pickup: true,
     address: {
+      _id: mongoose.Types.ObjectId(),
       province: 'تهران',
       city: 'تهران',
       street: 'اتوبان خرازی',

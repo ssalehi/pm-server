@@ -178,7 +178,7 @@ describe("Delivery POST API", () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
-  it("Should do nothing when passed list ids is empty", function(done) {
+  it("Should do nothing when passed list ids is empty", function (done) {
     rp({
       method: 'post',
       uri: lib.helpers.apiTestURL(`/delivery/assign`),
