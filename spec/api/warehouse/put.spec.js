@@ -38,7 +38,7 @@ describe('Warehouse PUT API', () => {
             },{
                 "_id" : "5bd6cde54682480cd8520033",
                 "priority":1,
-                "is_active":false
+                "is_active":true
             },
             {
                 "_id" : "5bd6cde54682480cd8520034",
@@ -53,7 +53,10 @@ describe('Warehouse PUT API', () => {
       })
         .then(res => {
           expect(res.statusCode).toBe(200);
-        // let result = JSON.parse(res.body);  
+         
+
+        let result = JSON.parse(res.body);  
+        expect(result.length).toBe(5);
         //   console.log(result)
 
         // result.forEach(r => {
