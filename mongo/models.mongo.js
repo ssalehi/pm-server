@@ -24,6 +24,7 @@ let schemas = {
   DictionarySchema: require('./schema/dictionary.schema'),
   ArchivePlacementSchema: require('./schema/archive_placement.schema'),
   SoldOutSchema: require('./schema/sold_out.schema'),
+  FreeDeliveryOptionSchema: require('./schema/free_delivery_option.sehcma'),
 };
 
 

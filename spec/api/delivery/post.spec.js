@@ -147,23 +147,23 @@ describe("Delivery POST API", () => {
       });
   });
 
-  it("Palladium's shop clerk should get list of related delivery items", function (done) {
+  // it("Palladium's shop clerk should get list of related delivery items", function (done) {
 
-  });
+  // });
 
-  it("Sales manager should get list of related delivery items", function (done) {
+  // it("Sales manager should get list of related delivery items", function (done) {
 
-  });
+  // });
 
-  it("Sana's shop clerk should get list of related delivery items", function (done) {
+  // it("Sana's shop clerk should get list of related delivery items", function (done) {
 
-  });
+  // });
 
-  it("Sales manager should update the delivery details", function (done) {
+  // it("Sales manager should update the delivery details", function (done) {
 
-  });
+  // });
 
-  it("Palladium's shop clerk should assign delivery agent, date and time for delivery item", function (done) {
+  // it("Palladium's shop clerk should assign delivery agent, date and time for delivery item", function (done) {
 
-  });
+  // });
 })
