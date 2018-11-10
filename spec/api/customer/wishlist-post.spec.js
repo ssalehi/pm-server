@@ -21,6 +21,7 @@ describe('Set Wish-List', () => {
   let productInstanceIds = [
     mongoose.Types.ObjectId(),
     mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
     mongoose.Types.ObjectId()
   ];
   let productIds = [
@@ -36,6 +37,8 @@ describe('Set Wish-List', () => {
   let type1, brand1;
   let colorArr = [];
   let productArr = [];
+  let wishRes = [];
+  let productRes = {};
 
   beforeEach(done => {
     productArr = [];
@@ -44,17 +47,8 @@ describe('Set Wish-List', () => {
       .then(res => {
         return lib.dbHelpers.addAndLoginCustomer('s@s.com', '123456', {first_name: 'Sareh', surname: 'Salehi'})
       }).then(res => {
-        let rpJar = null;
         customerObj.cid = res.cid;
         customerObj.jar = res.rpJar;
-        return lib.dbHelpers.addAndLoginCustomer('a@a.com', '654321', {
-          first_name: 'Ali',
-          surname: 'Alavi'
-        })
-      })
-      .then(res => {
-        customerObj2.cid = res.cid;
-        customerObj2.jar = res.rpJar;
         type1 = models()['ProductTypeTest']({
           name: 'testType'
         });
@@ -79,6 +73,7 @@ describe('Set Wish-List', () => {
         productArr.push(models()['ProductTest']({
           _id: productIds[0],
           name: 'testProductName1',
+          article_no : "NK628683",
           product_Type: {
             name: type1.name,
             product_type_id: type1._id
@@ -120,6 +115,7 @@ describe('Set Wish-List', () => {
         productArr.push(models()['ProductTest']({
           _id: productIds[1],
           name: 'testProductName2',
+          article_no : "NK628684",
           product_Type: {
             name: type1.name,
             product_type_id: type1._id
@@ -144,6 +140,12 @@ describe('Set Wish-List', () => {
               size: "M",
               price: 45000,
               barcode: '123123123125'
+            },
+            {
+              _id: productInstanceIds[3],
+              product_color_id: productColorId[2],
+              size: "L",
+              barcode: '123123123125'
             }
           ]
         }));
@@ -156,12 +158,7 @@ describe('Set Wish-List', () => {
         console.log(err.statusCode);
         done();
       });
-  }); // now I have 2 customers, 2 products
-
-  xit('should not be able to add item to wish list if user is not looged ib', function (done) {
-    // TODO
-    this.done = done;
-  })
+  }); // now I have 1 customers, 2 products
 
   it('should add a product to valid customer wish-list(wishlist is empty)', function (done) {
     this.done = done;
@@ -200,11 +197,11 @@ describe('Set Wish-List', () => {
       },
       uri: lib.helpers.apiTestURL('wishlist'),
       json: true,
-      jar: customerObj2.jar,
+      jar: customerObj.jar,
       resolveWithFullResponse: true,
     })
       .then(res => {
-        this.fail('Customer can add product to his wishlist without specifing product_color_id');
+        this.fail('Customer can not add product to his wishlist without specifing product_color_id');
         done();
       })
       .catch(err => {
@@ -221,15 +218,15 @@ describe('Set Wish-List', () => {
       body: {
         product_id: productIds[0],
         product_instance_id: productInstanceIds[1],
-        product_color_id: productColorId[1],        
+        product_color_id: productColorId[1],
       },
-      jar: customerObj2.jar,
+      jar: customerObj.jar,
       json: true,
       resolveWithFullResponse: true
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models()['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj2.cid)}).lean()
+        return models()['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
       })
       .then(res => {
         expect(res.wish_list.length).toBe(1);
@@ -243,7 +240,7 @@ describe('Set Wish-List', () => {
             product_instance_id: productInstanceIds[1],
             product_color_id: productColorId[1],
           },
-          jar: customerObj2.jar,
+          jar: customerObj.jar,
           json: true,
           resolveWithFullResponse: true
         })
@@ -267,7 +264,7 @@ describe('Set Wish-List', () => {
       uri: lib.helpers.apiTestURL('wishlist'),
       body: {
         product_id: productIds[0],
-        product_instance_id: productInstanceIds[1],
+        product_instance_id: productInstanceIds[0],
         product_color_id: productColorId[0],
       },
       jar: customerObj.jar,
@@ -281,13 +278,14 @@ describe('Set Wish-List', () => {
       .then(res => {
         expect(res.wish_list.length).toBe(1);
         expect(res.wish_list[0].product_id).toEqual(productIds[0]);
-        expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[1]);
+        expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[0]);
         return rp({
           method: 'POST',
           uri: lib.helpers.apiTestURL('wishlist'),
           body: {
-            product_id: productIds[0],
-            product_instance_id: productInstanceIds[0],
+            product_id: productIds[1],
+            product_instance_id: productInstanceIds[2],
+            product_color_id: productColorId[2],
           },
           jar: customerObj.jar,
           json: true,
@@ -301,7 +299,7 @@ describe('Set Wish-List', () => {
       .then(res => {
         expect(res.wish_list.length).toBe(2);
         expect(res.wish_list[0].product_id).toEqual(productIds[0]);
-        expect(res.wish_list[1].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res.wish_list[1].product_instance_id).toEqual(productInstanceIds[2]);
         done();
       })
       .catch(err => {
@@ -310,7 +308,121 @@ describe('Set Wish-List', () => {
       });
   });
 
-  it('should add product to wish list without specified product_instanc_id', function (done) {
+  it('should override new product instance size if this product has been added before with another size(color is same)', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL('wishlist'),
+      body: {
+        product_id: productIds[1],
+        product_instance_id: productInstanceIds[2],
+        product_color_id: productColorId[2],
+      },
+      jar: customerObj.jar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models()['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
+      })
+      .then(res => {
+        expect(res.wish_list.length).toBe(1);
+        expect(res.wish_list[0].product_id).toEqual(productIds[1]);
+        wishRes = res.wish_list;
+        return models()['ProductTest'].findOne({_id: mongoose.Types.ObjectId(res.wish_list[0].product_id)}).lean()
+      })
+      .then(res => {
+        productRes = res;
+        expect(productRes.name).toContain(productArr[1].name);
+        expect(productRes.instances.filter(el => el._id.toString() === wishRes[0].product_instance_id.toString())[0].size).toEqual("M");
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL('wishlist'),
+          body: {
+            product_id: productIds[1],
+            product_instance_id: productInstanceIds[3],
+            product_color_id: productColorId[2],
+          },
+          jar: customerObj.jar,
+          json: true,
+          resolveWithFullResponse: true
+        })
+      })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models()['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
+      })
+      .then(res => {
+        expect(res.wish_list.length).toBe(1);
+        expect(res.wish_list[0].product_id).toEqual(productIds[1]);
+        expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[3]);
+        wishRes = res.wish_list;
+        expect(productRes.name).toContain(productArr[1].name);
+        expect(productRes.instances.filter(el => el._id.toString() === wishRes[0].product_instance_id.toString())[0].size).toEqual("L");
+        done();
+      })
+      .catch(err => {
+        console.log(err.message);
+        done();
+      });
+  })
+
+  it('should be able to add one product withe different colors', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL('wishlist'),
+      body: {
+        product_id: productIds[0],
+        product_instance_id: productInstanceIds[0],
+        product_color_id: productColorId[0],
+      },
+      jar: customerObj.jar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models()['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
+      })
+      .then(res => {
+        expect(res.wish_list.length).toBe(1);
+        expect(res.wish_list[0].product_id).toEqual(productIds[0]);
+        expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res.wish_list[0].product_color_id).toEqual(productColorId[0]);
+        return rp({
+          method: 'POST',
+          uri: lib.helpers.apiTestURL('wishlist'),
+          body: {
+            product_id: productIds[0],
+            product_instance_id: productInstanceIds[1],
+            product_color_id: productColorId[1],
+          },
+          jar: customerObj.jar,
+          json: true,
+          resolveWithFullResponse: true
+        })
+      })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models()['CustomerTest'].findOne({_id: mongoose.Types.ObjectId(customerObj.cid)}).lean()
+      })
+      .then(res => {
+        expect(res.wish_list.length).toBe(2);
+        expect(res.wish_list[0].product_id).toEqual(productIds[0]);
+        expect(res.wish_list[0].product_instance_id).toEqual(productInstanceIds[0]);
+        expect(res.wish_list[1].product_id).toEqual(productIds[0]);
+        expect(res.wish_list[1].product_instance_id).toEqual(productInstanceIds[1]);
+        done();
+      })
+      .catch(err => {
+        console.log(err.message);
+        done();
+      });
+  })
+
+  it('should add product to wish list without specified product_instance_id', function (done) {
     this.done = done;
     rp({
       method: 'POST',
