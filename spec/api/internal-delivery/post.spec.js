@@ -2,11 +2,9 @@ const rp = require('request-promise');
 const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const errors = require('../../../lib/errors.list');
-const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 
 describe("Set Agent for Internal Delivery", () => {
-  let deliveries;
   let agents;
   let salesManager;
   beforeEach(async done => {
@@ -62,7 +60,7 @@ describe("Set Agent for Internal Delivery", () => {
   }, 15000);
 
 
-  xit("should get error when agent_id is not defined", async function (done) {
+  it("should get error when agent_id is not defined", async function (done) {
     try {
       this.done = done;
       const res = await rp({
@@ -84,7 +82,7 @@ describe("Set Agent for Internal Delivery", () => {
     }
   });
 
-  xit("should be set agent internal delivery", async function (done) {
+  it("should be set agent internal delivery", async function (done) {
     try {
       this.done = done;
       const res = await rp({
