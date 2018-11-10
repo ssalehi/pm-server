@@ -13,7 +13,7 @@ let time_slot_template = {
   },
 };
 
-loyalty_template = {
+let loyalty_template = {
   delivery_spent : {
     type: Number,
   },
@@ -30,6 +30,14 @@ loyalty_template = {
     type: Number,
   }
 };
+
+let receiver_info = {
+  recipient_name: String,
+  recipient_surname: String,
+  recipient_title: String,
+  recipient_national_id: String,
+  recipient_mobile_no: String
+}
 
 let schema_obj = {
   customer_id: {
@@ -88,6 +96,8 @@ let schema_obj = {
   time_slot: time_slot_template,
   // delivery_duration: delivery_duration_template,
   loyalty: loyalty_template,
+
+  receiver_info
 };
 
 

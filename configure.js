@@ -16,7 +16,6 @@ let PLACEMENTS = null;
 let pKeys = [];
 let _hash;
 
-
 db.dbIsReady()
   .then(() => {
     return modelIsReady();
@@ -174,7 +173,6 @@ db.dbIsReady()
   );
 
 
-
 modelIsReady = () => {
   return new Promise((resolve, reject) => {
 
@@ -190,7 +188,6 @@ modelIsReady = () => {
     }
     getModels();
   })
-
 }
 
 
