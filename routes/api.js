@@ -457,6 +457,7 @@ router.post('/delivery/status', apiResponse('Delivery', 'changeStatus', true, ['
 router.post('/delivery/by_order', apiResponse('Delivery', 'getDeliveryByOrderLine', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.get('/delivery/unassigned', apiResponse('Delivery', 'getUnassignedDeliveries', true, [], [_const.ACCESS_LEVEL.DeliveryAgent]));
 router.post('/delivery/assign', apiResponse('Delivery', 'assignDeliveryToAgnet', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/unassign', apiResponse('Delivery', 'unassignDeliveryFromAgent', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
 
 router.use('/delivery/evidence', function (req, res, next) {
   const id = new mongoose.Types.ObjectId();

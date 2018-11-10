@@ -301,7 +301,7 @@ describe("Delivery POST API", () => {
         expect(res.length).toBe(3);
         expect(res
           .map(el => el.order_lines.map(i => i.tickets[i.tickets.length - 1])
-          .reduce((a, b) => a.concat(b), []))
+            .reduce((a, b) => a.concat(b), []))
           .reduce((a, b) => a.concat(b), [])
           .map(el => el.status)).toContain(_const.ORDER_STATUS.ReadyToDeliver);
         done();
@@ -344,7 +344,7 @@ describe("Delivery POST API", () => {
         expect(res.length).toBe(4);
         expect(res
           .map(el => el.order_lines.map(i => i.tickets[i.tickets.length - 1])
-          .reduce((a, b) => a.concat(b), []))
+            .reduce((a, b) => a.concat(b), []))
           .reduce((a, b) => a.concat(b), [])
           .map(el => el.status)).toContain(_const.ORDER_STATUS.ReadyToDeliver);
         done();
@@ -414,6 +414,105 @@ describe("Delivery POST API", () => {
     })
       .then(res => {
         this.fail('Delivery agent can assign some deliveries with incomplete passed data');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.dataIsNotCompleted.status);
+        expect(err.error).toBe(errors.dataIsNotCompleted.message);
+        done();
+      });
+  });
+
+  it("Delivery agent should unassign multiple delivery items", function (done) {
+    this.done = done;
+
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`/delivery/unassign`),
+      body: {
+        delivery_ids: [deliveries[2]._id, deliveries[4]._id]
+      },
+      jar: deliveryAgents[0].rpJar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models()['DeliveryTest'].find({
+          delivery_agent: deliveryAgents[0].aid,
+        });
+      })
+      .then(res => {
+        expect(res.length).toBe(0);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("Should do nothing when delivery_ids is empty (unassigning the delivery)", function (done) {
+    this.done = done;
+
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`/delivery/unassign`),
+      body: {
+        delivery_ids: []
+      },
+      jar: deliveryAgents[0].rpJar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+        return models()['DeliveryTest'].find({
+          delivery_agent: deliveryAgents[0].aid,
+        });
+      })
+      .then(res => {
+        expect(res.length).toBe(2);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it("Should get error when there is a delivery with another agent responsibility", function (done) {
+    this.done = done;
+
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`/delivery/unassign`),
+      body: {
+        delivery_ids: [deliveries[2]._id]
+      },
+      jar: deliveryAgents[1].rpJar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        this.fail('Another delivery agent can unassign delivery with another one responsibility');
+        done();
+      })
+      .catch(err => {
+        expect(err.statusCode).toBe(errors.notDeliveryResponsibility.status);
+        expect(err.error).toBe(errors.notDeliveryResponsibility.message);
+        done();
+      });
+  });
+
+  it("Should get error when passed data is incomplete for unassinging", function (done) {
+    this.done = done;
+
+    rp({
+      method: 'post',
+      uri: lib.helpers.apiTestURL(`/delivery/unassign`),
+      body: {
+      },
+      jar: deliveryAgents[0].rpJar,
+      json: true,
+      resolveWithFullResponse: true
+    })
+      .then(res => {
+        this.fail('Delivery agent can unassign delivery with incomplete data');
         done();
       })
       .catch(err => {
