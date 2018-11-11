@@ -502,6 +502,7 @@ router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calcu
 
 // Internal Delivery
 router.get('/internal_delivery/get_agents', apiResponse('InternalDelivery', 'getInternalAgents', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/internal_delivery/get_agent', apiResponse('InternalDelivery', 'getAgentInternalDelivery', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/internal_delivery/set_agent', apiResponse('InternalDelivery', 'setInternalAgent', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 
 module.exports = router;

@@ -62,7 +62,7 @@ describe("Get All Agents that Related to Internal Delivery", () => {
     }
   }, 15000);
 
-  it("should get all agents that have access_level internal_delivery", async function (done) {
+  xit("should get all agents that have access_level internal_delivery", async function (done) {
     try {
       this.done = done;
       const res = await rp({
@@ -79,6 +79,45 @@ describe("Get All Agents that Related to Internal Delivery", () => {
       expect(res.body.filter(a => a.surname === 'surname2').length).toBe(1);
       expect(res.body.filter(a => a.surname === 'surname3').length).toBe(1);
 
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+  it("should get agent that have access_level internal_delivery and (is_active is true)", async function (done) {
+    try {
+      await models()['InternalDeliveryTest'].insertMany([
+        {
+          is_active: false,
+          start_time: new Date(),
+          agent_id: agents[0]._id
+        },
+        {
+          is_active: false,
+          start_time: new Date(),
+          agent_id: agents[1]._id
+        },
+        {
+          is_active: true,
+          start_time: new Date(),
+          agent_id: agents[0]._id
+        }
+      ]);
+      this.done = done;
+      const res = await rp({
+        method: 'GET',
+        uri: lib.helpers.apiTestURL(`/internal_delivery/get_agent`),
+        jar: salesManager.rpJar,
+        resolveWithFullResponse: true,
+        json: true
+      });
+      
+      expect(res.statusCode).toBe(200);
+      expect(res.body.agent_id).toBe(agents[0]._id.toString());
+      expect(res.body.first_name).toBe('firstname1');
+      expect(res.body.surname).toBe('surname1');
+      expect(res.body.is_active).toBe(true);
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
