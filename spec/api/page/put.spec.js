@@ -3,7 +3,6 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
-const fs = require('fs');
 
 describe("Put page basics", () => {
   let adminObj = {
@@ -25,6 +24,7 @@ describe("Put page basics", () => {
       });
   });
 
+  
   it("should add a new page", function (done) {
 
     this.done = done;
@@ -45,7 +45,7 @@ describe("Put page basics", () => {
       expect(res.body.address).toBe('testAddress');
       expect(res.body.is_app).toBe(false);
       expect(mongoose.Types.ObjectId.isValid(res.body._id)).toBeTruthy();
-      return models['PageTest'].find({}).lean();
+      return models()['PageTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(1);
@@ -54,6 +54,7 @@ describe("Put page basics", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
   it("should add a new page joined with a collection id", function (done) {
 
     this.done = done;
@@ -74,7 +75,7 @@ describe("Put page basics", () => {
     }).then(res => {
       expect(res.statusCode).toBe(200);
 
-      return models['PageTest'].find({}).lean();
+      return models()['PageTest'].find({}).lean();
 
     }).then(res => {
       expect(res.length).toBe(1);
@@ -85,11 +86,12 @@ describe("Put page basics", () => {
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
   it("should second page when there is already one", function (done) {
 
     this.done = done;
 
-    let page = new models['PageTest']({
+    let page = models()['PageTest']({
       address: 'testAddress1',
       is_app: false
     });
@@ -108,7 +110,7 @@ describe("Put page basics", () => {
         })).then(res => {
           expect(res.statusCode).toBe(200);
 
-          return models['PageTest'].find({}).lean();
+          return models()['PageTest'].find({}).lean();
 
         }).then(res => {
           expect(res.length).toBe(2);
@@ -117,6 +119,7 @@ describe("Put page basics", () => {
         })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
   it("expect error when page address is not defined", function (done) {
 
     this.done = done;
@@ -142,6 +145,7 @@ describe("Put page basics", () => {
       });
 
   });
+
   it("expect error when page type is not defined", function (done) {
 
     this.done = done;
@@ -167,11 +171,12 @@ describe("Put page basics", () => {
       });
 
   });
+
   it("expect error when page address is duplicated", function (done) {
 
     this.done = done;
 
-    let page = new models['PageTest']({
+    let page = models()['PageTest']({
       address: 'testAddress',
       is_app: false
     });
@@ -187,11 +192,11 @@ describe("Put page basics", () => {
           jar: adminObj.jar,
           json: true,
           resolveWithFullResponse: true
-        })).then(res => {
-
-          this.fail('did not failed when other users are calling api');
-          done();
         })
+      ).then(res => {
+        this.fail('Add page with same (duplicated) address');
+        done();
+      })
       .catch(err => {
         done();
       });
@@ -212,7 +217,7 @@ describe("Put Placement Api", () => {
 
         collection_id = new mongoose.Types.ObjectId();
 
-        page = models['PageTest']({
+        page = models()['PageTest']({
           address: 'test',
           is_app: false,
           placement: [
@@ -322,7 +327,7 @@ describe("Put Placement Api", () => {
     })
       .then(res => {
         expect(res.statusCode).toBe(200);
-        return models['PageTest'].find({
+        return models()['PageTest'].find({
           '_id': page._id,
         }).lean();
       })

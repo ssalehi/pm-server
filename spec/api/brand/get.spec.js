@@ -17,11 +17,10 @@ describe("Get Brand", () => {
           {name : 'brand 5'},
         ];
 
-        return models['BrandTest'].insertMany(brands);
+        return models()['BrandTest'].insertMany(brands);
 
       })
       .then(res => {
-
         brandIds = res.map(p => p._id.toString());
         done();
       })

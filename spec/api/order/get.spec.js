@@ -57,21 +57,21 @@ describe('Get User All Orders', () => {
           addresses: [address]
         }))
       .then(res => {
-        models['CustomerTest'].find({_id: res.cid}).then(r => {
+        models()['CustomerTest'].find({_id: res.cid}).then(r => {
         }).catch(e => console.log(e));
         customerObj.cid = res.cid;
         customerObj.jar = res.rpJar;
-        type1 = models['ProductTypeTest']({
+        type1 = models()['ProductTypeTest']({
           name: 'type1'
         });
-        brand1 = models['BrandTest']({
+        brand1 = models()['BrandTest']({
           name: 'Nike'
         });
 
         return Promise.all([type1.save(), brand1.save()]);
       })
       .then(() => {
-        products.push(models['ProductTest']({
+        products.push(models()['ProductTest']({
           _id: productIds[0],
           name: 'sample name',
           product_type: {
@@ -101,7 +101,7 @@ describe('Get User All Orders', () => {
             }
           ]
         }));
-        products.push(models['ProductTest']({
+        products.push(models()['ProductTest']({
           _id: productIds[1],
           name: 'another simple name',
           product_type: {
@@ -148,7 +148,7 @@ describe('Get User All Orders', () => {
             product_instance_id: productInstanceIds[1]
           }]
         };
-        return models['OrderTest'].insertMany([firstOrder]);
+        return models()['OrderTest'].insertMany([firstOrder]);
       })
       .then(res => {
         existingOrderId = res[0]._id;
@@ -170,7 +170,7 @@ describe('Get User All Orders', () => {
           }]
         };
 
-        return models['OrderTest'].insertMany([secondOrder])
+        return models()['OrderTest'].insertMany([secondOrder])
       }).then(res => {
       existingOrderId = res[0]._id;
       thirdOrder = {
@@ -191,10 +191,10 @@ describe('Get User All Orders', () => {
         }]
       };
 
-      return models['OrderTest'].insertMany([thirdOrder])
+      return models()['OrderTest'].insertMany([thirdOrder])
     })
       .then(() => {
-        return models['CustomerTest'].update({_id: customerObj.cid}, {$addToSet: {orders: existingOrderId}});
+        return models()['CustomerTest'].update({_id: customerObj.cid}, {$addToSet: {orders: existingOrderId}});
       })
       .then(() => {
         done();

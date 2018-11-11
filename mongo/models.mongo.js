@@ -10,6 +10,7 @@ let schemas = {
   CustomerSchema: require('./schema/customer.schema'),
   DeliverySchema: require('./schema/delivery.schema'),
   LoyaltyGroupSchema: require('./schema/loyalty_group.schema'),
+  DeliveryDurationInfoSchema: require('./schema/delivery_duration_info.schema'),
   OrderSchema: require('./schema/order.schema'),
   ProductSchema: require('./schema/product.schema'),
   ProductColorSchema: require('./schema/product_color.schema'),
@@ -20,6 +21,9 @@ let schemas = {
   PageSchema: require('./schema/page.schema'),
   WarehouseSchema: require('./schema/warehouse.schema'),
   DictionarySchema: require('./schema/dictionary.schema'),
+  ArchivePlacementSchema: require('./schema/archive_placement.schema'),
+  SoldOutSchema: require('./schema/sold_out.schema'),
+  FreeDeliveryOptionSchema: require('./schema/free_delivery_option.sehcma'),
 };
 
 
@@ -55,6 +59,16 @@ preSaveFunction = function (next) {
   });
 };
 
+
+soldOutPreSaveFunction = function (next) {
+  const soldOut = this;
+  let insertionDate = new Date();
+  soldOut.sold_out_date = insertionDate;
+  soldOut.expiration_date = new Date().setDate(insertionDate.getDate() + 7);
+  next();
+}
+
+
 compareFunction = function (candidatePassword, cb) {
   env.bcrypt.compare(candidatePassword, this.secret, function (err, isMatch) {
     if (err) return cb(err);
@@ -67,17 +81,23 @@ schemas.AgentSchema.methods.comparePassword = compareFunction;
 schemas.CustomerSchema.pre('save', preSaveFunction);
 schemas.CustomerSchema.methods.comparePassword = compareFunction;
 
+schemas.SoldOutSchema.pre('save', soldOutPreSaveFunction);
+
+
+
+
 // can save data out of schema using strict: false
 let models = {};
 
-db.dbIsReady().then(() => {
+db.dbIsReady().then((res) => {
   for (let key in schemas) {
     if (schemas.hasOwnProperty(key)) {
       let newKey = key.replace('Schema', '');
-      models[newKey] = db.prodConnection.model(newKey, schemas[key]);
-      models[newKey + 'Test'] = db.testConnection.model(newKey, schemas[key]);
+      models[newKey] = res.find(x => x.prodConnection).prodConnection.model(newKey, schemas[key]);
+      models[newKey + 'Test'] = res.find(x => x.testConnection).testConnection.model(newKey, schemas[key]);
     }
   }
+}).catch(err => {
 });
 
-module.exports = models;
+module.exports = () => models;

@@ -5,6 +5,7 @@ const passportSocketIO = require('passport.socketio');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const redis = require('../redis');
+const db = require('../mongo/index');
 const error = require('../lib/errors.list');
 
 /**
@@ -38,7 +39,9 @@ let setup = http => {
   io.use(socketSession.parser);
 
   io.on('connection', socket => {
+    console.log('-> ', 'connection made...');
 
+    console.log('----> socket ', socket );
     if (socket.session.passport) {
       let user = socket.session.passport.user;
       if (user && user.warehouse_id) {
@@ -46,6 +49,7 @@ let setup = http => {
       }
     }
   });
+
 };
 
 function onAuthorizeSuccess(data, accept) {
@@ -62,21 +66,21 @@ function onAuthorizeFail(data, message, error, accept) {
 
 let setRoom = (socket, name) => {
   socket.join(name);
-  console.log(`-> new user has been joined to room: ${name}`);
-  if (!rooms.find(x => x === name))
+  if (name && !rooms.find(x => x === name)) {
     rooms.push(name);
+    console.log(`-> new user has been joined to room: ${name}`);
+  }
 }
 
 /**
  *
  * @param name => warehouse id
- * @param message => is an object such as : {type: ... , data: ...}
+ * @param message 
  * @returns {Promise}
  */
-let sendToNS = (name, message) => {
+let sendToNS = (name, message = null) => {
 
-  if (!message.type || !message.data)
-    return Promise.reject(error.invalidSocketMessageType);
+  name = name.toString();
 
   return new Promise((resolve, reject) => {
     setTimeout(() => {

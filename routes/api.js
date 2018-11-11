@@ -43,7 +43,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
 
   return (function (req, res) {
     (req.jwtToken ?
-      personModel.jwtStrategy(req)
+      personModel.jwtStrategy(req, adminOnly)
       :
       Promise.resolve())
       .then(() => {
@@ -52,6 +52,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
         else
           return Promise.resolve();
       })
+
       .then(rs => {
         if (adminOnly && (!rs || rs.length < 1))
           return Promise.reject(error.adminOnly);
@@ -86,38 +87,95 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
 router.get('/', function (req, res) {
   res.send('respond with a resource');
 });
+
+router.get('/outTest', function (req, res) {
+  const helpers = require('../lib/helpers');
+
+  
+  return helpers.httpPost('http://httpbin.org/post', {})
+    .then(res => {
+      return helpers.httpPost('http://mock:3001/test', {})
+    })
+    .then(result => {
+      res.json(result);
+    })
+    .catch(err => {
+      console.error('-> ', err);
+      res.send(err);
+    })
+});
+
 // Login API
 router.post('/agent/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user', () => true]));
 router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user']));
-router.post('/app/login', apiResponse('Person', 'jwtAuth', false, ['body']));
+router.post('/app/login', apiResponse('Person', 'jwtAuth', false, ['body', () => false]));
+router.post('/app/agent/login', apiResponse('Person', 'jwtAuth', false, ['body', () => true]));
 router.post('/loginCheck', apiResponse('Person', 'loginCheck', false, ['body.username', 'body.password']));
 router.get('/logout', (req, res) => {
   req.logout();
   res.status(200).json('')
 });
-router.get('/agent/validUser', apiResponse('Person', 'afterLogin', false, ['user', () => true]));
+router.get('/agent/validUser', apiResponse('Person', 'afterLogin', true, ['user', () => true], [_const.ACCESS_LEVEL.DeliveryAgent, _const.ACCESS_LEVEL.ContentManager, _const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
 router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
-router.get('/login/google/callback', passport.authenticate('google', {
-  successRedirect: '/login/oauth',
-  failureRedirect: '/login/oauth'
-}));
+router.get('/login/google/callback', passport.authenticate('google', {}), function (req, res) {
+  /*
+   * The logic behind this is that when a user logs in with google, we set its verification to both email and mobile,
+   * so the system accepts their login, but then when he's logged in, we check its mobile verification and if it wasn't
+   * verified, we set it to unverified, and show the setting mobile page in the client to enter their mobile
+   *
+   * the necessity of being logged in at this point is that we need the logged in user object in order to
+   * change (in here, set) their mobile number in the database and not letting some random person comes and
+   * changes the mobile of any unverified user!
+   */
+  if (!req.user) {
+    console.error(error.noUser);
+    res.end();
+  }
+
+  // TODO: http://localhost:4200 needs to be changed on the real server !
+  let ClientAddress = 'http://127.0.0.1:4200';
+  let ClientSetMobileRoute = '/login/oauth/setMobile';
+  let ClientSetPreferences = '/login/oauth/setPreferences';
+
+  model['Customer' + (personModel.isTest(req) ? 'Test' : '')].findOne({username: req.user.username})
+    .then(obj => {
+      if (!obj.mobile_no || (obj.mobile_no && obj.is_verified !== _const.VERIFICATION.bothVerified)) {
+        model['Customer' + (personModel.isTest(req) ? 'Test' : '')].update({username: req.user.username}, {
+          is_verified: _const.VERIFICATION.emailVerified,
+        }).then(data => {
+          // redirect client to the setMobile page
+          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
+          res.end();
+        }).catch(err => {
+          console.error('error in changing verification level: ', err);
+          res.end();
+        });
+      } else { // if mobile is already verified
+        if (obj['is_preferences_set'])
+          res.writeHead(302, {'Location': `${ClientAddress}`});
+        else
+          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetPreferences}`});
+        res.end();
+      }
+    });
+});
 router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
 // Person (Customer/Agent) API
 router.put('/register', apiResponse('Customer', 'registration', false, ['body']));
 router.post('/editUserBasicInfo', apiResponse('Customer', 'editUserBasicInfo', false, ['body', 'user.username']));
 router.post('/changePassword', apiResponse('Customer', 'changePassword', false, ['body', 'user.username']));
-router.post('/register/verify', apiResponse('Customer', 'verification', false, ['body.code', 'body.username']));
+router.post('/register/verify', apiResponse('Customer', 'verification', false, ['user', 'body.code', 'body.username']));
 router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
-router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['body']));
+router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['user', 'body.mobile_no']));
 router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user', 'body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
+router.get('/user/activate/link/:link', apiResponse('Customer', 'checkActiveLink', false, ['params.link']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
-router.get('/user/activate/link/:link', apiResponse('Person', 'checkActiveLink', false, ['params.link']));
-router.post('/user/auth/local/:link', apiResponse('Person', 'completeAuth', false, ['params.link', 'body']));
-router.post('/user/auth/link', apiResponse('Person', 'sendActivationMail', false, ['body.email', 'body.is_forgot_mail']));
+// router.post('/user/auth/local/:link', apiResponse('Person', 'completeAuth', false, ['params.link', 'body']));
+router.post('/user/auth/link', apiResponse('Customer', 'sendActivationMail', false, ['body.username', 'body.is_forgot_mail']));
 router.post('/profile/image/:pid', upload.single('image'), apiResponse('Person', 'setProfileImage', false, ['user.pid', 'params.pid', 'file']));
 router.post('/profile/image/:username/:pid', upload.single('image'), apiResponse('Person', 'setProfileImage', true, ['user.pid', 'params.pid', 'file']));
 router.get('/profile/image/:pid', apiResponse('Person', 'getProfileImage', false, ['params.pid']));
@@ -152,9 +210,13 @@ router.put('/dictionary', apiResponse('Dictionary', 'addDictionary', false, ['bo
 // Brands
 router.get('/brand', apiResponse('Brand', 'getBrands', false, []));
 
+//Tags
+router.get('/tags/:tagGroupName', apiResponse('Tag', 'getTags', false, ['params.tagGroupName']));
+
+
 // Warehouses
-router.get('/warehouse/all', apiResponse('Warehouse', 'getAllWarehouses', false, []));
-router.get('/warehouse', apiResponse('Warehouse', 'getWarehouses', false, []));
+router.get('/warehouse/all', apiResponse('Warehouse', 'getAll', false, []));
+router.get('/warehouse', apiResponse('Warehouse', 'getShops', false, []));
 
 // Customer
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
@@ -162,15 +224,22 @@ router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', fa
 // Customer shoesType
 router.post('/customer/shoesType', apiResponse('Customer', 'setCustomerShoesType', false, ['user', 'body']));
 
+// Customer Preferences
+router.get('/customer/preferences', apiResponse('Customer', 'getPreferences', false, ['user.username']));
+router.post('/customer/preferences', apiResponse('Customer', 'setPreferences', false, ['user', 'body']));
+
 // Order
 router.get('/orders', apiResponse('Order', 'getOrders', false, ['user']));
 router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']));
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
-router.post('/order/ticket/:type', apiResponse('Order', 'setManualTicket', true, ['params.type', 'body', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
 
-// Order => direct request to offline system
-router.post('/order/offline/requestInvoice', apiResponse('Offline', 'manualRequestInvoice', true, ['body.orderId', 'body.orderLineId', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/offline/requestOnlineWarehouse', apiResponse('Offline', 'manualRequestOnlineWarehouse', true, ['body.orderId', 'body.orderLineId', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+// Order => Ticket
+router.post('/order/ticket/scan', apiResponse('TicketAction', 'newScan', true, ['body.barcode', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/ticket/invoice', apiResponse('TicketAction', 'requestInvoice', true, ['body.orderId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
+router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistoryOrderLine', true, ['params'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.get('/order/ticket/history/:orderId', apiResponse('Ticket', 'getHistoryOrderByReceiver', true, ['params', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.post('/order/return', apiResponse('TicketAction', 'returnOrderLine', false, ['body', 'user']));
+router.post('/order/cancel', apiResponse('TicketAction', 'cancelOrderLine', false, ['body', 'user']));
 
 // Order => api's used by offline system
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
@@ -185,6 +254,7 @@ router.delete('/wishlist/delete/:wishItemId', apiResponse('Customer', 'removeFro
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
 router.put('/product', apiResponse('Product', 'setProduct', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product', apiResponse('Product', 'setProduct', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/product/getMultiple', apiResponse('Product', 'getProducts', false, ['body.productIds', 'undefined', 'undefined', 'undefined', 'true']));
 router.delete('/product/:id', apiResponse('Product', 'deleteProduct', true, ['params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.get('/product/color/:product_id/:color_id/', apiResponse('Product', 'getProductByColor', false, ['params.product_id', 'params.color_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
@@ -279,12 +349,13 @@ router.get('/page/:id', apiResponse('Page', 'getPage', false, ['params.id']));
 router.put('/page', apiResponse('Page', 'setPage', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id'], [_const.ACCESS_LEVEL.ContentManager]));
-router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body.address', () => false]));
-router.post('/page/cm/preview', apiResponse('Page', 'getPageByAddress', true, ['body.address', () => true], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body', () => false]));
+router.post('/page/cm/preview', apiResponse('Page', 'getPageByAddress', true, ['body', () => true], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 // Search
 router.post('/search/:className', apiResponse('Search', 'search', false, ['params.className', 'body', 'user']));
+router.post('/collectionPages', apiResponse('Collection', 'getCollectionPages', false, ['body']));
 router.post('/suggest/:className', apiResponse('Search', 'suggest', false, ['params.className', 'body', 'user']));
 
 // upload Data
@@ -320,14 +391,11 @@ router.use('/uploadData', function (req, res, next) {
 router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // Cart
-router.post('/cart/items', apiResponse('Order', 'getCartItems', false, ['user', 'body']));
+router.get('/cart/items', apiResponse('Order', 'getCartItems', false, ['user']));
 
 // Coupon
 router.post('/coupon/code/valid', apiResponse('Order', 'checkCouponValidation', false, ['user', 'body']));
 router.post('/coupon/code/apply', apiResponse('Order', 'applyCouponCode', false, ['user', 'body']));
-
-//ticket
-router.put('/order/ticket', apiResponse('Order', 'setTicket', true, ['body'], _const.ACCESS_LEVEL.SalesManager));
 
 // Customer Address
 router.get('/customer/address', apiResponse('Customer', 'getAddresses', false, ['user']));
@@ -337,9 +405,11 @@ router.put('/placement', apiResponse('Page', 'addPlacement', true, ['body'], [_c
 router.post('/placement', apiResponse('Page', 'updatePlacements', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/delete', apiResponse('Page', 'deletePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/placement/finalize', apiResponse('Page', 'finalizePlacement', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/placement/revert', apiResponse('Page', 'revertOldPlacements', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+
 
 router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
-  req.is_new = req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined" ? false : true;
+  req.is_new = !(req.params.placementId.toLowerCase() !== "null" && req.params.placementId.toLowerCase() !== "undefined");
   const plc_id = req.is_new ? new mongoose.Types.ObjectId() : req.params.placementId;
 
   const destination = env.uploadPlacementImagePath + (req.test ? path.sep + 'test' : '')
@@ -360,10 +430,74 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
       next();
     }
   });
-})
+});
 router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // checkout
-router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address', 'body.customerData', 'body.transaction_id', 'body.used_point', 'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount']));
+router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address', 'body.customerData', 'body.transaction_id', 'body.used_point',
+  'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.paymentType', 'body.loyalty']));
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
+
+//sold out
+router.post('/soldout/setFlag', apiResponse('SoldOut', 'setSoldOutFlagOnPI', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+
+// LoyaltyGroup
+router.get('/loyaltygroup', apiResponse('LoyaltyGroup', 'getLoyaltyGroups', false, []));
+router.post('/loyaltygroup', apiResponse('LoyaltyGroup', 'upsertLoyaltyGroup', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGroup', true, ['body._id'], [_const.ACCESS_LEVEL.SalesManager]));
+
+// Delivery
+router.get('/delivery/by_id/:id', apiResponse('Delivery', 'getDeliveryData', false, ['params.id']));
+router.post('/delivery/items/:offset/:limit', apiResponse('Delivery', 'getDeliveryItems', true, ['user', 'params.offset', 'params.limit', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.get('/delivery/agent', apiResponse('Agent', 'getDeliveryAgents', true, [], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.post('/delivery', apiResponse('Delivery', 'updateDelivery', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.post('/delivery/tracking', apiResponse('Delivery', 'getTrackingDetails', true, ['user', 'body.id'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.post('/delivery/agent/items', apiResponse('Delivery', 'getDeliveryAgentItems', true, ['user', 'body.is_delivered', 'body.delivery_status', 'body.is_processed'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/status', apiResponse('Delivery', 'changeStatus', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/by_order', apiResponse('Delivery', 'getDeliveryByOrderLine', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.get('/delivery/unassigned', apiResponse('Delivery', 'getUnassignedDeliveries', true, [], [_const.ACCESS_LEVEL.DeliveryAgent]));
+
+router.use('/delivery/evidence', function (req, res, next) {
+  const id = new mongoose.Types.ObjectId();
+
+  const destination = env.uploadDeliveryEvidencePath + (req.test ? path.sep + 'test' : '') + path.sep + id;
+
+  req.delivery_evidence_id = id;
+
+  let deliveryStorage = multer.diskStorage({
+    destination,
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    }
+  });
+
+  let deliveryUpload = multer({storage: deliveryStorage});
+  deliveryUpload.single('file')(req, res, err => {
+    if (!err) {
+      next();
+    } else {
+      res.status(500)
+        .send(err);
+    }
+  });
+});
+router.post('/delivery/evidence', apiResponse('Delivery', 'setEvidence', true, ['body', 'file', 'delivery_evidence_id'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/finish', apiResponse('Delivery', 'finishDelivery', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+
+// Delivery Duration
+router.get('/deliveryduration', apiResponse('DeliveryDurationInfo', 'getAllDurationInfo', false, []));
+router.get('/deliveryduration/:id', apiResponse('DeliveryDurationInfo', 'getOneDurationInfo', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/deliverycc', apiResponse('DeliveryDurationInfo', 'getClickAndCollect', false, []));
+
+router.post('/deliveryduration', apiResponse('DeliveryDurationInfo', 'upsertDurationInfo', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/deliverycc', apiResponse('DeliveryDurationInfo', 'upsertCAndC', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo', 'deleteDuration', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/delivery/cost/free', apiResponse('Delivery', 'getFreeDeliveryOption', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/delivery/cost/free', apiResponse('Delivery', 'upsertFreeDeliveryOption', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/delivery/cost/free/delete', apiResponse('Delivery', 'deleteFreeDeliveryOption', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+
+// Customer Delivery Selected
+router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body'])); // body included customer id and delivery_duration id
+
+
 module.exports = router;

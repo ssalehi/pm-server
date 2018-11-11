@@ -8,15 +8,10 @@ let schema_obj = {
     trim: true,
     unique: true
   },
-  icon_url: {
-    type: String,
-    required: true,
-    trim: true,
-    unique: true
-  },
   min_score: {
     type: Number,
     required: true,
+    unique: true,
   },
 };
 

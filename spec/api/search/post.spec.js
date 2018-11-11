@@ -4,8 +4,11 @@ const rp = require('request-promise');
 const mongoose = require('mongoose');
 const error = require('../../../lib/errors.list');
 const _const = require('../../../lib/const.list');
+const _warehouses = require('../../../warehouses');
+const moment = require('moment');
 
-describe('POST Search Collection', () => {
+
+xdescribe('POST Search Collection', () => {
 
   let adminObj = {
     aid: null,
@@ -39,13 +42,13 @@ describe('POST Search Collection', () => {
           name: 'collection 006',
           name_fa: 'کالکشن 6',
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           done();
         });
       }).catch(err => {
-      console.log(err);
-      done();
-    });
+        console.log(err);
+        done();
+      });
   });
 
 
@@ -124,7 +127,7 @@ describe('POST Search Collection', () => {
 
 });
 
-describe('POST Search Page', () => {
+xdescribe('POST Search Page', () => {
 
   let page1, page2, collection1, collection2;
   let adminObj = {
@@ -143,7 +146,7 @@ describe('POST Search Page', () => {
         let inserts = [];
         let n = 0;
         while (n < 5) {
-          let newPage = models['PageTest']({
+          let newPage = models()['PageTest']({
             address: `testAddress${n + 1}`,
             is_app: false,
           });
@@ -151,21 +154,21 @@ describe('POST Search Page', () => {
           n++;
         }
 
-        collection1 = models['CollectionTest']({
+        collection1 = models()['CollectionTest']({
           name: 'collection1', name_fa: 'کالکشن 1'
         });
-        collection2 = models['CollectionTest']({
+        collection2 = models()['CollectionTest']({
           name: 'collection2', name_fa: 'کالکشن 2'
         });
 
-        page1 = models['PageTest']({
+        page1 = models()['PageTest']({
           address: 'testAddress6',
           is_app: false,
           page_info: {
             collection_id: collection1._id
           }
         });
-        page2 = models['PageTest']({
+        page2 = models()['PageTest']({
           address: 'testAddress7',
           is_app: true,
           page_info: {
@@ -276,7 +279,7 @@ describe('POST Search Page', () => {
 
 });
 
-describe('POST Order - Search over order lines by tickets', () => {
+xdescribe('POST Order - Search over order lines by tickets', () => {
 
   let customer1 = {
     cid: null,
@@ -300,76 +303,24 @@ describe('POST Order - Search over order lines by tickets', () => {
   };
 
   let productInstanceIds = [
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId()
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId()
   ];
   let colorIds = [
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId()
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId()
   ];
   let productIds = [];
   let orderIds = [];
-  let warehouses = [
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'انبار مرکزی',
-      phone: 'نا مشخص',
-      address: {
-        city: 'تهران',
-        street: 'نامشخص',
-        province: 'تهران'
-      },
-      is_center: true,
-      priority: 0,
-
-    },
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'پالادیوم',
-      phone: ' 021 2201 0600',
-      has_customer_pickup: true,
-      address: {
-        city: 'تهران',
-        street: 'مقدس اردبیلی',
-        province: 'تهران'
-      },
-      priority: 1,
-
-    },
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'سانا',
-      phone: '021 7443 8111',
-      has_customer_pickup: true,
-      address: {
-        province: 'تهران',
-        city: 'تهران',
-        street: 'اندرزگو',
-      },
-      priority: 2,
-    },
-    {
-      _id: mongoose.Types.ObjectId(),
-      name: 'ایران مال',
-      phone: 'نا مشخص',
-      has_customer_pickup: true,
-      address: {
-        province: 'تهران',
-        city: 'تهران',
-        street: 'اتوبان خرازی',
-      },
-      priority: 3,
-    }
-  ];
 
   beforeEach(done => {
     lib.dbHelpers.dropAll()
       .then(() => {
-        return models['WarehouseTest'].insertMany(warehouses)
+        return models()['WarehouseTest'].insertMany(warehouses)
       })
       .then(() => {
         return lib.dbHelpers.addAndLoginAgent('bm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_center)._id)
@@ -408,11 +359,11 @@ describe('POST Order - Search over order lines by tickets', () => {
           name: 'sample 1',
           product_type: {
             name: 'sample type',
-            product_type_id: mongoose.Types.ObjectId()
+            product_type_id: mongoose.Types.mongoose.Types.ObjectId()
           },
           brand: {
             name: 'sample brand',
-            brand_id: mongoose.Types.ObjectId()
+            brand_id: mongoose.Types.mongoose.Types.ObjectId()
           },
           base_price: 30000,
           desc: 'some description for this product',
@@ -447,49 +398,49 @@ describe('POST Order - Search over order lines by tickets', () => {
             }
           ]
         },
-          {
-            _id: productIds[1],
-            name: 'simple 2',
-            product_type: {
-              name: 'sample type',
-              product_type_id: mongoose.Types.ObjectId()
+        {
+          _id: productIds[1],
+          name: 'simple 2',
+          product_type: {
+            name: 'sample type',
+            product_type_id: mongoose.Types.mongoose.Types.ObjectId()
+          },
+          brand: {
+            name: 'sample brand',
+            brand_id: mongoose.Types.mongoose.Types.ObjectId()
+          },
+          base_price: 600000,
+          desc: "some else description for this product",
+          colors: [
+            {
+              color_id: colorIds[2],
+              name: 'red'
+            }, {
+              color_id: colorIds[3],
+              name: 'purple'
             },
-            brand: {
-              name: 'sample brand',
-              brand_id: mongoose.Types.ObjectId()
+          ],
+          instances: [
+            {
+              _id: productInstanceIds[2],
+              product_color_id: colorIds[2],
+              size: "11",
+              price: 50000,
+              barcode: '9303850203',
+              tickets: [
+                {}
+              ]
             },
-            base_price: 600000,
-            desc: "some else description for this product",
-            colors: [
-              {
-                color_id: colorIds[2],
-                name: 'red'
-              }, {
-                color_id: colorIds[3],
-                name: 'purple'
-              },
-            ],
-            instances: [
-              {
-                _id: productInstanceIds[2],
-                product_color_id: colorIds[2],
-                size: "11",
-                price: 50000,
-                barcode: '9303850203',
-                tickets: [
-                  {}
-                ]
-              },
-              {
-                _id: productInstanceIds[3],
-                product_color_id: colorIds[3],
-                size: "11",
-                price: 50000,
-                barcode: '9303850203',
-              }
-            ]
-          }];
-        return models['ProductTest'].insertMany(products);
+            {
+              _id: productInstanceIds[3],
+              product_color_id: colorIds[3],
+              size: "11",
+              price: 50000,
+              barcode: '9303850203',
+            }
+          ]
+        }];
+        return models()['ProductTest'].insertMany(products);
       })
       .then(res => {
 
@@ -501,7 +452,7 @@ describe('POST Order - Search over order lines by tickets', () => {
           order_time: new Date(),
           is_cart: false,
           address: warehouses[0].address,
-          transaction_id: mongoose.Types.ObjectId(),
+          transaction_id: mongoose.Types.mongoose.Types.ObjectId(),
           order_lines: [{
             product_id: productIds[0],
             product_instance_id: productInstanceIds[0],
@@ -535,7 +486,7 @@ describe('POST Order - Search over order lines by tickets', () => {
           order_time: new Date(),
           is_cart: false,
           address: warehouses[0].address,
-          transaction_id: mongoose.Types.ObjectId(),
+          transaction_id: mongoose.Types.mongoose.Types.ObjectId(),
           order_lines: [{
             product_id: productIds[1],
             product_instance_id: productInstanceIds[2],
@@ -560,7 +511,7 @@ describe('POST Order - Search over order lines by tickets', () => {
           }]
         }];
 
-        return models['OrderTest'].insertMany(orders);
+        return models()['OrderTest'].insertMany(orders);
       })
       .then(res => {
         orderIds = res.map(x => x._id);
@@ -658,31 +609,31 @@ describe('POST Order - Search over order lines by tickets', () => {
       jar: SMAgent.jar,
       resolveWithFullResponse: true
     })
-    .then((res) => {
-      expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(3);
-      done();
-    })
-    .catch(lib.helpers.errorHandler.bind(this));
+      .then((res) => {
+        expect(res.statusCode).toBe(200);
+        expect(res.body.data.length).toBe(3);
+        done();
+      })
+      .catch(lib.helpers.errorHandler.bind(this));
   });
 });
 
-describe('POST Suggest Product / Tag / Color', () => {
+xdescribe('POST Suggest Product / Tag / Color', () => {
 
   let productTypeIds = [
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId()];
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId()];
   let brandIds = [
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId()];
-  let tgIds = [mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId()];
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId(),
+    mongoose.Types.mongoose.Types.ObjectId()];
+  let tgIds = [mongoose.Types.mongoose.Types.ObjectId(),
+  mongoose.Types.mongoose.Types.ObjectId(),
+  mongoose.Types.mongoose.Types.ObjectId(),
+  mongoose.Types.mongoose.Types.ObjectId()];
   let productIds = [];
   let tagIds = [];
   let colorIds = [];
@@ -731,19 +682,19 @@ describe('POST Suggest Product / Tag / Color', () => {
           {name: 'col2'},
           {name: 'roloc3'}
         ];
-        models['ProductTest'].insertMany(products).then(res => {
+        models()['ProductTest'].insertMany(products).then(res => {
           productIds[0] = res[0]._id;
           productIds[1] = res[1]._id;
           productIds[2] = res[2]._id;
           productIds[3] = res[3]._id;
 
-          models['TagTest'].insertMany(tags).then(res => {
+          models()['TagTest'].insertMany(tags).then(res => {
             tagIds[0] = res[0]._id;
             tagIds[1] = res[1]._id;
             tagIds[2] = res[2]._id;
             tagIds[3] = res[3]._id;
 
-            models['ColorTest'].insertMany(colors).then(res => {
+            models()['ColorTest'].insertMany(colors).then(res => {
               colorIds[0] = res[0]._id;
               colorIds[1] = res[1]._id;
               colorIds[2] = res[2]._id;
@@ -846,7 +797,7 @@ describe('POST Suggest Product / Tag / Color', () => {
 
 });
 
-describe('POST Suggest Collection', () => {
+xdescribe('POST Suggest Collection', () => {
 
   let adminObj = {
     aid: null,
@@ -880,13 +831,13 @@ describe('POST Suggest Collection', () => {
           name: 'collection 006',
           name_fa: 'کالکشن 6',
         }];
-        models['CollectionTest'].insertMany(collectionArr).then(res => {
+        models()['CollectionTest'].insertMany(collectionArr).then(res => {
           done();
         });
       }).catch(err => {
-      console.log(err);
-      done();
-    });
+        console.log(err);
+        done();
+      });
   });
 
   it('should give suggestion over collections', function (done) {
@@ -933,6 +884,514 @@ describe('POST Suggest Collection', () => {
         done();
       });
   });
-
 });
 
+xdescribe('POST Suggest Page Address', () => {
+
+  let page1, page2;
+  let adminObj = {
+    aid: null,
+    jar: null,
+  };
+
+  beforeEach((done) => {
+    lib.dbHelpers.dropAll()
+      .then(() => {
+        return lib.dbHelpers.addAndLoginAgent('admin');
+      })
+      .then(res => {
+        adminObj.aid = res.aid;
+        adminObj.jar = res.rpJar;
+        let inserts = [];
+        let n = 0;
+        while (n < 5) {
+          let newPage = models()['PageTest']({
+            address: `test${n + 1}`,
+            is_app: false,
+          });
+          inserts.push(newPage.save());
+          n++;
+        }
+        return Promise.all(inserts);
+      })
+      .then(res => {
+        done()
+      })
+      .catch(err => {
+        console.log(err);
+        done();
+      });
+  });
+
+  it('should give suggestion over page', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`/suggest/Page`),
+      body: {
+        phrase: 'test1',
+        options: {
+          exceptionAddress: "test2",
+        }
+      },
+      json: true,
+      jar: adminObj.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toEqual(1);
+      expect(res.body[0].address).toBe('test1');
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should return addresses of two pages', function (done) {
+    this.done = done;
+    rp({
+      method: 'POST',
+      uri: lib.helpers.apiTestURL(`/suggest/Page`),
+      body: {
+        phrase: 'test',
+        options: {
+          exceptionAddress: "test2",
+        }
+      },
+      json: true,
+      jar: adminObj.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toEqual(4);
+      res.body.forEach(x => expect(x.address).toContain('test'));
+      res.body.forEach(x => expect(x.address).not.toBe('test2'));
+      done();
+    }).catch(lib.helpers.errorHandler.bind(this));
+  });
+
+  it('should get error when some one other than content manager is calling api', function (done) {
+    this.done = done;
+    rp({
+      method: "POST",
+      uri: lib.helpers.apiTestURL(`/suggest/Page`),
+      body: {
+        phrase: 'test1',
+        options: {
+          exceptionAddress: "test2",
+        }
+      },
+      json: true,
+      // jar: adminObj.jar,
+      resolveWithFullResponse: true
+    }).then(res => {
+      this.fail('some one other than content manager could call api');
+      done();
+    })
+      .catch(err => {
+        expect(err.statusCode).toBe(error.noAccess.status);
+        expect(err.error).toBe(error.noAccess.message);
+        done();
+      });
+  });
+});
+
+describe('POST Search Order Tickets', () => {
+
+  let CWClerk = { // central warehosue clerk
+    aid: null,
+    jar: null,
+  };
+
+  let PAClerk = { // paladium warehosue clerk
+    aid: null,
+    jar: null,
+  };
+
+
+  let products, orders = [], customer;
+
+  beforeEach(async (done) => {
+    try {
+
+      await lib.dbHelpers.dropAll()
+
+      let warehouses = await models()['WarehouseTest'].insertMany(_warehouses);
+      warehouses = JSON.parse(JSON.stringify(warehouses));
+
+      let centralWarehouse = warehouses.find(x => !x.is_hub && !x.has_customer_pickup);
+      let paladiumWarehouse = warehouses.find(x => x.name === 'پالادیوم');
+
+
+      let res = await lib.dbHelpers.addAndLoginAgent('cwclerk', _const.ACCESS_LEVEL.ShopClerk, centralWarehouse._id);
+      CWClerk.aid = res.aid;
+      CWClerk.jar = res.rpJar;
+
+      res = await lib.dbHelpers.addAndLoginAgent('paclerk', _const.ACCESS_LEVEL.ShopClerk, paladiumWarehouse._id);
+      PAClerk.aid = res.aid;
+      PAClerk.jar = res.rpJar;
+
+      customer = await lib.dbHelpers.addAndLoginCustomer('customer');
+
+      products = await models()['ProductTest'].insertMany([
+        {
+          name: 'sample 1',
+          base_price: 30000,
+          article_no: "ar123",
+          instances: [
+            {
+              size: "9",
+              price: 2000,
+              barcode: '0394081341',
+            },
+            {
+              size: "10",
+              price: 4000,
+              barcode: '19231213123',
+            }
+          ]
+        },
+        {
+          name: 'simple 2',
+          base_price: 600000,
+          article_no: "ar124",
+          instances: [
+            {
+              size: "11",
+              price: 50000,
+              barcode: '9303850203',
+            },
+            {
+              size: "12",
+              price: 50000,
+              barcode: '9303850203',
+            }
+          ]
+        }
+      ])
+
+      /*
+       order 1 => has 4 same order lines which 3 of them have ticket for central warehouse agent (scan base) 
+      
+      */
+
+      orders = [];
+
+      orders.push({
+        customer_id: mongoose.Types.ObjectId(),
+        is_cart: false,
+        transaction_id: "xyz12210",
+        order_lines: [],
+        address: {
+          province: "تهران",
+          city: "تهران",
+          street: 'دولت',
+          recipient_name: 'احسان',
+          recipient_surname: 'انصاری بصیر',
+          recipient_national_id: '0010684281',
+          recipient_mobile_no: '09125975886',
+          postal_code: "123456789",
+          loc: {
+            long: 51.111,
+            lat: 35.555
+          }
+        },
+        duration_days: 1,
+        is_collect: false,
+        order_time: moment(),
+        time_slot: {
+          lower_bound: 10,
+          upper_bound: 18
+        },
+        total_amount: 20,
+        used_balance: 0,
+        used_point: 0
+
+      });
+
+      let tickets = [ // tickets for scan base inbox
+        _const.ORDER_STATUS.default,
+        _const.ORDER_STATUS.Renew,
+        _const.ORDER_STATUS.WaitForOnlineWarehouse,
+
+      ];
+      // add 3 same scan base order line
+      for (let i = 0; i < 3; i++) {
+        orders[0].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[0].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: tickets[Math.floor(Math.random() * tickets.length)],
+              desc: null,
+              receiver_id: centralWarehouse._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+
+      // add 1 different scan base order line
+      orders[0].order_lines.push({
+        paid_price: 0,
+        product_id: products[1].id,
+        product_instance_id: products[1].instances[1].id,
+        adding_time: moment(),
+        tickets: [
+          {
+            is_processed: false,
+            status: _const.ORDER_STATUS.default,
+            desc: null,
+            receiver_id: paladiumWarehouse._id,
+            timestamp: moment()
+          }
+        ]
+      })
+
+      /*
+       order 2 => has 4 different scan base order lines
+      */
+      orders.push({
+        customer_id: mongoose.Types.ObjectId(),
+        is_cart: false,
+        transaction_id: "xyz12213",
+        order_lines: [],
+        address: {
+          province: "تهران",
+          city: "تهران",
+          street: 'دولت',
+          recipient_name: 'احسان',
+          recipient_surname: 'انصاری بصیر',
+          recipient_national_id: '0010684281',
+          recipient_mobile_no: '09125975886',
+          postal_code: "123456789",
+          loc: {
+            long: 51.111,
+            lat: 35.555
+          }
+        },
+        duration_days: 3,
+        is_collect: false,
+        order_time: moment(),
+        time_slot: {
+          lower_bound: 10,
+          upper_bound: 18
+        },
+        total_amount: 20,
+        used_balance: 0,
+        used_point: 0
+
+      });
+
+
+      for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
+          orders[1].order_lines.push({
+            paid_price: 0,
+            product_id: products[i].id,
+            product_instance_id: products[i].instances[j].id,
+            adding_time: moment(),
+            tickets: [
+              {
+                is_processed: false,
+                status: _const.ORDER_STATUS.default,
+                desc: null,
+                receiver_id: centralWarehouse._id,
+                timestamp: moment()
+              }
+            ]
+          })
+        }
+      }
+
+      /*
+      order 3 => has 4 different manual base order lines 
+      */
+
+      orders.push({
+        customer_id: mongoose.Types.ObjectId(),
+        is_cart: false,
+        transaction_id: "xyz12213",
+        order_lines: [],
+        address: Object.assign({
+          recipient_name: 'احسان',
+          recipient_surname: 'انصاری بصیر',
+          recipient_national_id: '0010684281',
+          recipient_mobile_no: '09125975886',
+        }, paladiumWarehouse.address),
+        duration_days: 3,
+        is_collect: true,
+        order_time: moment(),
+        total_amount: 20,
+        used_balance: 0,
+        used_point: 0
+      });
+
+
+      tickets = [ // tickets for manual base inbox
+        _const.ORDER_STATUS.WaitForAggregation,
+        _const.ORDER_STATUS.WaitForInvoice,
+        _const.ORDER_STATUS.ReadyForInvoice,
+
+      ];
+
+      for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
+          orders[2].order_lines.push({
+            paid_price: 0,
+            product_id: products[i].id,
+            product_instance_id: products[i].instances[j].id,
+            adding_time: moment(),
+            tickets: [
+              {
+                is_processed: false,
+                status: tickets[Math.floor(Math.random() * tickets.length)],
+                desc: null,
+                receiver_id: paladiumWarehouse._id,
+                timestamp: moment()
+              }
+            ]
+          })
+        }
+      }
+
+      orders = await models()['OrderTest'].insertMany(orders);
+      orders = JSON.parse(JSON.stringify(orders));
+
+      done()
+    }
+    catch (err) {
+      console.log(err);
+    };
+  }, 15000);
+
+
+  it('central warehoues clerck should get scan base inbox (4 order lines with total 7 count)', async function (done) {
+    try {
+      this.done = done;
+
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`search/Ticket`),
+        body: {
+          options: {
+            type: 'inbox',
+            manual: false
+          },
+          offset: 0,
+          limit: 5
+        },
+        json: true,
+        jar: CWClerk.jar,
+        resolveWithFullResponse: true
+      });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(4);
+      expect(res.body.total).toBe(4);
+
+      let count = 0;
+
+      let validTickets = [
+        _const.ORDER_STATUS.default,
+        _const.ORDER_STATUS.Renew,
+        _const.ORDER_STATUS.WaitForOnlineWarehouse,
+      ]
+      res.body.data.forEach(x => {
+        expect([orders[0], orders[1]].map(y => y._id).includes(x.order_id)).toBeTruthy();
+        expect(validTickets.includes(x.tickets[x.tickets.length - 1].status)).toBeTruthy();
+        count += x.count;
+      });
+      let foundOrderLine = res.body.data.find(x => x.order_id === orders[0]._id);
+      expect(count).toBe(7);
+
+
+      expect(foundOrderLine.count).toBe(4);
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+  it('paladium warehoues clerck should get manual inbox (4 order line collapsed in one order (order 3)', async function (done) {
+    try {
+      this.done = done;
+
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`search/Ticket`),
+        body: {
+          options: {
+            type: 'inbox',
+            manual: true
+          },
+          offset: 0,
+          limit: 5
+        },
+        json: true,
+        jar: PAClerk.jar,
+        resolveWithFullResponse: true
+      });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(1);
+      expect(res.body.total).toBe(1);
+      expect(res.body.data[0]._id).toBe(orders[2]._id.toString());
+      
+      let validTickets = [
+        _const.ORDER_STATUS.WaitForAggregation,
+        _const.ORDER_STATUS.ReadyForInvoice,
+        _const.ORDER_STATUS.WaitForInvoice,
+      ]
+    
+      res.body.data[0].order_lines.forEach(x => {
+        expect(orders[2].order_lines.map(y => y._id.toString()).includes(x.order_line_id)).toBeTruthy();
+        expect(validTickets.includes(x.tickets[x.tickets.length - 1].status)).toBeTruthy();
+      })
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+  it('customer, total order lines & recipient info should exists on manual inbox', async function (done) {
+    try {
+      this.done = done;
+
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`search/Ticket`),
+        body: {
+          options: {
+            type: 'inbox',
+            manual: true
+          },
+          offset: 0,
+          limit: 5
+        },
+        json: true,
+        jar: PAClerk.jar,
+        resolveWithFullResponse: true
+      });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data[0].customer).not.toBeUndefined();
+      expect(res.body.data[0].customer.name).toBe(customer.name);
+      expect(res.body.data[0].customer.surname).toBe(customer.surname);
+      expect(res.body.data[0].customer.mobile).toBe(customer.mobile);
+      expect(res.body.data[0].customer.gender).toBe(customer.gender);
+
+      expect(res.body.data[0].address).not.toBeUndefined();
+      expect(res.body.data[0].address.recipient_name).toBe(orders[2].address.recipient_name);
+      expect(res.body.data[0].address.recipient_surname).toBe(orders[2].address.recipient_surname);
+      expect(res.body.data[0].address.recipient_national_id).toBe(orders[2].address.recipient_national_id);
+      expect(res.body.data[0].address.recipient_mobile_no).toBe(orders[2].address.recipient_mobile_no);
+
+      expect(res.body.data[0].total_order_lines).toBe(4);
+
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+
+});

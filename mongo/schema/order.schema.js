@@ -2,6 +2,43 @@ const Schema = require('mongoose').Schema;
 const OrderLineSchema = require('./order_line.schema');
 const addressSchema = require('./address.schema');
 
+let time_slot_template = {
+  lower_bound: {
+    type: Number,
+    // required: true,
+  },
+  upper_bound: {
+    type: Number,
+    // required: true,
+  },
+};
+
+let loyalty_template = {
+  delivery_spent : {
+    type: Number,
+  },
+  shop_spent: {
+    type:Number,
+  },
+  delivery_value: {
+    type: Number,
+  },
+  shop_value: {
+    type: Number,
+  },
+  earn_point: {
+    type: Number,
+  }
+};
+
+let receiver_info = {
+  recipient_name: String,
+  recipient_surname: String,
+  recipient_title: String,
+  recipient_national_id: String,
+  recipient_mobile_no: String
+}
+
 let schema_obj = {
   customer_id: {
     type: Schema.Types.ObjectId,
@@ -12,7 +49,7 @@ let schema_obj = {
   },
   address: {
     type: addressSchema,
-    required: true
+    // required: true
   },
   total_amount: {
     type: Number,
@@ -32,7 +69,7 @@ let schema_obj = {
   discount: Number,
   order_time: {
     type: Date,
-    required: true,
+    // required: true,
   },
   is_collect: {
     type: Boolean,
@@ -49,7 +86,18 @@ let schema_obj = {
     type: Boolean,
     required: true,
     default: false
-  }
+  },
+  invoice_no: String,
+
+  duration_days: {      // delivery-periode-days references to delivery_duration_info schema
+    type: Number,
+    trim: true,
+  },
+  time_slot: time_slot_template,
+  // delivery_duration: delivery_duration_template,
+  loyalty: loyalty_template,
+
+  receiver_info
 };
 
 

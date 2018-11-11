@@ -12,7 +12,7 @@ describe("Get Page", () => {
         let inserts = [];
         let n = 0;
         while (n < 5) {
-          let newPage = models['PageTest']({
+          let newPage = models()['PageTest']({
             address: `testAddress${n + 1}`,
             is_app: false,
           });
@@ -20,21 +20,23 @@ describe("Get Page", () => {
           n++;
         }
 
-        collection1 = models['CollectionTest']({
+        collection1 = models()['CollectionTest']({
+          name_fa: 'مجموعه 1',
           name: 'collection1'
         });
-        collection2 = models['CollectionTest']({
+        collection2 = models()['CollectionTest']({
+          name_fa: 'مجموعه 2',
           name: 'collection2'
         });
 
-        page1 = models['PageTest']({
+        page1 = models()['PageTest']({
           address: 'testAddress6',
           is_app: false,
           page_info: {
             collection_id: collection1._id
           }
         });
-        page2 = models['PageTest']({
+        page2 = models()['PageTest']({
           address: 'testAddress7',
           is_app: true,
           page_info: {
@@ -55,7 +57,6 @@ describe("Get Page", () => {
       });
   });
 
-
   it("should get specific page by its id", function (done) {
 
     this.done = done;
@@ -68,12 +69,13 @@ describe("Get Page", () => {
       expect(res.statusCode).toBe(200);
       let result = JSON.parse(res.body);
       expect(result[0]._id).toBe(page1._id.toString());
-     expect(result[0].collection.name).toBe(collection1.name);
+      expect(result[0].collection.name).toBe(collection1.name);
       done();
 
     })
       .catch(lib.helpers.errorHandler.bind(this));
   });
+
   it("should get page info of a page by its id", function (done) {
 
     this.done = done;
@@ -93,4 +95,5 @@ describe("Get Page", () => {
       .catch(lib.helpers.errorHandler.bind(this));
   });
 
+  // ToDo: Should get placements (current and previouse placements)
 });

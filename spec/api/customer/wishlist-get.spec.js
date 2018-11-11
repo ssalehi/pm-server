@@ -41,10 +41,12 @@ describe('Get Wish-List', () => {
       _id: mongoose.Types.ObjectId(),
       product_id: productIds[0],
       product_instance_id: productInstanceIds[0],
+      product_color_id: productColorId[0],
     }, {
       _id: mongoose.Types.ObjectId(),
       product_id: productIds[1],
       product_instance_id: productInstanceIds[2],
+      product_color_id: productColorId[1],
     }
   ];
 
@@ -53,41 +55,36 @@ describe('Get Wish-List', () => {
     colorArr = [];
     lib.dbHelpers.dropAll()
       .then(res => {
-        return lib.dbHelpers.addAndLoginCustomer('s@s.com', '123456', {first_name: 'Sareh', surname: 'Salehi', wish_list: wishListArr})
+        return lib.dbHelpers.addAndLoginCustomer('s@s.com', '123456', {
+          first_name: 'Sareh',
+          surname: 'Salehi',
+          wish_list: wishListArr
+        })
       }).then(res => {
-      let rpJar = null;
       customerObj.cid = res.cid;
       customerObj.jar = res.rpJar;
-      return lib.dbHelpers.addAndLoginCustomer('a@a.com', '654321', {
-        first_name: 'Ali',
-        surname: 'Alavi',
-        // wish_list: wishListArr[1]
-      })
+      type1 = models()['ProductTypeTest']({
+        name: 'testType'
+      });
+      brand1 = models()['BrandTest']({
+        name: 'testBrand'
+      });
+      return Promise.all([type1.save(), brand1.save()]);
     })
-      .then(res => {
-        customerObj2.cid = res.cid;
-        customerObj2.jar = res.rpJar;
-        type1 = models['ProductTypeTest']({
-          name: 'testType'
-        });
-        brand1 = models['BrandTest']({
-          name: 'testBrand'
-        });
-        return Promise.all([type1.save(), brand1.save()]);
-      })
       .then((res) => {
-        colorArr.push(models['ColorTest']({
+        colorArr.push(models()['ColorTest']({
           name: 'testColor1'
         }));
-        colorArr.push(models['ColorTest']({
+        colorArr.push(models()['ColorTest']({
           name: 'testColor2'
         }));
         return Promise.all([colorArr[0].save(), colorArr[1].save()]);
       })
       .then(res => {
-        productArr.push(models['ProductTest']({
+        productArr.push(models()['ProductTest']({
           _id: productIds[0],
           name: 'testProductName1',
+          article_no: "NK628683",
           product_Type: {
             name: type1.name,
             product_type_id: type1._id
@@ -126,9 +123,10 @@ describe('Get Wish-List', () => {
             }
           ]
         }));
-        productArr.push(models['ProductTest']({
+        productArr.push(models()['ProductTest']({
           _id: productIds[1],
           name: 'testProductName2',
+          article_no: "NK628684",
           product_Type: {
             name: type1.name,
             product_type_id: type1._id
@@ -209,13 +207,21 @@ describe('Get Wish-List', () => {
 
   it('should resolve true message if wish list is empty', function (done) {
     this.done = done;
-    rp({
-      method: 'GET',
-      uri: lib.helpers.apiTestURL('wishlist'),
-      jar: customerObj2.jar,
-      json: true,
-      resolveWithFullResponse: true
+    lib.dbHelpers.addAndLoginCustomer('a@a.com', '111111', {
+      first_name: 'Ali',
+      surname: 'Alavi',
     })
+      .then(res => {
+        customerObj2.cid = res.cid;
+        customerObj2.jar = res.rpJar;
+        return rp({
+          method: 'GET',
+          uri: lib.helpers.apiTestURL('wishlist'),
+          jar: customerObj2.jar,
+          json: true,
+          resolveWithFullResponse: true
+        })
+      })
       .then(res => {
         expect(res.statusCode).toBe(200);
         expect(res.body.length).toBe(0);

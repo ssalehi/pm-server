@@ -42,7 +42,6 @@ if (isDev)
 /**
  *  App
  */
-
 const appName = getEnvValue(process.env.APP_NAME);
 const appAddress = getEnvValue(process.env.APP_ADDRESS);
 const port = getEnvValue(process.env.PORT);
@@ -53,10 +52,26 @@ const port = getEnvValue(process.env.PORT);
 const database = getEnvValue(process.env.DATABASE);
 const database_test = getEnvValue(process.env.DATABASE) + '_test';
 const db_uri = getEnvValue(process.env.DB_URI);
-const db_uri_test = getEnvValue(process.env.DB_URI) + '_test';
+const db_uri_test = getEnvValue(process.env.DB_URI_TEST);
 const googleAuth_clientId = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTID);
 const googleAuth_clientSecret = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTSECRET);
 const googleAuth_callbackUrl = getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL);
+
+/**
+ * Mail Config
+ */
+const mailConfig = {
+  host: "smtp.mailgun.org",
+  port: "465",
+  secure: true,
+  auth: {
+    user: getEnvValue(isDev ? process.env.EMAIL_USERNAME_DEV : process.env.EMAIL_USERNAME),
+    pass: getEnvValue(isDev ? process.env.EMAIL_PASSWORD_DEV : process.env.EMAIL_PASSWORD)
+  },
+  from: `Bank of Style <${getEnvValue(isDev ? process.env.EMAIL_USERNAME_DEV : process.env.EMAIL_USERNAME)}>`
+};
+if (isDev)
+  mailConfig['tls'] = {rejectUnauthorized: false};
 
 /**
  * Redis
@@ -69,10 +84,10 @@ const redisPass = getEnvValue(process.env.REDIS_PASSWORD);
 /**
  * upload files
  */
-
 uploadPath = "public/documents";
 uploadProductImagePath = "public/images/product-image";
 uploadPlacementImagePath = "public/images/placements";
+uploadDeliveryEvidencePath = "public/images/delivery";
 uploadExcelPath = "public/excel/";
 
 /**
@@ -115,6 +130,7 @@ module.exports = {
   uploadPath,
   uploadProductImagePath,
   uploadPlacementImagePath,
+  uploadDeliveryEvidencePath,
   uploadExcelPath,
   googleAuth: {
     clientID: googleAuth_clientId,
@@ -122,7 +138,8 @@ module.exports = {
     callBackURL: googleAuth_callbackUrl,
   },
   onlineWarehouseAPI,
-  invoiceAPI
+  invoiceAPI,
+  mailConfig,
 };
 
 

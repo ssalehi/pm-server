@@ -8,6 +8,9 @@ let schema_obj = {
   },
   product_instance_id: {
     type: Schema.Types.ObjectId,
+  },
+  product_color_id: {
+    type: Schema.Types.ObjectId,
     required: true
   },
   adding_time: {
