@@ -62,7 +62,7 @@ describe("Get All Agents that Related to Internal Delivery", () => {
     }
   }, 15000);
 
-  xit("should get all agents that have access_level internal_delivery", async function (done) {
+  it("should get all agents that have access_level internal_delivery", async function (done) {
     try {
       this.done = done;
       const res = await rp({
