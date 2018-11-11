@@ -188,12 +188,14 @@ describe("Get unassigned customer related deliveries", () => {
             addresses: [
               {
                 _id: mongoose.Types.ObjectId(),
+                district: "4",
                 province: "tehran",
                 city: "tehran",
                 street: "fatemi"
               },
               {
                 _id: mongoose.Types.ObjectId(),
+                district: "3",
                 city: "rasht",
                 province: "rasht",
                 street: "rashtAbad"
@@ -328,6 +330,11 @@ describe("Get unassigned customer related deliveries", () => {
         expect(res.length).toBe(2);
         expect(res.map(el => el._id.toString())).toContain(deliveries[1]._id.toString());
         expect(res.map(el => el._id.toString())).toContain(deliveries[4]._id.toString());
+
+        const delItem = res.find(el => el._id.toString() === deliveries[1]._id.toString());
+        expect(delItem.to.customer.address.district).toBe(customers[0].addresses[1].district);
+        expect(delItem.to.customer.address.city).toBe(customers[0].addresses[1].city);
+        expect(delItem.to.customer.address.province).toBe(customers[0].addresses[1].province);
 
         done();
       })
