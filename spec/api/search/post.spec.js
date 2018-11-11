@@ -994,7 +994,7 @@ xdescribe('POST Suggest Page Address', () => {
   });
 });
 
-describe('POST Search Order Tickets', () => {
+describe('POST Search Order inbox', () => {
 
   let CWClerk = { // central warehosue clerk
     aid: null,
@@ -1256,6 +1256,7 @@ describe('POST Search Order Tickets', () => {
         }
       }
 
+
       orders = await models()['OrderTest'].insertMany(orders);
       orders = JSON.parse(JSON.stringify(orders));
 
@@ -1336,13 +1337,13 @@ describe('POST Search Order Tickets', () => {
       expect(res.body.data.length).toBe(1);
       expect(res.body.total).toBe(1);
       expect(res.body.data[0]._id).toBe(orders[2]._id.toString());
-      
+
       let validTickets = [
         _const.ORDER_STATUS.WaitForAggregation,
         _const.ORDER_STATUS.ReadyForInvoice,
         _const.ORDER_STATUS.WaitForInvoice,
       ]
-    
+
       res.body.data[0].order_lines.forEach(x => {
         expect(orders[2].order_lines.map(y => y._id.toString()).includes(x.order_line_id)).toBeTruthy();
         expect(validTickets.includes(x.tickets[x.tickets.length - 1].status)).toBeTruthy();
@@ -1387,6 +1388,136 @@ describe('POST Search Order Tickets', () => {
 
       expect(res.body.data[0].total_order_lines).toBe(4);
 
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+});
+
+describe('POST Search Order related tickets', () => {
+
+  let CWClerk = { // central warehosue clerk
+    aid: null,
+    jar: null,
+  };
+
+  let PAClerk = { // paladium warehosue clerk
+    aid: null,
+    jar: null,
+  };
+
+
+  let products, orders = [], customer;
+
+  beforeEach(async (done) => {
+    try {
+
+      await lib.dbHelpers.dropAll()
+
+      let warehouses = await models()['WarehouseTest'].insertMany(_warehouses);
+      warehouses = JSON.parse(JSON.stringify(warehouses));
+
+      let centralWarehouse = warehouses.find(x => !x.is_hub && !x.has_customer_pickup);
+
+      let res = await lib.dbHelpers.addAndLoginAgent('cwclerk', _const.ACCESS_LEVEL.ShopClerk, centralWarehouse._id);
+      CWClerk.aid = res.aid;
+      CWClerk.jar = res.rpJar;
+
+      customer = await lib.dbHelpers.addAndLoginCustomer('customer');
+
+      products = await models()['ProductTest'].insertMany([
+        {
+          name: 'sample 1',
+          base_price: 30000,
+          article_no: "ar123",
+          instances: [
+            {
+              size: "9",
+              price: 2000,
+              barcode: '0394081341',
+            }
+          ]
+        }
+      ])
+
+      /*
+       order 1 => has 4 same order lines which 3 of them have ticket for central warehouse agent (scan base) 
+      
+      */
+
+      orders = [];
+
+      orders.push({
+        customer_id: mongoose.Types.ObjectId(),
+        is_cart: false,
+        transaction_id: "xyz12213",
+        order_lines: [],
+        address: Object.assign({
+          recipient_name: 'احسان',
+          recipient_surname: 'انصاری بصیر',
+          recipient_national_id: '0010684281',
+          recipient_mobile_no: '09125975886',
+        }, centralWarehouse.address),
+        duration_days: 3,
+        is_collect: false,
+        order_time: moment(),
+        total_amount: 20,
+        used_balance: 0,
+        used_point: 0
+      });
+      // adding all tickets
+      for (let i = 0; i < Object.values(_const.ORDER_STATUS).length; i++) {
+        orders[0].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[0].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: Object.values(_const.ORDER_STATUS)[i],
+              desc: null,
+              receiver_id: centralWarehouse._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+      orders = await models()['OrderTest'].insertMany(orders);
+      orders = JSON.parse(JSON.stringify(orders));
+
+      done()
+    }
+    catch (err) {
+      console.log(err);
+    };
+  }, 15000);
+
+
+  it('only 4 order lines whose tickets are related to scan base actions should return to related inbox', async function (done) {
+    try {
+      this.done = done;
+
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`search/Ticket`),
+        body: {
+          options: {
+            type: 'inbox',
+            manual: false
+          },
+          offset: 0,
+          limit: 5
+        },
+        json: true,
+        jar: CWClerk.jar,
+        resolveWithFullResponse: true
+      });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(1);
+      expect(res.body.total).toBe(1);
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
