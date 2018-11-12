@@ -53,6 +53,10 @@ let schema_obj = {
   recipient_mobile_no: {
     type: String,
     trim: true,
+  },
+  recipient_email: {
+    type: String,
+    trim: true,
   }
 };
 
