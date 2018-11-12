@@ -4,16 +4,27 @@ const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 const warehouses = require('../../../warehouses');
+const _const = require('../../../lib/const.list');
 
 describe('Warehouse PUT API', () => {
+
+    let adminObj = {
+        jar: null
+    }
+
     beforeEach(done => {
         lib.dbHelpers.dropAll()
-            .then(res => {
-                return models()['WarehouseTest'].insertMany(warehouses);
-                //   done();
+            .then(() => {
+                 models()['WarehouseTest'].insertMany(warehouses);
             })
+            .then(() =>{
+            return lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager)
+            })
+
             .then(res => {
-                done();
+                adminObj.jar = res.rpJar;
+                console.log(res.rpJar);
+            done()
             })
             .catch(err => {
                 console.error('Error in beforeEach block: ', err);
@@ -54,7 +65,7 @@ describe('Warehouse PUT API', () => {
                 body: {
                     "warehouses": properties
                 },
-
+                jar: adminObj.jar,
                 json: true,
                 uri: lib.helpers.apiTestURL('warehouse/update'),
                 resolveWithFullResponse: true,
