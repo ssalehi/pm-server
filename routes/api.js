@@ -91,7 +91,7 @@ router.get('/', function (req, res) {
 router.get('/outTest', function (req, res) {
   const helpers = require('../lib/helpers');
 
-  
+
   return helpers.httpPost('http://httpbin.org/post', {})
     .then(res => {
       return helpers.httpPost('http://mock:3001/test', {})
@@ -240,6 +240,7 @@ router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 
 router.get('/order/ticket/history/:orderId', apiResponse('Ticket', 'getHistoryOrderByReceiver', true, ['params', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/order/return', apiResponse('TicketAction', 'returnOrderLine', false, ['body', 'user']));
 router.post('/order/cancel', apiResponse('TicketAction', 'cancelOrderLine', false, ['body', 'user']));
+router.post('/order/mismatch', apiResponse('TicketAction', 'mismatchReport', true, ['body.trigger', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 
 // Order => api's used by offline system
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));

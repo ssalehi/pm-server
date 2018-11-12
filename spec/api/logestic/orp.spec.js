@@ -140,7 +140,7 @@ describe('ORP', () => {
       expect(order.order_lines.length).toBe(1);
       expect(order.order_lines[0].tickets.length).toBe(1);
       expect(order.order_lines[0].tickets[0].is_processed).toBeFalsy();
-      expect(order.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
+      expect(order.order_lines[0].tickets[0].status).toBe(_const.ORDER_LINE_STATUS.default);
       expect(order.order_lines[0].tickets[0].receiver_id.toString()).toBe(pre_data.warehouse.find(x => x.name === 'انبار مرکزی')._id.toString());
 
       let product = await models()['ProductTest'].findOne({_id: pre_data.product[0]._id});
@@ -179,7 +179,7 @@ describe('ORP', () => {
         const orderLine = order.order_lines[i];
         expect(orderLine.tickets.length).toBe(1);
         expect(orderLine.tickets[0].is_processed).toBeFalsy();
-        expect(orderLine.tickets[0].status).toBe(_const.ORDER_STATUS.default);
+        expect(orderLine.tickets[0].status).toBe(_const.ORDER_LINE_STATUS.default);
       }
 
       const central = pre_data.warehouse.find(x => x.name === 'انبار مرکزی');
@@ -217,7 +217,7 @@ describe('ORP', () => {
         const orderLine = order.order_lines[i];
         expect(orderLine.tickets.length).toBe(1);
         expect(orderLine.tickets[0].is_processed).toBeFalsy();
-        expect(orderLine.tickets[0].status).toBe(_const.ORDER_STATUS.default);
+        expect(orderLine.tickets[0].status).toBe(_const.ORDER_LINE_STATUS.default);
       }
 
       const central = pre_data.warehouse.find(x => x.name === 'انبار مرکزی');
@@ -257,7 +257,7 @@ describe('ORP', () => {
         const orderLine = order.order_lines[i];
         expect(orderLine.tickets.length).toBe(1);
         expect(orderLine.tickets[0].is_processed).toBeFalsy();
-        expect(orderLine.tickets[0].status).toBe(_const.ORDER_STATUS.default);
+        expect(orderLine.tickets[0].status).toBe(_const.ORDER_LINE_STATUS.default);
       }
 
       const central = pre_data.warehouse.find(x => x.name === 'انبار مرکزی');
@@ -298,7 +298,7 @@ describe('ORP', () => {
       expect(order.order_lines.length).toBe(1);
       expect(order.order_lines[0].tickets.length).toBe(1);
       expect(order.order_lines[0].tickets[0].is_processed).toBeFalsy();
-      expect(order.order_lines[0].tickets[0].status).toBe(_const.ORDER_STATUS.default);
+      expect(order.order_lines[0].tickets[0].status).toBe(_const.ORDER_LINE_STATUS.default);
       expect(order.order_lines[0].tickets[0].receiver_id.toString()).toBe(paladium._id.toString());
 
       let product = await models()['ProductTest'].findOne({_id: pre_data.product[0]._id});

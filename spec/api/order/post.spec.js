@@ -1205,7 +1205,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
             tickets: [ // sales manager ticket
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default
+                status: _const.ORDER_LINE_STATUS.default
               }
             ]
           }, { // shop clerk ticket
@@ -1214,7 +1214,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
             tickets: [
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 is_processed: true,
                 agent_id: SMAgent.aid
               },
@@ -1229,7 +1229,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
             tickets: [ // sales manager ticket
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 is_processed: true,
                 agent_id: SMAgent.aid
               },
@@ -1240,7 +1240,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
                 agent_id: SCAgent.aid
               }, {
                 warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
-                status: _const.ORDER_STATUS.Invoice,
+                status: _const.ORDER_LINE_STATUS.Invoice,
               }
             ]
           }]
@@ -1276,7 +1276,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
         tickets: [ // sales manager ticket
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.default
+            status: _const.ORDER_LINE_STATUS.default
           }
         ]
       }]
@@ -1305,7 +1305,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
             expect(res.order_lines[0].tickets.length).toBe(2);
             expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
             expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
-            expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.SMAssignToWarehouse);
+            expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_LINE_STATUS.SMAssignToWarehouse);
             expect(res.order_lines[0].tickets[1].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
 
             done();
@@ -1339,7 +1339,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
         expect(res.order_lines[0].tickets.length).toBe(2);
         expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
         expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
-        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.SMAssignToWarehouse);
+        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_LINE_STATUS.SMAssignToWarehouse);
         expect(res.order_lines[0].tickets[1].referral_advice).toBe(_const.REFERRAL_ADVICE.SendToCentral);
         expect(res.order_lines[0].tickets[1].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
 
@@ -1387,7 +1387,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
         tickets: [ // sales manager ticket
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.default
+            status: _const.ORDER_LINE_STATUS.default
           }
         ]
       }]
@@ -1434,7 +1434,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
         tickets: [ // sales manager ticket
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.default
+            status: _const.ORDER_LINE_STATUS.default
           }
         ]
       }]
@@ -1465,7 +1465,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
         expect(res.order_lines[0].tickets.length).toBe(2);
         expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
         expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
-        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.SMAssignToWarehouse);
+        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_LINE_STATUS.SMAssignToWarehouse);
         expect(res.order_lines[0].tickets[1].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
 
         done();
@@ -1492,13 +1492,13 @@ xdescribe('POST Order - (Set Ticket)', () => {
         tickets: [ // sales manager ticket
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.default,
+            status: _const.ORDER_LINE_STATUS.default,
             is_processed: true,
             agent_id: SMAgent.aid
           },
           {
             warehouse_id: warehouses.find(x => x.name === 'سانا')._id,
-            status: _const.ORDER_STATUS.SMAssignToWarehouse
+            status: _const.ORDER_LINE_STATUS.SMAssignToWarehouse
           }
         ]
       }]
@@ -1553,7 +1553,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
         expect(res.order_lines[0].tickets.length).toBe(2);
         expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
         expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
-        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.Invoice);
+        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_LINE_STATUS.Invoice);
         expect(res.order_lines[0].tickets[1].warehouse_id.toString()).toBe(warehouses.find(x => x.is_center)._id.toString());
 
         done();
@@ -1582,7 +1582,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
         expect(res.order_lines[0].tickets.length).toBe(2);
         expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
         expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SCAgent.aid.toString());
-        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.Invoice);
+        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_LINE_STATUS.Invoice);
         expect(res.order_lines[0].tickets[1].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
 
         done();
@@ -1605,7 +1605,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
         tickets: [ // sales manager ticket
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.default
+            status: _const.ORDER_LINE_STATUS.default
           }
         ]
       }]
@@ -1654,13 +1654,13 @@ xdescribe('POST Order - (Set Ticket)', () => {
         tickets: [ // sales manager ticket
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.default,
+            status: _const.ORDER_LINE_STATUS.default,
             is_processed: true,
             agent_id: SMAgent.aid
           },
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.Invoice
+            status: _const.ORDER_LINE_STATUS.Invoice
           }
         ]
       }]
@@ -1705,7 +1705,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
         tickets: [ // sales manager ticket
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.default,
+            status: _const.ORDER_LINE_STATUS.default,
             is_processed: true,
             agent_id: SMAgent.aid
           }
@@ -1760,7 +1760,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
         expect(res.order_lines[0].tickets.length).toBe(2);
         expect(res.order_lines[0].tickets[0].is_processed).toBeTruthy();
         expect(res.order_lines[0].tickets[0].agent_id.toString()).toBe(SMAgent.aid.toString());
-        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_STATUS.SMRefund);
+        expect(res.order_lines[0].tickets[1].status).toBe(_const.ORDER_LINE_STATUS.SMRefund);
 
         done();
       })
@@ -1808,12 +1808,12 @@ xdescribe('POST Order - (Set Ticket)', () => {
         tickets: [ // sales manager ticket
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.default,
+            status: _const.ORDER_LINE_STATUS.default,
             is_processed: true,
             agent_id: SMAgent.aid
           },
           {
-            status: _const.ORDER_STATUS.SMRefund
+            status: _const.ORDER_LINE_STATUS.SMRefund
           }
         ]
       }]
@@ -1883,7 +1883,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
         expect(res.order_lines[2].tickets.length).toBe(4);
         expect(res.order_lines[2].tickets[2].is_processed).toBeTruthy();
         expect(res.order_lines[2].tickets[2].agent_id.toString()).toBe(SCAgent.aid.toString());
-        expect(res.order_lines[2].tickets[3].status).toBe(_const.ORDER_STATUS.ReadyToDeliver);
+        expect(res.order_lines[2].tickets[3].status).toBe(_const.ORDER_LINE_STATUS.ReadyToDeliver);
         expect(res.order_lines[2].tickets[3].warehouse_id.toString()).toBe(warehouses.find(x => x.name === 'سانا')._id.toString());
 
         return models()['CustomerTest'].findById(res.customer_id).lean();
@@ -1931,19 +1931,19 @@ xdescribe('POST Order - (Set Ticket)', () => {
         tickets: [ // sales manager ticket
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.default,
+            status: _const.ORDER_LINE_STATUS.default,
             is_processed: true,
             agent_id: SMAgent.aid
           },
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.Invoice,
+            status: _const.ORDER_LINE_STATUS.Invoice,
             is_processed: true,
             agent_id: SMAgent.aid
           },
           {
             warehouse_id: warehouses.find(x => x.is_center)._id,
-            status: _const.ORDER_STATUS.ReadyToDeliver,
+            status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
           },
         ]
       }]
@@ -2353,9 +2353,195 @@ describe('POST Order - ORP', () => {
 
       expect(newPaladiumInventory.count).toBe(PrePaladiumInventory.count);
       expect(newPaladiumInventory.reserved).toBe(PrePaladiumInventory.reserved + 1);
-      
+
       expect(newSanaInventory.count).toBe(PreSanaInventory.count);
       expect(newSanaInventory.reserved).toBe(PreSanaInventory.reserved + 1);
+
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    };
+  });
+
+
+});
+
+describe('POST Order - ORP on mismatch', () => {
+  let orders, products, centralWarehouse;
+  let ShopClerk = {
+    cid: null,
+    jar: null
+  };
+
+  let colorIds = [
+    mongoose.Types.ObjectId(),
+    mongoose.Types.ObjectId(),
+  ];
+
+  beforeEach(async done => {
+    try {
+
+      await lib.dbHelpers.dropAll()
+
+      await models()['WarehouseTest'].insertMany(warehouses)
+
+      centralWarehouse = warehouses.find(x => !x.has_customer_pickup && !x.is_hub);
+
+      let res = await lib.dbHelpers.addAndLoginAgent('admin', _const.ACCESS_LEVEL.ShopClerk, centralWarehouse._id);
+      ShopClerk.cid = res.cid;
+      ShopClerk.jar = res.rpJar;
+
+      await lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager);
+
+      products = await models()['ProductTest'].insertMany([{
+        article_no: 'xy123',
+        name: 'sample 1',
+        product_type: {
+          name: 'sample type',
+          product_type_id: mongoose.Types.ObjectId()
+        },
+        brand: {
+          name: 'sample brand',
+          brand_id: mongoose.Types.ObjectId()
+        },
+        base_price: 30000,
+        desc: 'some description for this product',
+        colors: [
+          {
+            color_id: colorIds[0],
+            name: 'green'
+          },
+          {
+            color_id: colorIds[1],
+            name: 'yellow'
+          }
+        ],
+        instances: [{
+          product_color_id: colorIds[0],
+          size: "11",
+          price: 2000,
+          barcode: '0394081341',
+          inventory: [{
+            count: 0,
+            reserved: 0,
+            warehouse_id: warehouses[1]._id
+          }, {
+            count: 6,
+            reserved: 0,
+            warehouse_id: warehouses[2]._id
+          }, {
+            count: 2,
+            reserved: 0,
+            warehouse_id: warehouses[3]._id
+          }, {
+            count: 2,
+            reserved: 1,
+            warehouse_id: warehouses[4]._id
+          }]
+        },
+        {
+          product_color_id: colorIds[1],
+          size: "10",
+          price: 4000,
+          barcode: '19231213123',
+          inventory: [{
+            count: 2,
+            reserved: 0,
+            warehouse_id: warehouses[1]._id
+          }, {
+            count: 1,
+            reserved: 0,
+            warehouse_id: warehouses[2]._id
+          }, {
+            count: 4,
+            reserved: 0,
+            warehouse_id: warehouses[3]._id
+          }, {
+            count: 5,
+            reserved: 0,
+            warehouse_id: warehouses[4]._id
+          }]
+        }
+        ]
+      }]);
+
+      products = JSON.parse(JSON.stringify(products));
+
+      done();
+    } catch (err) {
+      console.log(err);
+    };
+  }, 15000);
+
+  it('mismatch trigger should assign 9 order lines to other inventories and set not exists ticket for 1 remaining (not c&c)', async function (done) {
+    try {
+      this.done = done;
+
+      let order_lines = [];
+      for (let i = 0; i < 10; i++) {
+        order_lines.push({
+          product_id: products[0]._id,
+          product_instance_id: products[0].instances[0]._id,
+          tickets: [
+            {
+              receiver_id: mongoose.Types.ObjectId(centralWarehouse._id),
+              status: _const.ORDER_LINE_STATUS.default
+            }
+          ]
+        })
+      }
+
+      orders = await models()['OrderTest'].insertMany([
+        { // order 1 => a normal order which central warehosue has inventory for
+          order_time: new Date(),
+          is_cart: false,
+          transaction_id: 'xy123',
+          order_lines
+        }
+      ]);
+
+      orders = JSON.parse(JSON.stringify(orders));
+
+      let res = await rp({
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`order/mismatch`),
+        body: {
+          trigger: _const.MISMATCH_TRIGGER.Inbox
+        },
+        json: true,
+        resolveWithFullResponse: true,
+        jar: ShopClerk.jar
+      });
+      expect(res.statusCode).toBe(200);
+
+      let foundOrder = await models()['OrderTest'].findOne();
+      let foundProduct = await models()['ProductTest'].findOne();
+
+      foundProduct.instances[0].inventory.forEach(x => {
+        expect(x.reserved).toBe(x.count);
+      });
+
+      let renewOrderLines = foundOrder.order_lines.filter(x => x.tickets.length === 3 && x.tickets[2].status === _const.ORDER_LINE_STATUS.Renew);
+      expect(renewOrderLines.length).toBe(9);
+
+      let notExistsOrderLines = foundOrder.order_lines.filter(x => x.tickets.length === 3 && x.tickets[2].status === _const.ORDER_LINE_STATUS.NotExists);
+      expect(notExistsOrderLines.length).toBe(1);
+
+
+      let salesManager = await models()['AgentTest'].findOne({
+        'access_level': _const.ACCESS_LEVEL.SalesManager
+      });
+
+      expect(notExistsOrderLines[0].tickets[2].receiver_id.toString()).toBe(salesManager._id.toString());
+
+
+      let paladiumTickets = renewOrderLines.filter(x => x.tickets[2].receiver_id.toString() === warehouses[2]._id.toString());
+      let sanaTickets = renewOrderLines.filter(x => x.tickets[2].receiver_id.toString() === warehouses[3]._id.toString());
+      let iranMallTickets = renewOrderLines.filter(x => x.tickets[2].receiver_id.toString() === warehouses[4]._id.toString());
+
+      expect(paladiumTickets.length).toBe(6);
+      expect(sanaTickets.length).toBe(2);
+      expect(iranMallTickets.length).toBe(1);
 
       done();
     } catch (err) {

@@ -459,7 +459,7 @@ xdescribe('POST Order - Search over order lines by tickets', () => {
             tickets: [ // sales manager ticket
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 is_processed: true
               }
             ]
@@ -469,7 +469,7 @@ xdescribe('POST Order - Search over order lines by tickets', () => {
             tickets: [
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 // is_processed: true,
                 agent_id: SMAgent.cid
               },
@@ -493,7 +493,7 @@ xdescribe('POST Order - Search over order lines by tickets', () => {
             tickets: [ // sales manager ticket
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 // is_processed: true,
                 agent_id: SMAgent.cid
               },
@@ -504,7 +504,7 @@ xdescribe('POST Order - Search over order lines by tickets', () => {
                 agent_id: SCAgent.cid
               }, {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.SCSentToCentral,
+                status: _const.ORDER_LINE_STATUS.SCSentToCentral,
                 is_processed: true,
               }
             ]
@@ -1108,9 +1108,9 @@ describe('POST Search Order inbox', () => {
       });
 
       let tickets = [ // tickets for scan base inbox
-        _const.ORDER_STATUS.default,
-        _const.ORDER_STATUS.Renew,
-        _const.ORDER_STATUS.WaitForOnlineWarehouse,
+        _const.ORDER_LINE_STATUS.default,
+        _const.ORDER_LINE_STATUS.Renew,
+        _const.ORDER_LINE_STATUS.WaitForOnlineWarehouse,
 
       ];
       // add 3 same scan base order line
@@ -1141,7 +1141,7 @@ describe('POST Search Order inbox', () => {
         tickets: [
           {
             is_processed: false,
-            status: _const.ORDER_STATUS.default,
+            status: _const.ORDER_LINE_STATUS.default,
             desc: null,
             receiver_id: paladiumWarehouse._id,
             timestamp: moment()
@@ -1195,7 +1195,7 @@ describe('POST Search Order inbox', () => {
             tickets: [
               {
                 is_processed: false,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 desc: null,
                 receiver_id: centralWarehouse._id,
                 timestamp: moment()
@@ -1230,9 +1230,9 @@ describe('POST Search Order inbox', () => {
 
 
       tickets = [ // tickets for manual base inbox
-        _const.ORDER_STATUS.WaitForAggregation,
-        _const.ORDER_STATUS.WaitForInvoice,
-        _const.ORDER_STATUS.ReadyForInvoice,
+        _const.ORDER_LINE_STATUS.WaitForAggregation,
+        _const.ORDER_LINE_STATUS.WaitForInvoice,
+        _const.ORDER_LINE_STATUS.ReadyForInvoice,
 
       ];
 
@@ -1294,9 +1294,9 @@ describe('POST Search Order inbox', () => {
       let count = 0;
 
       let validTickets = [
-        _const.ORDER_STATUS.default,
-        _const.ORDER_STATUS.Renew,
-        _const.ORDER_STATUS.WaitForOnlineWarehouse,
+        _const.ORDER_LINE_STATUS.default,
+        _const.ORDER_LINE_STATUS.Renew,
+        _const.ORDER_LINE_STATUS.WaitForOnlineWarehouse,
       ]
       res.body.data.forEach(x => {
         expect([orders[0], orders[1]].map(y => y._id).includes(x.order_id)).toBeTruthy();
@@ -1339,9 +1339,9 @@ describe('POST Search Order inbox', () => {
       expect(res.body.data[0]._id).toBe(orders[2]._id.toString());
 
       let validTickets = [
-        _const.ORDER_STATUS.WaitForAggregation,
-        _const.ORDER_STATUS.ReadyForInvoice,
-        _const.ORDER_STATUS.WaitForInvoice,
+        _const.ORDER_LINE_STATUS.WaitForAggregation,
+        _const.ORDER_LINE_STATUS.ReadyForInvoice,
+        _const.ORDER_LINE_STATUS.WaitForInvoice,
       ]
 
       res.body.data[0].order_lines.forEach(x => {
@@ -1354,7 +1354,7 @@ describe('POST Search Order inbox', () => {
     }
   });
 
-  it('customer, total order lines & recipient info should exists on manual inbox', async function (done) {
+  it('total order lines & recipient info should exists on manual inbox', async function (done) {
     try {
       this.done = done;
 
@@ -1374,12 +1374,6 @@ describe('POST Search Order inbox', () => {
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.data[0].customer).not.toBeUndefined();
-      expect(res.body.data[0].customer.name).toBe(customer.name);
-      expect(res.body.data[0].customer.surname).toBe(customer.surname);
-      expect(res.body.data[0].customer.mobile).toBe(customer.mobile);
-      expect(res.body.data[0].customer.gender).toBe(customer.gender);
-
       expect(res.body.data[0].address).not.toBeUndefined();
       expect(res.body.data[0].address.recipient_name).toBe(orders[2].address.recipient_name);
       expect(res.body.data[0].address.recipient_surname).toBe(orders[2].address.recipient_surname);
@@ -1468,7 +1462,7 @@ describe('POST Search Order related tickets', () => {
         used_point: 0
       });
       // adding all tickets
-      for (let i = 0; i < Object.values(_const.ORDER_STATUS).length; i++) {
+      for (let i = 0; i < Object.values(_const.ORDER_LINE_STATUS).length; i++) {
         orders[0].order_lines.push({
           paid_price: 0,
           product_id: products[0].id,
@@ -1477,7 +1471,7 @@ describe('POST Search Order related tickets', () => {
           tickets: [
             {
               is_processed: false,
-              status: Object.values(_const.ORDER_STATUS)[i],
+              status: Object.values(_const.ORDER_LINE_STATUS)[i],
               desc: null,
               receiver_id: centralWarehouse._id,
               timestamp: moment()
