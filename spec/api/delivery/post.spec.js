@@ -286,8 +286,6 @@ describe("Fetch Delivery Items POST API", () => {
           },
           start:new  Date(2010, 10, 10),
           end: new Date(2010, 10, 12),
-          delivery_start: new Date(2010, 10, 10),
-          delivery_end: new Date(2010, 10, 10)
         },
         {
           _id: mongoose.Types.ObjectId(),
@@ -308,9 +306,7 @@ describe("Fetch Delivery Items POST API", () => {
           },
           status_list: [deliveryStatus],
           start: new Date(2010, 10, 11),
-          end: new Date(2010, 10, 14),
-          delivery_start: new Date(2010, 10, 13),
-          delivery_end: new Date(2010, 10, 14)
+          end: new Date(2010, 10, 14)
         },
         {
           _id: mongoose.Types.ObjectId(),
@@ -378,7 +374,9 @@ describe("Fetch Delivery Items POST API", () => {
           delivered_evidence: 'abcd',
           delivery_agent: deliveryAgents[0].aid,
           start: new Date(2010, 11, 16),
-          end: new Date(2010, 11, 19)
+          end: new Date(2010, 11, 19),
+          delivery_start: new Date(2010, 10, 17),
+          delivery_end: new Date(2010, 10, 18),
         },
       ];
 
@@ -714,7 +712,7 @@ describe("Fetch Delivery Items POST API", () => {
     try {
       let res = await rp({
         method: 'post',
-        uri: lib.helpers.apiTestURL(`delivery/items/1/10`),
+        uri: lib.helpers.apiTestURL(`delivery/items/0/10`),
         body: {
           sort_column: '',
           agentName: '',
@@ -735,7 +733,7 @@ describe("Fetch Delivery Items POST API", () => {
 
       res = res.body;
 
-      expect(res.total).toBe(2);
+      expect(res.total).toBe(1);
 
       res = res.result;
 
@@ -756,9 +754,52 @@ describe("Fetch Delivery Items POST API", () => {
       lib.helpers.errorHandler.bind(this)(err);
     }
   });
-});
 
-describe("Delivery POST API", () => {
+  it("Hub clerk should get delivery items sent between two specified dates", async function (done) {
+    this.done = done;
+
+    try {
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery/items/0/10`),
+        body: {
+          sort_column: '',
+          agentName: '',
+          transferee: '',
+          direction: '',
+          endDate: '',
+          isDelivered: '',
+          isInternal: '',
+          missDeliveryAgent: true,
+        },
+        jar: hubClerk.rpJar,
+        json: true,
+        resolveWithFullResponse: true
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      res = res.body;
+
+      expect(res.total).toBe(1);
+
+      res = res.result;
+
+      expect(res.length).toBe(1);
+
+      const toCustomer = res.find(el => el._id.toString() === deliveries[1]._id.toString());
+      expect(toCustomer.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toCustomer.from.warehouse._id.toString()).toBe(hubId.toString());
+      expect(toCustomer.to.customer.first_name).toBe(orders[0].address.recipient_name);
+      expect(toCustomer.to.customer.surname).toBe(orders[0].address.recipient_surname);
+      expect(toCustomer.to.warehouse).toBeUndefined();   
+
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+});describe("Delivery POST API", () => {
   let deliveryAgents = [], deliveries = [], orders = [];
 
   beforeEach(done => {
