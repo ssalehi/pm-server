@@ -7,7 +7,18 @@ const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 
 describe("Fetch Delivery Items POST API", () => {
-  let deliveryAgents = [], deliveries = [], orders = [], salesManager, shopClerk, hubClerk;
+  let
+    deliveryAgents = [],
+    deliveries = [],
+    orders = [],
+    products = [],
+    salesManager,
+    shopClerk,
+    hubClerk,
+    customer,
+    centralId,
+    warehouseId,
+    hubId;
 
   beforeEach(async done => {
     try {
@@ -17,9 +28,9 @@ describe("Fetch Delivery Items POST API", () => {
         lib.dbHelpers.addAndLoginAgent('da1', _const.ACCESS_LEVEL.DeliveryAgent),
         lib.dbHelpers.addAndLoginAgent('da2', _const.ACCESS_LEVEL.DeliveryAgent)
       ]));
-      const centralId = warehouses.find(el => !el.is_hub && !el.has_customer_pickup)._id;
-      const warehouseId = warehouses.find(el => !el.is_hub && el.has_customer_pickup)._id;
-      const hubId = warehouses.find(el => el.is_hub)._id;
+      centralId = warehouses.find(el => !el.is_hub && !el.has_customer_pickup)._id;
+      warehouseId = warehouses.find(el => !el.is_hub && el.has_customer_pickup)._id;
+      hubId = warehouses.find(el => el.is_hub)._id;
 
       salesManager = (await lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, centralId));
       shopClerk = (await lib.dbHelpers.addAndLoginAgent('sc', _const.ACCESS_LEVEL.ShopClerk, warehouseId));
@@ -29,7 +40,16 @@ describe("Fetch Delivery Items POST API", () => {
         _id: mongoose.Types.ObjectId(),
         province: 'Tehran',
         city: 'Tehran',
-        street: 'Zafar'
+        district: '3',
+        street: 'Shariati',
+        unit: '10',
+        no: '20',
+        postal_code: '30405060',
+        recipient_title: 'm',
+        recipient_name: 'Ali',
+        recipient_surname: 'Alavi',
+        recipient_national_id: '0123456789',
+        recipient_mobile_no: '09092301202'
       };
       const ticket = {
         status: _const.ORDER_STATUS.DeliverySet,
@@ -46,7 +66,7 @@ describe("Fetch Delivery Items POST API", () => {
         timeStamp: new Date()
       };
 
-      const customer = {
+      customer = {
         _id: mongoose.Types.ObjectId(),
         first_name: 'AA',
         surname: 'BB',
@@ -57,7 +77,7 @@ describe("Fetch Delivery Items POST API", () => {
 
       await models()['CustomerTest'].insertMany([customer]);
 
-      const products = [
+      products = [
         {
           _id: mongoose.Types.ObjectId(),
           name: 'Product 1',
@@ -254,7 +274,7 @@ describe("Fetch Delivery Items POST API", () => {
             },
             {
               order_id: orders[1]._id,
-              order_line_ids: orders[0].order_lines.map(el => el._id)
+              order_line_ids: orders[1].order_lines.map(el => el._id)
             }
           ],
           status_list: [deliveryStatus],
@@ -264,8 +284,10 @@ describe("Fetch Delivery Items POST API", () => {
           to: {
             warehouse_id: hubId
           },
-          start: Date(2010, 10, 10),
-          end: Date(2010, 10, 12)
+          start:new  Date(2010, 10, 10),
+          end: new Date(2010, 10, 12),
+          delivery_start: new Date(2010, 10, 10),
+          delivery_end: new Date(2010, 10, 10)
         },
         {
           _id: mongoose.Types.ObjectId(),
@@ -285,8 +307,10 @@ describe("Fetch Delivery Items POST API", () => {
             }
           },
           status_list: [deliveryStatus],
-          start: Date(2010, 10, 11),
-          end: Date(2010, 10, 15)
+          start: new Date(2010, 10, 11),
+          end: new Date(2010, 10, 14),
+          delivery_start: new Date(2010, 10, 13),
+          delivery_end: new Date(2010, 10, 14)
         },
         {
           _id: mongoose.Types.ObjectId(),
@@ -304,8 +328,10 @@ describe("Fetch Delivery Items POST API", () => {
           },
           delivery_agent: deliveryAgents[0].aid,
           status_list: [deliveryStatus],
-          start: Date(2010, 10, 13),
-          end: Date(2010, 10, 15)
+          start: new Date(2010, 10, 13),
+          end: new Date(2010, 10, 15),
+          delivery_start: new Date(2010, 10, 14),
+          delivery_end: new Date(2010, 10, 15),
         },
         {
           _id: mongoose.Types.ObjectId(),
@@ -326,8 +352,8 @@ describe("Fetch Delivery Items POST API", () => {
           },
           is_return: true,
           status_list: [deliveryStatus],
-          start: Date(2010, 11, 15),
-          end: Date(2010, 11, 20)
+          start: new Date(2010, 11, 15),
+          end: new Date(2010, 11, 20)
         },
         {
           _id: mongoose.Types.ObjectId(),
@@ -351,8 +377,8 @@ describe("Fetch Delivery Items POST API", () => {
           }],
           delivered_evidence: 'abcd',
           delivery_agent: deliveryAgents[0].aid,
-          start: Date(2010, 11, 16),
-          end: Date(2010, 11, 19)
+          start: new Date(2010, 11, 16),
+          end: new Date(2010, 11, 19)
         },
       ];
 
@@ -397,226 +423,341 @@ describe("Fetch Delivery Items POST API", () => {
       const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
 
       const returnedDelivery = res.find(el => el._id.toString() === deliveries[3]._id.toString());
-      expect(returnedDelivery.product_intances.map(el => el._id.toString())).toContain(deliveries[3].order_details[0].order_id.toString());
+      expect(returnedDelivery.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
       expect(returnedDelivery.is_return).toBe(true);
+      expect(returnedDelivery.from.customer.first_name).toBe(customer.first_name);
+      expect(returnedDelivery.to.warehouse._id).toBe(hubId.toString());
 
       const fromCentral = res.find(el => el._id.toString() === deliveries[4]._id.toString());
-      expect(fromCentral.product_intances.map(el => el._id.toString())).toContain(deliveries[4].order_details[0].order_id.toString());
-      expect(fromCentral.delivery_agent_name).toBe(agentDetails.firstname + ' ' + agentDetails.surname);
+      expect(fromCentral.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(fromCentral.delivery_agent.first_name).toBe(agentDetails.first_name);
+      expect(fromCentral.from.warehouse._id.toString()).toBe(centralId.toString());
+      expect(fromCentral.to.warehouse._id.toString()).toBe(hubId.toString());
+      expect(fromCentral.to.customer).toBeUndefined();
 
       const toWarehouse = res.find(el => el._id.toString() === deliveries[2]._id.toString());
-      expect(toWarehouse.product_intances.map(el => el._id.toString())).toContain(deliveries[2].order_details[0].order_id.toString());
-      expect(toWarehouse.delivery_agent_name).toBe(agentDetails.firstname + ' ' + agentDetails.surname);
+      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(toWarehouse.delivery_agent.first_name).toBe(agentDetails.first_name);
+      expect(toWarehouse.from.warehouse._id.toString()).toBe(hubId.toString());
+      expect(toWarehouse.to.warehouse._id.toString()).toBe(warehouseId.toString());
+      expect(toWarehouse.to.customer).toBeUndefined();
 
       const toCustomer = res.find(el => el._id.toString() === deliveries[1]._id.toString());
-      expect(toCustomer.product_intances.map(el => el._id.toString())).toContain(deliveries[1].order_details[0].order_id.toString());
+      expect(toCustomer.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toCustomer.from.warehouse._id.toString()).toBe(hubId.toString());
+      expect(toCustomer.to.customer.first_name).toBe(orders[0].address.recipient_name);
+      expect(toCustomer.to.warehouse).toBeUndefined();
 
       const fromWarehouse = res.find(el => el._id.toString() === deliveries[0]._id.toString());
-      expect(fromWarehouse.product_intances.map(el => el._id.toString())).toContain(deliveries[0].order_details[0].order_id.toString());
+      expect(fromWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(fromWarehouse.from.warehouse._id.toString()).toBe(warehouseId.toString());
+      expect(fromWarehouse.to.warehouse._id.toString()).toBe(hubId.toString());
+      expect(fromWarehouse.to.customer).toBeUndefined();
 
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
     }
-  }, 100000);
+  });
 
-  // it("Sales manager should get deliveries based on offset and limit", async function (done) {
-  //   this.done = done;
+  it("Sales manager should get deliveries based on offset and limit (default soft is based on end field in document)", async function (done) {
+    this.done = done;
 
-  //   try {
-  //     let res = await rp({
-  //       method: 'post',
-  //       uri: lib.helpers.apiTestURL(`delivery/items/2/3`),
-  //       body: {
-  //         sort_column: '',
-  //         agentName: '',
-  //         transferee: '',
-  //         direction: '',
-  //         endDate: '',
-  //         isDelivered: '',
-  //         isInternal: '',
-  //       },
-  //       jar: salesManager.rpJar,
-  //       json: true,
-  //       resolveWithFullResponse: true
-  //     });
+    try {
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery/items/3/3`),
+        body: {
+          sort_column: '',
+          agentName: '',
+          transferee: '',
+          direction: '',
+          endDate: '',
+          isDelivered: '',
+          isInternal: '',
+        },
+        jar: salesManager.rpJar,
+        json: true,
+        resolveWithFullResponse: true
+      });
 
-  //     expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(200);
 
-  //     res = res.body;
+      res = res.body;
 
-  //     expect(res.length).toBe(2);
+      expect(res.total).toBe(5);
 
-  //     const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
+      res = res.result;
 
-  //     const toCustomer = res.find(el => el._id.toString() === deliveries[1]._id.toString());
-  //     expect(toCustomer.orders.map(el => el._id.toString())).toContain(deliveries[1].order_details[0].order_id.toString());
+      expect(res.length).toBe(2);
 
-  //     const fromWarehouse = res.find(el => el._id.toString() === deliveries[0]._id.toString());
-  //     expect(fromWarehouse.orders.map(el => el._id.toString())).toContain(deliveries[0].order_details[0].order_id.toString());
+      const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
 
-  //     done();
-  //   } catch (err) {
-  //     lib.helpers.errorHandler.bind(this);
-  //   }
-  // })
+      res.forEach(el => {
+        console.log(' ==> id ==> ', el._id.toString());
+      });
 
-  // it("Sales manager should get only returned deliveries", async function (done) {
-  //   this.done = done;
+      const returnedDelivery = res.find(el => el._id.toString() === deliveries[3]._id.toString());
+      expect(returnedDelivery.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(returnedDelivery.is_return).toBe(true);
+      expect(returnedDelivery.from.customer.first_name).toBe(customer.first_name);
+      expect(returnedDelivery.to.warehouse._id).toBe(hubId.toString());
 
-  //   try {
-  //     let res = await rp({
-  //       method: 'post',
-  //       uri: lib.helpers.apiTestURL(`delivery/items/0/1`),
-  //       body: {
-  //         sort_column: '',
-  //         agentName: '',
-  //         transferee: '',
-  //         direction: '',
-  //         endDate: '',
-  //         isDelivered: true,
-  //         isInternal: false,
-  //         isReturned: true,
-  //       },
-  //       jar: salesManager.rpJar,
-  //       json: true,
-  //       resolveWithFullResponse: true
-  //     });
-
-  //     expect(res.statusCode).toBe(200);
-
-  //     res = res.body;
-
-  //     expect(res.length).toBe(1);
-
-  //     const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
-
-  //     const returnedDelivery = res.find(el => el._id.toString() === deliveries[4]._id.toString());
-  //     expect(returnedDelivery.orders.map(el => el._id.toString())).toContain(deliveries[4].order_details[0].order_id.toString());
-  //     expect(returnedDelivery.is_return).toBe(true);
-  //     expect(returnedDelivery.delivered_evidence).toBe(deliveries[4].delivered_evidence);
-  //     expect(returnedDelivery.delivery_agent_name).toBe(agentDetails.firstname + ' ' + agentDetails.surname);
-
-  //     done();
-  //   } catch (err) {
-  //     lib.helpers.errorHandler.bind(this);
-  //   }
-  // });
-
-  // it("Shop clerk should get delivery items sent from current shop", async function (done) {
-  //   this.done = done;
-
-  //   try {
-  //     let res = await rp({
-  //       method: 'post',
-  //       uri: lib.helpers.apiTestURL(`delivery/items/0/1`),
-  //       body: {
-  //         sort_column: '',
-  //         agentName: '',
-  //         transferee: '',
-  //         direction: '',
-  //         endDate: '',
-  //         isDelivered: '',
-  //         isInternal: '',
-  //       },
-  //       jar: salesManager.rpJar,
-  //       json: true,
-  //       resolveWithFullResponse: true
-  //     });
-
-  //     expect(res.statusCode).toBe(200);
-
-  //     res = res.body;
-
-  //     expect(res.length).toBe(1);
-
-  //     const fromWarehouse = res.find(el => el._id.toString() === deliveries[0]._id.toString());
-  //     expect(fromWarehouse.orders.map(el => el._id.toString())).toContain(deliveries[0].order_details[0].order_id.toString());
-
-  //     done();
-  //   } catch (err) {
-  //     lib.helpers.errorHandler.bind(this);
-  //   }
-  // });
-
-  // it("Hub clerk should get delivery items sent from hub", async function (done) {
-  //   this.done = done;
-
-  //   try {
-  //     let res = await rp({
-  //       method: 'post',
-  //       uri: lib.helpers.apiTestURL(`delivery/items/0/10`),
-  //       body: {
-  //         sort_column: '',
-  //         agentName: '',
-  //         transferee: '',
-  //         direction: '',
-  //         endDate: '',
-  //         isDelivered: '',
-  //         isInternal: '',
-  //       },
-  //       jar: salesManager.rpJar,
-  //       json: true,
-  //       resolveWithFullResponse: true
-  //     });
-
-  //     expect(res.statusCode).toBe(200);
-
-  //     res = res.body;
-
-  //     expect(res.length).toBe(2);
-
-  //     const toWarehouse = res.find(el => el._id.toString() === deliveries[2]._id.toString());
-  //     expect(toWarehouse.orders.map(el => el._id.toString())).toContain(deliveries[2].order_details[0].order_id.toString());
-  //     expect(toWarehouse.delivery_agent_name).toBe(agentDetails.firstname + ' ' + agentDetails.surname);
-
-  //     const toCustomer = res.find(el => el._id.toString() === deliveries[1]._id.toString());
-  //     expect(toCustomer.orders.map(el => el._id.toString())).toContain(deliveries[1].order_details[0].order_id.toString());
+      const fromCentral = res.find(el => el._id.toString() === deliveries[4]._id.toString());
+      expect(fromCentral.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(fromCentral.delivery_agent.first_name).toBe(agentDetails.first_name);
+      expect(fromCentral.from.warehouse._id.toString()).toBe(centralId.toString());
+      expect(fromCentral.to.warehouse._id.toString()).toBe(hubId.toString());
+      expect(fromCentral.to.customer).toBeUndefined();
       
-  //     done();
-  //   } catch (err) {
-  //     lib.helpers.errorHandler.bind(this);
-  //   }
-  // });
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  })
 
-  // it("Hub clerk should get delivery items sent between two specified dates", async function (done) {
-  //   this.done = done;
+  it("Sales manager should get only returned deliveries", async function (done) {
+    this.done = done;
 
-  //   try {
-  //     let res = await rp({
-  //       method: 'post',
-  //       uri: lib.helpers.apiTestURL(`delivery/items/0/10`),
-  //       body: {
-  //         sort_column: '',
-  //         agentName: '',
-  //         transferee: '',
-  //         direction: '',
-  //         endDate: '',
-  //         isDelivered: '',
-  //         isInternal: '',
-  //         start_date: Date(2010, 10, 12),
-  //         end_date: Date(2010, 10, 20)
-  //       },
-  //       jar: salesManager.rpJar,
-  //       json: true,
-  //       resolveWithFullResponse: true
-  //     });
+    try {
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery/items/0/1`),
+        body: {
+          sort_column: '',
+          agentName: '',
+          transferee: '',
+          direction: '',
+          endDate: '',
+          isReturn: true,
+        },
+        jar: salesManager.rpJar,
+        json: true,
+        resolveWithFullResponse: true
+      });
 
-  //     expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(200);
 
-  //     res = res.body;
+      res = res.body;
 
-  //     expect(res.length).toBe(1);
+      expect(res.total).toBe(1);
 
-  //     const toWarehouse = res.find(el => el._id.toString() === deliveries[2]._id.toString());
-  //     expect(toWarehouse.orders.map(el => el._id.toString())).toContain(deliveries[2].order_details[0].order_id.toString());
-  //     expect(toWarehouse.delivery_agent_name).toBe(agentDetails.firstname + ' ' + agentDetails.surname);
+      res = res.result;
+
+      expect(res.length).toBe(1);
+
+      const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
+
+      const returnedDelivery = res.find(el => el._id.toString() === deliveries[3]._id.toString());
+      expect(returnedDelivery.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(returnedDelivery.is_return).toBe(true);
+      expect(returnedDelivery.from.customer.first_name).toBe(customer.first_name);
+      expect(returnedDelivery.to.warehouse._id).toBe(hubId.toString());
+
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+  it("Sales manager should get only internal deliveries", async function (done) {
+    this.done = done;
+
+    try {
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery/items/1/2`),
+        body: {
+          sort_column: '',
+          agentName: '',
+          transferee: '',
+          direction: '',
+          endDate: '',
+          isInternal: true,
+        },
+        jar: salesManager.rpJar,
+        json: true,
+        resolveWithFullResponse: true
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      res = res.body;
+
+      expect(res.total).toBe(3);
+
+      res = res.result;
+
+      expect(res.length).toBe(2);
+
+      const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
+
+      const fromCentral = res.find(el => el._id.toString() === deliveries[4]._id.toString());
+      expect(fromCentral.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(fromCentral.delivery_agent.first_name).toBe(agentDetails.first_name);
+      expect(fromCentral.from.warehouse._id.toString()).toBe(centralId.toString());
+      expect(fromCentral.to.warehouse._id.toString()).toBe(hubId.toString());
+      expect(fromCentral.to.customer).toBeUndefined();
+
+      const toWarehouse = res.find(el => el._id.toString() === deliveries[2]._id.toString());
+      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(toWarehouse.delivery_agent.first_name).toBe(agentDetails.first_name);
+      expect(toWarehouse.from.warehouse._id.toString()).toBe(hubId.toString());
+      expect(toWarehouse.to.warehouse._id.toString()).toBe(warehouseId.toString());
+      expect(toWarehouse.to.customer).toBeUndefined();
+
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+  it("Shop clerk should get delivery items sent from current shop", async function (done) {
+    this.done = done;
+
+    try {
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery/items/0/1`),
+        body: {
+          sort_column: '',
+          agentName: '',
+          transferee: '',
+          direction: '',
+          endDate: '',
+          isDelivered: '',
+          isInternal: '',
+        },
+        jar: shopClerk.rpJar,
+        json: true,
+        resolveWithFullResponse: true
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      res = res.body;
+
+      expect(res.total).toBe(1);
       
-  //     done();
-  //   } catch (err) {
-  //     lib.helpers.errorHandler.bind(this);
-  //   }
-  // });
+      res = res.result;
+
+      expect(res.length).toBe(1);
+
+      const fromWarehouse = res.find(el => el._id.toString() === deliveries[0]._id.toString());
+      expect(fromWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(fromWarehouse.from.warehouse._id.toString()).toBe(warehouseId.toString());
+      expect(fromWarehouse.to.warehouse._id.toString()).toBe(hubId.toString());
+      expect(fromWarehouse.to.customer).toBeUndefined();
+
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+  it("Hub clerk should get delivery items sent from hub", async function (done) {
+    this.done = done;
+
+    try {
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery/items/0/10`),
+        body: {
+          sort_column: '',
+          agentName: '',
+          transferee: '',
+          direction: '',
+          endDate: '',
+          isDelivered: '',
+          isInternal: '',
+        },
+        jar: hubClerk.rpJar,
+        json: true,
+        resolveWithFullResponse: true
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      res = res.body;
+
+      expect(res.total).toBe(2);
+
+      res = res.result;
+
+      expect(res.length).toBe(2);
+
+      const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
+
+      const toWarehouse = res.find(el => el._id.toString() === deliveries[2]._id.toString());
+      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(toWarehouse.delivery_agent.first_name).toBe(agentDetails.first_name);
+      expect(toWarehouse.from.warehouse._id.toString()).toBe(hubId.toString());
+      expect(toWarehouse.to.warehouse._id.toString()).toBe(warehouseId.toString());
+      expect(toWarehouse.to.customer).toBeUndefined();
+
+      const toCustomer = res.find(el => el._id.toString() === deliveries[1]._id.toString());
+      expect(toCustomer.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toCustomer.from.warehouse._id.toString()).toBe(hubId.toString());
+      expect(toCustomer.to.customer.first_name).toBe(orders[0].address.recipient_name);
+      expect(toCustomer.to.warehouse).toBeUndefined();
+
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+  it("Hub clerk should get delivery items sent between two specified dates", async function (done) {
+    this.done = done;
+
+    try {
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery/items/1/10`),
+        body: {
+          sort_column: '',
+          agentName: '',
+          transferee: '',
+          direction: '',
+          endDate: '',
+          isDelivered: '',
+          isInternal: '',
+          delivery_start: new Date(2010, 10, 12),
+          delivery_end: new Date(2010, 10, 20)
+        },
+        jar: hubClerk.rpJar,
+        json: true,
+        resolveWithFullResponse: true
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      res = res.body;
+
+      expect(res.total).toBe(2);
+
+      res = res.result;
+
+      expect(res.length).toBe(1);
+
+      const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
+
+      const toWarehouse = res.find(el => el._id.toString() === deliveries[2]._id.toString());
+      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(toWarehouse.delivery_agent.first_name).toBe(agentDetails.first_name);
+      expect(toWarehouse.from.warehouse._id.toString()).toBe(hubId.toString());
+      expect(toWarehouse.to.warehouse._id.toString()).toBe(warehouseId.toString());
+      expect(toWarehouse.to.customer).toBeUndefined();
+
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
 });
 
 xdescribe("Delivery POST API", () => {
@@ -901,22 +1042,22 @@ xdescribe("Delivery POST API", () => {
         expect(res.map(el => el._id.toString())).toContain(deliveries[1]._id.toString());
         expect(res.map(el => el._id.toString())).toContain(deliveries[3]._id.toString());
         // res.map(el => el.status_list[el.status_list.length - 1]).reduce((a, b) => a.concat(b), []).forEach(t => {
-          // expect(t.status).toBe(_const.ORDER_STATUS.ReadyToDeliver);
+        // expect(t.status).toBe(_const.ORDER_STATUS.ReadyToDeliver);
         // });
 
-      //   return models()['OrderTest'].find({
-      //     _id: {
-      //       $in: [orders[0]._id, orders[1]._id, orders[4]._id]
-      //     }
-      //   });
-      // })
-      // .then(res => {
-      //   expect(res.length).toBe(3);
-      //   expect(res
-      //     .map(el => el.order_lines.map(i => i.tickets[i.tickets.length - 1])
-      //       .reduce((a, b) => a.concat(b), []))
-      //     .reduce((a, b) => a.concat(b), [])
-      //     .map(el => el.status)).toContain(_const.ORDER_STATUS.ReadyToDeliver);
+        //   return models()['OrderTest'].find({
+        //     _id: {
+        //       $in: [orders[0]._id, orders[1]._id, orders[4]._id]
+        //     }
+        //   });
+        // })
+        // .then(res => {
+        //   expect(res.length).toBe(3);
+        //   expect(res
+        //     .map(el => el.order_lines.map(i => i.tickets[i.tickets.length - 1])
+        //       .reduce((a, b) => a.concat(b), []))
+        //     .reduce((a, b) => a.concat(b), [])
+        //     .map(el => el.status)).toContain(_const.ORDER_STATUS.ReadyToDeliver);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
@@ -947,19 +1088,19 @@ xdescribe("Delivery POST API", () => {
         expect(res.map(el => el._id.toString())).toContain(deliveries[1]._id.toString());
         expect(res.map(el => el._id.toString())).toContain(deliveries[2]._id.toString());
         expect(res.map(el => el._id.toString())).toContain(deliveries[4]._id.toString());
-      //   return models()['OrderTest'].find({
-      //     _id: {
-      //       $in: [orders[0]._id, orders[1]._id, orders[2]._id, orders[3]._id]
-      //     }
-      //   });
-      // })
-      // .then(res => {
-      //   expect(res.length).toBe(4);
-      //   expect(res
-      //     .map(el => el.order_lines.map(i => i.tickets[i.tickets.length - 1])
-      //       .reduce((a, b) => a.concat(b), []))
-      //     .reduce((a, b) => a.concat(b), [])
-      //     .map(el => el.status)).toContain(_const.ORDER_STATUS.ReadyToDeliver);
+        //   return models()['OrderTest'].find({
+        //     _id: {
+        //       $in: [orders[0]._id, orders[1]._id, orders[2]._id, orders[3]._id]
+        //     }
+        //   });
+        // })
+        // .then(res => {
+        //   expect(res.length).toBe(4);
+        //   expect(res
+        //     .map(el => el.order_lines.map(i => i.tickets[i.tickets.length - 1])
+        //       .reduce((a, b) => a.concat(b), []))
+        //     .reduce((a, b) => a.concat(b), [])
+        //     .map(el => el.status)).toContain(_const.ORDER_STATUS.ReadyToDeliver);
         done();
       })
       .catch(lib.helpers.errorHandler.bind(this));
