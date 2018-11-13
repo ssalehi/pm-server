@@ -423,36 +423,36 @@ describe("Fetch Delivery Items POST API", () => {
       const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
 
       const returnedDelivery = res.find(el => el._id.toString() === deliveries[3]._id.toString());
-      expect(returnedDelivery.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(returnedDelivery.product_instances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
       expect(returnedDelivery.is_return).toBe(true);
       expect(returnedDelivery.from.customer.first_name).toBe(customer.first_name);
       expect(returnedDelivery.from.customer.surname).toBe(customer.surname);
       expect(returnedDelivery.to.warehouse._id).toBe(hubId.toString());
 
       const fromCentral = res.find(el => el._id.toString() === deliveries[4]._id.toString());
-      expect(fromCentral.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(fromCentral.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
       expect(fromCentral.delivery_agent.first_name).toBe(agentDetails.first_name);
       expect(fromCentral.from.warehouse._id.toString()).toBe(centralId.toString());
       expect(fromCentral.to.warehouse._id.toString()).toBe(hubId.toString());
       expect(fromCentral.to.customer).toBeUndefined();
 
       const toWarehouse = res.find(el => el._id.toString() === deliveries[2]._id.toString());
-      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
-      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(toWarehouse.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toWarehouse.product_instances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
       expect(toWarehouse.delivery_agent.first_name).toBe(agentDetails.first_name);
       expect(toWarehouse.from.warehouse._id.toString()).toBe(hubId.toString());
       expect(toWarehouse.to.warehouse._id.toString()).toBe(warehouseId.toString());
       expect(toWarehouse.to.customer).toBeUndefined();
 
       const toCustomer = res.find(el => el._id.toString() === deliveries[1]._id.toString());
-      expect(toCustomer.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toCustomer.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
       expect(toCustomer.from.warehouse._id.toString()).toBe(hubId.toString());
       expect(toCustomer.to.customer.first_name).toBe(orders[0].address.recipient_name);
       expect(toCustomer.to.customer.surname).toBe(orders[0].address.recipient_surname);
       expect(toCustomer.to.warehouse).toBeUndefined();
 
       const fromWarehouse = res.find(el => el._id.toString() === deliveries[0]._id.toString());
-      expect(fromWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(fromWarehouse.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
       expect(fromWarehouse.from.warehouse._id.toString()).toBe(warehouseId.toString());
       expect(fromWarehouse.to.warehouse._id.toString()).toBe(hubId.toString());
       expect(fromWarehouse.to.customer).toBeUndefined();
@@ -497,13 +497,13 @@ describe("Fetch Delivery Items POST API", () => {
       const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
 
       const returnedDelivery = res.find(el => el._id.toString() === deliveries[3]._id.toString());
-      expect(returnedDelivery.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(returnedDelivery.product_instances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
       expect(returnedDelivery.is_return).toBe(true);
       expect(returnedDelivery.from.customer.first_name).toBe(customer.first_name);
       expect(returnedDelivery.to.warehouse._id).toBe(hubId.toString());
 
       const fromCentral = res.find(el => el._id.toString() === deliveries[4]._id.toString());
-      expect(fromCentral.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(fromCentral.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
       expect(fromCentral.delivery_agent.first_name).toBe(agentDetails.first_name);
       expect(fromCentral.from.warehouse._id.toString()).toBe(centralId.toString());
       expect(fromCentral.to.warehouse._id.toString()).toBe(hubId.toString());
@@ -548,7 +548,7 @@ describe("Fetch Delivery Items POST API", () => {
       const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
 
       const returnedDelivery = res.find(el => el._id.toString() === deliveries[3]._id.toString());
-      expect(returnedDelivery.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(returnedDelivery.product_instances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
       expect(returnedDelivery.is_return).toBe(true);
       expect(returnedDelivery.from.customer.first_name).toBe(customer.first_name);
       expect(returnedDelivery.to.warehouse._id).toBe(hubId.toString());
@@ -592,15 +592,15 @@ describe("Fetch Delivery Items POST API", () => {
       const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
 
       const fromCentral = res.find(el => el._id.toString() === deliveries[4]._id.toString());
-      expect(fromCentral.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(fromCentral.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
       expect(fromCentral.delivery_agent.first_name).toBe(agentDetails.first_name);
       expect(fromCentral.from.warehouse._id.toString()).toBe(centralId.toString());
       expect(fromCentral.to.warehouse._id.toString()).toBe(hubId.toString());
       expect(fromCentral.to.customer).toBeUndefined();
 
       const toWarehouse = res.find(el => el._id.toString() === deliveries[2]._id.toString());
-      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
-      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(toWarehouse.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toWarehouse.product_instances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
       expect(toWarehouse.delivery_agent.first_name).toBe(agentDetails.first_name);
       expect(toWarehouse.from.warehouse._id.toString()).toBe(hubId.toString());
       expect(toWarehouse.to.warehouse._id.toString()).toBe(warehouseId.toString());
@@ -644,7 +644,7 @@ describe("Fetch Delivery Items POST API", () => {
       expect(res.length).toBe(1);
 
       const fromWarehouse = res.find(el => el._id.toString() === deliveries[0]._id.toString());
-      expect(fromWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(fromWarehouse.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
       expect(fromWarehouse.from.warehouse._id.toString()).toBe(warehouseId.toString());
       expect(fromWarehouse.to.warehouse._id.toString()).toBe(hubId.toString());
       expect(fromWarehouse.to.customer).toBeUndefined();
@@ -689,15 +689,15 @@ describe("Fetch Delivery Items POST API", () => {
       const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
 
       const toWarehouse = res.find(el => el._id.toString() === deliveries[2]._id.toString());
-      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
-      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(toWarehouse.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toWarehouse.product_instances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
       expect(toWarehouse.delivery_agent.first_name).toBe(agentDetails.first_name);
       expect(toWarehouse.from.warehouse._id.toString()).toBe(hubId.toString());
       expect(toWarehouse.to.warehouse._id.toString()).toBe(warehouseId.toString());
       expect(toWarehouse.to.customer).toBeUndefined();
 
       const toCustomer = res.find(el => el._id.toString() === deliveries[1]._id.toString());
-      expect(toCustomer.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toCustomer.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
       expect(toCustomer.from.warehouse._id.toString()).toBe(hubId.toString());
       expect(toCustomer.to.customer.first_name).toBe(orders[0].address.recipient_name);
       expect(toCustomer.to.warehouse).toBeUndefined();
@@ -744,8 +744,8 @@ describe("Fetch Delivery Items POST API", () => {
       const agentDetails = (await models()['AgentTest'].findOne({_id: deliveryAgents[0].aid}));
 
       const toWarehouse = res.find(el => el._id.toString() === deliveries[2]._id.toString());
-      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
-      expect(toWarehouse.product_intances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
+      expect(toWarehouse.product_instances.map(el => el.product_id.toString())).toContain(products[0]._id.toString());
+      expect(toWarehouse.product_instances.map(el => el.product_id.toString())).toContain(products[1]._id.toString());
       expect(toWarehouse.delivery_agent.first_name).toBe(agentDetails.first_name);
       expect(toWarehouse.from.warehouse._id.toString()).toBe(hubId.toString());
       expect(toWarehouse.to.warehouse._id.toString()).toBe(warehouseId.toString());
