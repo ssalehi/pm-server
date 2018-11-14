@@ -459,7 +459,7 @@ xdescribe('POST Order - Search over order lines by tickets', () => {
             tickets: [ // sales manager ticket
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 is_processed: true
               }
             ]
@@ -469,7 +469,7 @@ xdescribe('POST Order - Search over order lines by tickets', () => {
             tickets: [
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 // is_processed: true,
                 agent_id: SMAgent.cid
               },
@@ -493,7 +493,7 @@ xdescribe('POST Order - Search over order lines by tickets', () => {
             tickets: [ // sales manager ticket
               {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 // is_processed: true,
                 agent_id: SMAgent.cid
               },
@@ -504,7 +504,7 @@ xdescribe('POST Order - Search over order lines by tickets', () => {
                 agent_id: SCAgent.cid
               }, {
                 warehouse_id: warehouses.find(x => x.is_center)._id,
-                status: _const.ORDER_STATUS.SCSentToCentral,
+                status: _const.ORDER_LINE_STATUS.SCSentToCentral,
                 is_processed: true,
               }
             ]
@@ -994,21 +994,15 @@ xdescribe('POST Suggest Page Address', () => {
   });
 });
 
-describe('POST Search Order Tickets', () => {
+xdescribe('POST Search Scan Inbox', () => {
 
   let CWClerk = { // central warehosue clerk
     aid: null,
     jar: null,
   };
 
-  let PAClerk = { // paladium warehosue clerk
-    aid: null,
-    jar: null,
-  };
 
-
-  let products, orders = [], customer;
-
+  let products, centralWarehouse;
   beforeEach(async (done) => {
     try {
 
@@ -1017,19 +1011,11 @@ describe('POST Search Order Tickets', () => {
       let warehouses = await models()['WarehouseTest'].insertMany(_warehouses);
       warehouses = JSON.parse(JSON.stringify(warehouses));
 
-      let centralWarehouse = warehouses.find(x => !x.is_hub && !x.has_customer_pickup);
-      let paladiumWarehouse = warehouses.find(x => x.name === 'پالادیوم');
-
+      centralWarehouse = warehouses.find(x => !x.is_hub && !x.has_customer_pickup);
 
       let res = await lib.dbHelpers.addAndLoginAgent('cwclerk', _const.ACCESS_LEVEL.ShopClerk, centralWarehouse._id);
       CWClerk.aid = res.aid;
       CWClerk.jar = res.rpJar;
-
-      res = await lib.dbHelpers.addAndLoginAgent('paclerk', _const.ACCESS_LEVEL.ShopClerk, paladiumWarehouse._id);
-      PAClerk.aid = res.aid;
-      PAClerk.jar = res.rpJar;
-
-      customer = await lib.dbHelpers.addAndLoginCustomer('customer');
 
       products = await models()['ProductTest'].insertMany([
         {
@@ -1044,220 +1030,12 @@ describe('POST Search Order Tickets', () => {
             },
             {
               size: "10",
-              price: 4000,
-              barcode: '19231213123',
-            }
-          ]
-        },
-        {
-          name: 'simple 2',
-          base_price: 600000,
-          article_no: "ar124",
-          instances: [
-            {
-              size: "11",
-              price: 50000,
-              barcode: '9303850203',
-            },
-            {
-              size: "12",
-              price: 50000,
-              barcode: '9303850203',
+              price: 2000,
+              barcode: '0394081342',
             }
           ]
         }
       ])
-
-      /*
-       order 1 => has 4 same order lines which 3 of them have ticket for central warehouse agent (scan base) 
-      
-      */
-
-      orders = [];
-
-      orders.push({
-        customer_id: mongoose.Types.ObjectId(),
-        is_cart: false,
-        transaction_id: "xyz12210",
-        order_lines: [],
-        address: {
-          province: "تهران",
-          city: "تهران",
-          street: 'دولت',
-          recipient_name: 'احسان',
-          recipient_surname: 'انصاری بصیر',
-          recipient_national_id: '0010684281',
-          recipient_mobile_no: '09125975886',
-          postal_code: "123456789",
-          loc: {
-            long: 51.111,
-            lat: 35.555
-          }
-        },
-        duration_days: 1,
-        is_collect: false,
-        order_time: moment(),
-        time_slot: {
-          lower_bound: 10,
-          upper_bound: 18
-        },
-        total_amount: 20,
-        used_balance: 0,
-        used_point: 0
-
-      });
-
-      let tickets = [ // tickets for scan base inbox
-        _const.ORDER_STATUS.default,
-        _const.ORDER_STATUS.Renew,
-        _const.ORDER_STATUS.WaitForOnlineWarehouse,
-
-      ];
-      // add 3 same scan base order line
-      for (let i = 0; i < 3; i++) {
-        orders[0].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[0].id,
-          adding_time: moment(),
-          tickets: [
-            {
-              is_processed: false,
-              status: tickets[Math.floor(Math.random() * tickets.length)],
-              desc: null,
-              receiver_id: centralWarehouse._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
-
-      // add 1 different scan base order line
-      orders[0].order_lines.push({
-        paid_price: 0,
-        product_id: products[1].id,
-        product_instance_id: products[1].instances[1].id,
-        adding_time: moment(),
-        tickets: [
-          {
-            is_processed: false,
-            status: _const.ORDER_STATUS.default,
-            desc: null,
-            receiver_id: paladiumWarehouse._id,
-            timestamp: moment()
-          }
-        ]
-      })
-
-      /*
-       order 2 => has 4 different scan base order lines
-      */
-      orders.push({
-        customer_id: mongoose.Types.ObjectId(),
-        is_cart: false,
-        transaction_id: "xyz12213",
-        order_lines: [],
-        address: {
-          province: "تهران",
-          city: "تهران",
-          street: 'دولت',
-          recipient_name: 'احسان',
-          recipient_surname: 'انصاری بصیر',
-          recipient_national_id: '0010684281',
-          recipient_mobile_no: '09125975886',
-          postal_code: "123456789",
-          loc: {
-            long: 51.111,
-            lat: 35.555
-          }
-        },
-        duration_days: 3,
-        is_collect: false,
-        order_time: moment(),
-        time_slot: {
-          lower_bound: 10,
-          upper_bound: 18
-        },
-        total_amount: 20,
-        used_balance: 0,
-        used_point: 0
-
-      });
-
-
-      for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
-          orders[1].order_lines.push({
-            paid_price: 0,
-            product_id: products[i].id,
-            product_instance_id: products[i].instances[j].id,
-            adding_time: moment(),
-            tickets: [
-              {
-                is_processed: false,
-                status: _const.ORDER_STATUS.default,
-                desc: null,
-                receiver_id: centralWarehouse._id,
-                timestamp: moment()
-              }
-            ]
-          })
-        }
-      }
-
-      /*
-      order 3 => has 4 different manual base order lines 
-      */
-
-      orders.push({
-        customer_id: mongoose.Types.ObjectId(),
-        is_cart: false,
-        transaction_id: "xyz12213",
-        order_lines: [],
-        address: Object.assign({
-          recipient_name: 'احسان',
-          recipient_surname: 'انصاری بصیر',
-          recipient_national_id: '0010684281',
-          recipient_mobile_no: '09125975886',
-        }, paladiumWarehouse.address),
-        duration_days: 3,
-        is_collect: true,
-        order_time: moment(),
-        total_amount: 20,
-        used_balance: 0,
-        used_point: 0
-      });
-
-
-      tickets = [ // tickets for manual base inbox
-        _const.ORDER_STATUS.WaitForAggregation,
-        _const.ORDER_STATUS.WaitForInvoice,
-        _const.ORDER_STATUS.ReadyForInvoice,
-
-      ];
-
-      for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
-          orders[2].order_lines.push({
-            paid_price: 0,
-            product_id: products[i].id,
-            product_instance_id: products[i].instances[j].id,
-            adding_time: moment(),
-            tickets: [
-              {
-                is_processed: false,
-                status: tickets[Math.floor(Math.random() * tickets.length)],
-                desc: null,
-                receiver_id: paladiumWarehouse._id,
-                timestamp: moment()
-              }
-            ]
-          })
-        }
-      }
-
-      orders = await models()['OrderTest'].insertMany(orders);
-      orders = JSON.parse(JSON.stringify(orders));
 
       done()
     }
@@ -1267,17 +1045,110 @@ describe('POST Search Order Tickets', () => {
   }, 15000);
 
 
-  it('central warehoues clerck should get scan base inbox (4 order lines with total 7 count)', async function (done) {
+  it('should get all scan inbox grouped by order line count', async function (done) {
     try {
       this.done = done;
+
+      let orders = [];
+
+      orders.push({
+        customer_id: mongoose.Types.ObjectId(),
+        is_cart: false,
+        transaction_id: "xyz12213",
+        order_lines: [],
+        is_collect: true,
+        order_time: moment(),
+      });
+
+      for (let i = 0; i < 3; i++) { // add 3 order line of first product for order 1 
+        orders[0].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[0].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.default,
+              desc: null,
+              receiver_id: centralWarehouse._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+      for (let i = 0; i < 2; i++) { // add 2 order line of second product instance for order 1 
+        orders[0].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[1].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.default,
+              desc: null,
+              receiver_id: centralWarehouse._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+
+      orders.push({
+        customer_id: mongoose.Types.ObjectId(),
+        is_cart: false,
+        transaction_id: "xyz12214",
+        order_lines: [],
+        is_collect: false,
+        order_time: moment(),
+      });
+
+      for (let i = 0; i < 2; i++) { // add 2 order line of frist product instance for order 2 
+        orders[1].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[0].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.default,
+              desc: null,
+              receiver_id: centralWarehouse._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+
+      for (let i = 0; i < 2; i++) { // add 2 order line of second product instance for order 1 
+        orders[1].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[1].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.default,
+              desc: null,
+              receiver_id: centralWarehouse._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+
+      orders = await models()['OrderTest'].insertMany(orders);
+      orders = JSON.parse(JSON.stringify(orders));
 
       let res = await rp({
         method: 'post',
         uri: lib.helpers.apiTestURL(`search/Ticket`),
         body: {
           options: {
-            type: 'inbox',
-            manual: false
+            type: 'sacnInbox'
           },
           offset: 0,
           limit: 5
@@ -1287,106 +1158,249 @@ describe('POST Search Order Tickets', () => {
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(4);
-      expect(res.body.total).toBe(4);
+      expect(res.body.data.length).toBe(2);
+      expect(res.body.total).toBe(2);
 
-      let count = 0;
+      let item1 = res.body.data.find(x => x.instance._id.toString() === products[0].instances[0]._id.toString());
+      let item2 = res.body.data.find(x => x.instance._id.toString() === products[0].instances[1]._id.toString());
 
-      let validTickets = [
-        _const.ORDER_STATUS.default,
-        _const.ORDER_STATUS.Renew,
-        _const.ORDER_STATUS.WaitForOnlineWarehouse,
-      ]
-      res.body.data.forEach(x => {
-        expect([orders[0], orders[1]].map(y => y._id).includes(x.order_id)).toBeTruthy();
-        expect(validTickets.includes(x.tickets[x.tickets.length - 1].status)).toBeTruthy();
-        count += x.count;
-      });
-      let foundOrderLine = res.body.data.find(x => x.order_id === orders[0]._id);
-      expect(count).toBe(7);
+      expect(item1.count).toBe(5);
+      expect(item2.count).toBe(4);
 
-
-      expect(foundOrderLine.count).toBe(4);
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
     }
   });
 
-  it('paladium warehoues clerck should get manual inbox (4 order line collapsed in one order (order 3)', async function (done) {
-    try {
-      this.done = done;
 
-      let res = await rp({
-        method: 'post',
-        uri: lib.helpers.apiTestURL(`search/Ticket`),
-        body: {
-          options: {
-            type: 'inbox',
-            manual: true
-          },
-          offset: 0,
-          limit: 5
-        },
-        json: true,
-        jar: PAClerk.jar,
-        resolveWithFullResponse: true
-      });
-      expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(1);
-      expect(res.body.total).toBe(1);
-      expect(res.body.data[0]._id).toBe(orders[2]._id.toString());
-      
-      let validTickets = [
-        _const.ORDER_STATUS.WaitForAggregation,
-        _const.ORDER_STATUS.ReadyForInvoice,
-        _const.ORDER_STATUS.WaitForInvoice,
-      ]
-    
-      res.body.data[0].order_lines.forEach(x => {
-        expect(orders[2].order_lines.map(y => y._id.toString()).includes(x.order_line_id)).toBeTruthy();
-        expect(validTickets.includes(x.tickets[x.tickets.length - 1].status)).toBeTruthy();
-      })
-      done();
-    } catch (err) {
-      lib.helpers.errorHandler.bind(this)(err);
+});
+
+describe('POST Search Send to Customer Box', () => {
+
+  let hubClerk = { // central warehosue clerk
+    aid: null,
+    jar: null,
+  };
+
+
+  let products, centralWarehouse;
+  beforeEach(async (done) => {
+    try {
+
+      await lib.dbHelpers.dropAll()
+
+      let warehouses = await models()['WarehouseTest'].insertMany(_warehouses);
+      warehouses = JSON.parse(JSON.stringify(warehouses));
+
+      hub = warehouses.find(x => x.is_hub);
+
+      let res = await lib.dbHelpers.addAndLoginAgent('hclerk', _const.ACCESS_LEVEL.HubClerk, hub._id);
+      hubClerk.aid = res.aid;
+      hubClerk.jar = res.rpJar;
+
+      products = await models()['ProductTest'].insertMany([
+        {
+          name: 'sample 1',
+          base_price: 30000,
+          article_no: "ar123",
+          instances: [
+            {
+              size: "9",
+              price: 2000,
+              barcode: '0394081341',
+            },
+            {
+              size: "10",
+              price: 2000,
+              barcode: '0394081342',
+            }
+          ]
+        }
+      ])
+
+      done()
     }
-  });
+    catch (err) {
+      console.log(err);
+    };
+  }, 15000);
 
-  it('customer, total order lines & recipient info should exists on manual inbox', async function (done) {
+
+  it('should get all aggregated send to customer orders', async function (done) {
     try {
       this.done = done;
+
+      let orders = [];
+
+      orders.push({ // not cc order
+        customer_id: mongoose.Types.ObjectId(),
+        is_cart: false,
+        transaction_id: "xyz12213",
+        address: {
+          _id: mongoose.Types.ObjectId(),
+          province: "تهران",
+          city: "تهران",
+          street: "دوم شرقی",
+          unit: "6",
+          no: "4",
+          district: "چاردیواری",
+          recipient_title: "m",
+          recipient_name: "احسان",
+          recipient_surname: "انصاری بصیر",
+          recipient_national_id: "0010684281",
+          recipient_mobile_no: "09125975886",
+          postal_code: null,
+          loc: {
+            long: 51.379926,
+            lat: 35.696491
+          }
+        },
+        order_lines: [],
+        tickets: [
+          {
+            is_processed: false,
+            status: _const.ORDER_STATUS.ReadyForInvoice,
+            desc: null,
+            receiver_id: hub._id,
+          }
+        ],
+        is_collect: false,
+        order_time: moment(),
+      });
+
+
+      for (let i = 0; i < 3; i++) { // add 3 order line of second product for order 1 with ticket Received  
+        orders[0].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[1].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.Recieved,
+              desc: null,
+              receiver_id: hub._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+
+      for (let i = 0; i < 2; i++) { // add 3 order line of second product for order 1 with ticket Recieived 
+        orders[0].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[1].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.Recieved,
+              desc: null,
+              receiver_id: hub._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+
+      orders.push({ // cc order
+        customer_id: mongoose.Types.ObjectId(),
+        is_cart: false,
+        transaction_id: "xyz12214",
+        address: {
+          _id: mongoose.Types.ObjectId(),
+          province: "تهران",
+          city: "تهران",
+          street: "دوم شرقی",
+          unit: "6",
+          no: "4",
+          district: "چاردیواری",
+          recipient_title: "m",
+          recipient_name: "احسان",
+          recipient_surname: "انصاری بصیر",
+          recipient_national_id: "0010684281",
+          recipient_mobile_no: "09125975886",
+          postal_code: null,
+          loc: {
+            long: 51.379926,
+            lat: 35.696491
+          }
+        },
+        tickets: [
+          {
+            is_processed: false,
+            status: _const.ORDER_STATUS.ReadyForInvoice,
+            desc: null,
+            receiver_id: hub._id,
+          }
+        ],
+        order_lines: [],
+        is_collect: true,
+        order_time: moment(),
+      });
+
+      for (let i = 0; i < 3; i++) { // add 3 order line of first product for order 1 with ticket Received  
+        orders[1].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[0].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.Recieved,
+              desc: null,
+              receiver_id: hub._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+
+      for (let i = 0; i < 3; i++) { // add 3 order line of first product for order 1 with ticket Received  
+        orders[1].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[0].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.Recieved,
+              desc: null,
+              receiver_id: hub._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+
+
+      orders = await models()['OrderTest'].insertMany(orders);
+      orders = JSON.parse(JSON.stringify(orders));
 
       let res = await rp({
         method: 'post',
         uri: lib.helpers.apiTestURL(`search/Ticket`),
         body: {
           options: {
-            type: 'inbox',
-            manual: true
+            type: _const.LOGISTIC_SEARCH.ToCustomerBox
           },
           offset: 0,
           limit: 5
         },
         json: true,
-        jar: PAClerk.jar,
+        jar: hubClerk.jar,
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.data[0].customer).not.toBeUndefined();
-      expect(res.body.data[0].customer.name).toBe(customer.name);
-      expect(res.body.data[0].customer.surname).toBe(customer.surname);
-      expect(res.body.data[0].customer.mobile).toBe(customer.mobile);
-      expect(res.body.data[0].customer.gender).toBe(customer.gender);
+      expect(res.body.data.length).toBe(2);
+      expect(res.body.total).toBe(2);
 
-      expect(res.body.data[0].address).not.toBeUndefined();
-      expect(res.body.data[0].address.recipient_name).toBe(orders[2].address.recipient_name);
-      expect(res.body.data[0].address.recipient_surname).toBe(orders[2].address.recipient_surname);
-      expect(res.body.data[0].address.recipient_national_id).toBe(orders[2].address.recipient_national_id);
-      expect(res.body.data[0].address.recipient_mobile_no).toBe(orders[2].address.recipient_mobile_no);
-
-      expect(res.body.data[0].total_order_lines).toBe(4);
-
+      console.log('-> ', res.body.data);
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);

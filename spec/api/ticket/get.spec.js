@@ -299,13 +299,13 @@ describe("GET Tickets Orderline", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [{
                 receiver_id: warehouses.find(x => x.name === 'سانا')._id,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 agent_id: SalesManager.aid,
                 desc: 'asas##$ sdsd 3423 232'
               },
               {
                 receiver_id: SalesManager.aid,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 agent_id: SCAgent.aid,
                 desc: 'dfdfdf #$#$ sds sd434343',
                 status: 2
@@ -316,7 +316,7 @@ describe("GET Tickets Orderline", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [{
               receiver_id: warehouses.find(x => x.is_hub)._id,
-              status: _const.ORDER_STATUS.default,
+              status: _const.ORDER_LINE_STATUS.default,
               agent_id: SalesManager.aid,
               desc: 'asas##$ sdsd 3423 232',
               status: 2
@@ -698,19 +698,19 @@ describe("GET Tickets Order By RecieverId", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [{
                 receiver_id: warehouses.find(x => x.name === 'سانا')._id,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 agent_id: SalesManager.aid,
                 desc: 'asas##$ sdsd 3423 232'
               },
               {
                 receiver_id: warehouses.find(x => x.name === 'سانا')._id,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 agent_id: SCAgent.aid,
                 desc: 'dfdfdf #$#$ sds sd434343',
                 status: 2
               }, {
                 receiver_id: SalesManager.aid,
-                status: _const.ORDER_STATUS.default,
+                status: _const.ORDER_LINE_STATUS.default,
                 agent_id: SalesManager.aid,
                 desc: 'asas##$ sdsd 3423 232'
               }
@@ -720,7 +720,7 @@ describe("GET Tickets Order By RecieverId", () => {
             product_instance_id: productInstanceIds[0],
             tickets: [{
               receiver_id: warehouses.find(x => x.is_hub)._id,
-              status: _const.ORDER_STATUS.default,
+              status: _const.ORDER_LINE_STATUS.default,
               agent_id: SalesManager.aid,
               desc: 'asas##$ sdsd 3423 232',
               status: 2
