@@ -6,7 +6,7 @@ const warehouses = require('../../../warehouses');
 const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 
-describe("Fetch Delivery Items POST API", () => {
+xdescribe("Fetch Delivery Items POST API", () => {
   let
     deliveryAgents = [],
     deliveries = [],
@@ -284,7 +284,7 @@ describe("Fetch Delivery Items POST API", () => {
           to: {
             warehouse_id: hubId
           },
-          start:new  Date(2010, 10, 10),
+          start: new Date(2010, 10, 10),
           end: new Date(2010, 10, 12),
         },
         {
@@ -506,7 +506,7 @@ describe("Fetch Delivery Items POST API", () => {
       expect(fromCentral.from.warehouse._id.toString()).toBe(centralId.toString());
       expect(fromCentral.to.warehouse._id.toString()).toBe(hubId.toString());
       expect(fromCentral.to.customer).toBeUndefined();
-      
+
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
@@ -636,7 +636,7 @@ describe("Fetch Delivery Items POST API", () => {
       res = res.body;
 
       expect(res.total).toBe(1);
-      
+
       res = res.result;
 
       expect(res.length).toBe(1);
@@ -792,14 +792,16 @@ describe("Fetch Delivery Items POST API", () => {
       expect(toCustomer.from.warehouse._id.toString()).toBe(hubId.toString());
       expect(toCustomer.to.customer.first_name).toBe(orders[0].address.recipient_name);
       expect(toCustomer.to.customer.surname).toBe(orders[0].address.recipient_surname);
-      expect(toCustomer.to.warehouse).toBeUndefined();   
+      expect(toCustomer.to.warehouse).toBeUndefined();
 
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
     }
   });
-});describe("Delivery POST API", () => {
+});
+
+xdescribe("Delivery POST API", () => {
   let deliveryAgents = [], deliveries = [], orders = [];
 
   beforeEach(done => {
@@ -1312,5 +1314,316 @@ describe("Fetch Delivery Items POST API", () => {
         expect(err.error).toBe(errors.dataIsNotCompleted.message);
         done();
       });
+  });
+});
+
+describe("Modify Delivery Item POST API", () => {
+  let
+    deliveryAgents = [],
+    deliveries = [],
+    salesManager,
+    shopClerk,
+    hubClerk,
+    customer,
+    centralId,
+    warehouseId,
+    hubId;
+
+  beforeEach(async done => {
+    try {
+      await lib.dbHelpers.dropAll();
+      await models()['WarehouseTest'].insertMany(warehouses);
+      deliveryAgents = await models()['AgentTest'].insertMany([
+        {
+          _id: mongoose.Types.ObjectId(),
+          username: 'da1',
+          first_name: 'Delivery 1',
+          surname: 'Agent 1',
+          secret: 'ABC',
+          access_level: _const.ACCESS_LEVEL.DeliveryAgent
+        },
+        {
+          _id: mongoose.Types.ObjectId(),
+          username: 'da2',
+          first_name: 'Delivery 2',
+          surname: 'Agent 2',
+          secret: 'ABC',
+          access_level: _const.ACCESS_LEVEL.DeliveryAgent
+        }
+      ]);
+
+      centralId = warehouses.find(el => !el.is_hub && !el.has_customer_pickup)._id;
+      warehouseId = warehouses.find(el => !el.is_hub && el.has_customer_pickup)._id;
+      hubId = warehouses.find(el => el.is_hub)._id;
+
+      salesManager = (await lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, centralId));
+      shopClerk = (await lib.dbHelpers.addAndLoginAgent('sc', _const.ACCESS_LEVEL.ShopClerk, warehouseId));
+      hubClerk = (await lib.dbHelpers.addAndLoginAgent('hc', _const.ACCESS_LEVEL.HubClerk, hubId));
+
+      const address = {
+        _id: mongoose.Types.ObjectId(),
+        province: 'Tehran',
+        city: 'Tehran',
+        district: '3',
+        street: 'Shariati',
+        unit: '10',
+        no: '20',
+        postal_code: '30405060',
+        recipient_title: 'm',
+        recipient_name: 'Ali',
+        recipient_surname: 'Alavi',
+        recipient_national_id: '0123456789',
+        recipient_mobile_no: '09092301202'
+      };
+      const ticket = {
+        status: _const.ORDER_STATUS.DeliverySet,
+        desc: "descccc",
+        timeStamp: new Date(),
+        is_processed: false,
+        referral_advice: 1123,
+        agent_id: mongoose.Types.ObjectId()
+      };
+      const deliveryStatus = {
+        agent_id: mongoose.Types.ObjectId(),
+        status: _const.ORDER_STATUS.DeliverySet,
+        is_processed: false,
+        timeStamp: new Date()
+      };
+
+      customer = {
+        _id: mongoose.Types.ObjectId(),
+        first_name: 'AA',
+        surname: 'BB',
+        username: 'AB',
+        is_verified: 3,
+        addresses: [address]
+      };
+
+      await models()['CustomerTest'].insertMany([customer]);
+
+      deliveries = [
+        {
+          _id: mongoose.Types.ObjectId(),
+          order_details: [
+            {
+              order_id: mongoose.Types.ObjectId(),
+              order_line_ids: [mongoose.Types.ObjectId()]
+            },
+            {
+              order_id: mongoose.Types.ObjectId(),
+              order_line_ids: [mongoose.Types.ObjectId()]
+            }
+          ],
+          status_list: [deliveryStatus],
+          from: {
+            warehouse_id: warehouseId
+          },
+          to: {
+            warehouse_id: hubId
+          },
+          start: new Date(2010, 10, 10),
+          end: new Date(2010, 10, 12),
+        },
+        {
+          _id: mongoose.Types.ObjectId(),
+          order_details: [
+            {
+              order_id: mongoose.Types.ObjectId(),
+              order_line_ids: [mongoose.Types.ObjectId(), mongoose.Types.ObjectId()]
+            }
+          ],
+          from: {
+            warehouse_id: hubId
+          },
+          to: {
+            customer: {
+              _id: customer._id,
+              address_id: customer.addresses[0]._id,
+            }
+          },
+          status_list: [deliveryStatus],
+          start: new Date(2010, 10, 11),
+          end: new Date(2010, 10, 14)
+        },
+        {
+          _id: mongoose.Types.ObjectId(),
+          order_details: [
+            {
+              order_id: mongoose.Types.ObjectId(),
+              order_line_ids: [mongoose.Types.ObjectId()]
+            },
+          ],
+          from: {
+            warehouse_id: hubId
+          },
+          to: {
+            warehouse_id: warehouseId
+          },
+          delivery_agent: deliveryAgents[0]._id,
+          status_list: [deliveryStatus],
+          start: new Date(2010, 10, 13),
+          end: new Date(2010, 10, 15),
+          delivery_start: new Date(2010, 10, 14),
+          delivery_end: new Date(2010, 10, 15),
+        },
+        {
+          _id: mongoose.Types.ObjectId(),
+          order_details: [
+            {
+              order_id: mongoose.Types.ObjectId(),
+              order_line_ids: [mongoose.Types.ObjectId()]
+            }
+          ],
+          from: {
+            customer: {
+              _id: customer._id,
+              address_id: customer.addresses[0]._id
+            }
+          },
+          to: {
+            warehouse_id: hubId
+          },
+          is_return: true,
+          status_list: [deliveryStatus],
+          start: new Date(2010, 11, 15),
+          end: new Date(2010, 11, 20)
+        }
+      ];
+
+      await models()['DeliveryTest'].insertMany(deliveries);
+
+      done();
+    } catch (err) {
+      console.log('Error in beforeEach: ', err);
+      done();
+    }
+  }, 10000);
+
+  it("Sales manager should assign/modify returned delivery agent", async function(done) {
+    this.done = done;
+
+    try {
+      const res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery`),
+        body: {
+          _id: deliveries[3]._id,
+          delivery_agent_id: deliveryAgents[0]._id,
+        },
+        json: true,
+        jar: salesManager.rpJar,
+        resolveWithFullResponse: true,
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      const delivery = await models()['DeliveryTest'].findOne({
+        _id: deliveries[3]._id
+      });
+
+      expect(delivery.delivery_agent.toString()).toBe(deliveryAgents[0]._id.toString());
+
+      done();
+    } catch(err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+  it("Hub clerk should assign/modify deliveries start from hub", async function(done) {
+    this.done = done;
+
+    try {
+      const res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery`),
+        body: {
+          _id: deliveries[1]._id,
+          delivery_agent_id: deliveryAgents[1]._id,
+        },
+        json: true,
+        jar: hubClerk.rpJar,
+        resolveWithFullResponse: true,
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      const delivery = await models()['DeliveryTest'].findOne({
+        _id: deliveries[1]._id
+      });
+
+      expect(delivery.delivery_agent.toString()).toBe(deliveryAgents[1]._id.toString());
+
+      done();
+    } catch(err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+  it("Sales manager should get error when assign/modify delivery agent for not returned delivery", async function(done) {
+    try {
+      await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery`),
+        body: {
+          _id: deliveries[0]._id,
+          delivery_agent_id: deliveryAgents[1]._id,
+        },
+        json: true,
+        jar: hubClerk.rpJar,
+        resolveWithFullResponse: true,
+      });
+
+      this.fail('Sales manager can assign delivery agent to not returned delivery');
+      done();
+    } catch(err) {
+      expect(err.statusCode).toBe(errors.notDeliveryResponsibility.status);
+      expect(err.error).toBe(errors.notDeliveryResponsibility.message);
+      done();
+    }
+  });
+
+  it("Shop clerk should get error when assign/modify delivery agent for delivery start from another warehouse", async function(done) {
+    try {
+      await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery`),
+        body: {
+          _id: deliveries[1]._id,
+          delivery_agent_id: deliveryAgents[1]._id,
+        },
+        json: true,
+        jar: shopClerk.rpJar,
+        resolveWithFullResponse: true,
+      });
+
+      this.fail('Shop clerk can assign/modify delivery agent to delivery start from another warehouse');
+      done();
+    } catch(err) {
+      expect(err.statusCode).toBe(errors.notDeliveryResponsibility.status);
+      expect(err.error).toBe(errors.notDeliveryResponsibility.message);
+      done();
+    }
+  });
+
+  it("Hub clerk (any clerk or sales manager) should get error when try to modify startted delivery", async function(done) {
+    try {
+      await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`delivery`),
+        body: {
+          _id: deliveries[2]._id,
+          delivery_agent_id: deliveryAgents[1]._id,
+        },
+        json: true,
+        jar: hubClerk.rpJar,
+        resolveWithFullResponse: true,
+      });
+
+      this.fail('Hub clerk can modify delivery agent when delivery is startted (or done)');
+      done();
+    } catch(err) {
+      expect(err.statusCode).toBe(500);
+      done();
+    }
   });
 });
