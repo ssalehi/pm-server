@@ -77,7 +77,7 @@ describe('Warehouse PUT API', () => {
             
                 expect(res.length).toBe(5);
 
-                // console.log( "properties", properties)
+            
                 res.forEach(x => {
                      let preProp = properties.find(y => y._id.toString() === x._id.toString())
                     expect(preProp).toBeDefined();
@@ -85,16 +85,7 @@ describe('Warehouse PUT API', () => {
                     expect(x.is_active).toBe(preProp.is_active)
                 });
 
-                // expect(res[0].priority).toBe(2)
-                // expect(res[0].is_active).toBe(false)
-                // expect(res[1].priority).toBe(0)
-                // expect(res[1].is_active).toBe(false)
-                // expect(res[2].priority).toBe(3)
-                // expect(res[2].is_active).toBe(false)
-                // expect(res[3].priority).toBe(1)
-                // expect(res[3].is_active).toBe(true)
-                // expect(res[4].priority).toBe(4)
-                // expect(res[4].is_active).toBe(false)
+            
 
                 done();
             })
