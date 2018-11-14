@@ -79,8 +79,7 @@ describe('Warehouse PUT API', () => {
 
                 // console.log( "properties", properties)
                 res.forEach(x => {
-                    console.log(properties)
-                    let preProp = properties.find(y => y._id.toString() === x._id.toString())
+                     let preProp = properties.find(y => y._id.toString() === x._id.toString())
                     expect(preProp).toBeDefined();
                     expect(x.priority).toBe(preProp.priority)
                     expect(x.is_active).toBe(preProp.is_active)
