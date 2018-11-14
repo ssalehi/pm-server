@@ -6,7 +6,7 @@ const warehouses = require('../../../warehouses');
 const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 
-xdescribe("Fetch Delivery Items POST API", () => {
+describe("Fetch Delivery Items POST API", () => {
   let
     deliveryAgents = [],
     deliveries = [],
@@ -801,7 +801,7 @@ xdescribe("Fetch Delivery Items POST API", () => {
   });
 });
 
-xdescribe("Delivery POST API", () => {
+describe("Delivery POST API", () => {
   let deliveryAgents = [], deliveries = [], orders = [];
 
   beforeEach(done => {
