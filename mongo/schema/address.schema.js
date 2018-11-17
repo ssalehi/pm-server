@@ -57,6 +57,10 @@ let schema_obj = {
   recipient_email: {
     type: String,
     trim: true,
+  },
+  name: {
+    type: String,
+    trim: true,
   }
 };
 
