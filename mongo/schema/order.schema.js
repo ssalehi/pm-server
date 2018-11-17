@@ -100,7 +100,10 @@ let schema_obj = {
   loyalty: loyalty_template,
 
   receiver_info,
-  tickets: [TicketSchema]
+  tickets: {
+    type: [TicketSchema],
+    default: []
+  }
 };
 
 
