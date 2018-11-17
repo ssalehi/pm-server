@@ -94,7 +94,7 @@ describe('Warehouse PUT API', () => {
     });
     
 
-    it("should check if when the database is dropped new data is added", function (done) {
+    it("should check if when the database is dropped new data is fetched", function (done) {
 
         this.done = done;
     
