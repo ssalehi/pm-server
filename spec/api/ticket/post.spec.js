@@ -1157,11 +1157,11 @@ describe("POST Tickets outbox", () => {
               tickets: [
                 {
                   receiver_id: warehouses.find(x => x.name === 'سانا')._id,
-                  status: _const.ORDER_STATUS.ReadyToDeliver,
+                  status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
                   desc: 'This is a description',
                 }, {
                   receiver_id: warehouses.find(x => x.name === 'سانا')._id,
-                  status: _const.ORDER_STATUS.InvoiceVerified,
+                  status: _const.ORDER_LINE_STATUS.InvoiceVerified,
                   desc: 'This is a description',
                 },
               ]
@@ -1185,12 +1185,12 @@ describe("POST Tickets outbox", () => {
               product_instance_id: productInstanceIds[0],
               tickets: [{
                 receiver_id: warehouses.find(x => x.name === 'سانا')._id,
-                status: _const.ORDER_STATUS.InvoiceVerified,
+                status: _const.ORDER_LINE_STATUS.InvoiceVerified,
                 desc: 'This is a description',
               },
                 {
                   receiver_id: warehouses.find(x => x.name === 'سانا')._id,
-                  status: _const.ORDER_STATUS.ReadyToDeliver,
+                  status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
                   desc: 'This is a description'
                 },
               ]
@@ -1214,11 +1214,11 @@ describe("POST Tickets outbox", () => {
               product_instance_id: productInstanceIds[0],
               tickets: [{
                 receiver_id: mongoose.Types.ObjectId(),
-                status: _const.ORDER_STATUS.ReadyToDeliver,
+                status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
                 desc: 'This is a description',
               }, {
                 receiver_id: warehouses.find(x => x.name === 'سانا')._id,
-                status: _const.ORDER_STATUS.Delivered,
+                status: _const.ORDER_LINE_STATUS.Delivered,
                 desc: 'This is a description',
               },
               ]
