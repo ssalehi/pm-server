@@ -188,6 +188,15 @@
     "SEASON": "فصل",
     "SEASON YEAR": "سال",
     "SILHOUETTE": "الگو ",
-    "SUB SILHOUETTE": "الگو جزیی"
+    "SUB SILHOUETTE": "الگو جزیی",
+    "TYPE": "نوع",
+    "SIZE": "سایز",
+    "SHOESSIZE": "سایز کفش",
+    "US": "آمریکایی",
+    "EU": "اروپایی",
+    "APPAREL": "پوشاک",
+    "FOOTWEAR": "کفش",
+    "ACCESSORIES": "لوازم جانبی",
+    "EQUIPMENT": "تجهیزات"
   }
 }
