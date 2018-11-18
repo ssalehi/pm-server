@@ -1,6 +1,7 @@
 const Schema = require('mongoose').Schema;
 const OrderLineSchema = require('./order_line.schema');
 const addressSchema = require('./address.schema');
+const TicketSchema = require('./ticket.schema');
 
 let time_slot_template = {
   lower_bound: {
@@ -13,12 +14,12 @@ let time_slot_template = {
   },
 };
 
-loyalty_template = {
-  delivery_spent : {
+let loyalty_template = {
+  delivery_spent: {
     type: Number,
   },
   shop_spent: {
-    type:Number,
+    type: Number,
   },
   delivery_value: {
     type: Number,
@@ -30,6 +31,14 @@ loyalty_template = {
     type: Number,
   }
 };
+
+let receiver_info = {
+  recipient_name: String,
+  recipient_surname: String,
+  recipient_title: String,
+  recipient_national_id: String,
+  recipient_mobile_no: String
+}
 
 let schema_obj = {
   customer_id: {
@@ -88,6 +97,9 @@ let schema_obj = {
   time_slot: time_slot_template,
   // delivery_duration: delivery_duration_template,
   loyalty: loyalty_template,
+
+  receiver_info,
+  tickets: [TicketSchema]
 };
 
 

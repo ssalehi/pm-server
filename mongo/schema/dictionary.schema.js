@@ -20,7 +20,7 @@ let schema_obj = {
 };
 
 
-let colorSchema = new Schema(schema_obj, {collection: 'dictionary', strict: true});
-colorSchema.index({ type: 1, name: 1}, { unique: true });
+let dictionarySchema = new Schema(schema_obj, {collection: 'dictionary', strict: true});
+dictionarySchema.index({ type: 1, name: 1}, { unique: true });
 
-module.exports = colorSchema;
+module.exports = dictionarySchema;

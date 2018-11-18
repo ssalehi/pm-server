@@ -141,7 +141,7 @@ describe('Initiate Delivery', () => {
             tickets: [ // sales manager ticket
               {
                 warehouse_id: warehouses.find(x => !x.has_customer_pickup && !x.is_hub)._id,
-                status: _const.ORDER_STATUS.default
+                status: _const.ORDER_LINE_STATUS.default
               }
             ]
           }, { // shop clerk ticket
@@ -186,7 +186,7 @@ describe('Initiate Delivery', () => {
               tickets: [
                 {
                   warehouse_id: warehouses.find(x => x.is_hub)._id,
-                  status: _const.ORDER_STATUS.default,
+                  status: _const.ORDER_LINE_STATUS.default,
                 }
               ]
             }
@@ -209,7 +209,7 @@ describe('Initiate Delivery', () => {
               ticket: [
                 {
                   warehouse_id: warehouses.find(x => !x.has_customer_pickup && !x.is_hub)._id,
-                  status: _const.ORDER_STATUS.default,
+                  status: _const.ORDER_LINE_STATUS.default,
                 }
               ]
             }

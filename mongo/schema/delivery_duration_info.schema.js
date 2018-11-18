@@ -15,7 +15,7 @@ cities_template = {
 loyalty_template = {
   _id: {
     type: Schema.Types.ObjectId,
-    required: true
+    // required: true
   },
   name: {
     type: String,
@@ -36,13 +36,14 @@ loyalty_template = {
 add_point_template = {
   _id: {
     type: Schema.Types.ObjectId,
-    required: true
+    // required: true
   },
   name: {
     type: String,
     required: true,
     trim: true,
   },
+  
   added_point: {
     type: String,
     required: true,
@@ -50,7 +51,6 @@ add_point_template = {
     trim: true,
   }
 };
-
 
 let schema_obj = {
   is_c_and_c: {
@@ -69,7 +69,7 @@ let schema_obj = {
   },
   cities: [cities_template],
   delivery_loyalty: [loyalty_template],
-  add_point: [add_point_template],
+  add_point: [add_point_template]
 };
 
 let deliveryDurationInfoSchema = new Schema(schema_obj, {collection: 'delivery_duration_info', strict: true});
