@@ -510,7 +510,9 @@ router.post('/internal_delivery/set_agent', apiResponse('InternalDelivery', 'set
 
 // Refund
 router.put('/refund/', apiResponse('Refund', 'setRefundFrom', false, ['user', 'body']));
-// router.post('/refund/', apiResponse('Refund', 'setRefundFrom', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/get_refund_form', apiResponse('Refund', 'getDetailRefundForm', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 // router.get('/refund/:cid', apiResponse('Refund', 'getRefundForm', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+// router.post('/refund/', apiResponse('Refund', 'setRefundFrom', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+
 
 module.exports = router;

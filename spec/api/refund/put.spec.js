@@ -33,7 +33,7 @@ describe("Put Refund basics", () => {
   }, 15000);
 
 
-  it("should error when user not found",  async function (done) {
+  xit("should error when user not found",  async function (done) {
 
     try {
       this.done = done;
@@ -55,11 +55,9 @@ describe("Put Refund basics", () => {
     }
   });
 
-
-  it("should be an error when each one of parameters is missed",  async function (done) {
+  xit("should be an error when each one of parameters is missed",  async function (done) {
 
     try {
-
       this.done = done;
       let res = await rp({
         method: 'put',
@@ -74,7 +72,7 @@ describe("Put Refund basics", () => {
         json: true,
         resolveWithFullResponse: true
       });
-      this.fail('aaaaaaaa')
+      this.fail('parameters not found')
         done();
 
     }
@@ -84,8 +82,35 @@ describe("Put Refund basics", () => {
       done();
     }
   });
+
+  xit("should set refund form in database",  async function (done) {
+
+    try {
+      this.done = done;
+      let res = await rp({
+        method: 'put',
+        uri: lib.helpers.apiTestURL(`refund`),
+        body: {
+          requested_time: new Date(),
+          card_no: '12345678910',
+          owner_card_name: 's',
+          owner_card_surname: 'v'
+        },
+        jar: customerObj.jar,
+        json: true,
+        resolveWithFullResponse: true
+      });
+      expect(res.statusCode).toBe(200);
+      let RefundForm = await models()['RefundTest'].findOne();
+
+      expect(RefundForm.card_no).toBe(res.body.card_no);
+      expect(RefundForm.owner_card_name).toBe(res.body.owner_card_name);
+      done();
+    }
+    catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    }
+  });
 });
 
-// let refundForm = await models()['RefundTest'].find({}).lean();
-//
-// expect(refundForm.owner_card_name.length).toBe(1);
+

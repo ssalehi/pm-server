@@ -15,19 +15,18 @@ let schema_obj = {
     type: Date,
   },
   card_no: {
-    type: Number,
+    type: String,
     trim: true,
     unique: true
   },
   sheba_no: {
-    type: Number,
+    type: String,
     trim: true,
     unique: true
   },
   tracking_no: {
     type: Number,
     trim: true,
-    unique: true
   },
   comment: {
     type: Schema.Types.Mixed,
