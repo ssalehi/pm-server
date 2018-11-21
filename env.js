@@ -24,6 +24,7 @@ const isDev = env === 'development';
  # the values must not be initiated with '!!'
  APP_NAME=Persian-Mode
  APP_ADDRESS=http://localhost:3000
+ OAUTH_APP_ADDRESS=http://127.0.0.1:4200 # for server, this should be e.g. bankofstyle.com
  PORT=3000
  DATABASE=PersianMode
  DB_URI=mongodb://127.0.0.1:27017/PersianMode
@@ -44,6 +45,7 @@ if (isDev)
  */
 const appName = getEnvValue(process.env.APP_NAME);
 const appAddress = getEnvValue(process.env.APP_ADDRESS);
+const oauthAddress =getEnvValue(process.env.OAUTH_ADDRESS) || appAddress;
 const port = getEnvValue(process.env.PORT);
 
 /**
@@ -116,6 +118,7 @@ module.exports = {
   isProd: isProd,
   isDev: isDev,
   appAddress,
+  oauthAddress,
   appName,
   app,
   port,
