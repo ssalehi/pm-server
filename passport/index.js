@@ -17,6 +17,11 @@ let setup = (app) => {
     },
     lib.Person.passportLocalStrategy
   ));
+  
+  console.log(' ------> ',env.googleAuth.clientID);
+  console.log(' ------> ',env.googleAuth.clientSecret);
+  console.log(' ------> ',env.googleAuth.callBackURL);
+  
   passport.use(new GoogleStrategy({
     clientID: env.googleAuth.clientID,
     clientSecret: env.googleAuth.clientSecret,
