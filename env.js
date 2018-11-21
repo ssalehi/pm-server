@@ -59,6 +59,15 @@ const googleAuth_clientId = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTID);
 const googleAuth_clientSecret = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTSECRET);
 const googleAuth_callbackUrl = getEnvValue(process.env.APP_ADDRESS) + getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL);
 
+
+console.log('-> ', googleAuth_clientId);
+console.log('-> ', googleAuth_clientSecret);
+console.log('-> ', googleAuth_callbackUrl);
+
+console.log('-> ', process.env.GOOGLE_OAUTH_CLIENTID);
+console.log('-> ', process.env.GOOGLE_OAUTH_CLIENTSECRET);
+console.log('-> ', process.env.APP_ADDRESS);
+console.log('-> ', process.env.GOOGLE_OAUTH_CALLBACKURL);
 /**
  * Mail Config
  */
