@@ -23,17 +23,17 @@ const isDev = env === 'development';
  ** START **
  # the values must not be initiated with '!!'
  APP_NAME=Persian-Mode
- APP_ADDRESS=http://localhost:3000
- OAUTH_APP_ADDRESS=http://127.0.0.1:4200 # for server, this should be e.g. bankofstyle.com
+ APP_ADDRESS=http://localhost:3000    # For server, this should be e.g. bankofstyle.com
+ OAUTH_ADDRESS=http://127.0.0.1:4200  # For server, this should be e.g. bankofstyle.com
  PORT=3000
  DATABASE=PersianMode
  DB_URI=mongodb://127.0.0.1:27017/PersianMode
  MONGO_HOST=localhost
  MONGO_PORT=27017
  REDIS_HOST=127.0.0.1
- GOOGLE_OAUTH_CLIENTID = 636231560622-k29avsd6knviv7bu7ni9sf6r6okac3bt.apps.googleusercontent.com
- GOOGLE_OAUTH_CLIENTSECRET = A7cwgIu3p8H37m69VqrjrW2J
- GOOGLE_OAUTH_CALLBACKURL = http://127.0.0.1:3000/api/login/google/callback
+ GOOGLE_OAUTH_CLIENTID = 986035602689-7m3qqtr3o3c1pop9sqcgtjpre77o4ved.apps.googleusercontent.com
+ GOOGLE_OAUTH_CLIENTSECRET = vaLNyweZ2vnVJ-83B3Whj9PY
+ GOOGLE_OAUTH_CALLBACKURL = /api/login/google/callback
  # REDIS_PASSWORD=123465
  ** END **
  */
@@ -57,7 +57,7 @@ const db_uri = getEnvValue(process.env.DB_URI);
 const db_uri_test = getEnvValue(process.env.DB_URI_TEST);
 const googleAuth_clientId = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTID);
 const googleAuth_clientSecret = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTSECRET);
-const googleAuth_callbackUrl = getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL);
+const googleAuth_callbackUrl = getEnvValue(process.env.APP_ADDRESS) + getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL);
 
 /**
  * Mail Config
