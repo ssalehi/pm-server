@@ -9,7 +9,6 @@ let schema_obj = {
   status: Number,
   requested_time: {
     type: Date,
-    required: true
   },
   executed_time: {
     type: Date,
@@ -17,12 +16,10 @@ let schema_obj = {
   card_no: {
     type: String,
     trim: true,
-    unique: true
   },
   sheba_no: {
     type: String,
     trim: true,
-    unique: true
   },
   tracking_no: {
     type: Number,
@@ -40,7 +37,10 @@ let schema_obj = {
     type: String,
     required: true,
     trim: true,
-  }
+  },
+  bank_name: {
+    type: String,
+  },
 };
 
 

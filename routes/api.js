@@ -509,8 +509,9 @@ router.get('/internal_delivery/get_agent', apiResponse('InternalDelivery', 'getA
 router.post('/internal_delivery/set_agent', apiResponse('InternalDelivery', 'setInternalAgent', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 
 // Refund
-router.put('/refund/', apiResponse('Refund', 'setRefundFrom', false, ['user', 'body']));
-router.get('/get_refund_form', apiResponse('Refund', 'getDetailRefundForm', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.put('/refund', apiResponse('Refund', 'setRefundFrom', false, ['user', 'body']));
+router.post('/get_refund_form', apiResponse('Refund', 'getDetailRefundForm', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/refund/get_forms', apiResponse('Refund', 'getAllRefundForms', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 // router.get('/refund/:cid', apiResponse('Refund', 'getRefundForm', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 // router.post('/refund/', apiResponse('Refund', 'setRefundFrom', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 

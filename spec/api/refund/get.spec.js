@@ -8,7 +8,6 @@ const _const = require('../../../lib/const.list');
 describe("Get Refund forms", () => {
   let customer1,  customer2;
   let form1, form2;
-  let warehouse;
   let SalesManagerObj;
   let RefundForms;
 
@@ -35,14 +34,14 @@ describe("Get Refund forms", () => {
         "loyalty_points" : 0,
         "balance" : 10000,
         "is_verified" : 3,
-        "shoesType" : "US",
+        "shoesType" : "EU",
         "is_guest" : false,
         "is_preferences_set" : false,
         "preferred_brands" : [],
         "preferred_tags" : [],
         "orders" : [],
         "active" : true,
-        "username" : "s",
+        "username" : "f",
         "first_name" : "saman",
         "surname" : "vaziri",
         "mobile_no": "0912345678"
@@ -51,7 +50,7 @@ describe("Get Refund forms", () => {
 
       customer2 = await  models()['CustomerTest'].create({
         "loyalty_points" : 0,
-        "balance" : 2222,
+        "balance" : 22222,
         "is_verified" : 3,
         "shoesType" : "US",
         "is_guest" : false,
@@ -60,9 +59,9 @@ describe("Get Refund forms", () => {
         "preferred_tags" : [],
         "orders" : [],
         "active" : true,
-        "username" : "sam",
-        "first_name" : "bbbbb",
-        "surname" : "aaa",
+        "username" : "ali",
+        "first_name" : "ali",
+        "surname" : "sav",
         "mobile_no": "09124567890"
 
       });
@@ -97,20 +96,21 @@ describe("Get Refund forms", () => {
   }, 15000);
 
 
-  it("should be able to get all refund form by sales manager",  async function (done) {
-
+  it("should be able to get refund form details by sales manager",  async function (done) {
     try {
       this.done = done;
       let res = await rp({
         method: 'get',
         uri: lib.helpers.apiTestURL(`get_refund_form`),
-        body: {refund_form_id: RefundForms[0]._id},
+        body: {refund_form_id: RefundForms[1]._id},
         jar: SalesManagerObj.rpJar,
         json: true,
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      console.log('res:::',res.body);
+      // console.log('res:::',res.body);
+      expect(res.body.sheba_no).toBe('456');
+      expect(res.body.customer[0].balance).toBe(22222);
       done();
     }
     catch (err) {
