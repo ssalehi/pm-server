@@ -31,8 +31,8 @@ const isDev = env === 'development';
  MONGO_HOST=localhost
  MONGO_PORT=27017
  REDIS_HOST=127.0.0.1
- GOOGLE_OAUTH_CLIENTID = 986035602689-7m3qqtr3o3c1pop9sqcgtjpre77o4ved.apps.googleusercontent.com
- GOOGLE_OAUTH_CLIENTSECRET = vaLNyweZ2vnVJ-83B3Whj9PY
+ GOOGLE_OAUTH_CLIENTID = 636231560622-k29avsd6knviv7bu7ni9sf6r6okac3bt.apps.googleusercontent.com
+ GOOGLE_OAUTH_CLIENTSECRET = A7cwgIu3p8H37m69VqrjrW2J
  GOOGLE_OAUTH_CALLBACKURL = /api/login/google/callback
  # REDIS_PASSWORD=123465
  ** END **
