@@ -23,8 +23,8 @@ const isDev = env === 'development';
  ** START **
  # the values must not be initiated with '!!'
  APP_NAME=Persian-Mode
- APP_ADDRESS=http://localhost:3000    # For server, this should be e.g. bankofstyle.com
- OAUTH_ADDRESS=http://127.0.0.1:4200  # For server, this should be e.g. bankofstyle.com
+ APP_ADDRESS=http://localhost:3000    # For server, this should be e.g. http://bankofstyle.com
+ OAUTH_ADDRESS=http://127.0.0.1:4200  # For server, this should be e.g. http://bankofstyle.com
  PORT=3000
  DATABASE=PersianMode
  DB_URI=mongodb://127.0.0.1:27017/PersianMode
