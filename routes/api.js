@@ -91,7 +91,7 @@ router.get('/', function (req, res) {
 router.get('/outTest', function (req, res) {
   const helpers = require('../lib/helpers');
 
-  
+
   return helpers.httpPost('http://httpbin.org/post', {})
     .then(res => {
       return helpers.httpPost('http://mock:3001/test', {})
@@ -135,7 +135,7 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
     res.end();
   }
 
-  // TODO: http://localhost:4200 needs to be changed on the real server !
+  // TODO: needs to be checked on the real server to see functionality !
   let ClientAddress = env.isProd ? env.appAddress : 'http://127.0.0.1:4200';
   let ClientSetMobileRoute = '/login/oauth/setMobile';
   let ClientSetPreferences = '/login/oauth/setPreferences';
@@ -240,6 +240,7 @@ router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 
 router.get('/order/ticket/history/:orderId', apiResponse('Ticket', 'getHistoryOrderByReceiver', true, ['params', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/order/return', apiResponse('TicketAction', 'returnOrderLine', false, ['body', 'user']));
 router.post('/order/cancel', apiResponse('TicketAction', 'cancelOrderLine', false, ['body', 'user']));
+router.post('/order/mismatch', apiResponse('TicketAction', 'mismatchReport', true, ['body.trigger', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 
 // Order => api's used by offline system
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
@@ -455,6 +456,9 @@ router.post('/delivery/tracking', apiResponse('Delivery', 'getTrackingDetails', 
 router.post('/delivery/agent/items', apiResponse('Delivery', 'getDeliveryAgentItems', true, ['user', 'body.is_delivered', 'body.delivery_status', 'body.is_processed'], [_const.ACCESS_LEVEL.DeliveryAgent]));
 router.post('/delivery/status', apiResponse('Delivery', 'changeStatus', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
 router.post('/delivery/by_order', apiResponse('Delivery', 'getDeliveryByOrderLine', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.get('/delivery/unassigned', apiResponse('Delivery', 'getUnassignedDeliveries', true, [], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/assign', apiResponse('Delivery', 'assignDeliveryToAgnet', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/unassign', apiResponse('Delivery', 'unassignDeliveryFromAgent', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
 
 router.use('/delivery/evidence', function (req, res, next) {
   const id = new mongoose.Types.ObjectId();
@@ -486,15 +490,22 @@ router.post('/delivery/finish', apiResponse('Delivery', 'finishDelivery', true, 
 // Delivery Duration
 router.get('/deliveryduration', apiResponse('DeliveryDurationInfo', 'getAllDurationInfo', false, []));
 router.get('/deliveryduration/:id', apiResponse('DeliveryDurationInfo', 'getOneDurationInfo', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
-// router.get('/deliverycc', apiResponse('DeliveryDurationInfo', 'getClickAndCollect', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.get('/deliverycc', apiResponse('DeliveryDurationInfo', 'getClickAndCollect', false, []));
 
 router.post('/deliveryduration', apiResponse('DeliveryDurationInfo', 'upsertDurationInfo', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/deliverycc', apiResponse('DeliveryDurationInfo', 'upsertCAndC', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.delete('/deliveryduration/delete/:id', apiResponse('DeliveryDurationInfo', 'deleteDuration', true, ['params.id'], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/delivery/cost/free', apiResponse('Delivery', 'getFreeDeliveryOption', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/delivery/cost/free', apiResponse('Delivery', 'upsertFreeDeliveryOption', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/delivery/cost/free/delete', apiResponse('Delivery', 'deleteFreeDeliveryOption', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 
 // Customer Delivery Selected
 router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body'])); // body included customer id and delivery_duration id
 
+
+// Internal Delivery
+router.get('/internal_delivery/get_agents', apiResponse('InternalDelivery', 'getInternalAgents', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/internal_delivery/get_agent', apiResponse('InternalDelivery', 'getAgentInternalDelivery', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/internal_delivery/set_agent', apiResponse('InternalDelivery', 'setInternalAgent', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 
 module.exports = router;

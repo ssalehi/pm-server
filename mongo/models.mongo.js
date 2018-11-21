@@ -9,6 +9,7 @@ let schemas = {
   ColorSchema: require('./schema/color.schema'),
   CustomerSchema: require('./schema/customer.schema'),
   DeliverySchema: require('./schema/delivery.schema'),
+  InternalDeliverySchema: require('./schema/internal_delivery.schema'),
   LoyaltyGroupSchema: require('./schema/loyalty_group.schema'),
   DeliveryDurationInfoSchema: require('./schema/delivery_duration_info.schema'),
   OrderSchema: require('./schema/order.schema'),
@@ -23,6 +24,7 @@ let schemas = {
   DictionarySchema: require('./schema/dictionary.schema'),
   ArchivePlacementSchema: require('./schema/archive_placement.schema'),
   SoldOutSchema: require('./schema/sold_out.schema'),
+  FreeDeliveryOptionSchema: require('./schema/free_delivery_option.sehcma'),
 };
 
 
