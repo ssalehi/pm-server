@@ -135,24 +135,26 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
     res.end();
   }
 
-  // TODO: http://localhost:4200 needs to be changed on the real server !
-  let ClientAddress = 'http://127.0.0.1:4200';
+  // TODO: needs to be checked on the real server to see functionality !
+  let ClientAddress = env.oauthAddress;
   let ClientSetMobileRoute = '/login/oauth/setMobile';
   let ClientSetPreferences = '/login/oauth/setPreferences';
 
-  model['Customer' + (personModel.isTest(req) ? 'Test' : '')].findOne({username: req.user.username})
+  model()['Customer' + (personModel.isTest(req) ? 'Test' : '')]
+    .findOne({username: req.user.username})
     .then(obj => {
       if (!obj.mobile_no || (obj.mobile_no && obj.is_verified !== _const.VERIFICATION.bothVerified)) {
-        model['Customer' + (personModel.isTest(req) ? 'Test' : '')].update({username: req.user.username}, {
-          is_verified: _const.VERIFICATION.emailVerified,
-        }).then(data => {
-          // redirect client to the setMobile page
-          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
-          res.end();
-        }).catch(err => {
-          console.error('error in changing verification level: ', err);
-          res.end();
-        });
+        model()['Customer' + (personModel.isTest(req) ? 'Test' : '')]
+          .update({username: req.user.username}, {
+            is_verified: _const.VERIFICATION.emailVerified,
+          }).then(data => {
+            // redirect client to the setMobile page
+            res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
+            res.end();
+          }).catch(err => {
+            console.error('error in changing verification level: ', err);
+            res.end();
+          });
       } else { // if mobile is already verified
         if (obj['is_preferences_set'])
           res.writeHead(302, {'Location': `${ClientAddress}`});
@@ -160,6 +162,11 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
           res.writeHead(302, {'Location': `${ClientAddress}${ClientSetPreferences}`});
         res.end();
       }
+    })
+    .catch(err => {
+      console.error("error occurred: ", err);
+      res.writeHead(302, {'Location': `${ClientAddress}`});
+      res.end();
     });
 });
 router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
