@@ -32,34 +32,11 @@ describe("Put Refund basics", () => {
     }
   }, 15000);
 
-
-  xit("should error when user not found",  async function (done) {
-
-    try {
-      this.done = done;
-      let res = await rp({
-        method: 'put',
-        uri: lib.helpers.apiTestURL(`refund`),
-        body: {},
-        // jar: customerObj.jar,
-        json: true,
-        resolveWithFullResponse: true
-      });
-      this.fail("should error when user not found");
-      done();
-    }
-    catch (err) {
-      expect(err.statusCode).toBe(error.noUser.status);
-      expect(err.error).toBe(error.noUser.message);
-      done();
-    }
-  });
-
-  xit("should be an error when each one of parameters is missed",  async function (done) {
+  it("should be an error when each one of parameters is missed",  async function (done) {
 
     try {
       this.done = done;
-      let res = await rp({
+      await rp({
         method: 'put',
         uri: lib.helpers.apiTestURL(`refund`),
         body: {
@@ -72,7 +49,7 @@ describe("Put Refund basics", () => {
         json: true,
         resolveWithFullResponse: true
       });
-      this.fail('parameters not found')
+      this.fail('parameters not found');
         done();
 
     }
@@ -83,7 +60,7 @@ describe("Put Refund basics", () => {
     }
   });
 
-  xit("should set refund form in database",  async function (done) {
+  it("should set refund form in database",  async function (done) {
 
     try {
       this.done = done;

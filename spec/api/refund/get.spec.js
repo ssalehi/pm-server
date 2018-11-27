@@ -101,16 +101,15 @@ describe("Get Refund forms", () => {
       this.done = done;
       let res = await rp({
         method: 'get',
-        uri: lib.helpers.apiTestURL(`get_refund_form`),
+        uri: lib.helpers.apiTestURL(`/refund/get_forms`),
         body: {refund_form_id: RefundForms[1]._id},
         jar: SalesManagerObj.rpJar,
         json: true,
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      // console.log('res:::',res.body);
-      expect(res.body.sheba_no).toBe('456');
-      expect(res.body.customer[0].balance).toBe(22222);
+      expect(res.body[1].sheba_no).toBe('456');
+      expect(res.body[1].customer_balance).toBe(22222);
       done();
     }
     catch (err) {

@@ -41,6 +41,10 @@ let schema_obj = {
   bank_name: {
     type: String,
   },
+  amount: {
+    type: Number,
+    default: 0,
+  }
 };
 
 
