@@ -224,7 +224,7 @@ router.get('/tags/:tagGroupName', apiResponse('Tag', 'getTags', false, ['params.
 // Warehouses
 router.get('/warehouse/all', apiResponse('Warehouse', 'getAll', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getShops', false, []));
-
+router.put('/warehouse/update',apiResponse('Warehouse','updateWarehouses',true,['body'],[_const.ACCESS_LEVEL.SalesManager]));
 // Customer
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 

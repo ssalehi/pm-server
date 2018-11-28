@@ -31,10 +31,18 @@ let schema_obj = {
     unique: true,
     min: 0
   },
-  ip_address: String
+  ip_address: String,
+  is_active: {
+    type: Boolean,
+    required: true,
+    default: true
+  }
 };
 
 
-let warehouseSchema = new Schema(schema_obj, {collection: 'warehouse', strict: true});
+let warehouseSchema = new Schema(schema_obj, {
+  collection: 'warehouse',
+  strict: true
+});
 
 module.exports = warehouseSchema;
