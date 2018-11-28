@@ -33,6 +33,7 @@ let loyalty_template = {
 };
 
 let receiver_info = {
+  recipient_email: String,
   recipient_name: String,
   recipient_surname: String,
   recipient_title: String,
@@ -99,7 +100,10 @@ let schema_obj = {
   loyalty: loyalty_template,
 
   receiver_info,
-  tickets: [TicketSchema]
+  tickets: {
+    type: [TicketSchema],
+    default: []
+  }
 };
 
 

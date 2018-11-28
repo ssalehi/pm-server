@@ -33,7 +33,10 @@ let schema_obj = {
     type: Schema.Types.ObjectId,
     ref: 'Warehouse'
   },
-  tickets: [TicketSchema]
+  tickets: {
+    type: [TicketSchema],
+    default: []
+  }
 };
 
 let OrderLineSchema = new Schema(schema_obj, {strict: true});
