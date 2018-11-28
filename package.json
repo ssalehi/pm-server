@@ -61,6 +61,7 @@
     "xlsx": "^0.11.17"
   },
   "devDependencies": {
+    "cors": "^2.8.5",
     "fs-copy-file-sync": "^1.0.1",
     "jasmine": "^2.99.0",
     "jasmine-node": "^2.0.1",
