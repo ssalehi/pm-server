@@ -58,7 +58,7 @@ let schema_obj = {
     type: String,
     trim: true,
   },
-  name: {
+  wharehouse_name: {
     type: String,
     trim: true,
   }
