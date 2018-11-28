@@ -53,6 +53,7 @@
     "redis": "^2.7.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
+    "requirejs": "^2.3.6",
     "rimraf-promise": "^2.0.0",
     "rxjs": "^5.5.10",
     "serve-favicon": "^2.5.0",
