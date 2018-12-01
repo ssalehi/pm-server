@@ -104,7 +104,7 @@ let schema_obj = {
     type: [TicketSchema],
     default: []
   },
-  delivery_deadline: {
+  delivery_expire_day: {
     type: Date,
   }
 };
