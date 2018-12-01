@@ -103,6 +103,9 @@ let schema_obj = {
   tickets: {
     type: [TicketSchema],
     default: []
+  },
+  delivery_deadline: {
+    type: Date,
   }
 };
 
