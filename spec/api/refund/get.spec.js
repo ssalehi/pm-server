@@ -11,6 +11,11 @@ describe("Get Refund forms", () => {
   let SalesManagerObj;
   let RefundForms;
 
+  let customerObj = {
+    cid: null,
+    jar: null,
+  };
+
   beforeEach(async done => {
 
     try {
@@ -28,6 +33,15 @@ describe("Get Refund forms", () => {
 
       let sm = await lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouse._id);
       SalesManagerObj = sm;
+
+      const res = await lib.dbHelpers.addAndLoginCustomer('s', '123456', {
+        first_name: 'saman',
+        surname: 'vaziri',
+        balance: 2000
+      });
+
+      customerObj.cid = res.cid;
+      customerObj.jar = res.rpJar;
 
 
        customer1 = await models()['CustomerTest'].create({
@@ -72,7 +86,8 @@ describe("Get Refund forms", () => {
         card_no: '123',
         requested_time: new Date(),
         status: _const.REFUND_FORM_STATUS.Pending,
-        customer_id:  customer1._id
+        customer_id:  customer1._id,
+        amount: 10000
       };
 
        form2 = {
@@ -81,19 +96,49 @@ describe("Get Refund forms", () => {
         sheba_no: '456',
         requested_time: new Date(),
         status: _const.REFUND_FORM_STATUS.Pending,
-        customer_id: customer2._id
-      };
+        customer_id: customerObj.cid,
+         amount: 22222,
+         active: false
+       };
 
        RefundForms = await models()['RefundTest'].insertMany([
         form1,
         form2
       ]);
 
+
+
       done();
     } catch (err) {
       console.log(err);
     }
   }, 15000);
+
+  it("should be get balance and status by customer id",  async function (done) {
+    try {
+      this.done = done;
+      let res = await rp({
+        method: 'get',
+        uri: lib.helpers.apiTestURL(`/refund/get_balance`),
+        body: {
+
+        },
+        jar: customerObj.jar,
+        json: true,
+        resolveWithFullResponse: true
+      });
+      expect(res.statusCode).toBe(200);
+      let customer = await models()['CustomerTest'].findOne({_id: customerObj.cid}).lean();
+      expect(customer.balance).toBe(2000);
+
+      let Refund = await models()['RefundTest'].findOne({customer_id: customerObj.cid}).lean();
+      expect(Refund.active).toBe(false);
+      done();
+    }
+    catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    }
+  });
 
 
   it("should be able to get refund form details by sales manager",  async function (done) {
@@ -109,7 +154,7 @@ describe("Get Refund forms", () => {
       });
       expect(res.statusCode).toBe(200);
       expect(res.body[1].sheba_no).toBe('456');
-      expect(res.body[1].customer_balance).toBe(22222);
+      expect(res.body[1].amount).toBe(22222);
       done();
     }
     catch (err) {

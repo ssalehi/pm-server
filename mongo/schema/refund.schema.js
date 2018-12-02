@@ -6,7 +6,10 @@ let schema_obj = {
     required: true,
     ref: 'Customer'
   },
-  status: Number,
+  status: {
+    type: Number,
+    default: 0
+  },
   requested_time: {
     type: Date,
   },
@@ -26,25 +29,29 @@ let schema_obj = {
     trim: true,
   },
   comment: {
-    type: Schema.Types.Mixed,
+    type: Schema.Types.Mixed
   },
   owner_card_name: {
     type: String,
     required: true,
-    trim: true,
+    trim: true
   },
   owner_card_surname: {
     type: String,
     required: true,
-    trim: true,
+    trim: true
   },
   bank_name: {
-    type: String,
+    type: String
   },
   amount: {
     type: Number,
-    default: 0,
-  }
+    default: 0
+  },
+   active: {
+    type: Boolean,
+     default: false
+   }
 };
 
 

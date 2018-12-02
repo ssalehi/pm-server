@@ -50,7 +50,7 @@ describe("POST Refund forms", () => {
 
       customer2 = await  models()['CustomerTest'].create({
         "loyalty_points" : 0,
-        "balance" : 22222,
+        "balance" : 0,
         "is_verified" : 3,
         "shoesType" : "US",
         "is_guest" : false,
@@ -74,7 +74,7 @@ describe("POST Refund forms", () => {
         status: _const.REFUND_FORM_STATUS.Pending,
         customer_id:  customer1._id,
         bank_name: 'Tejarat',
-        comment: '',
+        comment: 'comment',
         executed_time: new Date()
       };
 
@@ -83,11 +83,11 @@ describe("POST Refund forms", () => {
         owner_card_surname: 'na',
         sheba_no: '456',
         requested_time: new Date(),
-        status: _const.REFUND_FORM_STATUS.Pending,
+        status: _const.REFUND_FORM_STATUS.Refused,
         customer_id: customer2._id,
         bank_name: 'Saderat',
-        comment: '',
-        executed_time: new Date()
+        comment: 'some comment',
+        executed_time: new Date(),
       };
 
       RefundForms = await models()['RefundTest'].insertMany([
@@ -134,37 +134,7 @@ describe("POST Refund forms", () => {
     }
   });
 
-  it("should set balance to zero automatically after sale manager accept refund form",  async function (done) {
-    try {
-      this.done = done;
-
-      let res = await rp({
-        method: 'post',
-        uri: lib.helpers.apiTestURL(`/refund/set_detail_form`),
-        body: {
-          _id: RefundForms[0]._id,
-          owner_card_name: 'va',
-          owner_card_surname: 'sa',
-          bank_name: 'Melli',
-          card_no: 987654321,
-          comment: 'adding tracking number',
-          status: 2,
-        },
-        jar: SalesManagerObj.rpJar,
-        json: true,
-        resolveWithFullResponse: true
-      });
-      expect(res.statusCode).toBe(200);
-      let customer = await models()['CustomerTest'].findOne({_id: customer1._id}).lean();
-      expect(customer.balance).toBe(0);
-      done();
-    }
-    catch (err) {
-      lib.helpers.errorHandler.bind(this)(err)
-    }
-  });
-
-  it("should change status when form rejected by sales manager",  async function (done) {
+  it("should change status and balance when form rejected by sales manager",  async function (done) {
     try {
       this.done = done;
 
@@ -172,18 +142,23 @@ describe("POST Refund forms", () => {
         method: 'post',
         uri: lib.helpers.apiTestURL(`/refund/reject_detail_form`),
         body: {
-          _id: RefundForms[0]._id,
-          comment: 'form rejected',
+          _id: RefundForms[1]._id,
+          status: 3,
+          comment: 'Form Rejected',
           executed_time: new Date(),
-          status: 3
+          customer_id: RefundForms[1].customer_id,
+          amount: 444,
         },
         jar: SalesManagerObj.rpJar,
         json: true,
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      let Refund = await models()['RefundTest'].find({_id: RefundForms[0]._id}).lean();
-      expect(Refund[0].status).toBe(3);
+      let Refund = await models()['RefundTest'].findOne({_id: RefundForms[1]._id}).lean();
+      expect(Refund.status).toBe(3);
+
+      let customer = await models()['CustomerTest'].findOne({_id: Refund.customer_id}).lean();
+      expect(customer.balance).toBe(444);
       done();
     }
     catch (err) {
