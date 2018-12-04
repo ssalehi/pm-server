@@ -36,7 +36,6 @@ appWaiter = setInterval(() => {
     server.on('listening', onListening);
 
     socket.setup(server);
-    initTokenRequest();
   } else {
     console.log('App is being set up ...');
   }
