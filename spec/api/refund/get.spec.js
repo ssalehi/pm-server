@@ -120,9 +120,6 @@ describe("Get Refund forms", () => {
       let res = await rp({
         method: 'get',
         uri: lib.helpers.apiTestURL(`/refund/get_balance`),
-        body: {
-
-        },
         jar: customerObj.jar,
         json: true,
         resolveWithFullResponse: true
@@ -146,15 +143,16 @@ describe("Get Refund forms", () => {
       this.done = done;
       let res = await rp({
         method: 'get',
-        uri: lib.helpers.apiTestURL(`/refund/get_forms`),
-        body: {refund_form_id: RefundForms[1]._id},
+        uri: lib.helpers.apiTestURL(`/refund/get_forms/0/10`),
+        body: {_id: RefundForms[1]._id},
         jar: SalesManagerObj.rpJar,
         json: true,
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body[1].sheba_no).toBe('456');
-      expect(res.body[1].amount).toBe(22222);
+      let Refund = await models()['RefundTest'].findOne({_id: RefundForms[1]._id}).lean();
+      expect(Refund.sheba_no).toBe('456');
+      expect(Refund.amount).toBe(22222);
       done();
     }
     catch (err) {
