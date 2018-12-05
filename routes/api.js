@@ -135,24 +135,26 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
     res.end();
   }
 
-  // TODO: http://localhost:4200 needs to be changed on the real server !
-  let ClientAddress = 'http://127.0.0.1:4200';
+  // TODO: needs to be checked on the real server to see functionality !
+  let ClientAddress = env.oauthAddress;
   let ClientSetMobileRoute = '/login/oauth/setMobile';
   let ClientSetPreferences = '/login/oauth/setPreferences';
 
-  model['Customer' + (personModel.isTest(req) ? 'Test' : '')].findOne({username: req.user.username})
+  model()['Customer' + (personModel.isTest(req) ? 'Test' : '')]
+    .findOne({username: req.user.username})
     .then(obj => {
       if (!obj.mobile_no || (obj.mobile_no && obj.is_verified !== _const.VERIFICATION.bothVerified)) {
-        model['Customer' + (personModel.isTest(req) ? 'Test' : '')].update({username: req.user.username}, {
-          is_verified: _const.VERIFICATION.emailVerified,
-        }).then(data => {
-          // redirect client to the setMobile page
-          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
-          res.end();
-        }).catch(err => {
-          console.error('error in changing verification level: ', err);
-          res.end();
-        });
+        model()['Customer' + (personModel.isTest(req) ? 'Test' : '')]
+          .update({username: req.user.username}, {
+            is_verified: _const.VERIFICATION.emailVerified,
+          }).then(data => {
+            // redirect client to the setMobile page
+            res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
+            res.end();
+          }).catch(err => {
+            console.error('error in changing verification level: ', err);
+            res.end();
+          });
       } else { // if mobile is already verified
         if (obj['is_preferences_set'])
           res.writeHead(302, {'Location': `${ClientAddress}`});
@@ -160,6 +162,11 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
           res.writeHead(302, {'Location': `${ClientAddress}${ClientSetPreferences}`});
         res.end();
       }
+    })
+    .catch(err => {
+      console.error("error occurred: ", err);
+      res.writeHead(302, {'Location': `${ClientAddress}`});
+      res.end();
     });
 });
 router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
@@ -217,7 +224,7 @@ router.get('/tags/:tagGroupName', apiResponse('Tag', 'getTags', false, ['params.
 // Warehouses
 router.get('/warehouse/all', apiResponse('Warehouse', 'getAll', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getShops', false, []));
-
+router.put('/warehouse/update',apiResponse('Warehouse','updateWarehouses',true,['body'],[_const.ACCESS_LEVEL.SalesManager]));
 // Customer
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
@@ -435,7 +442,7 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
 router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // checkout
-router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address', 'body.customerData', 'body.transaction_id', 'body.used_point',
+router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address','body.transaction_id', 'body.used_point',
   'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.paymentType', 'body.loyalty']));
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
