@@ -236,7 +236,7 @@ describe('POST Order - ORP', () => {
     };
   });
 
-  xit('senario 2 : a normal order (order 2) which central warehouse does\'nt have inventory for', async function (done) {
+  it('senario 2 : a normal order (order 2) which central warehouse does\'nt have inventory for', async function (done) {
     try {
       this.done = done;
 
@@ -291,7 +291,7 @@ describe('POST Order - ORP', () => {
     };
   });
 
-  xit('senario 3 : c&c order (order 3) from paladium where has inventory for', async function (done) {
+  it('senario 3 : c&c order (order 3) from paladium where has inventory for', async function (done) {
     try {
       this.done = done;
 
@@ -352,7 +352,7 @@ describe('POST Order - ORP', () => {
     };
   });
 
-  xit('senario 4 : c&c order (order 4) from paladium where doesn\'t have enough inventory for as well as central (provided from sana and paladium )', async function (done) {
+  it('senario 4 : c&c order (order 4) from paladium where doesn\'t have enough inventory for as well as central (provided from sana and paladium )', async function (done) {
     try {
       this.done = done;
 
@@ -405,7 +405,7 @@ describe('POST Order - ORP', () => {
 
 });
 
-xdescribe('POST Order - ORP on mismatch', () => {
+describe('POST Order - ORP on mismatch', () => {
   let orders, products, centralWarehouse;
   let ShopClerk = {
     cid: null,
