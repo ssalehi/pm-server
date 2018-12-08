@@ -15,14 +15,14 @@ point_template = {
   }
 };
 
-status_template = {
+ticket_template = {
   status: Number,
   timestamp: {type: Date, default: Date.now},
   is_processed: {type: Boolean, default: false, required: true},
   agent_id: {type: Schema.Types.ObjectId, ref: 'Agent'},
 }
 
-min_slot_template = {
+slot_template = {
   lower_bound: Number,
   upper_bound: Number,
 };
@@ -64,9 +64,9 @@ let schema_obj = {
   delivery_end: Date,
   shelf_code: String,
   delivered_evidence: String,
-  status_list: [status_template],
-  min_end: Date,
-  min_slot: min_slot_template,
+  tickets: [ticket_template],
+  expire_date: Date,
+  slot: slot_template,
 };
 
 let DeliverySchema = new Schema(schema_obj, {collection: 'delivery', strict: true});
