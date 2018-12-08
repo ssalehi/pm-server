@@ -277,7 +277,7 @@ describe("Fetch Delivery Items POST API", () => {
               order_line_ids: orders[1].order_lines.map(el => el._id)
             }
           ],
-          tickets: [deliveryStatus],
+          status_list: [deliveryStatus],
           from: {
             warehouse_id: warehouseId
           },
@@ -304,7 +304,7 @@ describe("Fetch Delivery Items POST API", () => {
               address_id: orders[0].address._id,
             }
           },
-          tickets: [deliveryStatus],
+          status_list: [deliveryStatus],
           start: new Date(2010, 10, 11),
           end: new Date(2010, 10, 14)
         },
@@ -323,7 +323,7 @@ describe("Fetch Delivery Items POST API", () => {
             warehouse_id: warehouseId
           },
           delivery_agent: deliveryAgents[0].aid,
-          tickets: [deliveryStatus],
+          status_list: [deliveryStatus],
           start: new Date(2010, 10, 13),
           end: new Date(2010, 10, 15),
           delivery_start: new Date(2010, 10, 14),
@@ -347,7 +347,7 @@ describe("Fetch Delivery Items POST API", () => {
             warehouse_id: hubId
           },
           is_return: true,
-          tickets: [deliveryStatus],
+          status_list: [deliveryStatus],
           start: new Date(2010, 11, 15),
           end: new Date(2010, 11, 20)
         },
@@ -365,7 +365,7 @@ describe("Fetch Delivery Items POST API", () => {
           to: {
             warehouse_id: hubId
           },
-          tickets: [{
+          status_list: [{
             agent_id: mongoose.Types.ObjectId(),
             status: _const.ORDER_STATUS.Delivered,
             is_processed: true,
@@ -946,7 +946,7 @@ describe("Delivery POST API", () => {
                 order_line_ids: orders[0].order_lines.map(el => el._id)
               }
             ],
-            tickets: [deliveryStatus],
+            status_list: [deliveryStatus],
             from: {
               warehouse_id: hubId
             },
@@ -976,7 +976,7 @@ describe("Delivery POST API", () => {
                 address_id: orders[0].address._id,
               }
             },
-            tickets: [deliveryStatus],
+            status_list: [deliveryStatus],
             start: Date(2010, 10, 10),
             end: Date(2010, 10, 15)
           },
@@ -998,7 +998,7 @@ describe("Delivery POST API", () => {
               }
             },
             delivery_agent: deliveryAgents[0].aid,
-            tickets: [deliveryStatus],
+            status_list: [deliveryStatus],
             start: Date(2010, 10, 10),
             end: Date(2010, 10, 15)
           },
@@ -1020,7 +1020,7 @@ describe("Delivery POST API", () => {
               warehouse_id: hubId
             },
             is_return: true,
-            tickets: [deliveryStatus],
+            status_list: [deliveryStatus],
             start: Date(2010, 11, 10),
             end: Date(2010, 11, 15)
           },
@@ -1042,7 +1042,7 @@ describe("Delivery POST API", () => {
               warehouse_id: hubId
             },
             is_return: true,
-            tickets: [deliveryStatus],
+            status_list: [deliveryStatus],
             delivery_agent: deliveryAgents[0].aid,
             start: new Date(),
           },
@@ -1082,7 +1082,7 @@ describe("Delivery POST API", () => {
         expect(res.length).toBe(2);
         expect(res.map(el => el._id.toString())).toContain(deliveries[1]._id.toString());
         expect(res.map(el => el._id.toString())).toContain(deliveries[3]._id.toString());
-        // res.map(el => el.tickets[el.tickets.length - 1]).reduce((a, b) => a.concat(b), []).forEach(t => {
+        // res.map(el => el.status_list[el.status_list.length - 1]).reduce((a, b) => a.concat(b), []).forEach(t => {
         // expect(t.status).toBe(_const.ORDER_STATUS.ReadyToDeliver);
         // });
 
@@ -1414,7 +1414,7 @@ describe("Modify Delivery Item POST API", () => {
               order_line_ids: [mongoose.Types.ObjectId()]
             }
           ],
-          tickets: [deliveryStatus],
+          status_list: [deliveryStatus],
           from: {
             warehouse_id: warehouseId
           },
@@ -1441,7 +1441,7 @@ describe("Modify Delivery Item POST API", () => {
               address_id: customer.addresses[0]._id,
             }
           },
-          tickets: [deliveryStatus],
+          status_list: [deliveryStatus],
           start: new Date(2010, 10, 11),
           end: new Date(2010, 10, 14)
         },
@@ -1460,7 +1460,7 @@ describe("Modify Delivery Item POST API", () => {
             warehouse_id: warehouseId
           },
           delivery_agent: deliveryAgents[0]._id,
-          tickets: [deliveryStatus],
+          status_list: [deliveryStatus],
           start: new Date(2010, 10, 13),
           end: new Date(2010, 10, 15),
           delivery_start: new Date(2010, 10, 14),
@@ -1484,7 +1484,7 @@ describe("Modify Delivery Item POST API", () => {
             warehouse_id: hubId
           },
           is_return: true,
-          tickets: [deliveryStatus],
+          status_list: [deliveryStatus],
           start: new Date(2010, 11, 15),
           end: new Date(2010, 11, 20)
         }
