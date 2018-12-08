@@ -25,6 +25,7 @@ let schemas = {
   ArchivePlacementSchema: require('./schema/archive_placement.schema'),
   SoldOutSchema: require('./schema/sold_out.schema'),
   FreeDeliveryOptionSchema: require('./schema/free_delivery_option.sehcma'),
+  RefundSchema: require('./schema/refund.schema'),
 };
 
 
