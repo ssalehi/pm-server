@@ -67,6 +67,10 @@ const api_key = getEnvValue(process.env.API_KEY);
 const secret_key = getEnvValue(process.env.SECRET_KEY);
 const send_sms_url = getEnvValue(process.env.SEND_SMS_URL);
 
+const merchant_code = getEnvValue(process.env.MERCHANT_CODE);
+const terminal_code = getEnvValue(process.env.TERMINAL_CODE);
+const private_key = getEnvValue(process.env.PRIVATE_KEY);
+
 
 console.log('-> ', googleAuth_clientId);
 console.log('-> ', googleAuth_clientSecret);
@@ -166,6 +170,9 @@ module.exports = {
   api_key,
   secret_key,
   send_sms_url,
+  merchant_code,
+  terminal_code,
+  private_key,
 };
 
 
