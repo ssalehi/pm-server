@@ -34,6 +34,9 @@ const isDev = env === 'development';
  GOOGLE_OAUTH_CLIENTID = 636231560622-k29avsd6knviv7bu7ni9sf6r6okac3bt.apps.googleusercontent.com
  GOOGLE_OAUTH_CLIENTSECRET = A7cwgIu3p8H37m69VqrjrW2J
  GOOGLE_OAUTH_CALLBACKURL = /api/login/google/callback
+ TOKEN_URL = http://RestfulSms.com/api/Token
+ UserApiKey = 3419c133c8da0e423fdbd34
+ SecretKey = admin@123
  # REDIS_PASSWORD=123465
  ** END **
  */
@@ -59,6 +62,11 @@ const googleAuth_clientId = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTID);
 const googleAuth_clientSecret = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTSECRET);
 const googleAuth_callbackUrl = getEnvValue(process.env.APP_ADDRESS) + getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL);
 
+const token_url = getEnvValue(process.env.TOKEN_URL);
+const api_key = getEnvValue(process.env.API_KEY);
+const secret_key = getEnvValue(process.env.SECRET_KEY);
+const send_sms_url = getEnvValue(process.env.SEND_SMS_URL);
+
 
 console.log('-> ', googleAuth_clientId);
 console.log('-> ', googleAuth_clientSecret);
@@ -68,6 +76,8 @@ console.log('-> ', process.env.GOOGLE_OAUTH_CLIENTID);
 console.log('-> ', process.env.GOOGLE_OAUTH_CLIENTSECRET);
 console.log('-> ', process.env.APP_ADDRESS);
 console.log('-> ', process.env.GOOGLE_OAUTH_CALLBACKURL);
+
+
 /**
  * Mail Config
  */
@@ -152,6 +162,10 @@ module.exports = {
   onlineWarehouseAPI,
   invoiceAPI,
   mailConfig,
+  token_url,
+  api_key,
+  secret_key,
+  send_sms_url,
 };
 
 
