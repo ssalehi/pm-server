@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "node ./bin/www  --inspect",
     "test": "jasmine & jasmine-node --verbose --forceexit --captureExceptions spec/api"
   },
   "dependencies": {
@@ -13,10 +13,13 @@
     "body-parser": "^1.18.3",
     "bson": "^1.0.5",
     "cli-color": "^1.1.0",
+    "color-name": "^1.1.4",
     "compression": "^1.7.2",
     "connect-redis": "^3.3.0",
     "cookie-parser": "~1.4.3",
     "copy-dir": "^0.3.0",
+    "cron": "^1.5.0",
+    "css-color-converter": "^1.1.0",
     "debug": "~2.2.0",
     "dotenv": "^4.0.0",
     "express": "^4.16.3",
@@ -39,6 +42,7 @@
     "node-datetime": "^2.0.6",
     "node-image-resize": "0.0.2",
     "nodemailer": "^4.6.4",
+    "ntcjs": "^1.1.2",
     "passport": "^0.3.2",
     "passport-google-oauth": "^1.0.0",
     "passport-jwt": "^3.0.1",
@@ -50,6 +54,7 @@
     "redis": "^2.7.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
+    "requirejs": "^2.3.6",
     "rimraf-promise": "^2.0.0",
     "rxjs": "^5.5.10",
     "serve-favicon": "^2.5.0",

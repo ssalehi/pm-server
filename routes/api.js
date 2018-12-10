@@ -224,7 +224,7 @@ router.get('/tags/:tagGroupName', apiResponse('Tag', 'getTags', false, ['params.
 // Warehouses
 router.get('/warehouse/all', apiResponse('Warehouse', 'getAll', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getShops', false, []));
-
+router.put('/warehouse/update',apiResponse('Warehouse','updateWarehouses',true,['body'],[_const.ACCESS_LEVEL.SalesManager]));
 // Customer
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
@@ -241,7 +241,7 @@ router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
 
 // Order => Ticket
-router.post('/order/ticket/scan', apiResponse('TicketAction', 'newScan', true, ['body.barcode', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/ticket/scan', apiResponse('TicketAction', 'newScan', true, ['body', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
 router.post('/order/ticket/invoice', apiResponse('TicketAction', 'requestInvoice', true, ['body.orderId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
 router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistoryOrderLine', true, ['params'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.get('/order/ticket/history/:orderId', apiResponse('Ticket', 'getHistoryOrderByReceiver', true, ['params', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
@@ -442,7 +442,9 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
 router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // checkout
-router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address', 'body.customerData', 'body.transaction_id', 'body.used_point',
+
+router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
+router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address','body.transaction_id', 'body.used_point',
   'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.paymentType', 'body.loyalty']));
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
@@ -514,5 +516,13 @@ router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calcu
 router.get('/internal_delivery/get_agents', apiResponse('InternalDelivery', 'getInternalAgents', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.get('/internal_delivery/get_agent', apiResponse('InternalDelivery', 'getAgentInternalDelivery', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/internal_delivery/set_agent', apiResponse('InternalDelivery', 'setInternalAgent', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+
+// Refund
+router.put('/refund', apiResponse('Refund', 'setRefundFrom', false, ['user', 'body']));
+router.get('/refund/get_forms/:offset/:limit', apiResponse('Refund', 'getAllRefundForms', true, ['params.offset', 'params.limit'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/refund/set_detail_form', apiResponse('Refund', 'setDetailRefundForm', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/refund/reject_detail_form', apiResponse('Refund', 'rejectDetailRefundForm', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/refund/get_balance', apiResponse('Refund', 'getBalanceAndStatus', false, ['user']));
+
 
 module.exports = router;

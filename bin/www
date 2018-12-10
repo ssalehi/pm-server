@@ -9,6 +9,7 @@ const http = require('http');
 const env = require('../env');
 const socket = require('../socket');
 const port = normalizePort(env.port || '3000');
+const {initTokenRequest, getToken} = require('../lib/updateToken.model');
 
 /**
  * Get port from environment and store in Express.
@@ -30,17 +31,15 @@ appWaiter = setInterval(() => {
     /*
     * Listen on provided port, on all network interface.
     */
-
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
 
-
     socket.setup(server);
-
   } else {
     console.log('App is being set up ...');
   }
+
 }, 100);
 
 /**
@@ -102,3 +101,5 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+/** get token from sms.ir server every 25 minutes*/

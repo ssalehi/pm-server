@@ -7,9 +7,9 @@ const isProd = env === 'production';
 const isDev = env === 'development';
 
 /**
- * read environment variable form env.process
- * in dev or test mode the environment variables are read from .env file
- * .env file must at least contain:
+ * read environment variable form .env.process
+ * in dev or test mode the environment variables are read from ..env file
+ * ..env file must at least contain:
  * APP_NAME
  * APP_ADDRESS
  * PORT
@@ -19,7 +19,7 @@ const isDev = env === 'development';
  * MONGO_PORT
  * REDIS_HOST
  *
- * a .env file that might work for many:
+ * a ..env file that might work for many:
  ** START **
  # the values must not be initiated with '!!'
  APP_NAME=Persian-Mode
@@ -34,11 +34,14 @@ const isDev = env === 'development';
  GOOGLE_OAUTH_CLIENTID = 636231560622-k29avsd6knviv7bu7ni9sf6r6okac3bt.apps.googleusercontent.com
  GOOGLE_OAUTH_CLIENTSECRET = A7cwgIu3p8H37m69VqrjrW2J
  GOOGLE_OAUTH_CALLBACKURL = /api/login/google/callback
+ TOKEN_URL = http://RestfulSms.com/api/Token
+ UserApiKey = 3419c133c8da0e423fdbd34
+ SecretKey = admin@123
  # REDIS_PASSWORD=123465
  ** END **
  */
 if (isDev)
-  require('dotenv').config(); // loads env variables inside .env file into process.env
+  require('dotenv').config(); // loads .env variables inside ..env file into process..env
 
 /**
  *  App
@@ -60,6 +63,12 @@ const db_uri_test = getEnvValue(process.env.DB_URI_TEST);
 const googleAuth_clientId = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTID);
 const googleAuth_clientSecret = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTSECRET);
 const googleAuth_callbackUrl = getEnvValue(process.env.APP_ADDRESS) + getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL);
+
+const token_url = getEnvValue(process.env.TOKEN_URL);
+const api_key = getEnvValue(process.env.API_KEY);
+const secret_key = getEnvValue(process.env.SECRET_KEY);
+const send_sms_url = getEnvValue(process.env.SEND_SMS_URL);
+
 
 /**
  * Mail Config
@@ -101,9 +110,9 @@ const onlineWarehouseAPI = getEnvValue(process.env.ONLINE_WAREHOUSE_API);
 const invoiceAPI = getEnvValue(process.env.INVOICE_API);
 
 /**
- *  in some cases env var name which is declared in .env file is not compatible with server env var in production mode.
- *  for example in Heroku the name of env var for database connection is DATABASE_URL, but it is declared as pg_connection in .env file
- *  To resolve this if the name of env var contains !! at first, its value will be extracted from name after this two character
+ *  in some cases .env var name which is declared in ..env file is not compatible with server .env var in production mode.
+ *  for example in Heroku the name of .env var for database connection is DATABASE_URL, but it is declared as pg_connection in ..env file
+ *  To resolve this if the name of .env var contains !! at first, its value will be extracted from name after this two character
  * @param procEnv
  * @returns {*}
  */
@@ -145,6 +154,10 @@ module.exports = {
   onlineWarehouseAPI,
   invoiceAPI,
   mailConfig,
+  token_url,
+  api_key,
+  secret_key,
+  send_sms_url,
 };
 
 
