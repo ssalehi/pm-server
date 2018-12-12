@@ -36,6 +36,7 @@ app.use(function (req, res, next) {
   if (tk) {
     req.jwtToken = tk;
   } else {
+
     req.jwtToken = null;
   }
 
