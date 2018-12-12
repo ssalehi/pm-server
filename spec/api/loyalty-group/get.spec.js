@@ -33,6 +33,7 @@ describe("GET API", () => {
 
         let promiseList = [];
         promiseList.push(models()['LoyaltyGroupTest']({
+
           name: 'Gold',
           min_score: 1000,
         }).save());

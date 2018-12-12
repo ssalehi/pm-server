@@ -184,6 +184,7 @@ describe('Get Wish-List', () => {
         done();
       });
   });
+
   it('should get all wished items of customer', function (done) {
     this.done = done;
     rp({
