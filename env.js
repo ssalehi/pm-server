@@ -58,6 +58,8 @@ const database = getEnvValue(process.env.DATABASE);
 const database_test = getEnvValue(process.env.DATABASE) + '_test';
 const db_uri = getEnvValue(process.env.DB_URI);
 const db_uri_test = getEnvValue(process.env.DB_URI_TEST);
+
+
 const googleAuth_clientId = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTID);
 const googleAuth_clientSecret = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTSECRET);
 const googleAuth_callbackUrl = getEnvValue(process.env.APP_ADDRESS) + getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL);
@@ -66,16 +68,6 @@ const token_url = getEnvValue(process.env.TOKEN_URL);
 const api_key = getEnvValue(process.env.API_KEY);
 const secret_key = getEnvValue(process.env.SECRET_KEY);
 const send_sms_url = getEnvValue(process.env.SEND_SMS_URL);
-
-
-console.log('-> ', googleAuth_clientId);
-console.log('-> ', googleAuth_clientSecret);
-console.log('-> ', googleAuth_callbackUrl);
-
-console.log('-> ', process.env.GOOGLE_OAUTH_CLIENTID);
-console.log('-> ', process.env.GOOGLE_OAUTH_CLIENTSECRET);
-console.log('-> ', process.env.APP_ADDRESS);
-console.log('-> ', process.env.GOOGLE_OAUTH_CALLBACKURL);
 
 
 /**

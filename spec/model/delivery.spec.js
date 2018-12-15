@@ -257,8 +257,8 @@ describe('Initiate Delivery', () => {
             to: {
               warehouse_id: warehouses.find(x => x.is_hub)._id,
             },
-            min_end: new Date(2010, 10, 18),
-            min_slot: {
+            expire_date: new Date(2010, 10, 18),
+            slot: {
               lower_bound: 10,
               upper_bound: 18,
             }
@@ -274,7 +274,7 @@ describe('Initiate Delivery', () => {
       });
   });
 
-  it("should update order_details only (without changing min_end and min_slot)", function (done) {
+  it("should update order_details only (without changing expire_date and slot)", function (done) {
     Delivery.test = true;
     let delivery = new Delivery(true);
 
@@ -282,9 +282,9 @@ describe('Initiate Delivery', () => {
       .then(res => {
         expect(res.order_details.length).toBe(1);
         expect(res.order_details[0].order_line_ids.length).toBe(2);
-        expect(moment(res.min_end).format('YYYY-MM-DD')).toBe('2010-11-18');
-        expect(res.min_slot.lower_bound).toBe(10);
-        expect(res.min_slot.upper_bound).toBe(18);
+        expect(moment(res.expire_date).format('YYYY-MM-DD')).toBe('2010-11-18');
+        expect(res.slot.lower_bound).toBe(10);
+        expect(res.slot.upper_bound).toBe(18);
         done();
       })
       .catch(err => {
@@ -293,7 +293,7 @@ describe('Initiate Delivery', () => {
       });
   });
 
-  it("should update order_details, min_end and min_slot properties", function (done) {
+  it("should update order_details, expire_date and slot properties", function (done) {
     Delivery.test = true;
     let delivery = new Delivery(true);
 
@@ -302,9 +302,9 @@ describe('Initiate Delivery', () => {
         expect(res.order_details.length).toBe(2);
         const newOrder = res.order_details.find(x => x.order_id.toString() === orderIds[1].toString());
         expect(newOrder.order_line_ids.length).toBe(1);
-        expect(moment(res.min_end).format('YYYY-MM-DD')).toBe('2010-11-12');
-        expect(res.min_slot.lower_bound).toBe(18);
-        expect(res.min_slot.upper_bound).toBe(22);
+        expect(moment(res.expire_date).format('YYYY-MM-DD')).toBe('2010-11-12');
+        expect(res.slot.lower_bound).toBe(18);
+        expect(res.slot.upper_bound).toBe(22);
         done();
       })
       .catch(err => {
@@ -320,9 +320,9 @@ describe('Initiate Delivery', () => {
       .then(res => {
         expect(res.order_details.length).toBe(1);
         expect(res.order_details[0].order_line_ids.length).toBe(1);
-        expect(moment(res.min_end).format('YYYY-MM-DD')).toBe('2011-06-12');
-        expect(res.min_slot.lower_bound).toBe(18);
-        expect(res.min_slot.upper_bound).toBe(22);
+        expect(moment(res.expire_date).format('YYYY-MM-DD')).toBe('2011-06-12');
+        expect(res.slot.lower_bound).toBe(18);
+        expect(res.slot.upper_bound).toBe(22);
         done();
       })
       .catch(err => {
