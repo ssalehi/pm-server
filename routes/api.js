@@ -469,6 +469,7 @@ router.post('/delivery/unassign', apiResponse('Delivery', 'unassignAgent', true,
 router.get('/delivery/agent', apiResponse('Agent', 'getDeliveryAgents', true, [], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/delivery/agent', apiResponse('Delivery', 'setDeliveryAgent', true, ['body', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/delivery/start', apiResponse('Delivery', 'startDelivery', true, ['body.deliveryId', 'body.preCheck', 'user'], [_const.ACCESS_LEVEL.InternalDeliveryAgent, _const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/end', apiResponse('Delivery', 'endDelivery', true, ['body.deliveryId', 'user'], [_const.ACCESS_LEVEL.InternalDeliveryAgent, _const.ACCESS_LEVEL.DeliveryAgent]));
 
 // router.post('/delivery/items/:offset/:limit', apiResponse('Delivery', 'getDeliveryItems', true, ['user', 'params.offset', 'params.limit', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 // router.get('/delivery/by_id/:id', apiResponse('Delivery', 'getDeliveryData', false, ['params.id']));
