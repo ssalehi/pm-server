@@ -464,18 +464,22 @@ router.post('/loyaltygroup', apiResponse('LoyaltyGroup', 'upsertLoyaltyGroup', t
 router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGroup', true, ['body._id'], [_const.ACCESS_LEVEL.SalesManager]));
 
 // Delivery
-router.get('/delivery/by_id/:id', apiResponse('Delivery', 'getDeliveryData', false, ['params.id']));
-router.post('/delivery/items/:offset/:limit', apiResponse('Delivery', 'getDeliveryItems', true, ['user', 'params.offset', 'params.limit', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.post('/delivery/requestPackage', apiResponse('Delivery', 'requestPackage', true, ['body.deliveryId', 'user'], [_const.ACCESS_LEVEL.InternalDeliveryAgent, _const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/unassign', apiResponse('Delivery', 'unassignAgent', true, ['body.deliveryId', 'user'], [_const.ACCESS_LEVEL.InternalDeliveryAgent, _const.ACCESS_LEVEL.DeliveryAgent]));
 router.get('/delivery/agent', apiResponse('Agent', 'getDeliveryAgents', true, [], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/delivery/agent', apiResponse('Delivery', 'setDeliveryAgent', true, ['body', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.post('/delivery', apiResponse('Delivery', 'updateDelivery', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.post('/delivery/tracking', apiResponse('Delivery', 'getTrackingDetails', true, ['user', 'body.id'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.post('/delivery/agent/items', apiResponse('Delivery', 'getDeliveryAgentItems', true, ['user', 'body.is_delivered', 'body.delivery_status', 'body.is_processed'], [_const.ACCESS_LEVEL.DeliveryAgent]));
-router.post('/delivery/status', apiResponse('Delivery', 'changeStatus', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
-router.post('/delivery/by_order', apiResponse('Delivery', 'getDeliveryByOrderLine', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.get('/delivery/unassigned', apiResponse('Delivery', 'getUnassignedDeliveries', true, [], [_const.ACCESS_LEVEL.DeliveryAgent]));
-router.post('/delivery/assign', apiResponse('Delivery', 'assignDeliveryToAgnet', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
-router.post('/delivery/unassign', apiResponse('Delivery', 'unassignDeliveryFromAgent', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/start', apiResponse('Delivery', 'startDelivery', true, ['body.deliveryId', 'body.preCheck', 'user'], [_const.ACCESS_LEVEL.InternalDeliveryAgent, _const.ACCESS_LEVEL.DeliveryAgent]));
+
+// router.post('/delivery/items/:offset/:limit', apiResponse('Delivery', 'getDeliveryItems', true, ['user', 'params.offset', 'params.limit', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+// router.get('/delivery/by_id/:id', apiResponse('Delivery', 'getDeliveryData', false, ['params.id']));
+// router.post('/delivery', apiResponse('Delivery', 'updateDelivery', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+// router.post('/delivery/tracking', apiResponse('Delivery', 'getTrackingDetails', true, ['user', 'body.id'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+// router.post('/delivery/agent/items', apiResponse('Delivery', 'getDeliveryAgentItems', true, ['user', 'body.is_delivered', 'body.delivery_status', 'body.is_processed'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+// router.post('/delivery/status', apiResponse('Delivery', 'changeStatus', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+// router.post('/delivery/by_order', apiResponse('Delivery', 'getDeliveryByOrderLine', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+// router.get('/delivery/unassigned', apiResponse('Delivery', 'getUnassignedDeliveries', true, [], [_const.ACCESS_LEVEL.DeliveryAgent]));
+// router.post('/delivery/assign', apiResponse('Delivery', 'assignDeliveryToAgnet', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+// router.post('/delivery/unassign', apiResponse('Delivery', 'unassignDeliveryFromAgent', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
 
 router.use('/delivery/evidence', function (req, res, next) {
   const id = new mongoose.Types.ObjectId();
