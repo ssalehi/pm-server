@@ -69,7 +69,6 @@ const api_key = getEnvValue(process.env.API_KEY);
 const secret_key = getEnvValue(process.env.SECRET_KEY);
 const send_sms_url = getEnvValue(process.env.SEND_SMS_URL);
 
-
 /**
  * Mail Config
  */

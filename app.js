@@ -5,6 +5,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const compression = require('compression');
+const env = require('./env');
 
 const index = require('./routes/index');
 const api = require('./routes/api');
@@ -39,6 +40,12 @@ app.use(function (req, res, next) {
 
   next();
 });
+
+if (env.isDev) {
+  const cors = require('cors');
+  app.use(cors());
+  app.options('*', cors());
+}
 
 session.setup(app)
   .then(() => {
