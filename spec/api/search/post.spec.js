@@ -994,7 +994,7 @@ xdescribe('POST Suggest Page Address', () => {
   });
 });
 
-xdescribe('POST Search Scan Inbox', () => {
+describe('POST Search Scan Inbox', () => {
 
   let CWClerk = { // central warehosue clerk
     aid: null,
@@ -1227,7 +1227,7 @@ describe('POST Search Send to Customer Box', () => {
   }, 15000);
 
 
-  it('should get all aggregated send to customer orders', async function (done) {
+  it('should get all aggregated send to customer orders which exist in hub', async function (done) {
     try {
       this.done = done;
 
@@ -1271,24 +1271,6 @@ describe('POST Search Send to Customer Box', () => {
 
 
       for (let i = 0; i < 3; i++) { // add 3 order line of second product for order 1 with ticket Received  
-        orders[0].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[1].id,
-          adding_time: moment(),
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_LINE_STATUS.Recieved,
-              desc: null,
-              receiver_id: hub._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
-
-      for (let i = 0; i < 2; i++) { // add 3 order line of second product for order 1 with ticket Recieived 
         orders[0].order_lines.push({
           paid_price: 0,
           product_id: products[0].id,
@@ -1360,24 +1342,6 @@ describe('POST Search Send to Customer Box', () => {
         })
       }
 
-      for (let i = 0; i < 3; i++) { // add 3 order line of first product for order 1 with ticket Received  
-        orders[1].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[0].id,
-          adding_time: moment(),
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_LINE_STATUS.Recieved,
-              desc: null,
-              receiver_id: hub._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
-
 
       orders = await models()['OrderTest'].insertMany(orders);
       orders = JSON.parse(JSON.stringify(orders));
@@ -1397,15 +1361,205 @@ describe('POST Search Send to Customer Box', () => {
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(2);
-      expect(res.body.total).toBe(2);
+      expect(res.body.data.length).toBe(1);
+      expect(res.body.total).toBe(1);
 
-      console.log('-> ', res.body.data);
+      expect(res.body.data[0]._id.toString()).toBe(orders[0]._id.toString());
+      expect(res.body.data[0].total_order_lines).toBe(res.body.data[0].order_lines.length);
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
     }
   });
 
+  it('should not get send to customer orders whose all order lines are not aggregated', async function (done) {
+    try {
+      this.done = done;
+
+      let orders = [];
+
+      orders.push({ // not cc order
+        customer_id: mongoose.Types.ObjectId(),
+        is_cart: false,
+        transaction_id: "xyz12213",
+        address: {
+          _id: mongoose.Types.ObjectId(),
+          province: "تهران",
+          city: "تهران",
+          street: "دوم شرقی",
+          unit: "6",
+          no: "4",
+          district: "چاردیواری",
+          recipient_title: "m",
+          recipient_name: "احسان",
+          recipient_surname: "انصاری بصیر",
+          recipient_national_id: "0010684281",
+          recipient_mobile_no: "09125975886",
+          postal_code: null,
+          loc: {
+            long: 51.379926,
+            lat: 35.696491
+          }
+        },
+        order_lines: [],
+        tickets: [
+          {
+            is_processed: false,
+            status: _const.ORDER_STATUS.ReadyForInvoice,
+            desc: null,
+            receiver_id: hub._id,
+          }
+        ],
+        is_collect: false,
+        order_time: moment(),
+      });
+
+
+      for (let i = 0; i < 3; i++) { // add 3 order line of second product for order 1 with ticket Received  
+        orders[0].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[1].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.Recieved,
+              desc: null,
+              receiver_id: hub._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+      orders[0].order_lines.push({
+        paid_price: 0,
+        product_id: products[0].id,
+        product_instance_id: products[0].instances[1].id,
+        adding_time: moment(),
+        tickets: [
+          {
+            is_processed: false,
+            status: _const.ORDER_LINE_STATUS.Delivered,
+            desc: null,
+            receiver_id: hub._id,
+            timestamp: moment()
+          }
+        ]
+      })
+
+      
+      orders = await models()['OrderTest'].insertMany(orders);
+      orders = JSON.parse(JSON.stringify(orders));
+
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`search/Ticket`),
+        body: {
+          options: {
+            type: _const.LOGISTIC_SEARCH.ToCustomerBox
+          },
+          offset: 0,
+          limit: 5
+        },
+        json: true,
+        jar: hubClerk.jar,
+        resolveWithFullResponse: true
+      });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(0);
+      expect(res.body.total).toBe(0);
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
+
+  it('should not get send to customer orders whose last ticket is not ready for invoice', async function (done) {
+    try {
+      this.done = done;
+
+      let orders = [];
+
+      orders.push({ // not cc order
+        customer_id: mongoose.Types.ObjectId(),
+        is_cart: false,
+        transaction_id: "xyz12213",
+        address: {
+          _id: mongoose.Types.ObjectId(),
+          province: "تهران",
+          city: "تهران",
+          street: "دوم شرقی",
+          unit: "6",
+          no: "4",
+          district: "چاردیواری",
+          recipient_title: "m",
+          recipient_name: "احسان",
+          recipient_surname: "انصاری بصیر",
+          recipient_national_id: "0010684281",
+          recipient_mobile_no: "09125975886",
+          postal_code: null,
+          loc: {
+            long: 51.379926,
+            lat: 35.696491
+          }
+        },
+        order_lines: [],
+        tickets: [
+          {
+            is_processed: false,
+            status: _const.ORDER_STATUS.WaitForAggregation,
+            desc: null,
+            receiver_id: hub._id,
+          }
+        ],
+        is_collect: false,
+        order_time: moment(),
+      });
+
+
+      for (let i = 0; i < 3; i++) { // add 3 order line of second product for order 1 with ticket Received  
+        orders[0].order_lines.push({
+          paid_price: 0,
+          product_id: products[0].id,
+          product_instance_id: products[0].instances[1].id,
+          adding_time: moment(),
+          tickets: [
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.Recieved,
+              desc: null,
+              receiver_id: hub._id,
+              timestamp: moment()
+            }
+          ]
+        })
+      }
+      
+      orders = await models()['OrderTest'].insertMany(orders);
+      orders = JSON.parse(JSON.stringify(orders));
+
+      let res = await rp({
+        method: 'post',
+        uri: lib.helpers.apiTestURL(`search/Ticket`),
+        body: {
+          options: {
+            type: _const.LOGISTIC_SEARCH.ToCustomerBox
+          },
+          offset: 0,
+          limit: 5
+        },
+        json: true,
+        jar: hubClerk.jar,
+        resolveWithFullResponse: true
+      });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(0);
+      expect(res.body.total).toBe(0);
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err);
+    }
+  });
 
 });

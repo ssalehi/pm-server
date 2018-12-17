@@ -17,7 +17,7 @@ let setup = (app) => {
     },
     lib.Person.passportLocalStrategy
   ));
-  
+
   passport.use(new GoogleStrategy({
     clientID: env.googleAuth.clientID,
     clientSecret: env.googleAuth.clientSecret,
