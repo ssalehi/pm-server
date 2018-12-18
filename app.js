@@ -9,7 +9,6 @@ const env = require('./env');
 
 const index = require('./routes/index');
 const api = require('./routes/api');
-var cors = require('cors');
 
 const app = express();
 app.use(compression())
@@ -30,14 +29,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
 
 app.use(function (req, res, next) {
   const tk = req.headers['token'];
   if (tk) {
     req.jwtToken = tk;
   } else {
-
     req.jwtToken = null;
   }
 
