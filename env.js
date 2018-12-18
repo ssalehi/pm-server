@@ -74,6 +74,7 @@ const terminal_code = getEnvValue(process.env.TERMINAL_CODE);
 const private_key = getEnvValue(process.env.PRIVATE_KEY);
 
 
+
 /**
  * Mail Config
  */
@@ -164,7 +165,7 @@ module.exports = {
   send_sms_url,
   merchant_code,
   terminal_code,
-  private_key,
+  private_key
 };
 
 
