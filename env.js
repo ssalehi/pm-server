@@ -131,6 +131,10 @@ function getEnvValue(procEnv) {
     return procEnv;
 }
 
+/**
+ *  Daily Hour Report
+ */
+const dailyReportHour = getEnvValue(process.env.DAILY_REPORT_HOUR);
 
 module.exports = {
   bcrypt,
@@ -166,6 +170,7 @@ module.exports = {
   api_key,
   secret_key,
   send_sms_url,
+  dailyReportHour
 };
 
 
