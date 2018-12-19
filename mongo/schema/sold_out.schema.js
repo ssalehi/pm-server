@@ -20,3 +20,4 @@ let SoldOutSchema = new Schema(schema_obj, {collection: 'sold_out', strict: true
 SoldOutSchema.index({product_id: 1, product_instance_id: 1}, {unique: true});
 
 module.exports = SoldOutSchema;
+
