@@ -32,11 +32,7 @@ let schema_obj = {
     order_line_ids: [{
       type: Schema.Types.ObjectId,
       required: true,
-    }],
-    completed_order: {
-      type: Boolean,
-      default: false,
-    }
+    }]
   }],
   to: point_template,
   from: point_template,
