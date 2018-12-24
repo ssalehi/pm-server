@@ -37,7 +37,7 @@ let loyalty_template = {
 
 let IPG_template = {
   invoiceNumber : {
-    type: Schema.Types.ObjectId,
+    type: String,
   },
   invoiceDate : {
     type: Date,
@@ -123,7 +123,7 @@ let schema_obj = {
     type: Date,
   },
   invoiceNumber: {
-    type: Schema.Types.ObjectId,
+    type: String,
   },
   IPG_data: IPG_template,
 };
