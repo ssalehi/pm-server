@@ -58,7 +58,11 @@ let schema_obj = {
     type: String,
     trim: true,
   },
-  wharehouse_name: {
+  warehouse_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'Warehouse'
+  },
+  warehouse_name: {
     type: String,
     trim: true,
   }
