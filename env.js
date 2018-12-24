@@ -72,6 +72,7 @@ const send_sms_url = getEnvValue(process.env.SEND_SMS_URL);
 const merchant_code = getEnvValue(process.env.MERCHANT_CODE);
 const terminal_code = getEnvValue(process.env.TERMINAL_CODE);
 const private_key = getEnvValue(process.env.PRIVATE_KEY);
+const rsa_private_key = getEnvValue(process.env.RSA_PRIVATE_KEY);
 
 
 
@@ -165,7 +166,8 @@ module.exports = {
   send_sms_url,
   merchant_code,
   terminal_code,
-  private_key
+  private_key,
+  rsa_private_key
 };
 
 
