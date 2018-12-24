@@ -29,6 +29,21 @@ let loyalty_template = {
   },
   earn_point: {
     type: Number,
+  },
+  final_point: {
+    type: Number,
+  },
+};
+
+let IPG_template = {
+  invoiceNumber : {
+    type: Schema.Types.ObjectId,
+  },
+  invoiceDate : {
+    type: Date,
+  },
+  transaction_id: {
+    type: String,
   }
 };
 
@@ -106,7 +121,11 @@ let schema_obj = {
   },
   delivery_expire_day: {
     type: Date,
-  }
+  },
+  invoiceNumber: {
+    type: Schema.Types.ObjectId,
+  },
+  IPG_data: IPG_template,
 };
 
 
