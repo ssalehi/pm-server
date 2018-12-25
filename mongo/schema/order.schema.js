@@ -44,7 +44,8 @@ let IPG_template = {
   },
   transaction_id: {
     type: String,
-  }
+  },
+
 };
 
 let receiver_info = {
