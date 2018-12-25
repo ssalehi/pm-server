@@ -29,6 +29,45 @@ let loyalty_template = {
   },
   earn_point: {
     type: Number,
+  },
+  final_point: {
+    type: Number,
+  },
+};
+
+let IPG_template = {
+  result: {
+    type: String,
+  },
+  action: {
+    type: String,
+  },
+  invoice_number : {
+    type: String,
+  },
+  invoice_date : {
+    type: Date,
+  },
+  transaction_id: {
+    type: String,
+  },
+  trace_number: {
+    type: String,
+  },
+  reference_number: {
+    type: String,
+  },
+  transaction_date: {
+    type: Date,
+  },
+  terminal_code: {
+    type: String,
+  },
+  merchant_code: {
+    type: String,
+  },
+  amount: {
+    type: Number,
   }
 };
 
@@ -106,7 +145,11 @@ let schema_obj = {
   },
   delivery_expire_day: {
     type: Date,
-  }
+  },
+  invoice_number: {
+    type: String,
+  },
+  IPG_data: IPG_template,
 };
 
 
