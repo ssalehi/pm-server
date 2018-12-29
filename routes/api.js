@@ -455,7 +455,7 @@ router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
 router.post('/payment', apiResponse('Order', 'prepareDataForBankGateway', false, ['user','body']));
 router.post('/payResult', apiResponse('Order', 'readAndVerifyPayResult', false, ['user','body']));
 
-router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address','body.transaction_id', 'body.used_point',
+router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.invoice_number', 'body.invoice_date', 'body.cartItems', 'body.order_id', 'body.address','body.transaction_id', 'body.used_point',
   'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.paymentType', 'body.loyalty']));
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
