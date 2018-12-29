@@ -453,6 +453,11 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
 router.post('/payment', apiResponse('Order', 'prepareDataForBankGateway', false, ['user','body']));
 router.post('/payResult', apiResponse('Order', 'readAndVerifyPayResult', false, ['user','body']));
+
+router.post('/checkout', apiResponse('Order', 'checkoutCartDemo', false, ['user', 'body.cartItems', 'body.order_id', 'body.address','body.transaction_id', 'body.used_point',
+  'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.paymentType', 'body.loyalty']));
+
+
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
 //sold out
