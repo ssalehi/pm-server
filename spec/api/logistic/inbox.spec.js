@@ -127,64 +127,46 @@ describe('Inbox way to go', () => {
             products = JSON.parse(JSON.stringify(products));
 
             orders = await models()['OrderTest'].insertMany([{ // order 1 => a normal order which central warehosue has inventory for
-                    customer_id: customer.cid,
-                    order_time: new Date(),
-                    is_cart: false,
-                    order_lines: [{
-                        product_id: products[0]._id,
-                        product_instance_id: products[0].instances[0]._id,
-                        tickets: [{
-                            "is_processed": false,
-                            "_id":mongoose.Types.ObjectId(),
-                            "status": 3,
-                            "desc": null,
-                            "timestamp": new Date()
-                        }]
-                    }, {
-                        product_id: products[0],
-                        product_instance_id: products[0].instances[0]._id,
-                        tickets: []
+                customer_id: customer.cid,
+                order_time: '2018-12-24T20:14:20.462z',
+                is_cart: false,
+                order_lines: [{
+                    product_id: products[0]._id,
+                    product_instance_id: products[0].instances[0]._id,
+                    tickets: [{
+                        "is_processed": false,
+                        "_id": mongoose.Types.ObjectId(),
+                        "status": 2,
+                        "desc": null,
+                        "timestamp": '2018-12-24T20:14:20.462z'
                     }]
-                },
-                { // order 2 => a normal order which central warehouse does'nt have inventory for
-                    customer_id: customer.cid,
-                    order_time: new Date(),
-                    is_cart: false,
-                    order_lines: [{
-                        product_id: products[0]._id,
-                        product_instance_id: products[0].instances[1]._id,
-                        tickets: []
+                }, {
+                    product_id: products[0],
+                    product_instance_id: products[0].instances[0]._id,
+                    tickets: []
+                }]
+            },
+            { // order 1 => a normal order which central warehosue has inventory for
+                customer_id: customer.cid,
+                order_time: '2018-12-30T20:14:20.462z',
+                is_cart: false,
+                order_lines: [{
+                    product_id: products[0]._id,
+                    product_instance_id: products[0].instances[0]._id,
+                    tickets: [{
+                        "is_processed": false,
+                        "_id": mongoose.Types.ObjectId(),
+                        "status": 2,
+                        "desc": null,
+                        "timestamp": '2018-12-30T20:14:20.462z'
                     }]
-                },
-                { // order 3 => c&c order from paladium where has inventory for
-                    customer_id: customer.cid,
-                    order_time: new Date(),
-                    is_cart: false,
-                    order_lines: [{
-                        product_id: products[0]._id,
-                        product_instance_id: products[0].instances[0]._id,
-                        tickets: []
-                    }, {
-                        product_id: products[0]._id,
-                        product_instance_id: products[0].instances[0]._id,
-                        tickets: []
-                    }]
-                },
-                { // order 4 => c&c order from paladium where doesn't have enough inventory for as well as central (provided from sana and paladium )
-                    customer_id: customer.cid,
-                    order_time: new Date(),
-                    is_cart: false,
-                    order_lines: [{
-                        product_id: products[0]._id,
-                        product_instance_id: products[0].instances[1]._id,
-                        tickets: []
-                    }, {
-                        product_id: products[0]._id,
-                        product_instance_id: products[0].instances[1]._id,
-                        tickets: []
-                    }]
-                }
-            ]);
+                }, {
+                    product_id: products[0],
+                    product_instance_id: products[0].instances[0]._id,
+                    tickets: []
+                }]
+            }
+        ]);
 
             orders = JSON.parse(JSON.stringify(orders));
             done();
@@ -193,26 +175,52 @@ describe('Inbox way to go', () => {
         };
     }, 15000);
 
-    it('should expect lots of results', function (done) {
+    it('should check the order&delivery details to be correct ', async function (done) {
         this.done = done
-        rp({
+        const res = await rp({
             jar: adminObj.jar,
             body: {
                 "orderId": orders[0]._id,
                 "orderLineId": orders[0].order_lines[0]._id,
-                "warehouseId": '5b6e6c4a486ddf00066decab',
+                "warehouseId": warehouses[1]._id,
                 "userId": '5c209119da8a28386c02471b',
-                "barcode": '5b6ff01701f471001c3692d5'
+                "barcode": '0394081341'
             },
             method: 'POST',
             json: true,
             uri: lib.helpers.apiTestURL('order/offline/verifyOnlineWarehouse'),
             resolveWithFullResponse: true
-        }).then(res => {
-            console.log('->', 'hi');
-            expect(true).toBe(true);
-            done();
         })
+        //order details expectations
+        expect(res.statusCode).toBe(200)
+        const res1 = await models()['OrderTest'].find()
+        let lastTicket = res1[0].order_lines[0].tickets[res1[0].order_lines[0].tickets.length - 1].status;
+        expect(lastTicket).toBe(_const.ORDER_LINE_STATUS.DeliverySet)
+        
+        
+        
+        // delivery details expectations
+          const deliveries = await models()['DeliveryTest'].find()
+          expect(deliveries[0].tickets[0].status).toBe(_const.DELIVERY_STATUS.default)
+
+       
+        const res2 = await rp({
+            jar: adminObj.jar,
+            body: {
+                "orderId": orders[1]._id,
+                "orderLineId": orders[1].order_lines[0]._id,
+                "warehouseId": warehouses[1]._id,
+                "userId": '5c209119da8a28386c02471b',
+                "barcode": '19231213123'
+            },
+            method: 'POST',
+            json: true,
+            uri: lib.helpers.apiTestURL('order/offline/verifyOnlineWarehouse'),
+            resolveWithFullResponse: true
+        })
+        expect(res2.statusCode).toBe(200)
+        console.log('->',new Date());
+        done();
     });
 
 });
