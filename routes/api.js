@@ -155,13 +155,13 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
           .update({username: req.user.username}, {
             is_verified: _const.VERIFICATION.emailVerified,
           }).then(data => {
-          // redirect client to the setMobile page
-          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
-          res.end();
-        }).catch(err => {
-          console.error('error in changing verification level: ', err);
-          res.end();
-        });
+            // redirect client to the setMobile page
+            res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
+            res.end();
+          }).catch(err => {
+            console.error('error in changing verification level: ', err);
+            res.end();
+          });
       } else { // if mobile is already verified
         if (obj['is_preferences_set'])
           res.writeHead(302, {'Location': `${ClientAddress}`});
@@ -451,7 +451,6 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 // checkout
 
 router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
-
 router.post('/payment', apiResponse('Order', 'prepareDataForBankGateway', false, ['user','body']));
 router.post('/payResult', apiResponse('Order', 'readAndVerifyPayResult', false, ['user','body']));
 

@@ -1,20 +1,18 @@
 
+const moment = require('moment');
 
-// let ehsan = {
-//   a: 1,
-//   b: 2
-// };
+var main = () => {
 
-let a = 1;
-let b = 2;
 
-let ehsan = {
-  a,
-  b
+  let m1 = moment();
+
+  let m2 = moment('2018-12-23');
+
+  console.log('-> ', m1);
+  console.log('-> ', m2);
+
+  console.log('-> ', m1.isBefore(m2));
+  console.log('-> ', m2.isBefore(m1));
+
 }
-
-console.log('-> ', ehsan);
-
-
-
-
+main()
