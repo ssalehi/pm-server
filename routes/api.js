@@ -533,7 +533,7 @@ router.post('/refund/set_detail_form', apiResponse('Refund', 'setDetailRefundFor
 router.post('/refund/reject_detail_form', apiResponse('Refund', 'rejectDetailRefundForm', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.get('/refund/get_balance', apiResponse('Refund', 'getBalanceAndStatus', false, ['user']));
 
-//Daily Sale Manager Report
+//Daily Sales Manager Report
 router.get('/daily_sales_report', apiResponse('Order', 'getDailySalesReport', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 
 
