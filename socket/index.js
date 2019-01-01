@@ -83,6 +83,7 @@ let sendToNS = (name, message = null) => {
 
       if (rooms.find(x => x === name)) {
         io.to(name).emit('msg', message);
+        console.log('-> ', 'msg sent to ', name);
       } else {
         console.log('-> ', `${name} is not in rooms`);
       }
