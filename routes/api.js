@@ -451,12 +451,10 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 // checkout
 
 router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
-router.post('/payment', apiResponse('Order', 'prepareDataForBankGateway', false, ['user','body']));
+router.post('/prepareDataForBankGateway', apiResponse('Order', 'prepareDataForBankGateway', false, ['user','body']));
 router.post('/payResult', apiResponse('Order', 'readPayResult', false, ['user','body']));
 router.post('/verifyTransaction', apiResponse('Order', 'verifyPayment', false, ['user','body']));
 
-router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.invoice_number', 'body.invoice_date', 'body.cartItems', 'body.order_id', 'body.address','body.transaction_id', 'body.used_point',
-  'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.paymentType', 'body.loyalty']));
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
 //sold out
