@@ -190,7 +190,7 @@ describe('POST Order - ORP', () => {
       let transaction_id = mongoose.Types.ObjectId();
       let res = await rp({
         method: 'POST',
-        uri: lib.helpers.apiTestURL(`checkout`),
+        uri: lib.helpers.apiTestURL(`checkoutDemo`),
         body: {
           order_id: orders[0]._id,
           address: customerAddress,
@@ -249,7 +249,7 @@ describe('POST Order - ORP', () => {
       let transaction_id = mongoose.Types.ObjectId();
       let res = await rp({
         method: 'POST',
-        uri: lib.helpers.apiTestURL(`checkout`),
+        uri: lib.helpers.apiTestURL(`checkoutDemo`),
         body: {
           order_id: orders[1]._id,
           address: customerAddress,
@@ -304,7 +304,7 @@ describe('POST Order - ORP', () => {
       let transaction_id = mongoose.Types.ObjectId();
       let res = await rp({
         method: 'POST',
-        uri: lib.helpers.apiTestURL(`checkout`),
+        uri: lib.helpers.apiTestURL(`checkoutDemo`),
         body: {
           order_id: orders[2]._id,
           address: warehouses[2].address, // paladium
@@ -365,7 +365,7 @@ describe('POST Order - ORP', () => {
       let transaction_id = mongoose.Types.ObjectId();
       let res = await rp({
         method: 'POST',
-        uri: lib.helpers.apiTestURL(`checkout`),
+        uri: lib.helpers.apiTestURL(`checkoutDemo`),
         body: {
           order_id: orders[3]._id,
           address: warehouses[2].address, // paladium
