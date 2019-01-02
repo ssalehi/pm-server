@@ -249,12 +249,12 @@ router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['us
 
 // Order => Ticket
 router.post('/order/ticket/scan', apiResponse('TicketAction', 'newScan', true, ['body', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/ticket', apiResponse('Ticket', 'getTickets', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/order/invoice', apiResponse('Offline', 'manualRequestInvoice', true, ['body.orderId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
-router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistoryOrderLine', true, ['params'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.get('/order/ticket/history/:orderId', apiResponse('Ticket', 'getHistoryOrderByReceiver', true, ['params', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/order/return', apiResponse('TicketAction', 'returnOrderLine', false, ['body', 'user']));
 router.post('/order/cancel', apiResponse('TicketAction', 'cancelOrderLine', false, ['body', 'user']));
 router.post('/order/mismatch', apiResponse('TicketAction', 'mismatchReport', true, ['body.trigger', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+
 
 // Order => api's used by offline system
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
@@ -533,7 +533,11 @@ router.post('/refund/set_detail_form', apiResponse('Refund', 'setDetailRefundFor
 router.post('/refund/reject_detail_form', apiResponse('Refund', 'rejectDetailRefundForm', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.get('/refund/get_balance', apiResponse('Refund', 'getBalanceAndStatus', false, ['user']));
 
-//Daily Sale Manager Report
+//Daily Sales Manager Report
 router.get('/daily_sales_report', apiResponse('Order', 'getDailySalesReport', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+
+
+router.post('/checkoutDemo', apiResponse('Order', 'checkoutCartDemo', false, ['user', 'body.cartItems', 'body.order_id', 'body.address','body.transaction_id', 'body.used_point',
+  'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.paymentType', 'body.loyalty']));
 
 module.exports = router;

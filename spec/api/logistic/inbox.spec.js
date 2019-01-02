@@ -197,6 +197,7 @@ describe('POST waitforonlinewarehouse', () => {
 
 
 
+
     it('new delivery created and orderline ticket is changed to deliveryset', async function (done) {
         this.done = done;
         await models()['DeliveryTest'].remove({});
@@ -213,25 +214,17 @@ describe('POST waitforonlinewarehouse', () => {
             json: true,
             uri: lib.helpers.apiTestURL('order/offline/verifyOnlineWarehouse'),
             resolveWithFullResponse: true
-        })
-        
+        });
         expect(res.statusCode).toBe(200)
         const res1 = await models()['OrderTest'].find()
         let lastTicket = res1[0].order_lines[0].tickets[res1[0].order_lines[0].tickets.length - 1].status;
         expect(lastTicket).toBe(_const.ORDER_LINE_STATUS.DeliverySet)
         done()
-    })
+    });
 
 
 
-
-
-
-
-
-
-
-    it('should check the orderline is added to an existing delivery ', async function (done) {
+    it('should check the orderline is added to an existing delivery that has started today ', async function (done) {
         this.done = done
         const res = await rp({
             jar: adminObj.jar,
@@ -247,11 +240,6 @@ describe('POST waitforonlinewarehouse', () => {
             uri: lib.helpers.apiTestURL('order/offline/verifyOnlineWarehouse'),
             resolveWithFullResponse: true
         })
-
-
-
-
-        //order details expectations
         expect(res.statusCode).toBe(200)
         const deliveryData = await models()['DeliveryTest'].find()
         expect(deliveryData.length).toBe(1)
@@ -261,6 +249,31 @@ describe('POST waitforonlinewarehouse', () => {
 
 
 
+    it('should add the delivery to an existing one that has started few days ago', async function (done) {
+        this.done = done;
+        const deliveryData = await models()['DeliveryTest'].find()
+        deliveryData[0].start = '2018-12-25T20:30:00.000Z'
+        deliveryData[0].save()
+        const res = await rp({
+            jar: adminObj.jar,
+            body: {
+                "orderId": orders[0]._id,
+                "orderLineId": orders[0].order_lines[0]._id,
+                "warehouseId": warehouses[1]._id,
+                "userId": '5c209119da8a28386c02471b',
+                "barcode": '0394081341'
+            },
+            method: 'POST',
+            json: true,
+            uri: lib.helpers.apiTestURL('order/offline/verifyOnlineWarehouse'),
+            resolveWithFullResponse: true
+        });
+        expect(deliveryData[0].start.getMonth()).not.toEqual(new Date().getMonth())
+        expect(deliveryData[0].start.getDate()).not.toEqual(new Date().getDate())
+        expect(deliveryData[0].start.getFullYear()).not.toEqual(new Date().getFullYear())
+        expect(deliveryData.length).toBe(1)
+        done()
+    });
 
 
 
@@ -271,7 +284,6 @@ describe('POST waitforonlinewarehouse', () => {
         const deliveryData = await models()['DeliveryTest'].find()
         deliveryData[0].tickets[0].status = _const.DELIVERY_STATUS.started
         deliveryData[0].save()
-
         const addDelivery = await rp({
             jar: adminObj.jar,
             body: {
@@ -299,7 +311,4 @@ describe('POST waitforonlinewarehouse', () => {
         });
 
     });
-
-
-
 });
