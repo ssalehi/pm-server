@@ -398,8 +398,9 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
+      console.error("error in rmPromise: ", err);
+      next(err);
     });
-
 });
 
 router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
@@ -450,8 +451,8 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 // checkout
 
 router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
-router.post('/payment', apiResponse('Order', 'prepareDataForBankGateway', false, ['user','body']));
-router.post('/payResult', apiResponse('Order', 'readAndVerifyPayResult', false, ['user','body']));
+router.post('/payment', apiResponse('Order', 'prepareDataForBankGateway', false, ['user', 'body']));
+router.post('/payResult', apiResponse('Order', 'readAndVerifyPayResult', false, ['user', 'body']));
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
 //sold out
