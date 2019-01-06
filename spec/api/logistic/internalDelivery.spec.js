@@ -118,7 +118,7 @@ describe('delivery start', () => {
                 tickets: [{
                     is_processed: false,
                     _id: mongoose.Types.ObjectId(),
-                    status: 5,
+                    status: _const.ORDER_LINE_STATUS.DeliverySet,
                     desc: null,
                     receiver_id: agentObj.aid,
                     timestamp: new Date()
@@ -129,7 +129,7 @@ describe('delivery start', () => {
                         tickets: [{
                             is_processed: false,
                             _id: mongoose.Types.ObjectId(),
-                            status: 4,
+                            status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
                             desc: null,
                             receiver_id: agentObj.aid,
                             timestamp: new Date()
@@ -142,7 +142,7 @@ describe('delivery start', () => {
                         tickets: [{
                             is_processed: false,
                             _id: mongoose.Types.ObjectId(),
-                            status: 9,
+                            status: _const.ORDER_LINE_STATUS.FinalCheck,
                             desc: null,
                             receiver_id: agentObj.aid,
                             timestamp: new Date()
@@ -155,10 +155,10 @@ describe('delivery start', () => {
             deliveries = await models()['DeliveryTest'].insertMany([{
                     //delivery 0 : from a shop to hub all orderlines checked
                     to: {
-                        warehouse_id: warehouses.find(warehouse => warehouse.name === 'مرکز تجمیع')._id
+                        warehouse_id: warehouses.find(x => x.is_hub)._id
                     },
                     from: {
-                        warehouse_id: warehouses[3]._id
+                        warehouse_id: warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id
                     },
                     is_return: false,
                     order_details: [{
@@ -173,16 +173,16 @@ describe('delivery start', () => {
                     tickets: [{
                         is_processed: false,
                         _id: mongoose.Types.ObjectId(),
-                        status: 2,
+                        status: _const.DELIVERY_STATUS.agentSet,
                         receiver_id: agentObj.aid,
                         timestamp: new Date()
                     }]
                 }, { //delivery 1 : from a shop to hub with unchecked ordelines whose ticket is set to verrified
                     to: {
-                        warehouse_id: warehouses.find(warehouse => warehouse.name === 'مرکز تجمیع')._id
+                        warehouse_id: warehouses.find(x => x.is_hub)._id
                     },
                     from: {
-                        warehouse_id: warehouses[3]._id
+                        warehouse_id: warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id
                     },
                     is_return: false,
                     order_details: [{
@@ -197,17 +197,17 @@ describe('delivery start', () => {
                     tickets: [{
                         is_processed: false,
                         _id: mongoose.Types.ObjectId(),
-                        status: 2,
+                        status: _const.DELIVERY_STATUS.agentSet,
                         receiver_id: agentObj.aid,
                         timestamp: new Date()
                     }]
                 },
                 { //delivery 2 :  cc from a shop to another shop
                     to: {
-                        warehouse_id: warehouses[3]._id
+                        warehouse_id: warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id
                     },
                     from: {
-                        warehouse_id: warehouses.find(warehouse => warehouse.name === 'مرکز تجمیع')._id
+                        warehouse_id: warehouses.find(x => x.is_hub)._id
                     },
                     is_return: false,
                     order_details: [{
@@ -222,7 +222,7 @@ describe('delivery start', () => {
                     tickets: [{
                         is_processed: false,
                         _id: mongoose.Types.ObjectId(),
-                        status: 2,
+                        status: _const.DELIVERY_STATUS.agentSet,
                         receiver_id: warehouses[0]._id,
                         timestamp: new Date()
                     }]

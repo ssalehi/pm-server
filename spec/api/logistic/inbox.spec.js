@@ -4,6 +4,7 @@ const models = require('../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 const warehouses = require('../../../warehouses');
+const moment = require('moment');
 
 describe('POST waitforonlinewarehouse', () => {
     let adminObj = {
@@ -141,7 +142,7 @@ describe('POST waitforonlinewarehouse', () => {
                     tickets: [{
                         is_processed: false,
                         _id: mongoose.Types.ObjectId(),
-                        status: 2,
+                        status: _const.ORDER_LINE_STATUS.WaitForOnlineWarehouse,
                         desc: null,
                         timestamp: new Date(),
                     }]
@@ -151,7 +152,7 @@ describe('POST waitforonlinewarehouse', () => {
                     tickets: [{
                         is_processed: false,
                         _id: mongoose.Types.ObjectId(),
-                        status: 2,
+                        status: _const.ORDER_LINE_STATUS.WaitForOnlineWarehouse,
                         desc: null,
                         timestamp: new Date(),
                     }]
@@ -162,24 +163,25 @@ describe('POST waitforonlinewarehouse', () => {
 
             deliveries = await models()['DeliveryTest'].insertMany([{
                 to: {
-                    "warehouse_id": warehouses[0]._id
+                    warehouse_id: warehouses.find(x => x.is_hub)._id
                 },
                 from: {
-                    "warehouse_id": warehouses[1]._id
+                    warehouse_id: warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id
+
                 },
                 is_return: false,
                 order_details: [{
-                    "order_line_ids": [
+                    order_line_ids: [
                         orders[0].order_lines[1]._id,
                     ],
-                    "_id": mongoose.Types.ObjectId(),
-                    "order_id": orders[0]._id
+                    _id: mongoose.Types.ObjectId(),
+                    order_id: orders[0]._id
                 }],
                 start: new Date(),
                 tickets: [{
                     is_processed: false,
                     id: mongoose.Types.ObjectId(),
-                    status: 1,
+                    status: _const.DELIVERY_STATUS.default,
                     receiver_id: warehouses[3]._id,
                     timestamp: new Date()
                 }],
@@ -214,6 +216,8 @@ describe('POST waitforonlinewarehouse', () => {
             resolveWithFullResponse: true
         });
         expect(res.statusCode).toBe(200)
+        const deliveries = await models()['DeliveryTest'].find();
+        expect(deliveries.length).toBe(1)
         const res1 = await models()['OrderTest'].find()
         let lastTicket = res1[0].order_lines[0].tickets[res1[0].order_lines[0].tickets.length - 1].status;
         expect(lastTicket).toBe(_const.ORDER_LINE_STATUS.DeliverySet)
@@ -241,7 +245,9 @@ describe('POST waitforonlinewarehouse', () => {
         expect(res.statusCode).toBe(200)
         const deliveryData = await models()['DeliveryTest'].find()
         expect(deliveryData.length).toBe(1)
-        expect(deliveryData[0].to.warehouse_id).toEqual(warehouses[0]._id)
+        isExist = deliveryData[0].order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
+        expect(isExist).toBe(true)
+        expect(deliveryData[0].to.warehouse_id.toString()).toBe(warehouses.find(x => x.is_hub)._id.toString())
         done()
     });
 
@@ -250,7 +256,8 @@ describe('POST waitforonlinewarehouse', () => {
     it('should add the delivery to an existing one that has started few days ago', async function (done) {
         this.done = done;
         const deliveryData = await models()['DeliveryTest'].find()
-        deliveryData[0].start = '2018-12-25T20:30:00.000Z'
+        deliveryData[0].start = (new Date()).setDate(new Date().getDate() - 3);
+
         deliveryData[0].save()
         const res = await rp({
             jar: adminObj.jar,
@@ -266,10 +273,11 @@ describe('POST waitforonlinewarehouse', () => {
             uri: lib.helpers.apiTestURL('order/offline/verifyOnlineWarehouse'),
             resolveWithFullResponse: true
         });
-        expect(deliveryData[0].start.getMonth()).not.toEqual(new Date().getMonth())
-        expect(deliveryData[0].start.getDate()).not.toEqual(new Date().getDate())
-        expect(deliveryData[0].start.getFullYear()).not.toEqual(new Date().getFullYear())
-        expect(deliveryData.length).toBe(1)
+        const deliveryData1 = await models()['DeliveryTest'].find()
+        isExist = deliveryData1[0].order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
+        expect(isExist).toBe(true)
+        expect(deliveryData1[0].start.getDate()).not.toEqual(new Date().getDate())
+        expect(deliveryData1.length).toBe(1)
         done()
     });
 
@@ -280,7 +288,9 @@ describe('POST waitforonlinewarehouse', () => {
     it('should check when the existing delivery is started creates a new delivery for new orderlines', async function (done) {
         this.done = done
         const deliveryData = await models()['DeliveryTest'].find()
+        console.log('->', deliveryData[0].start);
         deliveryData[0].tickets[0].status = _const.DELIVERY_STATUS.started
+        deliveryData[0].delivery_start = new Date()
         deliveryData[0].save()
         const addDelivery = await rp({
             jar: adminObj.jar,
@@ -299,14 +309,11 @@ describe('POST waitforonlinewarehouse', () => {
         expect(addDelivery.statusCode).toBe(200)
         const deliveryData2 = await models()['DeliveryTest'].find()
         expect(deliveryData2.length).toBe(2)
-        deliveryData2.forEach(delivery => {
-            if (delivery.tickets[0].status === _const.DELIVERY_STATUS.started) {
-                expect(delivery.start.getMonth()).toEqual(new Date().getMonth())
-                expect(delivery.start.getDate()).toEqual(new Date().getDate())
-                expect(delivery.start.getFullYear()).toEqual(new Date().getFullYear())
-            }
-            done()
-        });
+        newDelivery = deliveryData2.find(delivery => delivery.tickets[0].status === _const.DELIVERY_STATUS.default)
+        let nextDay = moment(moment().add('d', 1)).format('YYYY-MM-DD');
+        expect(moment(newDelivery.start).format('YYYY-MM-DD')).toBe(nextDay)
+        done()
+
 
     });
 });
