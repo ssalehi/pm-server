@@ -137,6 +137,19 @@ function getEnvValue(procEnv) {
  */
 const dailyReportHour = getEnvValue(process.env.DAILY_REPORT_HOUR);
 
+console.log('-> ', token_url); 
+console.log('-> ', api_key); 
+console.log('-> ', secret_key); 
+console.log('-> ', send_sms_url); 
+console.log('-> ', dailyReportHour); 
+console.log('-> ', merchant_code); 
+console.log('-> ', terminal_code); 
+console.log('-> ', redirect_address); 
+console.log('-> ', check_transaction_result_url); 
+console.log('-> ', verify_payment_url); 
+console.log('-> ', private_key); 
+console.log('-> ', rsa_private_key); 
+
 module.exports = {
   bcrypt,
   isProd: isProd,
