@@ -28,7 +28,7 @@ let setup = (app) => {
           resave: false,
           saveUninitialized: false,
         };
-
+ 
         if (env.isProd) {
           app.set('trust proxy', 1); //Trust first proxy
           session_config.cookie.secure = true; //Serve secure cookies
