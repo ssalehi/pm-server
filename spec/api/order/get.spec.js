@@ -3,9 +3,12 @@ const lib = require('../../../lib/index');
 const models = require('../../../mongo/models.mongo');
 const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
+const _const = require('../../../lib/const.list');
+const env = require('../../../env');
+const moment = require('moment');
+const dailyReportHour = env.dailyReportHour;
 
-
-describe('Get User All Orders', () => {
+xdescribe('Get User All Orders', () => {
   let customerObj = {
     cid: null,
     jar: null
@@ -73,6 +76,7 @@ describe('Get User All Orders', () => {
       .then(() => {
         products.push(models()['ProductTest']({
           _id: productIds[0],
+          article_no: 'vvvvv',
           name: 'sample name',
           product_type: {
             name: type1.name,
@@ -103,6 +107,7 @@ describe('Get User All Orders', () => {
         }));
         products.push(models()['ProductTest']({
           _id: productIds[1],
+          article_no: 'qqqqq',
           name: 'another simple name',
           product_type: {
             name: type1.name,
@@ -120,7 +125,7 @@ describe('Get User All Orders', () => {
               product_color_id: mongoose.Types.ObjectId(),
               size: "11",
               price: 50000,
-              barcode: '9303850203',
+              barcode: '9303850203'
             }
           ]
         }));
@@ -200,7 +205,7 @@ describe('Get User All Orders', () => {
         done();
       })
       .catch(err => {
-        console.lowg(err);
+        console.log(err);
         done();
       });
   });
@@ -230,4 +235,195 @@ describe('Get User All Orders', () => {
       done();
     }).catch(lib.helpers.errorHandler.bind(this));
   });
+});
+
+describe('Get Daily Sales Report for sales manager', () => {
+  let customerObj = {
+    cid: null,
+    jar: null
+  };
+  let SalesManagerObj = {
+    aid: null,
+    jar: null
+  };
+  let order1, order2, order3;
+
+  let today = moment(moment().format('YYYY-MM-DD')).set({
+    'hour': dailyReportHour,
+    'minute': '00',
+    'second': '00'
+  }).toDate();
+
+  let yesterday = moment(moment().add(-1, 'd').format('YYYY-MM-DD')).set({
+    'hour': dailyReportHour,
+    'minute': '00',
+    'second': '00'
+  }).toDate();
+
+  let day = moment(moment().add(-2, 'd').format('YYYY-MM-DD')).set({
+    'hour': dailyReportHour,
+    'minute': '00',
+    'second': '00'
+  }).toDate();
+
+  let firstOrder = {
+    customer_id: mongoose.Types.ObjectId(),
+    is_cart: false,
+    transaction_id: mongoose.Types.ObjectId(),
+    address: {
+      province: "aa",
+      city: "aa",
+      district: "aaa",
+      street: "aa",
+      unit: "1",
+      no: "1",
+      postal_code: "111",
+      loc: {
+        long: 11,
+        lat: 11,
+      }
+    },
+    total_amount: 1,
+    used_point: 1,
+    used_balance: 1,
+    order_time: today,
+    is_collect: false,
+    coupon_code: '1111',
+    order_lines: []
+  };
+  let secondOrder = {
+    customer_id: mongoose.Types.ObjectId(),
+    is_cart: false,
+    transaction_id: mongoose.Types.ObjectId(),
+    address: {
+      province: "b",
+      city: "b",
+      district: "b",
+      street: "b",
+      unit: "2",
+      no: "2",
+      postal_code: "22",
+      loc: {
+        long: 22,
+        lat: 22,
+      }
+    },
+    total_amount: 2,
+    used_point: 2,
+    used_balance: 2,
+    order_time: day,
+    is_collect: false,
+    coupon_code: '2222',
+    order_lines: []
+  };
+  let address = {
+    province: "assd",
+    city: "dsgg",
+    district: "sdgsdg",
+    street: "sdgsdgdsg",
+    unit: "2",
+    no: "4",
+    postal_code: "512123456",
+    loc: {
+      long: 12,
+      lat: 12,
+    }
+  };
+  let warehouses = [{
+    _id: mongoose.Types.ObjectId(),
+    name: 'انبار مرکزی',
+    phone: 'نا مشخص',
+    address: {
+      city: 'تهران',
+      street: 'نامشخص',
+      province: 'تهران'
+    },
+    is_hub: true,
+    priority: 0,
+
+  },
+    {
+      _id: mongoose.Types.ObjectId(),
+      name: 'پالادیوم',
+      phone: ' 021 2201 0600',
+      has_customer_pickup: true,
+      address: {
+        city: 'تهران',
+        street: 'مقدس اردبیلی',
+        province: 'تهران'
+      },
+      priority: 1,
+
+    },
+    {
+      _id: mongoose.Types.ObjectId(),
+      name: 'سانا',
+      phone: '021 7443 8111',
+      has_customer_pickup: true,
+      address: {
+        province: 'تهران',
+        city: 'تهران',
+        street: 'اندرزگو',
+      },
+      priority: 2,
+    },
+    {
+      _id: mongoose.Types.ObjectId(),
+      name: 'ایران مال',
+      phone: 'نا مشخص',
+      has_customer_pickup: true,
+      address: {
+        province: 'تهران',
+        city: 'تهران',
+        street: 'اتوبان خرازی',
+      },
+      priority: 3,
+    }
+  ];
+
+  beforeEach(async done => {
+    try {
+      await lib.dbHelpers.dropAll();
+      const customerLoggedIn = await lib.dbHelpers.addAndLoginCustomer('test@test', "123456", {
+        addresses: [address]
+      });
+      let customer = await models()['CustomerTest'].find({_id: customerLoggedIn.cid});
+
+      const salesManager = await lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager, warehouses.find(x => x.is_hub)._id);
+      SalesManagerObj.jar = salesManager.rpJar;
+
+      order1 = await models()['OrderTest'].insertMany([firstOrder]);
+      order2 = await models()['OrderTest'].insertMany([secondOrder]);
+
+      done();
+    }
+    catch (error) {
+      console.log('error->', error);
+      done();
+    }
+  }, 15000);
+
+  it('should be return orders that have be between (order_time)  ', async function (done) {
+    try {
+      this.done = done;
+      const res = await rp({
+        method: 'get',
+        uri: lib.helpers.apiTestURL('daily_sales_report'),
+        jar: SalesManagerObj.jar,
+        json: true,
+        resolveWithFullResponse: true
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toBe(1);
+
+      const orders = await  models()['OrderTest'].find();
+
+      done();
+    }
+    catch (error) {
+      lib.helpers.errorHandler.bind(this)(error)
+    }
+  });
+
 });
