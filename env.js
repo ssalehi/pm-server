@@ -69,6 +69,16 @@ const api_key = getEnvValue(process.env.API_KEY);
 const secret_key = getEnvValue(process.env.SECRET_KEY);
 const send_sms_url = getEnvValue(process.env.SEND_SMS_URL);
 
+const merchant_code = getEnvValue(process.env.MERCHANT_CODE);
+const terminal_code = getEnvValue(process.env.TERMINAL_CODE);
+const redirect_address = getEnvValue(process.env.REDIRECT_ADDRESS);
+const check_transaction_result_url = getEnvValue(process.env.CHECK_TRANSACTION_RESULT_URL);
+const verify_payment_url = getEnvValue(process.env.VERIFY_PAYMENT_URL);
+const private_key = getEnvValue(process.env.PRIVATE_KEY);
+const rsa_private_key = getEnvValue(process.env.RSA_PRIVATE_KEY);
+
+
+
 /**
  * Mail Config
  */
@@ -161,7 +171,14 @@ module.exports = {
   api_key,
   secret_key,
   send_sms_url,
-  dailyReportHour
+  dailyReportHour,
+  merchant_code,
+  terminal_code,
+  redirect_address,
+  check_transaction_result_url,
+  verify_payment_url,
+  private_key,
+  rsa_private_key
 };
 
 
