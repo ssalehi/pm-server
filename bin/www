@@ -11,8 +11,6 @@ const socket = require('../socket');
 const port = normalizePort(env.port || '3000');
 const {initTokenRequest, getToken} = require('../lib/updateToken.model');
 
-console.log(JSON.stringify(env));
-
 /**
  * Get port from environment and store in Express.
  */
