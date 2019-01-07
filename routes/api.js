@@ -399,7 +399,7 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-    });
+  });
 
 });
 
@@ -451,8 +451,10 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 // checkout
 
 router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
-router.post('/payment', apiResponse('Order', 'prepareDataForBankGateway', false, ['user','body']));
-router.post('/payResult', apiResponse('Order', 'readAndVerifyPayResult', false, ['user','body']));
+router.post('/prepareDataForBankGateway', apiResponse('Order', 'prepareDataForBankGateway', false, ['user','body']));
+router.post('/payResult', apiResponse('Order', 'readPayResult', false, ['user','body']));
+router.post('/verifyTransaction', apiResponse('Order', 'verifyPayment', false, ['user','body']));
+
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
 //sold out
