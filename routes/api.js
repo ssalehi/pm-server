@@ -181,7 +181,7 @@ router.put('/register', apiResponse('Customer', 'registration', false, ['body'])
 router.post('/editUserBasicInfo', apiResponse('Customer', 'editUserBasicInfo', false, ['body', 'user.username']));
 router.post('/changePassword', apiResponse('Customer', 'changePassword', false, ['body', 'user.username']));
 router.post('/register/verify', apiResponse('Customer', 'verification', false, ['user', 'body.code', 'body.username']));
-router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
+router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['user', 'body.username']));
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['user', 'body.mobile_no']));
 router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user', 'body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
