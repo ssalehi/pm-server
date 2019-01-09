@@ -46,7 +46,7 @@ let IPG_template = {
     type: String,
   },
   invoice_date : {
-    type: Date,
+    type: String,
   },
   transaction_id: {
     type: String,

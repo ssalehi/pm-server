@@ -36,6 +36,10 @@ let schema_obj = {
   tickets: {
     type: [TicketSchema],
     default: []
+  },
+  cancel: {
+    type: Boolean,
+    default: false
   }
 };
 
