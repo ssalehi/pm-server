@@ -212,7 +212,7 @@ describe('POST waitforonlinewarehouse', () => {
             },
             method: 'POST',
             json: true,
-            uri: lib.helpers.apiTestURL('order/offline/verifyOnlineWarehouse'),
+            uri: lib.helpers.apiTestURL('order/offline/onlineWarehouseResponse'),
             resolveWithFullResponse: true
         });
         expect(res.statusCode).toBe(200)
@@ -239,7 +239,7 @@ describe('POST waitforonlinewarehouse', () => {
             },
             method: 'POST',
             json: true,
-            uri: lib.helpers.apiTestURL('order/offline/verifyOnlineWarehouse'),
+            uri: lib.helpers.apiTestURL('order/offline/onlineWarehouseResponse'),
             resolveWithFullResponse: true
         })
         expect(res.statusCode).toBe(200)
@@ -270,7 +270,7 @@ describe('POST waitforonlinewarehouse', () => {
             },
             method: 'POST',
             json: true,
-            uri: lib.helpers.apiTestURL('order/offline/verifyOnlineWarehouse'),
+            uri: lib.helpers.apiTestURL('order/offline/onlineWarehouseResponse'),
             resolveWithFullResponse: true
         });
         const deliveryData1 = await models()['DeliveryTest'].find()
@@ -303,7 +303,7 @@ describe('POST waitforonlinewarehouse', () => {
             },
             method: 'POST',
             json: true,
-            uri: lib.helpers.apiTestURL('order/offline/verifyOnlineWarehouse'),
+            uri: lib.helpers.apiTestURL('order/offline/onlineWarehouseResponse'),
             resolveWithFullResponse: true
         })
         expect(addDelivery.statusCode).toBe(200)
