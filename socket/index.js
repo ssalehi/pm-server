@@ -39,7 +39,6 @@ let setup = http => {
   io.use(socketSession.parser);
 
   io.on('connection', socket => {
-    console.log('-> ', 'connection made...');
     if (socket.session.passport) {
       let user = socket.session.passport.user;
       if (user && user.warehouse_id) {
@@ -57,7 +56,6 @@ function onAuthorizeSuccess(data, accept) {
 function onAuthorizeFail(data, message, error, accept) {
   if (error)
     accept(new Error(message));
-
   console.log('Failed connection  to socket.io', message);
   accept(null, false);
 }
@@ -85,6 +83,7 @@ let sendToNS = (name, message = null) => {
 
       if (rooms.find(x => x === name)) {
         io.to(name).emit('msg', message);
+        console.log('-> ', 'msg sent to ', name);
       } else {
         console.log('-> ', `${name} is not in rooms`);
       }

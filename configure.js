@@ -79,6 +79,27 @@ db.dbIsReady()
         access_level: _const.ACCESS_LEVEL.ShopClerk,
         first_name: 'shop',
         surname: 'clerck',
+      },
+      {
+        username: 'idelivery@persianmode.com',
+        secret: _hash,
+        access_level: _const.ACCESS_LEVEL.InternalDeliveryAgent,
+        first_name: 'internal delivery',
+        surname: 'agent',
+      },
+      {
+        username: 'delivery@persianmode.com',
+        secret: _hash,
+        access_level: _const.ACCESS_LEVEL.DeliveryAgent,
+        first_name: 'delivery',
+        surname: 'agent',
+      },
+      {
+        username: 'offline@persianmode.com',
+        secret: _hash,
+        access_level: _const.ACCESS_LEVEL.OfflineSystem,
+        first_name: 'offline',
+        surname: 'system',
       }];
 
       return models()['Agent'].insertMany(agents);

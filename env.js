@@ -34,6 +34,9 @@ const isDev = env === 'development';
  GOOGLE_OAUTH_CLIENTID = 636231560622-k29avsd6knviv7bu7ni9sf6r6okac3bt.apps.googleusercontent.com
  GOOGLE_OAUTH_CLIENTSECRET = A7cwgIu3p8H37m69VqrjrW2J
  GOOGLE_OAUTH_CALLBACKURL = /api/login/google/callback
+ TOKEN_URL = http://RestfulSms.com/api/Token
+ UserApiKey = 3419c133c8da0e423fdbd34
+ SecretKey = admin@123
  # REDIS_PASSWORD=123465
  ** END **
  */
@@ -55,19 +58,27 @@ const database = getEnvValue(process.env.DATABASE);
 const database_test = getEnvValue(process.env.DATABASE) + '_test';
 const db_uri = getEnvValue(process.env.DB_URI);
 const db_uri_test = getEnvValue(process.env.DB_URI_TEST);
+
+
 const googleAuth_clientId = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTID);
 const googleAuth_clientSecret = getEnvValue(process.env.GOOGLE_OAUTH_CLIENTSECRET);
 const googleAuth_callbackUrl = getEnvValue(process.env.APP_ADDRESS) + getEnvValue(process.env.GOOGLE_OAUTH_CALLBACKURL);
 
+const token_url = getEnvValue(process.env.TOKEN_URL);
+const api_key = getEnvValue(process.env.API_KEY);
+const secret_key = getEnvValue(process.env.SECRET_KEY);
+const send_sms_url = getEnvValue(process.env.SEND_SMS_URL);
 
-console.log('-> ', googleAuth_clientId);
-console.log('-> ', googleAuth_clientSecret);
-console.log('-> ', googleAuth_callbackUrl);
+const merchant_code = getEnvValue(process.env.MERCHANT_CODE);
+const terminal_code = getEnvValue(process.env.TERMINAL_CODE);
+const redirect_address = getEnvValue(process.env.REDIRECT_ADDRESS);
+const check_transaction_result_url = getEnvValue(process.env.CHECK_TRANSACTION_RESULT_URL);
+const verify_payment_url = getEnvValue(process.env.VERIFY_PAYMENT_URL);
+const private_key = getEnvValue(process.env.PRIVATE_KEY);
+const rsa_private_key = getEnvValue(process.env.RSA_PRIVATE_KEY);
 
-console.log('-> ', process.env.GOOGLE_OAUTH_CLIENTID);
-console.log('-> ', process.env.GOOGLE_OAUTH_CLIENTSECRET);
-console.log('-> ', process.env.APP_ADDRESS);
-console.log('-> ', process.env.GOOGLE_OAUTH_CALLBACKURL);
+
+
 /**
  * Mail Config
  */
@@ -121,6 +132,10 @@ function getEnvValue(procEnv) {
     return procEnv;
 }
 
+/**
+ *  Daily Hour Report
+ */
+const dailyReportHour = getEnvValue(process.env.DAILY_REPORT_HOUR);
 
 module.exports = {
   bcrypt,
@@ -152,6 +167,18 @@ module.exports = {
   onlineWarehouseAPI,
   invoiceAPI,
   mailConfig,
+  token_url,
+  api_key,
+  secret_key,
+  send_sms_url,
+  dailyReportHour,
+  merchant_code,
+  terminal_code,
+  redirect_address,
+  check_transaction_result_url,
+  verify_payment_url,
+  private_key,
+  rsa_private_key
 };
 
 

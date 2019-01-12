@@ -115,7 +115,14 @@ router.get('/logout', (req, res) => {
   req.logout();
   res.status(200).json('')
 });
-router.get('/agent/validUser', apiResponse('Person', 'afterLogin', true, ['user', () => true], [_const.ACCESS_LEVEL.DeliveryAgent, _const.ACCESS_LEVEL.ContentManager, _const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk]));
+router.get('/agent/validUser', apiResponse('Person', 'afterLogin', true, ['user', () => true], [
+  _const.ACCESS_LEVEL.DeliveryAgent,
+  _const.ACCESS_LEVEL.InternalDeliveryAgent,
+  _const.ACCESS_LEVEL.ContentManager,
+  _const.ACCESS_LEVEL.HubClerk,
+  _const.ACCESS_LEVEL.SalesManager,
+  _const.ACCESS_LEVEL.ShopClerk
+]));
 router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
@@ -224,7 +231,7 @@ router.get('/tags/:tagGroupName', apiResponse('Tag', 'getTags', false, ['params.
 // Warehouses
 router.get('/warehouse/all', apiResponse('Warehouse', 'getAll', false, []));
 router.get('/warehouse', apiResponse('Warehouse', 'getShops', false, []));
-router.put('/warehouse/update',apiResponse('Warehouse','updateWarehouses',true,['body'],[_const.ACCESS_LEVEL.SalesManager]));
+router.put('/warehouse/update', apiResponse('Warehouse', 'updateWarehouses', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 // Customer
 router.get('/customer/balance', apiResponse('Customer', 'getBalanceAndPoint', false, ['user']));
 
@@ -241,17 +248,17 @@ router.post('/order', apiResponse('Order', 'addToOrder', false, ['user', 'body']
 router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['user', 'body']));
 
 // Order => Ticket
-router.post('/order/ticket/scan', apiResponse('TicketAction', 'newScan', true, ['body.barcode', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/ticket/invoice', apiResponse('TicketAction', 'requestInvoice', true, ['body.orderId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
-router.get('/order/ticket/history/:orderId/:orderLineId', apiResponse('Ticket', 'getHistoryOrderLine', true, ['params'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.get('/order/ticket/history/:orderId', apiResponse('Ticket', 'getHistoryOrderByReceiver', true, ['params', 'user'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.post('/order/ticket/scan', apiResponse('TicketAction', 'newScan', true, ['body', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
+router.post('/order/ticket', apiResponse('Ticket', 'getTickets', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/order/invoice', apiResponse('Offline', 'manualRequestInvoice', true, ['body.orderId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
 router.post('/order/return', apiResponse('TicketAction', 'returnOrderLine', false, ['body', 'user']));
-router.post('/order/cancel', apiResponse('TicketAction', 'cancelOrderLine', false, ['body', 'user']));
+router.post('/order/cancel', apiResponse('TicketAction', 'requestCancel', false, ['body', 'user']));
 router.post('/order/mismatch', apiResponse('TicketAction', 'mismatchReport', true, ['body.trigger', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 
+
 // Order => api's used by offline system
-router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', false, ['body']));
-router.post('/order/offline/verifyOnlineWarehouse', apiResponse('Offline', 'verifyOnlineWarehouse', false, ['body']));
+router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
+router.post('/order/offline/onlineWarehouseResponse', apiResponse('Offline', 'onlineWarehouseResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
 
 // Wish List
 router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
@@ -392,7 +399,7 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-    });
+  });
 
 });
 
@@ -442,8 +449,12 @@ router.use('/placement/image/:pageId/:placementId', function (req, res, next) {
 router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addImage', true, ['params', 'body', 'file', 'is_new', 'new_placement_id'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // checkout
-router.post('/checkout', apiResponse('Order', 'checkoutCart', false, ['user', 'body.cartItems', 'body.order_id', 'body.address','body.transaction_id', 'body.used_point',
-  'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.paymentType', 'body.loyalty']));
+
+router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
+router.post('/prepareDataForBankGateway', apiResponse('Order', 'prepareDataForBankGateway', false, ['user','body']));
+router.post('/payResult', apiResponse('Order', 'readPayResult', false, ['user','body']));
+router.post('/verifyTransaction', apiResponse('Order', 'verifyPayment', false, ['user','body']));
+
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
 //sold out
@@ -455,17 +466,19 @@ router.post('/loyaltygroup', apiResponse('LoyaltyGroup', 'upsertLoyaltyGroup', t
 router.post('/loyaltygroup/delete', apiResponse('LoyaltyGroup', 'deleteLoyaltyGroup', true, ['body._id'], [_const.ACCESS_LEVEL.SalesManager]));
 
 // Delivery
-router.get('/delivery/by_id/:id', apiResponse('Delivery', 'getDeliveryData', false, ['params.id']));
-router.post('/delivery/items/:offset/:limit', apiResponse('Delivery', 'getDeliveryItems', true, ['user', 'params.offset', 'params.limit', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.post('/delivery/requestPackage', apiResponse('Delivery', 'requestPackage', true, ['body.deliveryId', 'user'], [_const.ACCESS_LEVEL.InternalDeliveryAgent, _const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/unassign', apiResponse('Delivery', 'unassignAgent', true, ['body.deliveryId', 'user'], [_const.ACCESS_LEVEL.InternalDeliveryAgent, _const.ACCESS_LEVEL.DeliveryAgent]));
 router.get('/delivery/agent', apiResponse('Agent', 'getDeliveryAgents', true, [], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.post('/delivery', apiResponse('Delivery', 'updateDelivery', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.post('/delivery/tracking', apiResponse('Delivery', 'getTrackingDetails', true, ['user', 'body.id'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.post('/delivery/agent/items', apiResponse('Delivery', 'getDeliveryAgentItems', true, ['user', 'body.is_delivered', 'body.delivery_status', 'body.is_processed'], [_const.ACCESS_LEVEL.DeliveryAgent]));
-router.post('/delivery/status', apiResponse('Delivery', 'changeStatus', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
-router.post('/delivery/by_order', apiResponse('Delivery', 'getDeliveryByOrderLine', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.get('/delivery/unassigned', apiResponse('Delivery', 'getUnassignedDeliveries', true, [], [_const.ACCESS_LEVEL.DeliveryAgent]));
-router.post('/delivery/assign', apiResponse('Delivery', 'assignDeliveryToAgnet', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
-router.post('/delivery/unassign', apiResponse('Delivery', 'unassignDeliveryFromAgent', true, ['user', 'body'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/agent', apiResponse('Delivery', 'assignAgent', true, ['body', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/start', apiResponse('Delivery', 'startDelivery', true, ['body.deliveryId', 'body.preCheck', 'user'], [_const.ACCESS_LEVEL.InternalDeliveryAgent, _const.ACCESS_LEVEL.DeliveryAgent]));
+router.post('/delivery/end', apiResponse('Delivery', 'endDelivery', true, ['body.deliveryId', 'user'], [_const.ACCESS_LEVEL.InternalDeliveryAgent, _const.ACCESS_LEVEL.DeliveryAgent]));
+
+// router.post('/delivery/items/:offset/:limit', apiResponse('Delivery', 'getDeliveryItems', true, ['user', 'params.offset', 'params.limit', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+// router.get('/delivery/by_id/:id', apiResponse('Delivery', 'getDeliveryData', false, ['params.id']));
+// router.post('/delivery', apiResponse('Delivery', 'updateDelivery', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+// router.post('/delivery/tracking', apiResponse('Delivery', 'getTrackingDetails', true, ['user', 'body.id'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+// router.post('/delivery/agent/items', apiResponse('Delivery', 'getDeliveryAgentItems', true, ['user', 'body.is_delivered', 'body.delivery_status', 'body.is_processed'], [_const.ACCESS_LEVEL.DeliveryAgent]));
+// router.post('/delivery/by_order', apiResponse('Delivery', 'getDeliveryByOrderLine', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 
 router.use('/delivery/evidence', function (req, res, next) {
   const id = new mongoose.Types.ObjectId();
@@ -514,5 +527,19 @@ router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calcu
 router.get('/internal_delivery/get_agents', apiResponse('InternalDelivery', 'getInternalAgents', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.get('/internal_delivery/get_agent', apiResponse('InternalDelivery', 'getAgentInternalDelivery', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/internal_delivery/set_agent', apiResponse('InternalDelivery', 'setInternalAgent', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+
+// Refund
+router.put('/refund', apiResponse('Refund', 'setRefundFrom', false, ['user', 'body']));
+router.get('/refund/get_forms/:offset/:limit', apiResponse('Refund', 'getAllRefundForms', true, ['params.offset', 'params.limit'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/refund/set_detail_form', apiResponse('Refund', 'setDetailRefundForm', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/refund/reject_detail_form', apiResponse('Refund', 'rejectDetailRefundForm', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
+router.get('/refund/get_balance', apiResponse('Refund', 'getBalanceAndStatus', false, ['user']));
+
+//Daily Sales Manager Report
+router.get('/daily_sales_report', apiResponse('Order', 'getDailySalesReport', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+
+
+router.post('/checkoutDemo', apiResponse('Order', 'checkoutCartDemo', false, ['user', 'body.cartItems', 'body.order_id', 'body.address','body.transaction_id', 'body.used_point',
+  'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.paymentType', 'body.loyalty']));
 
 module.exports = router;
