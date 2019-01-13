@@ -11,6 +11,11 @@ let schema_obj = {
     ref: 'Product',
     required: true
   },
+  product_price: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   paid_price: {
     type: Number,
     required: true,
