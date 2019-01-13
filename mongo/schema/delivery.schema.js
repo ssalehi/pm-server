@@ -1,5 +1,6 @@
 const Schema = require('mongoose').Schema;
 const TicketSchema = require('./ticket.schema');
+const addressSchema = require('./address.schema');
 
 
 point_template = {
@@ -8,7 +9,7 @@ point_template = {
       type: Schema.Types.ObjectId,
       ref: 'Customer'
     },
-    address_id: Schema.Types.ObjectId
+    address: addressSchema
   },
   warehouse_id: {
     type: Schema.Types.ObjectId,
