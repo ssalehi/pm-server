@@ -26,6 +26,7 @@ let schemas = {
   SoldOutSchema: require('./schema/sold_out.schema'),
   FreeDeliveryOptionSchema: require('./schema/free_delivery_option.sehcma'),
   RefundSchema: require('./schema/refund.schema'),
+  SMMessageSchema: require('./schema/sm_message.schema'),
 };
 
 
