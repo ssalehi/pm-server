@@ -136,6 +136,7 @@ function getEnvValue(procEnv) {
  *  Daily Hour Report
  */
 const dailyReportHour = getEnvValue(process.env.DAILY_REPORT_HOUR);
+const validPassedDaysForReturn = getEnvValue(process.env.VALID_PASSED_DAYS_FOR_RETURN);
 
 module.exports = {
   bcrypt,
@@ -178,7 +179,8 @@ module.exports = {
   check_transaction_result_url,
   verify_payment_url,
   private_key,
-  rsa_private_key
+  rsa_private_key,
+  validPassedDaysForReturn
 };
 
 

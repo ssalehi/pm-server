@@ -250,7 +250,7 @@ router.post('/order/delete', apiResponse('Order', 'removeFromOrder', false, ['us
 router.post('/order/ticket/scan', apiResponse('TicketAction', 'newScan', true, ['body', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
 router.post('/order/ticket', apiResponse('Ticket', 'getTickets', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/order/invoice', apiResponse('Offline', 'manualRequestInvoice', true, ['body.orderId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
-router.post('/order/return', apiResponse('TicketAction', 'returnOrderLine', false, ['body', 'user']));
+router.post('/order/return', apiResponse('TicketAction', 'requestReturn', false, ['body', 'user']));
 router.post('/order/cancel', apiResponse('TicketAction', 'requestCancel', false, ['body', 'user']));
 router.post('/order/mismatch', apiResponse('TicketAction', 'mismatchReport', true, ['body.trigger', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 
