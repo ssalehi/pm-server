@@ -532,6 +532,7 @@ router.get('/daily_sales_report', apiResponse('Order', 'getDailySalesReport', tr
 
 // SM Message
 router.post('/sm/assignToReturn', apiResponse('SMMessage', 'assignToReturn', true, ['body', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/sm/close', apiResponse('SMMessage', 'close', true, ['body.id', 'body.report', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 
 
 
