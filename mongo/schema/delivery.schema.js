@@ -37,15 +37,6 @@ let schema_obj = {
   }],
   to: point_template,
   from: point_template,
-  is_return: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  completed_by: {
-    type: Schema.Types.ObjectId,
-    ref: 'Agent'
-  },
   delivery_agent: {
     type: Schema.Types.ObjectId,
     ref: 'Agent'
