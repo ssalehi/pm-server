@@ -4,7 +4,8 @@ const TicketSchema = require('./ticket.schema');
 
 let campaignInfo_template = {
   _id: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: 'Campaign'
   },
   discount_ref: {
     type: Number,
