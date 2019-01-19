@@ -142,7 +142,6 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
     res.end();
   }
 
-  // TODO: needs to be checked on the real server to see functionality !
   let ClientAddress = env.oauthAddress;
   let ClientSetMobileRoute = '/login/oauth/setMobile';
   let ClientSetPreferences = '/login/oauth/setPreferences';
@@ -182,7 +181,7 @@ router.put('/register', apiResponse('Customer', 'registration', false, ['body'])
 router.post('/editUserBasicInfo', apiResponse('Customer', 'editUserBasicInfo', false, ['body', 'user.username']));
 router.post('/changePassword', apiResponse('Customer', 'changePassword', false, ['body', 'user.username']));
 router.post('/register/verify', apiResponse('Customer', 'verification', false, ['user', 'body.code', 'body.username']));
-router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
+router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['user', 'body.username']));
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['user', 'body.mobile_no']));
 router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user', 'body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
@@ -354,7 +353,6 @@ router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'delete
 // Campaign
 router.get('/campaign/:cid', apiResponse('Campaign', 'getCampaign', true, ['params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.put('/campaign', apiResponse('Campaign', 'setCampaign', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
-router.post('/campaign/:cid', apiResponse('Campaign', 'setCampaign', true, ['body', 'params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/campaign/collection/:isAdd', apiResponse('Campaign', 'addRemoveCollection', true, ['body.campaignId', 'body.collectionId', 'params.isAdd'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/campaign/:cid', apiResponse('Campaign', 'endCampaign', true, ['params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
 
@@ -399,8 +397,9 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-  });
-
+      console.error("error in rmPromise: ", err);
+      next(err);
+    });
 });
 
 router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
