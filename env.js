@@ -77,6 +77,8 @@ const verify_payment_url = getEnvValue(process.env.VERIFY_PAYMENT_URL);
 const private_key = getEnvValue(process.env.PRIVATE_KEY);
 const rsa_private_key = getEnvValue(process.env.RSA_PRIVATE_KEY);
 
+const free_delivery_amount = getEnvValue(process.env.FREE_DELIVERY_AMOUNT);
+
 
 
 /**
@@ -180,7 +182,8 @@ module.exports = {
   verify_payment_url,
   private_key,
   rsa_private_key,
-  validPassedDaysForReturn
+  free_delivery_amount,
+  validPassedDaysForReturn,
 };
 
 
