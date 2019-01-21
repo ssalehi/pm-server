@@ -53,7 +53,7 @@ add_point_template = {
 };
 
 let schema_obj = {
-  is_c_and_c: {
+  is_collect: {
     type: Boolean,
     required: true,
     default: false,
