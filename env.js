@@ -83,8 +83,8 @@ const rsa_private_key = getEnvValue(process.env.RSA_PRIVATE_KEY);
  * Mail Config
  */
 const mailConfig = {
-  host: "smtp.mailgun.org",
-  port: "465",
+  host: isDev ? "smtp.mailgun.org" : process.env.MAIL_HOST,
+  port: isDev ? "465" : process.env.MAIL_HOST_PORT,
   secure: true,
   auth: {
     user: getEnvValue(isDev ? process.env.EMAIL_USERNAME_DEV : process.env.EMAIL_USERNAME),
