@@ -77,14 +77,16 @@ const verify_payment_url = getEnvValue(process.env.VERIFY_PAYMENT_URL);
 const private_key = getEnvValue(process.env.PRIVATE_KEY);
 const rsa_private_key = getEnvValue(process.env.RSA_PRIVATE_KEY);
 
+const free_delivery_amount = getEnvValue(process.env.FREE_DELIVERY_AMOUNT);
+
 
 
 /**
  * Mail Config
  */
 const mailConfig = {
-  host: "smtp.mailgun.org",
-  port: "465",
+  host: isDev ? "smtp.mailgun.org" : process.env.MAIL_HOST,
+  port: isDev ? "465" : process.env.MAIL_HOST_PORT,
   secure: true,
   auth: {
     user: getEnvValue(isDev ? process.env.EMAIL_USERNAME_DEV : process.env.EMAIL_USERNAME),
@@ -136,6 +138,7 @@ function getEnvValue(procEnv) {
  *  Daily Hour Report
  */
 const dailyReportHour = getEnvValue(process.env.DAILY_REPORT_HOUR);
+const validPassedDaysForReturn = getEnvValue(process.env.VALID_PASSED_DAYS_FOR_RETURN);
 
 module.exports = {
   bcrypt,
@@ -178,7 +181,9 @@ module.exports = {
   check_transaction_result_url,
   verify_payment_url,
   private_key,
-  rsa_private_key
+  rsa_private_key,
+  free_delivery_amount,
+  validPassedDaysForReturn,
 };
 
 

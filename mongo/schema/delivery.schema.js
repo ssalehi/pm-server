@@ -1,5 +1,6 @@
 const Schema = require('mongoose').Schema;
 const TicketSchema = require('./ticket.schema');
+const addressSchema = require('./address.schema');
 
 
 point_template = {
@@ -8,7 +9,7 @@ point_template = {
       type: Schema.Types.ObjectId,
       ref: 'Customer'
     },
-    address_id: Schema.Types.ObjectId
+    address: addressSchema
   },
   warehouse_id: {
     type: Schema.Types.ObjectId,
@@ -36,15 +37,6 @@ let schema_obj = {
   }],
   to: point_template,
   from: point_template,
-  is_return: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  completed_by: {
-    type: Schema.Types.ObjectId,
-    ref: 'Agent'
-  },
   delivery_agent: {
     type: Schema.Types.ObjectId,
     ref: 'Agent'
