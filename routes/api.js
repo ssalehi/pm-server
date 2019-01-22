@@ -142,7 +142,6 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
     res.end();
   }
 
-  // TODO: needs to be checked on the real server to see functionality !
   let ClientAddress = env.oauthAddress;
   let ClientSetMobileRoute = '/login/oauth/setMobile';
   let ClientSetPreferences = '/login/oauth/setPreferences';
@@ -182,7 +181,7 @@ router.put('/register', apiResponse('Customer', 'registration', false, ['body'])
 router.post('/editUserBasicInfo', apiResponse('Customer', 'editUserBasicInfo', false, ['body', 'user.username']));
 router.post('/changePassword', apiResponse('Customer', 'changePassword', false, ['body', 'user.username']));
 router.post('/register/verify', apiResponse('Customer', 'verification', false, ['user', 'body.code', 'body.username']));
-router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['body.username']));
+router.post('/register/resend', apiResponse('Customer', 'resendVerificationCode', false, ['user', 'body.username']));
 router.post('/register/mobile', apiResponse('Customer', 'setMobileNumber', false, ['user', 'body.mobile_no']));
 router.post('/user/address', apiResponse('Customer', 'setAddress', false, ['user', 'body']));
 router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', false, ['body']));
@@ -354,7 +353,6 @@ router.delete('/collection/product/:cid/:pid', apiResponse('Collection', 'delete
 // Campaign
 router.get('/campaign/:cid', apiResponse('Campaign', 'getCampaign', true, ['params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.put('/campaign', apiResponse('Campaign', 'setCampaign', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
-router.post('/campaign/:cid', apiResponse('Campaign', 'setCampaign', true, ['body', 'params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/campaign/collection/:isAdd', apiResponse('Campaign', 'addRemoveCollection', true, ['body.campaignId', 'body.collectionId', 'params.isAdd'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/campaign/:cid', apiResponse('Campaign', 'endCampaign', true, ['params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
 
@@ -399,8 +397,9 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-  });
-
+      console.error("error in rmPromise: ", err);
+      next(err);
+    });
 });
 
 router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
@@ -473,13 +472,6 @@ router.post('/delivery/agent', apiResponse('Delivery', 'assignAgent', true, ['bo
 router.post('/delivery/start', apiResponse('Delivery', 'startDelivery', true, ['body.deliveryId', 'body.preCheck', 'user'], [_const.ACCESS_LEVEL.InternalDeliveryAgent, _const.ACCESS_LEVEL.DeliveryAgent]));
 router.post('/delivery/end', apiResponse('Delivery', 'endDelivery', true, ['body.deliveryId', 'user'], [_const.ACCESS_LEVEL.InternalDeliveryAgent, _const.ACCESS_LEVEL.DeliveryAgent]));
 
-// router.post('/delivery/items/:offset/:limit', apiResponse('Delivery', 'getDeliveryItems', true, ['user', 'body', 'params.offset', 'params.limit'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-// router.get('/delivery/by_id/:id', apiResponse('Delivery', 'getDeliveryData', false, ['params.id']));
-// router.post('/delivery', apiResponse('Delivery', 'updateDelivery', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-// router.post('/delivery/tracking', apiResponse('Delivery', 'getTrackingDetails', true, ['user', 'body.id'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-// router.post('/delivery/agent/items', apiResponse('Delivery', 'getDeliveryAgentItems', true, ['user', 'body.is_delivered', 'body.delivery_status', 'body.is_processed'], [_const.ACCESS_LEVEL.DeliveryAgent]));
-// router.post('/delivery/by_order', apiResponse('Delivery', 'getDeliveryByOrderLine', true, ['user', 'body'], [_const.ACCESS_LEVEL.SalesManager, _const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-
 router.use('/delivery/evidence', function (req, res, next) {
   const id = new mongoose.Types.ObjectId();
 
@@ -537,6 +529,11 @@ router.get('/refund/get_balance', apiResponse('Refund', 'getBalanceAndStatus', f
 
 //Daily Sales Manager Report
 router.get('/daily_sales_report', apiResponse('Order', 'getDailySalesReport', true, [], [_const.ACCESS_LEVEL.SalesManager]));
+
+// SM Message
+router.post('/sm/assignToReturn', apiResponse('SMMessage', 'assignToReturn', true, ['body', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/sm/close', apiResponse('SMMessage', 'close', true, ['body.id', 'body.report', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
+
 
 
 router.post('/checkoutDemo', apiResponse('Order', 'checkoutCartDemo', false, ['user', 'body.cartItems', 'body.order_id', 'body.address','body.transaction_id', 'body.used_point',

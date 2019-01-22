@@ -41,6 +41,9 @@ let schema_obj = {
   },
   close_date: {
     type: Date,
+  },
+  report: {
+    type: String
   }
 };
 
