@@ -39,11 +39,7 @@ let schema_obj = {
     default: Date.now,
     required: true
   },
-  campaignInfo: campaignInfo_template,
-  campaign_id: {
-    type: Schema.Types.ObjectId,
-    ref: 'Campaign'
-  },
+  campaign_info: campaignInfo_template,
   collection_id: {
     type: Schema.Types.ObjectId,
     ref: 'Collection'

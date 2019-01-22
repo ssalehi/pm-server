@@ -42,10 +42,10 @@ let IPG_template = {
   action: {
     type: String,
   },
-  invoice_number : {
+  invoice_number: {
     type: String,
   },
-  invoice_date : {
+  invoice_date: {
     type: String,
   },
   transaction_id: {
@@ -71,14 +71,22 @@ let IPG_template = {
   }
 };
 
-let receiver_info = {
-  recipient_email: String,
-  recipient_name: String,
-  recipient_surname: String,
-  recipient_title: String,
-  recipient_national_id: String,
-  recipient_mobile_no: String
-}
+let delivery_template = {
+  duration_days: {
+    type: Number
+  },
+  delivery_cost: {
+    type: Number
+  },
+  delivery_discount: {
+    type: Number
+  },
+  delivery_expire_day: {
+    type: Date,
+  },
+  time_slot: time_slot_template,
+
+};
 
 let schema_obj = {
   customer_id: {
@@ -107,7 +115,6 @@ let schema_obj = {
     required: true,
     default: 0
   },
-  discount: Number,
   order_time: {
     type: Date,
     // required: true,
@@ -117,34 +124,32 @@ let schema_obj = {
     default: false,
     required: true
   },
+  
   coupon_code: String,
+  coupon_discount: Number,
+  
   is_cart: {
     type: Boolean,
     default: false,
   },
+  
   order_lines: [OrderLineSchema],
+  
   is_offline: {
     type: Boolean,
     required: true,
     default: false
   },
+
+  delivery_info: delivery_template,
+
   invoice_no: String,
-
-  duration_days: {      // delivery-periode-days references to delivery_duration_info schema
-    type: Number,
-    trim: true,
-  },
-  time_slot: time_slot_template,
-  // delivery_duration: delivery_duration_template,
+  
   loyalty: loyalty_template,
-
-  receiver_info,
+  
   tickets: {
     type: [TicketSchema],
     default: []
-  },
-  delivery_expire_day: {
-    type: Date,
   },
   invoice_number: {
     type: String,

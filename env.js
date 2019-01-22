@@ -140,6 +140,11 @@ function getEnvValue(procEnv) {
 const dailyReportHour = getEnvValue(process.env.DAILY_REPORT_HOUR);
 const validPassedDaysForReturn = getEnvValue(process.env.VALID_PASSED_DAYS_FOR_RETURN);
 
+/**
+ *  pricing
+ */
+const rounding_factor = parseInt(getEnvValue(process.env.ROUNDING_FACTOR));
+
 module.exports = {
   bcrypt,
   isProd: isProd,
@@ -184,6 +189,7 @@ module.exports = {
   rsa_private_key,
   free_delivery_amount,
   validPassedDaysForReturn,
+  rounding_factor
 };
 
 
