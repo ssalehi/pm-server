@@ -203,7 +203,7 @@ describe('POST Order - ORP', () => {
             lower_bound: 18,
             upper_bound: 22
           },
-          duration_days: 3,
+          delivery_info: {duration_days: 3},
           paymentType: 1
         },
         json: true,
@@ -262,7 +262,7 @@ describe('POST Order - ORP', () => {
             lower_bound: 18,
             upper_bound: 22
           },
-          duration_days: 3,
+          delivery_info: {duration_days: 3},
           paymentType: 1
         },
         json: true,
