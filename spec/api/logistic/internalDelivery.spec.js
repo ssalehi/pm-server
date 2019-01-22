@@ -32,8 +32,6 @@ describe('delivery start', () => {
             agentObj.aid = agent.aid;
             agentObj.jar = agent.rpJar;
             await models()['WarehouseTest'].insertMany(warehouses)
-
-
             products = await models()['ProductTest'].insertMany([{
                 article_no: 'xy123',
                 name: 'sample 1',
@@ -125,6 +123,11 @@ describe('delivery start', () => {
                 }],
                 order_lines: [{ //orderline which product is checked 
                         product_id: products[0]._id,
+                        campaignInfo : 
+                        {
+                            _id: mongoose.Types.ObjectId(),
+                          discount_ref: 0
+                        },
                         product_instance_id: products[0].instances[0]._id,
                         tickets: [{
                             is_processed: false,
@@ -138,6 +141,11 @@ describe('delivery start', () => {
                     },
                     { //orderline which product has final check ticket status 
                         product_id: products[0],
+                        campaignInfo : 
+                        {
+                            _id: mongoose.Types.ObjectId(),
+                          discount_ref: 0
+                        },
                         product_instance_id: products[0].instances[0]._id,
                         tickets: [{
                             is_processed: false,

@@ -138,6 +138,11 @@ describe('POST waitforonlinewarehouse', () => {
                 is_cart: false,
                 order_lines: [{
                     product_id: products[0]._id,
+                    campaignInfo : 
+                    {
+                        _id: mongoose.Types.ObjectId(),
+                      discount_ref: 0
+                    },
                     product_instance_id: products[0].instances[0]._id,
                     tickets: [{
                         is_processed: false,
@@ -148,6 +153,11 @@ describe('POST waitforonlinewarehouse', () => {
                     }]
                 }, {
                     product_id: products[0],
+                    campaignInfo : 
+                    {
+                        _id: mongoose.Types.ObjectId(),
+                      discount_ref: 0
+                    },
                     product_instance_id: products[0].instances[0]._id,
                     tickets: [{
                         is_processed: false,
