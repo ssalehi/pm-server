@@ -143,7 +143,6 @@ let schema_obj = {
 
   delivery_info: delivery_template,
 
-  invoice_no: String,
   
   loyalty: loyalty_template,
   
