@@ -138,10 +138,9 @@ describe('POST waitforonlinewarehouse', () => {
                 is_cart: false,
                 order_lines: [{
                     product_id: products[0]._id,
-                    campaignInfo : 
-                    {
+                    campaignInfo: {
                         _id: mongoose.Types.ObjectId(),
-                      discount_ref: 0
+                        discount_ref: 0
                     },
                     product_instance_id: products[0].instances[0]._id,
                     tickets: [{
@@ -153,10 +152,9 @@ describe('POST waitforonlinewarehouse', () => {
                     }]
                 }, {
                     product_id: products[0],
-                    campaignInfo : 
-                    {
+                    campaignInfo: {
                         _id: mongoose.Types.ObjectId(),
-                      discount_ref: 0
+                        discount_ref: 0
                     },
                     product_instance_id: products[0].instances[0]._id,
                     tickets: [{
@@ -236,7 +234,7 @@ describe('POST waitforonlinewarehouse', () => {
 
 
 
-    it('should check the orderline is added to an existing delivery that has started today ', async function (done) {
+    it('should check the orderline is added to an existing delivery that is being started today ', async function (done) {
         this.done = done
         const res = await rp({
             jar: adminObj.jar,
@@ -267,8 +265,7 @@ describe('POST waitforonlinewarehouse', () => {
         this.done = done;
         const deliveryData = await models()['DeliveryTest'].find()
         deliveryData[0].start = (new Date()).setDate(new Date().getDate() - 3);
-
-        deliveryData[0].save()
+        await deliveryData[0].save()
         const res = await rp({
             jar: adminObj.jar,
             body: {
@@ -301,7 +298,7 @@ describe('POST waitforonlinewarehouse', () => {
         console.log('->', deliveryData[0].start);
         deliveryData[0].tickets[0].status = _const.DELIVERY_STATUS.started
         deliveryData[0].delivery_start = new Date()
-        deliveryData[0].save()
+        await deliveryData[0].save()
         const addDelivery = await rp({
             jar: adminObj.jar,
             body: {

@@ -116,17 +116,16 @@ describe('delivery start', () => {
                 tickets: [{
                     is_processed: false,
                     _id: mongoose.Types.ObjectId(),
-                    status: _const.ORDER_LINE_STATUS.DeliverySet,
+                    status: _const.ORDER_STATUS.DeliverySet,
                     desc: null,
                     receiver_id: agentObj.aid,
                     timestamp: new Date()
                 }],
                 order_lines: [{ //orderline which product is checked 
                         product_id: products[0]._id,
-                        campaignInfo : 
-                        {
+                        campaignInfo: {
                             _id: mongoose.Types.ObjectId(),
-                          discount_ref: 0
+                            discount_ref: 0
                         },
                         product_instance_id: products[0].instances[0]._id,
                         tickets: [{
@@ -141,10 +140,9 @@ describe('delivery start', () => {
                     },
                     { //orderline which product has final check ticket status 
                         product_id: products[0],
-                        campaignInfo : 
-                        {
+                        campaignInfo: {
                             _id: mongoose.Types.ObjectId(),
-                          discount_ref: 0
+                            discount_ref: 0
                         },
                         product_instance_id: products[0].instances[0]._id,
                         tickets: [{
@@ -161,7 +159,7 @@ describe('delivery start', () => {
 
             orders = JSON.parse(JSON.stringify(orders));
             deliveries = await models()['DeliveryTest'].insertMany([{
-                    //delivery 0 : from a shop to hub all orderlines checked
+                    //delivery 0 : from a shop to hub
                     to: {
                         warehouse_id: warehouses.find(x => x.is_hub)._id
                     },
@@ -185,32 +183,8 @@ describe('delivery start', () => {
                         receiver_id: agentObj.aid,
                         timestamp: new Date()
                     }]
-                }, { //delivery 1 : from a shop to hub with unchecked ordelines whose ticket is set to verrified
-                    to: {
-                        warehouse_id: warehouses.find(x => x.is_hub)._id
-                    },
-                    from: {
-                        warehouse_id: warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id
-                    },
-                    is_return: false,
-                    order_details: [{
-                        order_line_ids: [
-                            orders[0].order_lines[0]._id,
-                            orders[0].order_lines[1]._id
-                        ],
-                        _id: mongoose.Types.ObjectId(),
-                        order_id: orders[0]._id
-                    }],
-                    start: new Date(),
-                    tickets: [{
-                        is_processed: false,
-                        _id: mongoose.Types.ObjectId(),
-                        status: _const.DELIVERY_STATUS.agentSet,
-                        receiver_id: agentObj.aid,
-                        timestamp: new Date()
-                    }]
                 },
-                { //delivery 2 :  cc from a shop to another shop
+                { //delivery 1:  from hub to  shop
                     to: {
                         warehouse_id: warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id
                     },
@@ -264,17 +238,22 @@ describe('delivery start', () => {
         lastTicket = orderData[0].order_lines[0].tickets[orderData[0].order_lines[0].tickets.length - 1]
         expect(lastTicket.status).toBe(_const.ORDER_LINE_STATUS.OnDelivery)
         expect(res.statusCode).toBe(200)
+        expect(deliveryData[0].order_details[0].order_line_ids.length).toBe(1)
+        isExist = deliveryData[0].order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
+        expect(isExist).toBe(true)
         done()
 
     });
 
     it('should start a delivery with one orderline ready and one on finalcheck from shop to hub', async function (done) {
         this.done = done;
-
+        const deliveryData1 = await models()['DeliveryTest'].find()
+        deliveryData1[0].order_details[0].order_line_ids =[orders[0].order_lines[0]._id,orders[0].order_lines[1]._id] 
+        await deliveryData1[0].save()
         const res = await rp({
             jar: agentObj.jar,
             body: {
-                deliveryId: deliveries[1]._id,
+                deliveryId: deliveries[0]._id,
                 preCheck: false,
             },
             method: 'POST',
@@ -290,7 +269,8 @@ describe('delivery start', () => {
         lastTicket2 = orderData[0].order_lines[1].tickets[orderData[0].order_lines[1].tickets.length - 1]
         expect(lastTicket2.status).toBe(_const.ORDER_LINE_STATUS.OnlineWarehouseVerified)
         const deliveryData = await models()['DeliveryTest'].find()
-        expect(deliveryData[1].order_details.length).toBe(1)
+        isExist = deliveryData[0].order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
+        expect(isExist).toBe(true)
         done()
     });
     it('should start a delivery with one orderline ready and one on finalcheck from hub to shop ', async function (done) {
@@ -299,7 +279,7 @@ describe('delivery start', () => {
         const res = await rp({
             jar: agentObj.jar,
             body: {
-                deliveryId: deliveries[2]._id,
+                deliveryId: deliveries[1]._id,
                 preCheck: false,
             },
             method: 'POST',
@@ -313,8 +293,11 @@ describe('delivery start', () => {
         expect(lastTicket.status).toBe(_const.ORDER_LINE_STATUS.OnDelivery)
         lastTicket2 = orderData[0].order_lines[1].tickets[orderData[0].order_lines[1].tickets.length - 1]
         expect(lastTicket2.status).toBe(_const.ORDER_LINE_STATUS.Delivered)
+        expect(lastTicket2.receiver_id.toString()).toBe(warehouses.find(x => x.is_hub)._id.toString())
         const deliveryData = await models()['DeliveryTest'].find()
-        expect(deliveryData[1].order_details.length).toBe(1)
+        isExist = deliveryData[1].order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
+        expect(isExist).toBe(true)
+
         done()
 
     });
