@@ -89,7 +89,7 @@ describe('POST waitforonlinewarehouse', () => {
                         barcode: '0394081341',
                         inventory: [{
                             count: 3,
-                            reserved: 1,
+                            reserved: 2,
                             warehouse_id: warehouses[1]._id
                         }, {
                             count: 2,
@@ -111,19 +111,19 @@ describe('POST waitforonlinewarehouse', () => {
                         price: 4000,
                         barcode: '19231213123',
                         inventory: [{
-                            count: 2,
-                            reserved: 2,
+                            count: 0,
+                            reserved: 0,
                             warehouse_id: warehouses[1]._id
                         }, {
-                            count: 1,
+                            count: 0,
                             reserved: 0,
                             warehouse_id: warehouses[2]._id
                         }, {
-                            count: 4,
+                            count: 0,
                             reserved: 0,
                             warehouse_id: warehouses[3]._id
                         }, {
-                            count: 5,
+                            count: 0,
                             reserved: 0,
                             warehouse_id: warehouses[4]._id
                         }]
@@ -138,7 +138,7 @@ describe('POST waitforonlinewarehouse', () => {
                 is_cart: false,
                 order_lines: [{
                     product_id: products[0]._id,
-                    campaignInfo: {
+                    campaign_info: {
                         _id: mongoose.Types.ObjectId(),
                         discount_ref: 0
                     },
@@ -152,11 +152,11 @@ describe('POST waitforonlinewarehouse', () => {
                     }]
                 }, {
                     product_id: products[0],
-                    campaignInfo: {
+                    campaign_info: {
                         _id: mongoose.Types.ObjectId(),
                         discount_ref: 0
                     },
-                    product_instance_id: products[0].instances[0]._id,
+                    product_instance_id: products[0].instances[1]._id,
                     tickets: [{
                         is_processed: false,
                         _id: mongoose.Types.ObjectId(),
@@ -177,7 +177,6 @@ describe('POST waitforonlinewarehouse', () => {
                     warehouse_id: warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id
 
                 },
-                is_return: false,
                 order_details: [{
                     order_line_ids: [
                         orders[0].order_lines[1]._id,
@@ -196,7 +195,6 @@ describe('POST waitforonlinewarehouse', () => {
                 "__v": 0
             }]);
             deliveries = JSON.parse(JSON.stringify(deliveries));
-
             done();
         } catch (err) {
             console.log(err);
@@ -208,7 +206,7 @@ describe('POST waitforonlinewarehouse', () => {
 
     it('new delivery created and orderline ticket is changed to deliveryset', async function (done) {
         this.done = done;
-        await models()['DeliveryTest'].remove({});
+        await models()['DeliveryTest'].deleteMany({});
         const res = await rp({
             jar: adminObj.jar,
             body: {
@@ -295,7 +293,6 @@ describe('POST waitforonlinewarehouse', () => {
     it('should check when the existing delivery is started creates a new delivery for new orderlines', async function (done) {
         this.done = done
         const deliveryData = await models()['DeliveryTest'].find()
-        console.log('->', deliveryData[0].start);
         deliveryData[0].tickets[0].status = _const.DELIVERY_STATUS.started
         deliveryData[0].delivery_start = new Date()
         await deliveryData[0].save()
@@ -323,4 +320,55 @@ describe('POST waitforonlinewarehouse', () => {
 
 
     });
+
+    it('should check after onlinewarehouseverification the reserved and count of an inventory are reduced by 1', async function (done) {
+        this.done = done
+        const addDelivery = await rp({
+            jar: adminObj.jar,
+            body: {
+                "orderId": orders[0]._id,
+                "orderLineId": orders[0].order_lines[0]._id,
+                "warehouseId": warehouses[1]._id,
+                "userId": '5c209119da8a28386c02471b',
+                "barcode": '0394081341'
+            },
+            method: 'POST',
+            json: true,
+            uri: lib.helpers.apiTestURL('order/offline/onlineWarehouseResponse'),
+            resolveWithFullResponse: true
+        });
+        expect(addDelivery.statusCode).toBe(200)
+        const productsData = await models()['ProductTest'].find()
+        NewCount = productsData[0].instances[0].inventory.find(inv => inv.warehouse_id = warehouses[1]._id).count
+        NewReserved = productsData[0].instances[0].inventory.find(inv => inv.warehouse_id = warehouses[1]._id).reserved
+        expect(NewCount).toBe(products[0].instances[0].inventory[0].count - 1)
+        expect(NewReserved).toBe(products[0].instances[0].inventory[0].reserved - 1)
+        done()
+    });
+
+
+    it('should check if an inventory count and reserved are 0 the orderline will not be inline warehouse verified', async function (done) {
+        this.done = done
+        await models()['DeliveryTest'].deleteMany({});
+        const addDelivery = await rp({
+            jar: adminObj.jar,
+            body: {
+                "orderId": orders[0]._id,
+                "orderLineId": orders[0].order_lines[1]._id,
+                "warehouseId": warehouses[1]._id,
+                "userId": '5c209119da8a28386c02471b',
+                "barcode": '0394081341'
+            },
+            method: 'POST',
+            json: true,
+            uri: lib.helpers.apiTestURL('order/offline/onlineWarehouseResponse'),
+            resolveWithFullResponse: true
+        });
+        expect(addDelivery.statusCode).not.toBe(200)
+        done()
+    });
+
+
+
+
 });
