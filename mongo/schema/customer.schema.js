@@ -55,11 +55,6 @@ let schema_obj = {
     type: String,
     default: "US",
   },
-  is_guest: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
   is_preferences_set: {
     type: Boolean,
     required: true,
