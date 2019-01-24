@@ -259,6 +259,11 @@ router.post('/order/mismatch', apiResponse('TicketAction', 'mismatchReport', tru
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
 router.post('/order/offline/onlineWarehouseResponse', apiResponse('Offline', 'onlineWarehouseResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
 
+// offline reset order
+router.get('/order/offline/reset/:id', apiResponse('Offline', 'makeTestOrder', true, ['params.id'], [_const.ACCESS_LEVEL.OfflineSystem]));
+
+
+
 // Wish List
 router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
 router.get('/wishlist', apiResponse('Customer', 'getWishListItems', false, ['user']));
@@ -532,5 +537,8 @@ router.get('/daily_sales_report', apiResponse('Order', 'getDailySalesReport', tr
 // SM Message
 router.post('/sm/assignToReturn', apiResponse('SMMessage', 'assignToReturn', true, ['body', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/sm/close', apiResponse('SMMessage', 'close', true, ['body.id', 'body.report', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
+
+
+
 
 module.exports = router;
