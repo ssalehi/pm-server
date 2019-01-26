@@ -42,15 +42,16 @@ let isDev = env === 'development';
  ** END **
  */
 if (isDev)
-require('dotenv').config(); // loads .env variables inside ..env file into process..env
+  require('dotenv').config(); // loads .env variables inside ..env file into process..env
 
-isDev = false;
+console.log(`-> app is running in ${env} mode`);
+
 /**
  *  App
  */
 const appName = getEnvValue(process.env.APP_NAME);
 const appAddress = getEnvValue(process.env.APP_ADDRESS);
-const oauthAddress =getEnvValue(process.env.OAUTH_ADDRESS) || appAddress;
+const oauthAddress = getEnvValue(process.env.OAUTH_ADDRESS) || appAddress;
 const port = getEnvValue(process.env.PORT);
 
 /**
@@ -87,6 +88,7 @@ const free_delivery_amount = getEnvValue(process.env.FREE_DELIVERY_AMOUNT);
  * Mail Config
  */
 const mailConfig = {
+  tls: {rejectUnauthorized: false},
   host: isDev ? "smtp.mailgun.org" : process.env.MAIL_HOST,
   port: isDev ? "465" : process.env.MAIL_HOST_PORT,
   secure: isDev,
@@ -96,9 +98,6 @@ const mailConfig = {
   },
   from: `Bank of Style <${getEnvValue(isDev ? process.env.EMAIL_USERNAME_DEV : process.env.EMAIL_USERNAME)}>`
 };
-if (isDev)
-  mailConfig['tls'] = {rejectUnauthorized: false};
-
 
 /**
  * Redis
