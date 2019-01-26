@@ -5,10 +5,12 @@
  */
 
 const debug = require('debug')('persian-mode:server');
+const https = require('https');
 const http = require('http');
+const fs = require('fs');
 const env = require('../env');
 const socket = require('../socket');
-const port = normalizePort(env.port || '3000');
+const port = normalizePort(process.env.SECURE_PORT || env.port || '3000');
 const {initTokenRequest, getToken} = require('../lib/updateToken.model');
 
 /**
@@ -24,9 +26,27 @@ appWaiter = setInterval(() => {
     app.set('port', port);
 
     /*
-     * Create Http Server
+     * Create Https Server
      */
-    server = http.createServer(app);
+    const certPath = {
+      key: '/cert/lithium.style.key',
+      cert: '/cert/lithium.style.crt',
+    };
+
+    if (process.env.SECURE_PORT && fs.existsSync(certPath.key) && fs.existsSync(certPath.cert)) {
+      server = https.createServer({
+        key: fs.readFileSync(certPath.key),
+        cert: fs.readFileSync(certPath.cert)
+      }, app);
+      server2 = http.createServer(function(req, res, next) {
+        if(!req.secure && req.get('Host').includes('lithium')) {
+          return res.redirect(['https://', req.get('Host'), req.url].join(''));
+        }
+        next();
+      }, app).listen(80)
+    } else {
+      server = http.createServer(app);
+    }
 
     /*
     * Listen on provided port, on all network interface.
