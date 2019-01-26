@@ -6,7 +6,7 @@ const _const = require('../../../lib/const.list');
 const warehouses = require('../../../warehouses');
 const moment = require('moment');
 
-describe('POST waitforonlinewarehouse', () => {
+describe('POST onlineWarehouseResponse', () => {
     let adminObj = {
         aid: null,
         jar: null,
@@ -200,10 +200,6 @@ describe('POST waitforonlinewarehouse', () => {
             console.log(err);
         };
     }, 15000);
-
-
-
-
     it('new delivery created and orderline ticket is changed to deliveryset', async function (done) {
         this.done = done;
         await models()['DeliveryTest'].deleteMany({});
@@ -229,9 +225,6 @@ describe('POST waitforonlinewarehouse', () => {
         expect(lastTicket).toBe(_const.ORDER_LINE_STATUS.DeliverySet)
         done()
     });
-
-
-
     it('should check the orderline is added to an existing delivery that is being started today ', async function (done) {
         this.done = done
         const res = await rp({
@@ -256,9 +249,6 @@ describe('POST waitforonlinewarehouse', () => {
         expect(deliveryData[0].to.warehouse_id.toString()).toBe(warehouses.find(x => x.is_hub)._id.toString())
         done()
     });
-
-
-
     it('should add the delivery to an existing one that has started few days ago', async function (done) {
         this.done = done;
         const deliveryData = await models()['DeliveryTest'].find()
@@ -285,10 +275,6 @@ describe('POST waitforonlinewarehouse', () => {
         expect(deliveryData1.length).toBe(1)
         done()
     });
-
-
-
-
 
     it('should check when the existing delivery is started creates a new delivery for new orderlines', async function (done) {
         this.done = done
@@ -317,10 +303,7 @@ describe('POST waitforonlinewarehouse', () => {
         let nextDay = moment(moment().add('d', 1)).format('YYYY-MM-DD');
         expect(moment(newDelivery.start).format('YYYY-MM-DD')).toBe(nextDay)
         done()
-
-
     });
-
     it('should check after onlinewarehouseverification the reserved and count of an inventory are reduced by 1', async function (done) {
         this.done = done
         const addDelivery = await rp({
@@ -345,9 +328,7 @@ describe('POST waitforonlinewarehouse', () => {
         expect(NewReserved).toBe(products[0].instances[0].inventory[0].reserved - 1)
         done()
     });
-
-
-    it('should check if an inventory count and reserved are 0 the orderline will not be inline warehouse verified', async function (done) {
+    it('should check if an inventory count and reserved are 0 the orderline will not be online warehouse verified', async function (done) {
         this.done = done
         await models()['DeliveryTest'].deleteMany({});
         const addDelivery = await rp({
@@ -367,8 +348,4 @@ describe('POST waitforonlinewarehouse', () => {
         expect(addDelivery.statusCode).not.toBe(200)
         done()
     });
-
-
-
-
 });
