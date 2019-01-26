@@ -573,7 +573,6 @@ describe('POST Customer / ', () => {
       surname: 'farhad',
       active: true,
       shoesType: 'US',
-      is_guest: false
     };
     let brandArr = [{
       name: 'nike'
