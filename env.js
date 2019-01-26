@@ -89,7 +89,7 @@ const free_delivery_amount = getEnvValue(process.env.FREE_DELIVERY_AMOUNT);
 const mailConfig = {
   host: isDev ? "smtp.mailgun.org" : process.env.MAIL_HOST,
   port: isDev ? "465" : process.env.MAIL_HOST_PORT,
-  secure: true,
+  secure: isDev,
   auth: {
     user: getEnvValue(isDev ? process.env.EMAIL_USERNAME_DEV : process.env.EMAIL_USERNAME),
     pass: getEnvValue(isDev ? process.env.EMAIL_PASSWORD_DEV : process.env.EMAIL_PASSWORD)
