@@ -49,8 +49,10 @@ appWaiter = setInterval(() => {
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
-    server2.on('error', onError);
-    server2.on('listening', onListening);
+    if (server2) {
+      server2.on('error', onError);
+      server2.on('listening', onListening);
+    }
     socket.setup(server);
   } else {
     console.log('App is being set up ...');

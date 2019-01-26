@@ -11,9 +11,7 @@ router.use(function(req, res, next) {
 
 /* Diverting unknown routes to Angular router */
 router.all("*",function(req,res,next){
-  if(req.get('Host').includes('lithium') && !req.secure) {
-    return res.redirect(['https://', req.get('Host'), req.url].join(''));
-  } else if(req.originalUrl.indexOf('api') === -1) {
+  if(req.originalUrl.indexOf('api') === -1) {
     console.log('[TRACE] Server 404 request: ' + req.originalUrl);
     const p = path.join(__dirname, '../public', 'index.html').replace(/\/routes\//, '/');
     res.status(200).sendFile(p);
