@@ -17,7 +17,7 @@ const {initTokenRequest, getToken} = require('../lib/updateToken.model');
  * Get port from environment and store in Express.
  */
 
-let app, server;
+let app, server, server2;
 appWaiter = setInterval(() => {
   if(require('../app').isReady()) {
     console.log('App is set up');
@@ -38,12 +38,7 @@ appWaiter = setInterval(() => {
         key: fs.readFileSync(certPath.key),
         cert: fs.readFileSync(certPath.cert)
       }, app);
-      server2 = http.createServer(function(req, res, next) {
-        if(!req.secure && req.get('Host').includes('lithium')) {
-          return res.redirect(['https://', req.get('Host'), req.url].join(''));
-        }
-        next();
-      }, app).listen(normalizePort(env.port || '3000'));
+      server2 = http.createServer(app).listen(normalizePort(env.port || '3000'));
     } else {
       server = http.createServer(app);
     }
@@ -54,7 +49,8 @@ appWaiter = setInterval(() => {
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
-
+    server2.on('error', onError);
+    server2.on('listening', onListening);
     socket.setup(server);
   } else {
     console.log('App is being set up ...');
