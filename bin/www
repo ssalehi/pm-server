@@ -43,7 +43,7 @@ appWaiter = setInterval(() => {
           return res.redirect(['https://', req.get('Host'), req.url].join(''));
         }
         next();
-      }, app).listen(80)
+      }, app).listen(normalizePort(env.port || '3000'));
     } else {
       server = http.createServer(app);
     }
