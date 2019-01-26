@@ -4,7 +4,8 @@ let env = app.get('env');
 if (env === 'test')
   env = 'development';
 const isProd = env === 'production';
-const isDev = env === 'development';
+let isDev = env === 'development';
+
 
 /**
  * read environment variable form .env.process
@@ -41,8 +42,9 @@ const isDev = env === 'development';
  ** END **
  */
 if (isDev)
-  require('dotenv').config(); // loads .env variables inside ..env file into process..env
+require('dotenv').config(); // loads .env variables inside ..env file into process..env
 
+isDev = false;
 /**
  *  App
  */
@@ -97,8 +99,6 @@ const mailConfig = {
 if (isDev)
   mailConfig['tls'] = {rejectUnauthorized: false};
 
-
-console.log('-> ', mailConfig);
 
 /**
  * Redis
