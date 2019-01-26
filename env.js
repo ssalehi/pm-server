@@ -97,6 +97,9 @@ const mailConfig = {
 if (isDev)
   mailConfig['tls'] = {rejectUnauthorized: false};
 
+
+console.log('-> ', mailConfig);
+
 /**
  * Redis
  */
