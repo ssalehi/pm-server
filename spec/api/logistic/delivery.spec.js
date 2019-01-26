@@ -6,7 +6,7 @@ const _const = require('../../../lib/const.list');
 const warehouses = require('../../../warehouses');
 
 ////////////////////////////////////////////////////////////////////
-describe('Requset For Package', () => {
+describe('Requset For Package-Internal Delivery', () => {
     let orders, products, deliveries;
     let agentObj = {
         id: null,
@@ -204,7 +204,7 @@ describe('Requset For Package', () => {
 });
 
 //////////////////////////////////////////////////////////////////
-describe('Delivery Start', () => {
+describe('Delivery Start-Internal Delivery', () => {
 
     let orders, products, deliveries;
     let agentObj = {
@@ -497,7 +497,7 @@ describe('Delivery Start', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////
-describe('End Delivery', () => {
+describe('End Delivery-Internal Delivery', () => {
 
     let orders, products, deliveries;
     let agentObj = {
@@ -603,7 +603,7 @@ describe('End Delivery', () => {
                 tickets: [{
                     is_processed: false,
                     _id: mongoose.Types.ObjectId(),
-                    status: _const.ORDER_STATUS.DeliverySet,
+                    status: _const.ORDER_STATUS.OnDelivery,
                     desc: null,
                     receiver_id: agentObj.aid,
                     timestamp: new Date()
