@@ -42,6 +42,11 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
   };
 
   return (function (req, res) {
+
+    let db = require('../mongo');
+    let connection = db.connection(req.test);
+    let session;
+
     (req.jwtToken ?
       personModel.jwtStrategy(req, adminOnly)
       :
@@ -53,7 +58,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
           return Promise.resolve();
       })
 
-      .then(rs => {
+      .then(async rs => {
         if (adminOnly && (!rs || rs.length < 1))
           return Promise.reject(error.adminOnly);
         else {
@@ -67,15 +72,30 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
             lib[cn].test = req.test;
 
           let isStaticFunction = typeof lib[className][functionName] === 'function';
-          let model = isStaticFunction ? lib[className] : new lib[className](req.test);
+
+          session = await connection.startSession();
+          session.startTransaction();
+          let model = isStaticFunction ? lib[className] : new lib[className](req.test, session);
           return model[functionName].apply(isStaticFunction ? null : model, allArgs);
         }
       })
-      .then(data => {
+      .then(async data => {
+        try {
+          await session.commitTransaction();
+        } catch (err) {
+          console.log('-> erron on commiting transcation', err);
+          throw err;
+        }
         res.status(200)
           .json(data);
       })
-      .catch(err => {
+      .catch(async err => {
+        try {
+
+          await session.abortTransaction();
+        } catch (err) {
+          console.log('-> ', err);
+        }
         console.log(`${className}/${functionName}: `, req.app.get('env') === 'development' ? err : err.message);
         res.status(err.status || 500)
           .send(err.message || err);
@@ -517,7 +537,7 @@ router.post('/delivery/cost/free', apiResponse('Delivery', 'upsertFreeDeliveryOp
 router.post('/delivery/cost/free/delete', apiResponse('Delivery', 'deleteFreeDeliveryOption', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 
 // Customer Delivery Selected
-router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body.duration_id' , 'body.customer_id'])); 
+router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body.duration_id', 'body.customer_id']));
 
 // Internal Delivery
 router.get('/internal_delivery/get_agents', apiResponse('InternalDelivery', 'getInternalAgents', true, [], [_const.ACCESS_LEVEL.SalesManager]));

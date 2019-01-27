@@ -6,6 +6,8 @@ if (env.isDev) {
   // mongoose.set('debug', true);
 }
 
+
+let prodConnection, testConnection;
 let dbIsReady = () => {
 
   let testDb = new Promise((resolve, reject) => {
@@ -13,7 +15,7 @@ let dbIsReady = () => {
     if (env.isDev) {
 
       function connect() {
-        const testConnection = mongoose.createConnection(env.db_uri_test);
+        testConnection = mongoose.createConnection(env.db_uri_test);
         testConnection.on('connected', function () {
           console.log('-> ', 'Mongoose test has been connected!');
           resolve({testConnection});
@@ -34,7 +36,7 @@ let dbIsReady = () => {
   let prodDb = new Promise((resolve, reject) => {
 
     function connect() {
-      const prodConnection = mongoose.createConnection(env.db_uri);
+      prodConnection = mongoose.createConnection(env.db_uri);
       prodConnection.on('connected', function () {
         console.log('-> ', 'Mongoose product has been connected!');
         resolve({prodConnection});
@@ -56,5 +58,6 @@ let dbIsReady = () => {
 
 
 module.exports = {
-  dbIsReady
+  dbIsReady,
+  connection : (isTest) => isTest ? testConnection : prodConnection
 };
