@@ -5,17 +5,19 @@
  */
 
 const debug = require('debug')('persian-mode:server');
+const https = require('https');
 const http = require('http');
+const fs = require('fs');
 const env = require('../env');
 const socket = require('../socket');
-const port = normalizePort(env.port || '3000');
+const port = normalizePort(process.env.SECURE_PORT || env.port || '3000');
 const {initTokenRequest, getToken} = require('../lib/updateToken.model');
 
 /**
  * Get port from environment and store in Express.
  */
 
-let app, server;
+let app, server, server2;
 appWaiter = setInterval(() => {
   if(require('../app').isReady()) {
     console.log('App is set up');
@@ -24,9 +26,22 @@ appWaiter = setInterval(() => {
     app.set('port', port);
 
     /*
-     * Create Http Server
+     * Create Https Server
      */
-    server = http.createServer(app);
+    const certPath = {
+      key: '/cert/lithium.style.key',
+      cert: '/cert/lithium.style.crt',
+    };
+
+    if (process.env.SECURE_PORT && fs.existsSync(certPath.key) && fs.existsSync(certPath.cert)) {
+      server = https.createServer({
+        key: fs.readFileSync(certPath.key),
+        cert: fs.readFileSync(certPath.cert)
+      }, app);
+      server2 = http.createServer(app).listen(normalizePort(env.port || '3000'));
+    } else {
+      server = http.createServer(app);
+    }
 
     /*
     * Listen on provided port, on all network interface.
@@ -34,7 +49,10 @@ appWaiter = setInterval(() => {
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
-
+    if (server2) {
+      server2.on('error', onError);
+      server2.on('listening', onListening);
+    }
     socket.setup(server);
   } else {
     console.log('App is being set up ...');
