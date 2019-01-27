@@ -259,6 +259,11 @@ router.post('/order/mismatch', apiResponse('TicketAction', 'mismatchReport', tru
 router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
 router.post('/order/offline/onlineWarehouseResponse', apiResponse('Offline', 'onlineWarehouseResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
 
+// offline reset order
+router.get('/order/offline/reset/:id', apiResponse('Offline', 'makeTestOrder', true, ['params.id'], [_const.ACCESS_LEVEL.OfflineSystem]));
+
+
+
 // Wish List
 router.post('/wishlist', apiResponse('Customer', 'AddToWishList', false, ['user', 'body']));
 router.get('/wishlist', apiResponse('Customer', 'getWishListItems', false, ['user']));
@@ -450,9 +455,9 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 // checkout
 
 router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
-router.post('/prepareDataForBankGateway', apiResponse('Order', 'prepareDataForBankGateway', false, ['user','body']));
-router.post('/payResult', apiResponse('Order', 'readPayResult', false, ['user','body']));
-router.post('/verifyTransaction', apiResponse('Order', 'verifyPayment', false, ['user','body']));
+router.post('/checkout/:demo', apiResponse('Order', 'checkout', false, ['user', 'body', 'params.demo']));
+router.post('/payResult', apiResponse('Order', 'readPayResult', false, ['user', 'body']));
+router.post('/verifyTransaction', apiResponse('Order', 'verifyPayment', false, ['user', 'body']));
 
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
@@ -512,8 +517,7 @@ router.post('/delivery/cost/free', apiResponse('Delivery', 'upsertFreeDeliveryOp
 router.post('/delivery/cost/free/delete', apiResponse('Delivery', 'deleteFreeDeliveryOption', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 
 // Customer Delivery Selected
-router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body'])); // body included customer id and delivery_duration id
-
+router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body.duration_id' , 'body.customer_id'])); 
 
 // Internal Delivery
 router.get('/internal_delivery/get_agents', apiResponse('InternalDelivery', 'getInternalAgents', true, [], [_const.ACCESS_LEVEL.SalesManager]));
@@ -536,7 +540,5 @@ router.post('/sm/close', apiResponse('SMMessage', 'close', true, ['body.id', 'bo
 
 
 
-router.post('/checkoutDemo', apiResponse('Order', 'checkoutCartDemo', false, ['user', 'body.cartItems', 'body.order_id', 'body.address','body.transaction_id', 'body.used_point',
-  'body.used_balance', 'body.total_amount', 'body.is_collect', 'body.discount', 'body.duration_days', 'body.time_slot', 'body.paymentType', 'body.loyalty']));
 
 module.exports = router;
