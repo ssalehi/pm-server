@@ -580,28 +580,4 @@ describe('POST Order Ticket Scan-External Delivery', () => {
         done()
 
     });
-
-
-    // it('should scan prduct barcode for CC delivery ', async function (done) {
-    //     this.done = done
-    //     const res = await rp({
-    //         jar: ShopClerk.jar,
-    //         body: {
-    //             trigger: _const.SCAN_TRIGGER.ReturnDelivery,
-    //             orderId: orders[4]._id,
-    //             barcode: '0394081341'
-    //         },
-    //         method: 'POST',
-    //         json: true,
-    //         uri: lib.helpers.apiTestURL('order/ticket/scan'),
-    //         resolveWithFullResponse: true
-    //     });
-    //     expect(res.statusCode).toBe(200)
-    //     const orderData = await models()['OrderTest'].find()
-    //     const order = orderData.find(o => o.is_collect === true)
-    //     expect(order.order_lines[0].tickets[order.order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Checked)
-    //     done()
-
-    // });
-
 });

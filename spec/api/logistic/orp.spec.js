@@ -125,10 +125,18 @@ describe('POST Order - ORP', () => {
           order_time: new Date(),
           is_cart: false,
           order_lines: [{
+            campaign_info: {
+              _id: mongoose.Types.ObjectId(),
+              discount_ref: 0
+          },
             product_id: products[0]._id,
             product_instance_id: products[0].instances[0]._id,
             tickets: []
           }, {
+            campaign_info: {
+              _id: mongoose.Types.ObjectId(),
+              discount_ref: 0
+          },
             product_id: products[0],
             product_instance_id: products[0].instances[0]._id,
             tickets: []
@@ -149,10 +157,18 @@ describe('POST Order - ORP', () => {
           order_time: new Date(),
           is_cart: false,
           order_lines: [{
+            campaign_info: {
+              _id: mongoose.Types.ObjectId(),
+              discount_ref: 0
+          },
             product_id: products[0]._id,
             product_instance_id: products[0].instances[0]._id,
             tickets: []
           }, {
+            campaign_info: {
+            _id: mongoose.Types.ObjectId(),
+            discount_ref: 0
+        },
             product_id: products[0]._id,
             product_instance_id: products[0].instances[0]._id,
             tickets: []
@@ -163,10 +179,18 @@ describe('POST Order - ORP', () => {
           order_time: new Date(),
           is_cart: false,
           order_lines: [{
+            campaign_info: {
+              _id: mongoose.Types.ObjectId(),
+              discount_ref: 0
+          },
             product_id: products[0]._id,
             product_instance_id: products[0].instances[1]._id,
             tickets: []
           }, {
+            campaign_info: {
+              _id: mongoose.Types.ObjectId(),
+              discount_ref: 0
+          },
             product_id: products[0]._id,
             product_instance_id: products[0].instances[1]._id,
             tickets: []
