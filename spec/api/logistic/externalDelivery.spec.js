@@ -649,20 +649,4 @@ describe('Post start delivery-ExternalDelivery', () => {
     }, 15000);
 
 
-    it('should change orderlines ticket to finalcheck and delivery ticket to request for package', async function (done) {
-        this.done = done;
-        const res = await rp({
-            jar: agentObj.jar,
-            body: {
-                deliveryId: deliveries[0]._id,
-            },
-            method: 'POST',
-            json: true,
-            uri: lib.helpers.apiTestURL('delivery/start'),
-            resolveWithFullResponse: true
-        });
-        expect(res.statusCode).toBe(200);
-        done();
-    });
-
 });
