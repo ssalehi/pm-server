@@ -150,10 +150,10 @@ describe('POST Order Ticket Scan-External Delivery', () => {
                     gender: "m",
                 },
                 { // customer 1: is_guest = true
-                    addresses: [{
+                    addresses: {
                         _id: mongoose.Types.ObjectId(),
-                        province: "تهران",
-                        city: "تهران",
+                        province: "شمالااااال",
+                        city: "شمااالال",
                         street: "دوم شرقی",
                         unit: "6",
                         no: "4",
@@ -168,7 +168,8 @@ describe('POST Order Ticket Scan-External Delivery', () => {
                             long: 51.379926,
                             lat: 35.696491
                         }
-                    }],
+                    },
+                    is_guest: true,
                     active: true,
                     username: "qazaljl@gmail.com",
                     first_name: "qazal",
@@ -181,7 +182,7 @@ describe('POST Order Ticket Scan-External Delivery', () => {
             customer = JSON.parse(JSON.stringify(customer));
 
 
-            orders = await models()['OrderTest'].insertMany([{ // order 1 => a logged in customer order
+            orders = await models()['OrderTest'].insertMany([{ // order 0 => a logged in customer order
                     customer_id: customer[0]._id,
                     address: customer[0].addresses[0],
                     order_time: new Date(),
@@ -223,7 +224,7 @@ describe('POST Order Ticket Scan-External Delivery', () => {
                             _id: mongoose.Types.ObjectId(),
                             discount_ref: 0
                         },
-                        product_instance_id: products[0].instances[1]._id,
+                        product_instance_id: products[0].instances[0]._id,
                         tickets: [{
                             is_processed: false,
                             status: _const.ORDER_LINE_STATUS.Delivered,
@@ -233,7 +234,7 @@ describe('POST Order Ticket Scan-External Delivery', () => {
                         }]
                     }]
                 },
-                { // order 2 => a guest customer order
+                { // order 1=> a guest customer order
                     address: customer[1].addresses[0],
                     order_time: new Date(),
                     delivery_info: {
@@ -269,7 +270,7 @@ describe('POST Order Ticket Scan-External Delivery', () => {
                             timestamp: new Date(),
                         }]
                     }]
-                }, { // order 3 => an Internal order to scan
+                }, { // order 2 => an Internal final scan
 
                     order_time: new Date(),
                     is_cart: false,
@@ -295,69 +296,158 @@ describe('POST Order Ticket Scan-External Delivery', () => {
                             timestamp: new Date(),
                         }]
                     }]
+                },
+                { // order 3 => external final scan
+                    address: customer[1].addresses[0],
+                    order_time: new Date(),
+                    delivery_info: {
+                        duration_days: 3,
+                        delivery_cost: 63000,
+                        delivery_discount: 0,
+                        delivery_expire_day: new Date(),
+                        time_slot: {
+                            lower_bound: 10,
+                            upper_bound: 14,
+                        }
+                    },
+                    is_cart: false,
+                    tickets: [{
+                        is_processed: false,
+                        status: _const.ORDER_STATUS.DeliverySet,
+                        desc: null,
+                        receiver_id: warehouses.find(x => x.is_hub)._id,
+                        timestamp: new Date()
+                    }],
+                    order_lines: [{
+                        product_id: products[0]._id,
+                        campaign_info: {
+                            _id: mongoose.Types.ObjectId(),
+                            discount_ref: 0
+                        },
+                        product_instance_id: products[0].instances[0]._id,
+                        tickets: [{
+                            is_processed: false,
+                            status: _const.ORDER_LINE_STATUS.FinalCheck,
+                            receiver_id: warehouses.find(x => x.is_hub)._id,
+                            desc: null,
+                            timestamp: new Date(),
+                        }]
+                    }]
+                },{ // order 4 => CC final scan
+                    order_time: new Date(),
+                    is_cart: false,
+                    is_collect : true,
+                    tickets: [{
+                        is_processed: false,
+                        status: _const.ORDER_STATUS.DeliverySet,
+                        desc: null,
+                        receiver_id: warehouses.find(x => x.name === 'سانا')._id,
+                        timestamp: new Date()
+                    }],
+                    order_lines: [{
+                        product_id: products[0]._id,
+                        campaign_info: {
+                            _id: mongoose.Types.ObjectId(),
+                            discount_ref: 0
+                        },
+                        product_instance_id: products[0].instances[0]._id,
+                        tickets: [{
+                            is_processed: false,
+                            status: _const.ORDER_LINE_STATUS.FinalCheck,
+                            receiver_id: warehouses.find(x => x.name === 'سانا')._id,
+                            desc: null,
+                            timestamp: new Date(),
+                        }]
+                    }]
                 }
 
             ]);
 
             orders = JSON.parse(JSON.stringify(orders));
-            deliveries = await models()['DeliveryTest'].insertMany([{
+            deliveries = await models()['DeliveryTest'].insertMany([
+                {// delivery 0 => external to customer
 
-                to: {
-                    customer: {
-                        _id: customer[0]._id,
-                        address: customer[0].addresses[0]
-                    }
-                },
-                from: {
-                    warehouse_id: warehouses.find(x => x.is_hub)._id,
+                    to: {
+                        customer: {
+                            _id: customer[0]._id,
+                            address: customer[0].addresses[0]
+                        }
+                    },
+                    from: {
+                        warehouse_id: warehouses.find(x => x.is_hub)._id,
 
+                    },
+                    order_details: [{
+                        order_line_ids: [
+                            orders[0].order_lines[1]._id
+                        ],
+                        order_id: orders[0]._id
+                    }],
+                    start: new Date(),
+                    slot: {
+                        lower_bound: 10,
+                        upper_bound: 14,
+                    },
+                    tickets: [{
+                        is_processed: false,
+                        status: _const.DELIVERY_STATUS.default,
+                        receiver_id: warehouses.find(x => x.is_hub)._id,
+                        timestamp: new Date()
+                    }],
+                    "__v": 0
                 },
-                order_details: [{
-                    order_line_ids: [
-                        orders[0].order_lines[1]._id
-                    ],
-                    order_id: orders[0]._id
-                }],
-                start: new Date(),
-                slot: {
-                    lower_bound: 10,
-                    upper_bound: 14,
-                },
-                tickets: [{
-                    is_processed: false,
-                    status: _const.DELIVERY_STATUS.default,
-                    receiver_id: warehouses.find(x => x.is_hub)._id,
-                    timestamp: new Date()
-                }],
-                "__v": 0
-            }, {
+                {// delivery 1 => internal delivery to hub
+                    to: {
+                        warehouse_id: warehouses.find(x => x.is_hub)._id
 
-                to: {
-                    warehouse_id: warehouses.find(x => x.is_hub)._id
+                    },
+                    from: {
+                        warehouse_id: warehouses.find(x => x.name === 'سانا')._id
 
-                },
-                from: {
-                    warehouse_id: warehouses.find(x => x.name === 'سانا')._id
-
-                },
-                order_details: [{
-                    order_line_ids: [
-                        orders[2].order_lines[0]._id
-                    ],
-                    order_id: orders[0]._id
-                }],
-                start: new Date(),
-                delivery_agent: {
-                    _id: internalagent.aid
-                },
-                tickets: [{
-                    is_processed: false,
-                    status: _const.DELIVERY_STATUS.default,
-                    receiver_id: warehouses.find(x => x.is_hub)._id,
-                    timestamp: new Date()
-                }],
-                "__v": 0
-            }]);
+                    },
+                    order_details: [{
+                        order_line_ids: [
+                            orders[2].order_lines[0]._id
+                        ],
+                        order_id: orders[0]._id
+                    }],
+                    start: new Date(),
+                    delivery_agent: {
+                        _id: internalagent.aid
+                    },
+                    tickets: [{
+                        is_processed: false,
+                        status: _const.DELIVERY_STATUS.default,
+                        receiver_id: warehouses.find(x => x.is_hub)._id,
+                        timestamp: new Date()
+                    }],
+                    "__v": 0
+                },{// delivery 2 => CC after recieved
+                    to: {
+                        warehouse_id: warehouses.find(x => x.name === 'سانا')._id
+                    },
+                    from: {
+                        warehouse_id: warehouses.find(x => x.is_hub)._id
+                    },
+                    order_details: [{
+                        order_line_ids: [
+                            orders[4].order_lines[0]._id
+                        ],
+                        order_id: orders[4]._id
+                    }],
+                    start: new Date(),
+                    delivery_agent: {
+                        _id: internalagent.aid
+                    },
+                    tickets: [{
+                        is_processed: false,
+                        status: _const.DELIVERY_STATUS.default,
+                        receiver_id: warehouses.find(x => x.is_hub)._id,
+                        timestamp: new Date()
+                    }],
+                    "__v": 0
+                }
+            ]);
             deliveries = JSON.parse(JSON.stringify(deliveries));
             done();
         } catch (err) {
@@ -366,72 +456,119 @@ describe('POST Order Ticket Scan-External Delivery', () => {
     }, 15000);
 
 
-    it('should scan product barcode and change its ticket to checked and initiates delivery with logged in customer', async function (done) {
-        this.done = done
+    // it('should scan product barcode and change its ticket to checked and initiates delivery with logged in customer', async function (done) {
+    //     this.done = done
 
-        const res = await rp({
-            jar: hubClerk.jar,
-            body: {
-                trigger: _const.SCAN_TRIGGER.Inbox,
-                orderId: orders[0]._id,
-                barcode: '0394081341'
-            },
-            method: 'POST',
-            json: true,
-            uri: lib.helpers.apiTestURL('order/ticket/scan'),
-            resolveWithFullResponse: true
-        });
-        expect(res.statusCode).toBe(200)
-        const deliveryData = await models()['DeliveryTest'].find()
-        const orderData = await models()['OrderTest'].find()
-        is_exist= deliveryData.find(delivery=> delivery.to.customer._id).order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
-        newOLTicketStatus = orderData[0].order_lines[0].tickets[orderData[0].order_lines[0].tickets.length - 1].status
-        expect(newOLTicketStatus).toBe(_const.ORDER_LINE_STATUS.Recieved)
-        expect(orderData[0].tickets[orderData[0].tickets.length - 1].status).toBe(_const.ORDER_STATUS.DeliverySet)
-        expect(deliveryData[0].tickets[deliveryData[0].tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.default)
-        expect(is_exist).toBe(true)
-        done()
-
-
-    });
+    //     const res = await rp({
+    //         jar: hubClerk.jar,
+    //         body: {
+    //             trigger: _const.SCAN_TRIGGER.Inbox,
+    //             orderId: orders[0]._id,
+    //             barcode: '0394081341'
+    //         },
+    //         method: 'POST',
+    //         json: true,
+    //         uri: lib.helpers.apiTestURL('order/ticket/scan'),
+    //         resolveWithFullResponse: true
+    //     });
+    //     expect(res.statusCode).toBe(200)
+    //     const deliveryData = await models()['DeliveryTest'].find()
+    //     const orderData = await models()['OrderTest'].find()
+    //     is_exist = deliveryData.find(delivery => delivery.to.customer._id).order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
+    //     newOLTicketStatus = orderData[0].order_lines[0].tickets[orderData[0].order_lines[0].tickets.length - 1].status
+    //     expect(newOLTicketStatus).toBe(_const.ORDER_LINE_STATUS.Recieved)
+    //     expect(orderData[0].tickets[orderData[0].tickets.length - 1].status).toBe(_const.ORDER_STATUS.DeliverySet)
+    //     expect(deliveryData[0].tickets[deliveryData[0].tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.default)
+    //     expect(is_exist).toBe(true)
+    //     done()
 
 
-    it('should scan product barcode and change its ticket to checked and initiates delivery with guest customer', async function (done) {
-        this.done = done
-
-        const res = await rp({
-            jar: hubClerk.jar,
-            body: {
-                trigger: _const.SCAN_TRIGGER.Inbox,
-                orderId: orders[1]._id,
-                barcode: '19231213123'
-            },
-            method: 'POST',
-            json: true,
-            uri: lib.helpers.apiTestURL('order/ticket/scan'),
-            resolveWithFullResponse: true
-        });
-        expect(res.statusCode).toBe(200)
-        const deliveryData = await models()['DeliveryTest'].find()
-        const orderData = await models()['OrderTest'].find()
-        is_exist= deliveryData.find(delivery=> !delivery.to.customer._id).order_details[0].order_line_ids.map(id => id.toString()).includes(orders[1].order_lines[0]._id.toString())
-        newOLTicketStatus = orderData[1].order_lines[0].tickets[orderData[1].order_lines[0].tickets.length - 1].status
-        expect(newOLTicketStatus).toBe(_const.ORDER_LINE_STATUS.Recieved)
-        expect(orderData[1].tickets[orderData[1].tickets.length - 1].status).toBe(_const.ORDER_STATUS.DeliverySet)
-        expect(deliveryData[0].tickets[deliveryData[0].tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.default)
-        expect(is_exist).toBe(true)
-
-        done()
-    });
+    // });
 
 
-    it('should scan product barcode and change its ticket to checked and initiates delivery with guest customer', async function (done) {
+    // it('should scan product barcode and change its ticket to checked and initiates delivery with guest customer', async function (done) {
+    //     this.done = done
+
+    //     const res = await rp({
+    //         jar: hubClerk.jar,
+    //         body: {
+    //             trigger: _const.SCAN_TRIGGER.Inbox,
+    //             orderId: orders[0]._id,
+    //             barcode: '19231213123'
+    //         },
+    //         method: 'POST',
+    //         json: true,
+    //         uri: lib.helpers.apiTestURL('order/ticket/scan'),
+    //         resolveWithFullResponse: true
+    //     });
+    //     expect(res.statusCode).toBe(200)
+    //     const deliveryData = await models()['DeliveryTest'].find()
+    //     const delivery = deliveryData.find(delivery => !delivery.to.warehouse_id && !delivery.to.customer._id)
+    //     const orderData = await models()['OrderTest'].find()
+    //     const order = orderData.find(o => !o.customer_id && o.address)
+    //     is_exist = delivery.order_details[0].order_line_ids.map(id => id.toString()).includes(orders[1].order_lines[0]._id.toString())
+    //     newOLTicketStatus = order.order_lines[0].tickets[orderData[1].order_lines[0].tickets.length - 1].status
+    //     expect(newOLTicketStatus).toBe(_const.ORDER_LINE_STATUS.Recieved)
+    //     expect(order.tickets[order.tickets.length - 1].status).toBe(_const.ORDER_STATUS.DeliverySet)
+    //     expect(delivery.tickets[delivery.tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.default)
+    //     expect(is_exist).toBe(true)
+    //     done()
+    // });
+
+
+    // it('should scan product barcode for internal send and change OL ticket to ready to deliver', async function (done) {
+    //     this.done = done
+    //     const res = await rp({
+    //         jar: ShopClerk.jar,
+    //         body: {
+    //             trigger: _const.SCAN_TRIGGER.SendInternal,
+    //             orderId: orders[2]._id,
+    //             barcode: '0394081341'
+    //         },
+    //         method: 'POST',
+    //         json: true,
+    //         uri: lib.helpers.apiTestURL('order/ticket/scan'),
+    //         resolveWithFullResponse: true
+    //     });
+    //     expect(res.statusCode).toBe(200)
+    //     const orderData = await models()['OrderTest'].find()
+    //     const order = orderData.find(o => !o.address)
+    //     newOLTicketStatus = order.order_lines[0].tickets[order.order_lines[0].tickets.length - 1].status
+    //     expect(newOLTicketStatus).toBe(_const.ORDER_LINE_STATUS.ReadyToDeliver)
+    //     done()
+    // });
+
+    // it('should scan prduct barcode for External delivery for final and change its ticket to checked', async function (done) {
+    //     this.done = done
+    //     const res = await rp({
+    //         jar: hubClerk.jar,
+    //         body: {
+    //             trigger: _const.SCAN_TRIGGER.SendExternal,
+    //             orderId: orders[3]._id,
+    //             barcode: '0394081341'
+    //         },
+    //         method: 'POST',
+    //         json: true,
+    //         uri: lib.helpers.apiTestURL('order/ticket/scan'),
+    //         resolveWithFullResponse: true
+    //     });
+
+    //     expect(res.statusCode).toBe(200)
+    //     const orderData = await models()['OrderTest'].find()
+    //     const order = orderData.find(o => o.order_lines[0].tickets[0].status === _const.ORDER_LINE_STATUS.FinalCheck && o.address)
+    //     expect(order.order_lines[0].tickets[order.order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Checked)
+    //     done()
+
+    // });
+
+
+    it('should scan prduct barcode for CC delivery ', async function (done) {
         this.done = done
         const res = await rp({
             jar: ShopClerk.jar,
             body: {
-                trigger: _const.SCAN_TRIGGER.SendInternal,
-                orderId: orders[2]._id,
+                trigger: _const.SCAN_TRIGGER.CCDelivery,
+                orderId: orders[4]._id,
                 barcode: '0394081341'
             },
             method: 'POST',
@@ -439,19 +576,10 @@ describe('POST Order Ticket Scan-External Delivery', () => {
             uri: lib.helpers.apiTestURL('order/ticket/scan'),
             resolveWithFullResponse: true
         });
+
         expect(res.statusCode).toBe(200)
-        // const deliveryData = await models()['DeliveryTest'].find()
-        // const orderData = await models()['OrderTest'].find()
-        // is_exist = deliveryData[1].order_details[0].order_line_ids.map(id => id.toString()).includes(orders[1].order_lines[0]._id.toString())
-        // newOLTicketStatus = orderData[1].order_lines[0].tickets[orderData[1].order_lines[0].tickets.length - 1].status
-        // expect(newOLTicketStatus).toBe(_const.ORDER_LINE_STATUS.Recieved)
-        // expect(orderData[1].tickets[orderData[1].tickets.length - 1].status).toBe(_const.ORDER_STATUS.DeliverySet)
-        // expect(deliveryData[0].tickets[deliveryData[0].tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.default)
-        // expect(is_exist).toBe(true)
-
         done()
+
     });
-
-
 
 });
