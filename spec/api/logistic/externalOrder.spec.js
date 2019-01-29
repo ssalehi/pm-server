@@ -481,38 +481,40 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
 
 
     it('should scan product barcode and change its ticket to recieved and initiates delivery with logged in customer', async function (done) {
-        this.done = done
-
-        const res = await rp({
-            jar: hubClerk.jar,
-            body: {
-                trigger: _const.SCAN_TRIGGER.Inbox,
-                orderId: orders[0]._id,
-                barcode: '0394081341'
-            },
-            method: 'POST',
-            json: true,
-            uri: lib.helpers.apiTestURL('order/ticket/scan'),
-            resolveWithFullResponse: true
-        });
-        expect(res.statusCode).toBe(200)
-        const deliveryData = await models()['DeliveryTest'].find()
-        const orderData = await models()['OrderTest'].find()
-        is_exist = deliveryData.find(delivery => delivery.to.customer._id).order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
-        newOLTicketStatus = orderData[0].order_lines[0].tickets[orderData[0].order_lines[0].tickets.length - 1].status
-        expect(newOLTicketStatus).toBe(_const.ORDER_LINE_STATUS.Recieved)
-        expect(orderData[0].tickets[orderData[0].tickets.length - 1].status).toBe(_const.ORDER_STATUS.DeliverySet)
-        expect(deliveryData[0].tickets[deliveryData[0].tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.default)
-        expect(is_exist).toBe(true)
-        done()
-
+        try {
+            this.done = done
+            const res = await rp({
+                jar: hubClerk.jar,
+                body: {
+                    trigger: _const.SCAN_TRIGGER.Inbox,
+                    orderId: orders[0]._id,
+                    barcode: '0394081341'
+                },
+                method: 'POST',
+                json: true,
+                uri: lib.helpers.apiTestURL('order/ticket/scan'),
+                resolveWithFullResponse: true
+            });
+            expect(res.statusCode).toBe(200)
+            const deliveryData = await models()['DeliveryTest'].find()
+            const orderData = await models()['OrderTest'].find()
+            is_exist = deliveryData.find(delivery => delivery.to.customer._id).order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
+            newOLTicketStatus = orderData[0].order_lines[0].tickets[orderData[0].order_lines[0].tickets.length - 1].status
+            expect(newOLTicketStatus).toBe(_const.ORDER_LINE_STATUS.Recieved)
+            expect(orderData[0].tickets[orderData[0].tickets.length - 1].status).toBe(_const.ORDER_STATUS.DeliverySet)
+            expect(deliveryData[0].tickets[deliveryData[0].tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.default)
+            expect(is_exist).toBe(true)
+            done()
+        } catch (err) {
+            lib.helpers.errorHandler.bind(this)(err)
+        };
 
     });
 
 
     it('should scan product barcode and change its ticket to recieved and initiates delivery with guest customer', async function (done) {
+try{
         this.done = done
-
         const res = await rp({
             jar: hubClerk.jar,
             body: {
@@ -538,10 +540,14 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
         expect(delivery.tickets[delivery.tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.default)
         expect(is_exist).toBe(true)
         done()
+    }catch (err) {
+        lib.helpers.errorHandler.bind(this)(err)
+      };
     });
 
 
     it('should scan product barcode for internal send and change OL ticket to ready to deliver', async function (done) {
+       try{
         this.done = done
         const res = await rp({
             jar: ShopClerk.jar,
@@ -561,9 +567,13 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
         newOLTicketStatus = order.order_lines[0].tickets[order.order_lines[0].tickets.length - 1].status
         expect(newOLTicketStatus).toBe(_const.ORDER_LINE_STATUS.ReadyToDeliver)
         done()
+    }catch (err) {
+        lib.helpers.errorHandler.bind(this)(err)
+      };
     });
 
     it('should scan prduct barcode for External delivery for final and change its ticket to checked', async function (done) {
+       try{
         this.done = done
         const res = await rp({
             jar: hubClerk.jar,
@@ -583,10 +593,13 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
         const order = orderData.find(o => o.order_lines[0].tickets[0].status === _const.ORDER_LINE_STATUS.FinalCheck && o.address)
         expect(order.order_lines[0].tickets[order.order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Checked)
         done()
-
+    }catch (err) {
+        lib.helpers.errorHandler.bind(this)(err)
+      };
     });
 
     it('should scan prduct barcode for External delivery which initiated few days ago for final and change its ticket to checked', async function (done) {
+       try{
         this.done = done
         const orderData0 = await models()['OrderTest'].find()
         orderData0[3].order_lines[0].tickets[orderData0[3].order_lines[0].tickets.length - 1].status = _const.ORDER_LINE_STATUS.Checked
@@ -612,9 +625,13 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
         });
         expect(order.order_lines[0].tickets[order.order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Checked)
         done()
+    }catch (err) {
+        lib.helpers.errorHandler.bind(this)(err)
+      };
 
     });
     it('should scan prduct barcode for CC delivery and change ticket from finalcheck to checked ', async function (done) {
+     try{
         this.done = done
         const res = await rp({
             jar: ShopClerk.jar,
@@ -633,6 +650,10 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
         const order = orderData.find(o => o.is_collect === true)
         expect(order.order_lines[0].tickets[order.order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Checked)
         done()
-
+    }catch (err) {
+        lib.helpers.errorHandler.bind(this)(err)
+      };
     });
 });
+
+

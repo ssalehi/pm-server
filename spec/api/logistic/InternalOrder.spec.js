@@ -328,25 +328,31 @@ describe('POST onlineWarehouseResponse', () => {
         expect(NewReserved).toBe(products[0].instances[0].inventory[0].reserved - 1)
         done()
     });
-   // this test will not pass because of code problems
-    // it('should check if an inventory count and reserved are 0 the orderline will not be online warehouse verified', async function (done) {
-    //     this.done = done
-    //     await models()['DeliveryTest'].deleteMany({});
-    //     const addDelivery = await rp({
-    //         jar: adminObj.jar,
-    //         body: {
-    //             "orderId": orders[0]._id,
-    //             "orderLineId": orders[0].order_lines[1]._id,
-    //             "warehouseId": warehouses[1]._id,
-    //             "userId": '5c209119da8a28386c02471b',
-    //             "barcode": '0394081341'
-    //         },
-    //         method: 'POST',
-    //         json: true,
-    //         uri: lib.helpers.apiTestURL('order/offline/onlineWarehouseResponse'),
-    //         resolveWithFullResponse: true
-    //     });
-    //     expect(addDelivery.statusCode).not.toBe(200)
-    //     done()
-    // });
+    it('should check if an inventory count and reserved are 0 gets error', async function (done) {
+
+        try {
+            this.done = done
+            await models()['DeliveryTest'].deleteMany({});
+            await rp({
+                jar: adminObj.jar,
+                body: {
+                    "orderId": orders[0]._id,
+                    "orderLineId": orders[0].order_lines[1]._id,
+                    "warehouseId": warehouses[1]._id,
+                    "userId": '5c209119da8a28386c02471b',
+                    "barcode": '0394081341'
+                },
+                method: 'POST',
+                json: true,
+                uri: lib.helpers.apiTestURL('order/offline/onlineWarehouseResponse'),
+                resolveWithFullResponse: true
+            })
+            this.fail('expect error when count and reserved amounts are 0')
+            done()
+        } catch (err) {
+            expect(err.statusCode).toBe(500);
+            done()
+        };
+    });
+
 });
