@@ -273,6 +273,7 @@ router.post('/order/invoice', apiResponse('Offline', 'manualRequestInvoice', tru
 router.post('/order/return', apiResponse('TicketAction', 'requestReturn', false, ['body', 'user']));
 router.post('/order/cancel', apiResponse('TicketAction', 'requestCancel', false, ['body', 'user']));
 router.post('/order/mismatch', apiResponse('TicketAction', 'mismatchReport', true, ['body.trigger', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
+router.post('/order/damage', apiResponse('TicketAction', 'mismatchReport', true, ['body.orderId','body.orderLineId', 'user'], [_const.ACCESS_LEVEL.HubClerk]));
 
 
 // Order => api's used by offline system
