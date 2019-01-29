@@ -8,10 +8,14 @@ const moment = require('moment');
 
 
 
-describe('POST Order Ticket Scan-External Delivery', () => {
+describe('POST Order Ticket Scan - multiple triggers', () => {
     let hubClerk = { // central warehosue clerk
         aid: null,
         jar: null,
+    };
+    let agentObj = {
+        id: null,
+        jar: null
     };
     ShopClerk = {
         aid: null,
@@ -42,6 +46,9 @@ describe('POST Order Ticket Scan-External Delivery', () => {
             const sclerck = await lib.dbHelpers.addAndLoginAgent('sc', _const.ACCESS_LEVEL.ShopClerk, warehouses.find(x => x.name === 'سانا')._id)
             ShopClerk.aid = sclerck.aid;
             ShopClerk.jar = sclerck.rpJar
+            const Dagent = await lib.dbHelpers.addAndLoginAgent('Delivery Agent', _const.ACCESS_LEVEL.DeliveryAgent)
+            agentObj.id = Dagent.aid;
+            agentObj.jar = Dagent.rpJar;
 
             products = await models()['ProductTest'].insertMany([{
                 article_no: 'xy123',
@@ -297,7 +304,8 @@ describe('POST Order Ticket Scan-External Delivery', () => {
                     }]
                 },
                 { // order 3 => external final scan
-                    address: customer[1].addresses[0],
+                    customer_id: customer[0]._id,
+                    address: customer[0].addresses[0],
                     order_time: new Date(),
                     delivery_info: {
                         duration_days: 3,
@@ -312,12 +320,26 @@ describe('POST Order Ticket Scan-External Delivery', () => {
                     is_cart: false,
                     tickets: [{
                         is_processed: false,
-                        status: _const.ORDER_STATUS.DeliverySet,
+                        status: _const.ORDER_STATUS.ReadyToDeliver,
                         desc: null,
                         receiver_id: warehouses.find(x => x.is_hub)._id,
                         timestamp: new Date()
                     }],
                     order_lines: [{
+                        product_id: products[0]._id,
+                        campaign_info: {
+                            _id: mongoose.Types.ObjectId(),
+                            discount_ref: 0
+                        },
+                        product_instance_id: products[0].instances[0]._id,
+                        tickets: [{
+                            is_processed: false,
+                            status: _const.ORDER_LINE_STATUS.FinalCheck,
+                            receiver_id: warehouses.find(x => x.is_hub)._id,
+                            desc: null,
+                            timestamp: new Date(),
+                        }]
+                    }, {
                         product_id: products[0]._id,
                         campaign_info: {
                             _id: mongoose.Types.ObjectId(),
@@ -383,6 +405,9 @@ describe('POST Order Ticket Scan-External Delivery', () => {
                         order_id: orders[0]._id
                     }],
                     start: new Date(),
+                    delivery_agent: {
+                        _id: agentObj.id
+                    },
                     slot: {
                         lower_bound: 10,
                         upper_bound: 14,
@@ -445,7 +470,7 @@ describe('POST Order Ticket Scan-External Delivery', () => {
                         timestamp: new Date()
                     }],
                     "__v": 0
-                }
+                },
             ]);
             deliveries = JSON.parse(JSON.stringify(deliveries));
             done();
@@ -455,7 +480,7 @@ describe('POST Order Ticket Scan-External Delivery', () => {
     }, 15000);
 
 
-    it('should scan product barcode and change its ticket to checked and initiates delivery with logged in customer', async function (done) {
+    it('should scan product barcode and change its ticket to recieved and initiates delivery with logged in customer', async function (done) {
         this.done = done
 
         const res = await rp({
@@ -485,7 +510,7 @@ describe('POST Order Ticket Scan-External Delivery', () => {
     });
 
 
-    it('should scan product barcode and change its ticket to checked and initiates delivery with guest customer', async function (done) {
+    it('should scan product barcode and change its ticket to recieved and initiates delivery with guest customer', async function (done) {
         this.done = done
 
         const res = await rp({
@@ -508,6 +533,7 @@ describe('POST Order Ticket Scan-External Delivery', () => {
         is_exist = delivery.order_details[0].order_line_ids.map(id => id.toString()).includes(orders[1].order_lines[0]._id.toString())
         newOLTicketStatus = order.order_lines[0].tickets[orderData[1].order_lines[0].tickets.length - 1].status
         expect(newOLTicketStatus).toBe(_const.ORDER_LINE_STATUS.Recieved)
+        expect(delivery.to.customer.address.province).toBe(customer[1].addresses[0].province)
         expect(order.tickets[order.tickets.length - 1].status).toBe(_const.ORDER_STATUS.DeliverySet)
         expect(delivery.tickets[delivery.tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.default)
         expect(is_exist).toBe(true)
@@ -559,7 +585,36 @@ describe('POST Order Ticket Scan-External Delivery', () => {
         done()
 
     });
-    it('should scan prduct barcode for CC delivery ', async function (done) {
+
+    it('should scan prduct barcode for External delivery which initiated few days ago for final and change its ticket to checked', async function (done) {
+        this.done = done
+        const orderData0 = await models()['OrderTest'].find()
+        orderData0[3].order_lines[0].tickets[orderData0[3].order_lines[0].tickets.length - 1].status = _const.ORDER_LINE_STATUS.Checked
+        await orderData0[3].save()
+        const res = await rp({
+            jar: hubClerk.jar,
+            body: {
+                trigger: _const.SCAN_TRIGGER.SendExternal,
+                orderId: orders[3]._id,
+                barcode: '0394081341'
+            },
+            method: 'POST',
+            json: true,
+            uri: lib.helpers.apiTestURL('order/ticket/scan'),
+            resolveWithFullResponse: true
+        });
+
+        expect(res.statusCode).toBe(200)
+        const orderData = await models()['OrderTest'].find()
+        const order = orderData.find(o => o.tickets[o.tickets.length - 1].status === _const.ORDER_STATUS.WaitForInvoice && o.address)
+        order.order_lines.forEach(ol => {
+            expect(ol.tickets[ol.tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Checked)
+        });
+        expect(order.order_lines[0].tickets[order.order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Checked)
+        done()
+
+    });
+    it('should scan prduct barcode for CC delivery and change ticket from finalcheck to checked ', async function (done) {
         this.done = done
         const res = await rp({
             jar: ShopClerk.jar,
