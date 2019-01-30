@@ -44,79 +44,7 @@ describe('POST Order - ORP', () => {
 
       products = await utils.makeProducts();
       
-      orders = await models()['OrderTest'].insertMany([
-        { // order 1 => a normal order which central warehosue has inventory for
-          customer_id: customer.cid,
-          order_time: new Date(),
-          is_cart: false,
-          order_lines: [{
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[0]._id,
-            tickets: []
-          }, {
-            product_id: products[0],
-            product_instance_id: products[0].instances[0]._id,
-            tickets: []
-          }]
-        },
-        { // order 2 => a normal order which central warehouse does'nt have inventory for
-          customer_id: customer.cid,
-          order_time: new Date(),
-          is_cart: false,
-          order_lines: [{
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[1]._id,
-            tickets: []
-          }]
-        },
-        { // order 3 => c&c order from paladium where has inventory for
-          customer_id: customer.cid,
-          order_time: new Date(),
-          is_cart: false,
-          order_lines: [{
-            campaign_info: {
-              _id: mongoose.Types.ObjectId(),
-              discount_ref: 0
-            },
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[0]._id,
-            tickets: []
-          }, {
-            campaign_info: {
-              _id: mongoose.Types.ObjectId(),
-              discount_ref: 0
-            },
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[0]._id,
-            tickets: []
-          }]
-        },
-        { // order 4 => c&c order from paladium where doesn't have enough inventory for as well as central (provided from sana and paladium )
-          customer_id: customer.cid,
-          order_time: new Date(),
-          is_cart: false,
-          order_lines: [{
-            campaign_info: {
-              _id: mongoose.Types.ObjectId(),
-              discount_ref: 0
-            },
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[1]._id,
-            tickets: []
-          }, {
-            campaign_info: {
-              _id: mongoose.Types.ObjectId(),
-              discount_ref: 0
-            },
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[1]._id,
-            tickets: []
-          }]
-        }
-      ]);
-
-      orders = JSON.parse(JSON.stringify(orders));
-      done();
+       done();
     } catch (err) {
       console.log(err);
     };
@@ -126,9 +54,8 @@ describe('POST Order - ORP', () => {
     try {
       this.done = done;
 
-      let PreInventory = products[0].instances[0].inventory.find(x =>
-        x.warehouse_id.toString() === warehouses[1]._id.toString());
-      let transaction_id = mongoose.Types.ObjectId();
+      // let PreInventory = products[0].instances[0].inventory.find(x =>
+      //   x.warehouse_id.toString() === warehouses[1]._id.toString());
       let res = await rp({
         method: 'POST',
         uri: lib.helpers.apiTestURL(`checkout/true`),
@@ -139,16 +66,29 @@ describe('POST Order - ORP', () => {
           used_balance: 0,
           total_amount: 0,
           is_collect: false,
+          total_amount: 922000,
+          transaction_id: null,
+          used_balance: 0,
+          used_point: 0,
+          paymentType: 'cash',
+          loyalty: {
+            delivery_spent: 0,
+            shop_spent: 0,
+            delivery_value: 0,
+            shop_value: 0,
+            earn_point: 36
+          },
+          discount: 0,
+          duration_id: delivery_info[0]._id,
           time_slot: {
             lower_bound: 18,
             upper_bound: 22
-          },
-          delivery_info: {duration_days: 3},
-          paymentType: 1
+          }
         },
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`checkout/true`),
         json: true,
         resolveWithFullResponse: true,
-        jar: customer.jar
       });
       expect(res.statusCode).toBe(200);
       let foundOrder = await models()['OrderTest'].findById(orders[0]._id);
