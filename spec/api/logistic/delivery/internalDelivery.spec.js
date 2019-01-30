@@ -1,11 +1,10 @@
 const rp = require('request-promise');
-const lib = require('../../../lib/index');
-const models = require('../../../mongo/models.mongo');
+const lib = require('../../../../lib/index');
+const models = require('../../../../mongo/models.mongo');
 const mongoose = require('mongoose');
-const _const = require('../../../lib/const.list');
-const warehouses = require('../../../warehouses');
+const _const = require('../../../../lib/const.list');
+const warehouses = require('../../../../warehouses');
 
-////////////////////////////////////////////////////////////////////
 describe('Requset For Package-Internal Delivery', () => {
     let orders, products, deliveries;
     let agentObj = {
@@ -203,7 +202,6 @@ describe('Requset For Package-Internal Delivery', () => {
     });
 });
 
-//////////////////////////////////////////////////////////////////
 describe('Delivery Start-Internal Delivery', () => {
 
     let orders, products, deliveries;
@@ -439,7 +437,7 @@ describe('Delivery Start-Internal Delivery', () => {
 
     });
 
-    it('should start a delivery with one orderline ready and one on finalcheck from shop to hub', async function (done) {
+    it('should start a delivery with one orderline ready and one on finalcheck from shop to hub => the left one should be put back on prev state in shop', async function (done) {
         this.done = done;
         const deliveryData1 = await models()['DeliveryTest'].find()
         deliveryData1[0].order_details[0].order_line_ids = [orders[0].order_lines[0]._id, orders[0].order_lines[1]._id]
@@ -467,7 +465,7 @@ describe('Delivery Start-Internal Delivery', () => {
         expect(isExist).toBe(true)
         done()
     });
-    it('should start a delivery with one orderline ready and one on finalcheck from hub to shop ', async function (done) {
+    it('should start a delivery with one orderline ready and one on finalcheck from hub to shop => => the left one should be put back on prev state on hub', async function (done) {
         this.done = done;
 
         const res = await rp({
@@ -496,7 +494,6 @@ describe('Delivery Start-Internal Delivery', () => {
     });
 });
 
-////////////////////////////////////////////////////////////////////////////
 describe('End Delivery-Internal Delivery', () => {
 
     let orders, products, deliveries;
@@ -677,7 +674,7 @@ describe('End Delivery-Internal Delivery', () => {
             console.log(err);
         };
     }, 15000);
-    it('should end delivery ', async function (done) {
+    it('should end intenal delivery ', async function (done) {
         this.done = done;
         const res = await rp({
             jar: agentObj.jar,
