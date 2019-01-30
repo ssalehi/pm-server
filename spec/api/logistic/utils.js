@@ -117,7 +117,6 @@ let makeProducts = async () => {
 
 let makeOrders = async () => {
   try {
-
     orders = await models()['OrderTest'].insertMany([{ //order 1  => 1 orderlines
       order_time: new Date(),
       is_cart: false,
