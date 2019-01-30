@@ -546,31 +546,7 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
     });
 
 
-    it('should scan product barcode for internal send and change OL ticket to ready to deliver', async function (done) {
-        try {
-            this.done = done
-            const res = await rp({
-                jar: ShopClerk.jar,
-                body: {
-                    trigger: _const.SCAN_TRIGGER.SendInternal,
-                    orderId: orders[2]._id,
-                    barcode: '0394081341'
-                },
-                method: 'POST',
-                json: true,
-                uri: lib.helpers.apiTestURL('order/ticket/scan'),
-                resolveWithFullResponse: true
-            });
-            expect(res.statusCode).toBe(200)
-            const orderData = await models()['OrderTest'].find()
-            const order = orderData.find(o => !o.address)
-            newOLTicketStatus = order.order_lines[0].tickets[order.order_lines[0].tickets.length - 1].status
-            expect(newOLTicketStatus).toBe(_const.ORDER_LINE_STATUS.ReadyToDeliver)
-            done()
-        } catch (err) {
-            lib.helpers.errorHandler.bind(this)(err)
-        };
-    });
+   
 
     it('should scan prduct barcode for External delivery for final and change its ticket to checked', async function (done) {
         try {
