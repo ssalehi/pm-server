@@ -23,7 +23,7 @@ let makeProducts = async () => {
       })
     });
 
-    products = await models()['ProductTest'].insertMany([
+    let products = await models()['ProductTest'].insertMany([
       // product 1
       {
         article_no: 'xy123',
@@ -193,6 +193,83 @@ let makeOrders = async () => {
     console.log('-> error on makeing test orders', err);
     throw err;
   }
+}
+
+let changeInventory = async (productId, productInstanceId, warehouseId, delCount, delReserved) => {
+  try {
+
+    let foundProduct = await this.ProductModel.findById(mongoose.Types.ObjectId(productId)).lean()
+    if (!foundProduct)
+      throw new Error('product not found');
+
+    let foundInstance = foundProduct.instances.find(x => x._id.toString() === productInstanceId.toString());
+    if (!foundInstance)
+      throw new Error('product instance not found');
+
+    const initialInstance = JSON.parse(JSON.stringify(foundInstance));
+
+    let foundInventory = foundInstance.inventory.find(i => i.warehouse_id.toString() === warehouseId.toString());
+    if (!foundInventory)
+      throw new Error('inventory not found');
+
+    if (delReserved && foundInventory.reserved + delReserved >= 0 && foundInventory.reserved + delReserved <= foundInventory.count) {
+      foundInventory.reserved += delReserved;
+    }
+
+    // count number should be changed after reserved
+    if (delCount && foundInventory.count + delCount >= 0 && foundInventory.count + delCount >= foundInventory.reserved) {
+      foundInventory.count += delCount;
+    }
+
+
+    if (foundInventory.count < foundInventory.reserved || foundInventory.count < 0 || foundInventory.reserved < 0)
+      return Promise.reject(error.invalidInventoryCount);
+
+
+    let isSoldOut = await this.checkSoldOutStatus(productId, initialInstance, foundInstance);
+
+    /**
+     * if inventory is changed so that the instance its count is not 0 anymore, its flag should be removed and should be removed from sold out collection
+     * in opposite, if the instance has no inventory anymore it should be added to sold out collection but
+     * its flag should not be changed immediately (because of 1 week off of sold out) 
+     */
+    if (!isSoldOut && foundInstance.sold_out)
+      foundInstance.sold_out = false;
+
+    return this.ProductModel.update({
+      _id: mongoose.Types.ObjectId(body.id),
+      'instances._id': mongoose.Types.ObjectId(body.productInstanceId)
+    }, {
+        $set: {
+          'instances.$': foundInstance
+        }
+      });
+
+  } catch (err) {
+    console.log('-> error on change inventory', err);
+    throw err;
+  }
+}
+
+let checkSoldOutStatus = async (productId, initialInstance, changedInstance) => {
+
+  try {
+    const totalInitialCount = initialInstance.inventory.map(x => x.count).reduce((x, y) => x + y);
+    const totalChangedCount = changedInstance.inventory.map(x => x.count).reduce((x, y) => x + y);
+    if (totalChangedCount === 0) {
+      // when the product counts becomes 0, the product is added to soldout list (not when count - reserved == 0)
+      await new SoldOutModel(Product.test).insertProductInstance(productId, initialInstance._id.toString());
+      return true;
+    }
+    else if (totalInitialCount === 0 && totalChangedCount > 0) {
+      await new SoldOutModel(Product.test).removeProductInstance(productId, initialInstance._id.toString());
+      return false;
+    }
+  } catch (err) {
+    console.log('-> error on check sold out sataus', err);
+    throw err;
+  }
+
 }
 
 
@@ -370,5 +447,6 @@ module.exports = {
   makeProducts,
   makeOrders,
   makeDeliveries,
-  makeCustomer
+  makeCustomer,
+  changeInventory
 }
