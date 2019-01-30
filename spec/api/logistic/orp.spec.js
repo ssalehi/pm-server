@@ -54,9 +54,8 @@ describe('POST Order - ORP', () => {
     try {
       this.done = done;
 
-      let PreInventory = products[0].instances[0].inventory.find(x =>
-        x.warehouse_id.toString() === warehouses[1]._id.toString());
-      let transaction_id = mongoose.Types.ObjectId();
+      // let PreInventory = products[0].instances[0].inventory.find(x =>
+      //   x.warehouse_id.toString() === warehouses[1]._id.toString());
       let res = await rp({
         method: 'POST',
         uri: lib.helpers.apiTestURL(`checkout/true`),
@@ -67,16 +66,29 @@ describe('POST Order - ORP', () => {
           used_balance: 0,
           total_amount: 0,
           is_collect: false,
+          total_amount: 922000,
+          transaction_id: null,
+          used_balance: 0,
+          used_point: 0,
+          paymentType: 'cash',
+          loyalty: {
+            delivery_spent: 0,
+            shop_spent: 0,
+            delivery_value: 0,
+            shop_value: 0,
+            earn_point: 36
+          },
+          discount: 0,
+          duration_id: delivery_info[0]._id,
           time_slot: {
             lower_bound: 18,
             upper_bound: 22
-          },
-          delivery_info: {duration_days: 3},
-          paymentType: 1
+          }
         },
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`checkout/true`),
         json: true,
         resolveWithFullResponse: true,
-        jar: customer.jar
       });
       expect(res.statusCode).toBe(200);
       let foundOrder = await models()['OrderTest'].findById(orders[0]._id);
