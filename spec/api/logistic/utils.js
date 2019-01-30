@@ -299,7 +299,7 @@ let makeOrders = async (custoemr) => {
 
     let defaultTicket = {
         is_processed: false,
-        status: _const.ORDER_STATUS.default,
+        status: _const.ORDER_STATUS.WaitForAggregation,
         desc: null,
         receiver_id: mongoose.Types.ObjectId(),
         timestamp: new Date()
