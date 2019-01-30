@@ -9,6 +9,7 @@ const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
 const copydir = require('copy-dir');
 const warehouses = require('./warehouses');
+const deliveryDurationInfo = require('./deliveryDurationInfo');
 
 
 SALT_WORK_FACTOR = 10;
@@ -18,23 +19,30 @@ let _hash;
 
 db.dbIsReady()
   .then(() => {
-    return modelIsReady();
-  })
-  .then(() => {
+    try {
+      await modelIsReady();
+      copydir.sync('assets', 'public/assets');
 
-    copydir.sync('assets', 'public/assets');
-    return models()['Warehouse'].find().lean();
-  })
-  .then(res => {
-    if (!res || res.length === 0) {
+      let res = await models()['Warehouse'].find().lean();
+      if (!res || res.length === 0) {
+        await models()['Warehouse'].insertMany(warehouses);
+        console.log('-> ', 'warehouses are added');
+      }
 
-      return models()['Warehouse'].insertMany(warehouses);
-    }
-    else
+      res = await models()['DeliveryDurationInfo'].find().lean();
+      if (!res || res.length === 0) {
+        await models()['DeliveryDurationInfo'].insertMany(deliveryDurationInfo);
+        console.log('-> ', 'delivery duaraion info are added');
+      }
+
       return Promise.resolve();
+    } catch (err) {
+      console.log('-> ', err);
+      process.exit();
+    }
+
   })
   .then(() => {
-    console.log('-> ', 'warehouses are added');
 
     return new Promise((resolve, reject) => {
       env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
