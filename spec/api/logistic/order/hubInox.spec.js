@@ -51,8 +51,6 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
             products = await utils.makeProducts();
             customer = await utils.makeCustomer();
             orders = await utils.makeOrders();
-            console.log(orders);
-            
             orders[0].order_lines[0].tickets[orders[0].order_lines[0].tickets.length - 1].status = _const.ORDER_LINE_STATUS.Delivered
             deliveries = await utils.makeDeliveries()
             done();
