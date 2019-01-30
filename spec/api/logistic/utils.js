@@ -350,7 +350,7 @@ let makeOrders = async (customer) => {
         coupon_discount: 15,
         transaction_id: 'xyz45301',
         customer_id: customer._id,
-        address: loggedInCustomerAddress,
+        address: warehouses.find(x => x.name === 'سانا').address,
         delivery_info: {
           time_slot: {
             lower_bound: 10,
@@ -359,7 +359,7 @@ let makeOrders = async (customer) => {
           delivery_cost: 30000
         },
         tickets: [defaultTicket],
-        is_collect: false,
+        is_collect: true,
         total_amount: 30000,
         order_lines: []
       },
@@ -384,7 +384,7 @@ let makeOrders = async (customer) => {
         order_time: new Date(),
         is_cart: false,
         transaction_id: 'xyz45302',
-        address: guestAddress,
+        address: warehouses.find(x => x.name === 'سانا').address,
         delivery_info: {
           time_slot: {
             lower_bound: 10,
