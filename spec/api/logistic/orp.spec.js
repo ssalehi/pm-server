@@ -5,6 +5,8 @@ const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 const warehouses = require('../../../warehouses')
+const deliveryDurationInfo = require('../../../deliveryDurationInfo')
+const utils = require('./utils');
 
 describe('POST Order - ORP', () => {
   let orders, products;
@@ -20,18 +22,15 @@ describe('POST Order - ORP', () => {
     street: 'مطهری'
   };
 
-  let colorIds = [
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId()
-  ];
+  
 
   beforeEach(async done => {
     try {
 
       await lib.dbHelpers.dropAll()
 
+
+      await models()['DeliveryDurationInfoTest'].insertMany(deliveryDurationInfo)
       await models()['WarehouseTest'].insertMany(warehouses)
 
       let res = await lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
@@ -42,130 +41,19 @@ describe('POST Order - ORP', () => {
 
       customer.cid = res.cid;
       customer.jar = res.rpJar;
-      products = await models()['ProductTest'].insertMany([{
-        article_no: 'xy123',
-        name: 'sample 1',
-        product_type: {
-          name: 'sample type',
-          product_type_id: mongoose.Types.ObjectId()
-        },
-        brand: {
-          name: 'sample brand',
-          brand_id: mongoose.Types.ObjectId()
-        },
-        base_price: 30000,
-        desc: 'some description for this product',
-        colors: [{
-            color_id: colorIds[0],
-            name: 'green'
-          },
-          {
-            color_id: colorIds[1],
-            name: 'yellow'
-          },
-          {
-            color_id: colorIds[2],
-            name: 'red'
-          }
-        ],
-        instances: [{
-            product_color_id: colorIds[0],
-            size: "11",
-            price: 2000,
-            barcode: '0394081341',
-            inventory: [{
-              count: 3,
-              reserved: 1,
-              warehouse_id: warehouses[1]._id
-            }, {
-              count: 2,
-              reserved: 0,
-              warehouse_id: warehouses[2]._id
-            }, {
-              count: 3,
-              reserved: 0,
-              warehouse_id: warehouses[3]._id
-            }, {
-              count: 4,
-              reserved: 0,
-              warehouse_id: warehouses[4]._id
-            }]
-          },
-          {
-            product_color_id: colorIds[1],
-            size: "10",
-            price: 4000,
-            barcode: '19231213123',
-            inventory: [{
-              count: 2,
-              reserved: 2,
-              warehouse_id: warehouses[1]._id
-            }, {
-              count: 1,
-              reserved: 0,
-              warehouse_id: warehouses[2]._id
-            }, {
-              count: 4,
-              reserved: 0,
-              warehouse_id: warehouses[3]._id
-            }, {
-              count: 5,
-              reserved: 0,
-              warehouse_id: warehouses[4]._id
-            }]
-          }
-        ]
-      }]);
 
-      products = JSON.parse(JSON.stringify(products));
-
-      delivery_info = await models()['DeliveryDurationInfoTest'].insertMany([{
-
-        add_point: null,
-        cities: [{
-
-          name: "تهران",
-          delivery_cost: 30000
-        }],
-        delivery_days: 1,
-        delivery_loyalty: [{
-
-            name: "White",
-            price: 10,
-            discount: 0
-          },
-          {
-            name: "Orange",
-            price: 15,
-            discount: 0
-          },
-          {
-            name: "Black",
-            price: 20,
-            discount: 0
-          }
-        ],
-        is_c_and_c: false,
-        name: "یک روزه"
-      }])
-      delivery_info = JSON.parse(JSON.stringify(delivery_info));
-      orders = await models()['OrderTest'].insertMany([{ // order 1 => a normal order which central warehosue has inventory for
+      products = await utils.makeProducts();
+      
+      orders = await models()['OrderTest'].insertMany([
+        { // order 1 => a normal order which central warehosue has inventory for
           customer_id: customer.cid,
           order_time: new Date(),
           is_cart: true,
           order_lines: [{
-            campaign_info: {
-              _id: mongoose.Types.ObjectId(),
-              discount_ref: 0
-            },
             product_id: products[0]._id,
             product_instance_id: products[0].instances[0]._id,
             tickets: []
           }, {
-            campaign_info: {
-              _id: mongoose.Types.ObjectId(),
-              discount_ref: 0
-            },
             product_id: products[0],
             product_instance_id: products[0].instances[0]._id,
             tickets: []
@@ -245,12 +133,14 @@ describe('POST Order - ORP', () => {
       // let PreInventory = products[0].instances[0].inventory.find(x =>
       //   x.warehouse_id.toString() === warehouses[1]._id.toString());
       let res = await rp({
-
-        jar: customer.jar,
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`checkout/true`),
         body: {
           address: customerAddress,
-          order_id: orders[0]._id,
-          cartItems: null,
+          duration_id: 20,
+          used_point: 0,
+          used_balance: 0,
+          total_amount: 0,
           is_collect: false,
           total_amount: 922000,
           transaction_id: null,
@@ -302,210 +192,172 @@ describe('POST Order - ORP', () => {
     };
   });
 
-  // it('senario 2 : a normal order (order 2) which central warehouse does\'nt have inventory for', async function (done) {
-  //   try {
-  //     this.done = done;
+  xit('senario 2 : a normal order (order 2) which central warehouse does\'nt have inventory for', async function (done) {
+    try {
+      this.done = done;
 
-  //     let PreCentralInventory = products[0].instances[1].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[1]._id.toString());
+      let PreCentralInventory = products[0].instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
 
-  //     let PrePaladiumInventory = products[0].instances[1].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[2]._id.toString());
+      let PrePaladiumInventory = products[0].instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[2]._id.toString());
 
-  //     let transaction_id = mongoose.Types.ObjectId();
-  //     let res = await rp({
-  //         jar: customer.jar,
-  // body: {
-  //   address: customerAddress,
-  //   order_id: orders[0]._id,
-  //   cartItems: null,
-  //   is_collect: false,
-  //   total_amount: 922000,
-  //   transaction_id: null,
-  //   used_balance: 0,
-  //   used_point: 0,
-  //   paymentType: 'cash',
-  //   loyalty: {
-  //     delivery_spent: 0,
-  //     shop_spent: 0,
-  //     delivery_value: 0,
-  //     shop_value: 0,
-  //     earn_point: 36
-  //   },
-  //   discount: 0,
-  //   duration_id: delivery_info[0]._id,
-  //   time_slot: {
-  //     lower_bound: 18,
-  //     upper_bound: 22
-  //   }
-  // },
-  // method: 'POST',
-  // uri: lib.helpers.apiTestURL(`checkout/true`),
-  // json: true,
-  //  resolveWithFullResponse: true,
-  //     });
-  //     expect(res.statusCode).toBe(200);
+      let transaction_id = mongoose.Types.ObjectId();
+      let res = await rp({
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`checkoutDemo`),
+        body: {
+          order_id: orders[1]._id,
+          address: customerAddress,
+          transaction_id,
+          used_point: 0,
+          used_balance: 0,
+          total_amount: 0,
+          is_collect: false,
+          time_slot: {
+            lower_bound: 18,
+            upper_bound: 22
+          },
+          delivery_info: {duration_days: 3},
+          paymentType: 1
+        },
+        json: true,
+        resolveWithFullResponse: true,
+        jar: customer.jar
+      });
+      expect(res.statusCode).toBe(200);
 
-  //     let foundProduct = await models()['ProductTest'].findById(products[0]._id).lean();
+      let foundProduct = await models()['ProductTest'].findById(products[0]._id).lean();
 
-  //     let newCentralInventory = foundProduct.instances[1].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[1]._id.toString());
+      let newCentralInventory = foundProduct.instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
 
-  //     let newPaladiumInventory = foundProduct.instances[1].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[2]._id.toString());
+      let newPaladiumInventory = foundProduct.instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[2]._id.toString());
 
-  //     expect(newCentralInventory.count).toBe(PreCentralInventory.count);
-  //     expect(newCentralInventory.reserved).toBe(PreCentralInventory.reserved);
+      expect(newCentralInventory.count).toBe(PreCentralInventory.count);
+      expect(newCentralInventory.reserved).toBe(PreCentralInventory.reserved);
 
-  //     expect(newPaladiumInventory.count).toBe(PrePaladiumInventory.count);
-  //     expect(newPaladiumInventory.reserved).toBe(PrePaladiumInventory.reserved + 1);
+      expect(newPaladiumInventory.count).toBe(PrePaladiumInventory.count);
+      expect(newPaladiumInventory.reserved).toBe(PrePaladiumInventory.reserved + 1);
 
-  //     done();
-  //   } catch (err) {
-  //     lib.helpers.errorHandler.bind(this)(err)
-  //   };
-  // });
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    };
+  });
 
-  // it('senario 3 : c&c order (order 3) from paladium where has inventory for', async function (done) {
-  //   try {
-  //     this.done = done;
+  xit('senario 3 : c&c order (order 3) from paladium where has inventory for', async function (done) {
+    try {
+      this.done = done;
 
-  //     let PreCentralInventory = products[0].instances[0].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[1]._id.toString());
+      let PreCentralInventory = products[0].instances[0].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
 
-  //     let PrePaladiumInventory = products[0].instances[0].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[2]._id.toString());
+      let PrePaladiumInventory = products[0].instances[0].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[2]._id.toString());
 
-  //     let transaction_id = mongoose.Types.ObjectId();
-  //     let res = await rp({
-  //          // body: {
-  //   address: customerAddress,
-  //   order_id: orders[0]._id,
-  //   cartItems: null,
-  //   is_collect: false,
-  //   total_amount: 922000,
-  //   transaction_id: null,
-  //   used_balance: 0,
-  //   used_point: 0,
-  //   paymentType: 'cash',
-  //   loyalty: {
-  //     delivery_spent: 0,
-  //     shop_spent: 0,
-  //     delivery_value: 0,
-  //     shop_value: 0,
-  //     earn_point: 36
-  //   },
-  //   discount: 0,
-  //   duration_id: delivery_info[0]._id,
-  //   time_slot: {
-  //     lower_bound: 18,
-  //     upper_bound: 22
-  //   }
-  // },
-  // method: 'POST',
-  // uri: lib.helpers.apiTestURL(`checkout/true`),
-  // json: true,
-  //  resolveWithFullResponse: true,
-  //       jar: customer.jar
-  //     });
-  //     expect(res.statusCode).toBe(200);
+      let transaction_id = mongoose.Types.ObjectId();
+      let res = await rp({
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`checkoutDemo`),
+        body: {
+          order_id: orders[2]._id,
+          address: warehouses[2].address, // paladium
+          transaction_id,
+          used_point: 0,
+          used_balance: 0,
+          total_amount: 0,
+          is_collect: true,
+        },
+        json: true,
+        resolveWithFullResponse: true,
+        jar: customer.jar
+      });
+      expect(res.statusCode).toBe(200);
 
-  //     let foundOrder = await models()['OrderTest'].findById(orders[2]._id);
-  //     expect(foundOrder.transaction_id.toString()).toBe(transaction_id.toString());
-  //     expect(foundOrder.is_collect).toBe(true);
-  //     expect(foundOrder.is_cart).toBeFalsy();
-  //     expect(foundOrder.address._id.toString()).toBe(warehouses[2].address._id.toString());
+      let foundOrder = await models()['OrderTest'].findById(orders[2]._id);
+      expect(foundOrder.transaction_id.toString()).toBe(transaction_id.toString());
+      expect(foundOrder.is_collect).toBe(true);
+      expect(foundOrder.is_cart).toBeFalsy();
+      expect(foundOrder.address._id.toString()).toBe(warehouses[2].address._id.toString());
 
-  //     expect(foundOrder.tickets.length).toBe(1);
-  //     expect(foundOrder.tickets[0].status).toBe(_const.ORDER_STATUS.WaitForAggregation);
-  //     expect(foundOrder.tickets[0].receiver_id).toBeUndefined();
+      expect(foundOrder.tickets.length).toBe(1);
+      expect(foundOrder.tickets[0].status).toBe(_const.ORDER_STATUS.WaitForAggregation);
+      expect(foundOrder.tickets[0].receiver_id).toBeUndefined();
 
 
-  //     let foundProduct = await models()['ProductTest'].findById(products[0]._id).lean();
+      let foundProduct = await models()['ProductTest'].findById(products[0]._id).lean();
 
-  //     let newCentralInventory = foundProduct.instances[0].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[1]._id.toString());
+      let newCentralInventory = foundProduct.instances[0].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
 
-  //     let newPaladiumInventory = foundProduct.instances[0].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[2]._id.toString());
+      let newPaladiumInventory = foundProduct.instances[0].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[2]._id.toString());
 
-  //     // central warehouse must not be included in c&c orders
-  //     expect(newCentralInventory.count).toBe(PreCentralInventory.count);
-  //     expect(newCentralInventory.reserved).toBe(PreCentralInventory.reserved);
+      // central warehouse must not be included in c&c orders
+      expect(newCentralInventory.count).toBe(PreCentralInventory.count);
+      expect(newCentralInventory.reserved).toBe(PreCentralInventory.reserved);
 
-  //     expect(newPaladiumInventory.count).toBe(PrePaladiumInventory.count);
-  //     expect(newPaladiumInventory.reserved).toBe(PrePaladiumInventory.reserved + 2);
+      expect(newPaladiumInventory.count).toBe(PrePaladiumInventory.count);
+      expect(newPaladiumInventory.reserved).toBe(PrePaladiumInventory.reserved + 2);
 
-  //     done();
-  //   } catch (err) {
-  //     lib.helpers.errorHandler.bind(this)(err)
-  //   };
-  // });
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    };
+  });
 
-  // it('senario 4 : c&c order (order 4) from paladium where doesn\'t have enough inventory for as well as central (provided from sana and paladium )', async function (done) {
-  //   try {
-  //     this.done = done;
+  xit('senario 4 : c&c order (order 4) from paladium where doesn\'t have enough inventory for as well as central (provided from sana and paladium )', async function (done) {
+    try {
+      this.done = done;
 
-  //     let PrePaladiumInventory = products[0].instances[1].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[2]._id.toString());
+      let PrePaladiumInventory = products[0].instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[2]._id.toString());
 
-  //     let PreSanaInventory = products[0].instances[1].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[3]._id.toString());
+      let PreSanaInventory = products[0].instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[3]._id.toString());
 
-  //     let transaction_id = mongoose.Types.ObjectId();
-  //     let res = await rp({
-  //           // body: {
-  //   address: customerAddress,
-  //   order_id: orders[0]._id,
-  //   cartItems: null,
-  //   is_collect: false,
-  //   total_amount: 922000,
-  //   transaction_id: null,
-  //   used_balance: 0,
-  //   used_point: 0,
-  //   paymentType: 'cash',
-  //   loyalty: {
-  //     delivery_spent: 0,
-  //     shop_spent: 0,
-  //     delivery_value: 0,
-  //     shop_value: 0,
-  //     earn_point: 36
-  //   },
-  //   discount: 0,
-  //   duration_id: delivery_info[0]._id,
-  //   time_slot: {
-  //     lower_bound: 18,
-  //     upper_bound: 22
-  //   }
-  // },
-  // method: 'POST',
-  // uri: lib.helpers.apiTestURL(`checkout/true`),
-  // json: true,
-  //  resolveWithFullResponse: true,
-  //       jar: customer.jar
-  //     });
-  //     expect(res.statusCode).toBe(200);
+      let transaction_id = mongoose.Types.ObjectId();
+      let res = await rp({
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`checkoutDemo`),
+        body: {
+          order_id: orders[3]._id,
+          address: warehouses[2].address, // paladium
+          transaction_id,
+          used_point: 0,
+          used_balance: 0,
+          total_amount: 0,
+          is_collect: true,
+        },
+        json: true,
+        resolveWithFullResponse: true,
+        jar: customer.jar
+      });
+      expect(res.statusCode).toBe(200);
 
-  //     let foundOrder = await models()['OrderTest'].findById(orders[3]._id);
-  //     let foundProduct = await models()['ProductTest'].findById(products[0]._id).lean();
+      let foundOrder = await models()['OrderTest'].findById(orders[3]._id);
+      let foundProduct = await models()['ProductTest'].findById(products[0]._id).lean();
 
-  //     let newPaladiumInventory = foundProduct.instances[1].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[2]._id.toString());
+      let newPaladiumInventory = foundProduct.instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[2]._id.toString());
 
-  //     let newSanaInventory = foundProduct.instances[1].inventory.find(x =>
-  //       x.warehouse_id.toString() === warehouses[3]._id.toString());
+      let newSanaInventory = foundProduct.instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[3]._id.toString());
 
-  //     expect(newPaladiumInventory.count).toBe(PrePaladiumInventory.count);
-  //     expect(newPaladiumInventory.reserved).toBe(PrePaladiumInventory.reserved + 1);
+      expect(newPaladiumInventory.count).toBe(PrePaladiumInventory.count);
+      expect(newPaladiumInventory.reserved).toBe(PrePaladiumInventory.reserved + 1);
 
-  //     expect(newSanaInventory.count).toBe(PreSanaInventory.count);
-  //     expect(newSanaInventory.reserved).toBe(PreSanaInventory.reserved + 1);
+      expect(newSanaInventory.count).toBe(PreSanaInventory.count);
+      expect(newSanaInventory.reserved).toBe(PreSanaInventory.reserved + 1);
 
-  //     done();
-  //   } catch (err) {
-  //     lib.helpers.errorHandler.bind(this)(err)
-  //   };
-  // });
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    };
+  });
 
 
 });
+
