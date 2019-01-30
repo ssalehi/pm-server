@@ -72,7 +72,6 @@ main = async () => {
       })
 
       if (dirInfo && dirInfo.length) {
-
         products = await getProducts(dirArticles);
 
         console.log('-> ', ` ${products.length} related product exists in database`);
@@ -108,24 +107,25 @@ main = async () => {
                       }
 
                       for (let k = 0; k < foundDirCode.images.length; k++) {
-                        const image = foundDirCode.images[k];
+                        let image = foundDirCode.images[k];
                         const imageOrig = path.join(BASE_TEMP, foundDir.article, foundDirCode.no, image);
-                        const imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
+                        let imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
 
                         try {
-                          await fs.copy(imageOrig, imageDest)  
-                          // fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
+                          // add to angles
+                          await fs.copy(imageOrig, imageDest)
+                          await updateProductImages(product._id, color._id, image, false);
+
+                          // check if it was thumbnail, add to thumbnail and also resize the image
                           if (k === 0) {
-                            // await imageResizing(imageOrig, imageDest)
+                            image = "thmbnl_" + image;
+                            imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
+                            await imageResizing(imageOrig, imageDest);
                             await updateProductImages(product._id, color._id, image, true);
-                            if (foundDirCode.images.length === 1)
-                              await updateProductImages(product._id, color._id, image, false);
-                          } else {
-                            await updateProductImages(product._id, color._id, image, false);
                           }
                           console.log('-> ', `${image} is succesfuly added to path: ${path.join(product._id.toString(), color._id.toString())} ${k === 0 ? 'as thumbnail' : ''} `);
                         } catch (err) {
-                          console.log('-> ', `error on copying file ${image} from temp folder to destination ${k === 0 ? 'as thumbnail' : ''}`);
+                          console.log('-> ', `error on copying file ${image} from temp folder to destination ${k === 0 ? 'as thumbnail' : ''} => ${err}`);
                         }
 
                       }
@@ -330,20 +330,12 @@ getProducts = async (articles) => {
 
 
 imageResizing = async (orig, dest) => {
-
-  return new Promise((resolve, reject) => {
-
-    Jimp.read(orig).then(function (lenna) {
-      lenna.resize(144, 144)            // resize
-        .write(dest); // save
-      resolve();
-    }).catch(function (err) {
-      reject(err);
-    });
-  })
-
-
+  const lenna = await Jimp.read(orig);
+  return lenna
+    .scaleToFit(144, 144)
+    .write(dest);
 }
+
 modelIsReady = async () => {
   return new Promise((resolve, reject) => {
 
