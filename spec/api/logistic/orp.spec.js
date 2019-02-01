@@ -5,6 +5,8 @@ const error = require('../../../lib/errors.list');
 const mongoose = require('mongoose');
 const _const = require('../../../lib/const.list');
 const warehouses = require('../../../warehouses')
+const deliveryDurationInfo = require('../../../deliveryDurationInfo')
+const utils = require('./utils');
 
 describe('POST Order - ORP', () => {
   let orders, products;
@@ -13,26 +15,16 @@ describe('POST Order - ORP', () => {
     jar: null
   };
 
-  let customerAddress = {
-    _id: mongoose.Types.ObjectId(),
-    province: 'تهران',
-    city: 'تهران',
-    street: 'مطهری'
-  };
-
-  let colorIds = [
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId(),
-    mongoose.Types.ObjectId()
-  ];
 
   beforeEach(async done => {
     try {
 
       await lib.dbHelpers.dropAll()
 
+
+      await models()['DeliveryDurationInfoTest'].insertMany(deliveryDurationInfo)
       await models()['WarehouseTest'].insertMany(warehouses)
+
       let res = await lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
         first_name: 'test 1',
         surname: 'test 1',
@@ -41,164 +33,29 @@ describe('POST Order - ORP', () => {
 
       customer.cid = res.cid;
       customer.jar = res.rpJar;
-      products = await models()['ProductTest'].insertMany([{
-        article_no: 'xy123',
-        name: 'sample 1',
-        product_type: {
-          name: 'sample type',
-          product_type_id: mongoose.Types.ObjectId()
-        },
-        brand: {
-          name: 'sample brand',
-          brand_id: mongoose.Types.ObjectId()
-        },
-        base_price: 30000,
-        desc: 'some description for this product',
-        colors: [
-          {
-            color_id: colorIds[0],
-            name: 'green'
+
+      products = await utils.makeProducts();
+      orders = await utils.makeOrders();
+
+      let res = await models()['OrderTest'].findOneAndUpdate({
+        _id: order[0]._id
+      }, {
+          $set: {
+            tickets: [],
+            is_cart: true,
+            transaction_id: null,
           },
-          {
-            color_id: colorIds[1],
-            name: 'yellow'
-          },
-          {
-            color_id: colorIds[2],
-            name: 'red'
+          $unset: {
+            address: 1,
+            delivery_info: 1,
+            is_collect: 1,
+            total_amount: 1,
           }
-        ],
-        instances: [{
-          product_color_id: colorIds[0],
-          size: "11",
-          price: 2000,
-          barcode: '0394081341',
-          inventory: [{
-            count: 3,
-            reserved: 1,
-            warehouse_id: warehouses[1]._id
-          }, {
-            count: 2,
-            reserved: 0,
-            warehouse_id: warehouses[2]._id
-          }, {
-            count: 3,
-            reserved: 0,
-            warehouse_id: warehouses[3]._id
-          }, {
-            count: 4,
-            reserved: 0,
-            warehouse_id: warehouses[4]._id
-          }]
-        },
-        {
-          product_color_id: colorIds[1],
-          size: "10",
-          price: 4000,
-          barcode: '19231213123',
-          inventory: [{
-            count: 2,
-            reserved: 2,
-            warehouse_id: warehouses[1]._id
-          }, {
-            count: 1,
-            reserved: 0,
-            warehouse_id: warehouses[2]._id
-          }, {
-            count: 4,
-            reserved: 0,
-            warehouse_id: warehouses[3]._id
-          }, {
-            count: 5,
-            reserved: 0,
-            warehouse_id: warehouses[4]._id
-          }]
-        }
-        ]
-      }]);
 
-      products = JSON.parse(JSON.stringify(products));
+        }, {new: true});
 
-      orders = await models()['OrderTest'].insertMany([
-        { // order 1 => a normal order which central warehosue has inventory for
-          customer_id: customer.cid,
-          order_time: new Date(),
-          is_cart: false,
-          order_lines: [{
-            campaign_info: {
-              _id: mongoose.Types.ObjectId(),
-              discount_ref: 0
-          },
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[0]._id,
-            tickets: []
-          }, {
-            campaign_info: {
-              _id: mongoose.Types.ObjectId(),
-              discount_ref: 0
-          },
-            product_id: products[0],
-            product_instance_id: products[0].instances[0]._id,
-            tickets: []
-          }]
-        },
-        { // order 2 => a normal order which central warehouse does'nt have inventory for
-          customer_id: customer.cid,
-          order_time: new Date(),
-          is_cart: false,
-          order_lines: [{
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[1]._id,
-            tickets: []
-          }]
-        },
-        { // order 3 => c&c order from paladium where has inventory for
-          customer_id: customer.cid,
-          order_time: new Date(),
-          is_cart: false,
-          order_lines: [{
-            campaign_info: {
-              _id: mongoose.Types.ObjectId(),
-              discount_ref: 0
-          },
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[0]._id,
-            tickets: []
-          }, {
-            campaign_info: {
-            _id: mongoose.Types.ObjectId(),
-            discount_ref: 0
-        },
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[0]._id,
-            tickets: []
-          }]
-        },
-        { // order 4 => c&c order from paladium where doesn't have enough inventory for as well as central (provided from sana and paladium )
-          customer_id: customer.cid,
-          order_time: new Date(),
-          is_cart: false,
-          order_lines: [{
-            campaign_info: {
-              _id: mongoose.Types.ObjectId(),
-              discount_ref: 0
-          },
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[1]._id,
-            tickets: []
-          }, {
-            campaign_info: {
-              _id: mongoose.Types.ObjectId(),
-              discount_ref: 0
-          },
-            product_id: products[0]._id,
-            product_instance_id: products[0].instances[1]._id,
-            tickets: []
-          }]
-        }
-      ]);
+      orders[0] = JSON.parse(JSON.stringify(res));
 
-      orders = JSON.parse(JSON.stringify(orders));
       done();
     } catch (err) {
       console.log(err);
@@ -208,31 +65,68 @@ describe('POST Order - ORP', () => {
   it('senario 1 : a normal order (order 1) which central warehosue has inventory for ', async function (done) {
     try {
       this.done = done;
+      let res = await models()['OrderTest'].findOneAndUpdate({
+        _id: order[0]._id
+      }, {
+          $set: {
+            order_lines: [
+              {
+                product_price: 0,
+                paid_price: 0,
+                cancel: false,
+                product_id: products[0]._id,
+                product_instance_id: products[0].instances[0]._id,
+                tickets: []
+              },
+              {
+                product_price: 0,
+                paid_price: 0,
+                cancel: false,
+                product_id: products[0]._id,
+                product_instance_id: products[0].instances[1]._id,
+                tickets: []
+              }
+            ],
+          },
+        }, {new: true});
 
-      let PreInventory = products[0].instances[0].inventory.find(x =>
-        x.warehouse_id.toString() === warehouses[1]._id.toString());
-      let transaction_id = mongoose.Types.ObjectId();
+      orders[0] = JSON.parse(JSON.stringify(res));
+
+      // let PreInventory = products[0].instances[0].inventory.find(x =>
+      //   x.warehouse_id.toString() === warehouses[1]._id.toString());
       let res = await rp({
         method: 'POST',
-        uri: lib.helpers.apiTestURL(`checkoutDemo`),
+        uri: lib.helpers.apiTestURL(`checkout/true`),
         body: {
-          order_id: orders[0]._id,
           address: customerAddress,
-          transaction_id,
+          duration_id: 20,
           used_point: 0,
           used_balance: 0,
           total_amount: 0,
           is_collect: false,
+          total_amount: 922000,
+          transaction_id: null,
+          used_balance: 0,
+          used_point: 0,
+          paymentType: 'cash',
+          loyalty: {
+            delivery_spent: 0,
+            shop_spent: 0,
+            delivery_value: 0,
+            shop_value: 0,
+            earn_point: 36
+          },
+          discount: 0,
+          duration_id: delivery_info[0]._id,
           time_slot: {
             lower_bound: 18,
             upper_bound: 22
-          },
-          delivery_info: {duration_days: 3},
-          paymentType: 1
+          }
         },
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`checkout/true`),
         json: true,
         resolveWithFullResponse: true,
-        jar: customer.jar
       });
       expect(res.statusCode).toBe(200);
       let foundOrder = await models()['OrderTest'].findById(orders[0]._id);
@@ -260,7 +154,7 @@ describe('POST Order - ORP', () => {
     };
   });
 
-  it('senario 2 : a normal order (order 2) which central warehouse does\'nt have inventory for', async function (done) {
+  xit('senario 2 : a normal order (order 2) which central warehouse does\'nt have inventory for', async function (done) {
     try {
       this.done = done;
 
@@ -315,7 +209,7 @@ describe('POST Order - ORP', () => {
     };
   });
 
-  it('senario 3 : c&c order (order 3) from paladium where has inventory for', async function (done) {
+  xit('senario 3 : c&c order (order 3) from paladium where has inventory for', async function (done) {
     try {
       this.done = done;
 
@@ -376,7 +270,7 @@ describe('POST Order - ORP', () => {
     };
   });
 
-  it('senario 4 : c&c order (order 4) from paladium where doesn\'t have enough inventory for as well as central (provided from sana and paladium )', async function (done) {
+  xit('senario 4 : c&c order (order 4) from paladium where doesn\'t have enough inventory for as well as central (provided from sana and paladium )', async function (done) {
     try {
       this.done = done;
 
