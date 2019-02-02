@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 let deliveryDurationInfo = [
   {
+    _id: mongoose.Types.ObjectId(),
     add_point: null,
     cities: [
       {
@@ -33,6 +34,8 @@ let deliveryDurationInfo = [
   }
   ,
   {
+    _id: mongoose.Types.ObjectId(),
+
     add_point: null,
     cities: [
       {
@@ -63,6 +66,8 @@ let deliveryDurationInfo = [
   }
   ,
   {
+    _id: mongoose.Types.ObjectId(),
+
     add_point: null,
     cities: [
       {
@@ -92,6 +97,7 @@ let deliveryDurationInfo = [
     name: "پنج روزه"
   },
   {
+    _id: mongoose.Types.ObjectId(),
     add_point: [
       {
         added_point: "100",
