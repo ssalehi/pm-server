@@ -88,7 +88,7 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
             expect(res.statusCode).toBe(200)
             const orderData = await models()['OrderTest'].find()
             const order = orderData.find(o => o.is_collect  && o.customer_id)
-            console.log('->',order);
+           expect(order.tickets[order.tickets.length-1].status).toBe(_const.ORDER_STATUS.WaitForInvoice)
             expect(order.order_lines[0].tickets[order.order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Checked)
             done()
         } catch (err) {
