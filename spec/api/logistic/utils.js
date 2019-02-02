@@ -58,7 +58,7 @@ let makeProducts = async () => {
     ];
 
     let defultInventoires = [];
-    warehouses.forEach(x => {
+    warehouses.filter(x => !x.is_hub).forEach(x => {
       defultInventoires.push({
         count: 2,
         reserved: 0,
@@ -72,14 +72,14 @@ let makeProducts = async () => {
         name: 'c1',
         discount_ref: 20,
         start_date: moment().toDate(),
-        end_date: moment().add(1, 'd').toDate
+        end_date: moment().add(1, 'd').toDate()
       },
       {
         name: 'c2',
         discount_ref: 15,
         coupon_code: 'xy1234',
         start_date: moment().toDate(),
-        end_date: moment().add(1, 'd').toDate
+        end_date: moment().add(1, 'd').toDate()
       }
     ]);
 
@@ -294,7 +294,7 @@ let checkSoldOutStatus = async (productId, initialInstance, changedInstance) => 
 
 }
 
-let makeOrders = async (custoemr) => {
+let makeOrders = async (customer) => {
   try {
 
     let defaultTicket = {
@@ -312,7 +312,7 @@ let makeOrders = async (custoemr) => {
         transaction_id: 'xyz45300',
         coupon_code: 'xy1234',
         coupon_discount: 15,
-        customer_id: custoemr._id,
+        customer_id: customer._id,
         address: loggedInCustomerAddress,
         delivery_info: {
           time_slot: {
