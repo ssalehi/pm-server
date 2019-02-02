@@ -15,14 +15,6 @@ describe('POST Order - ORP', () => {
     jar: null
   };
 
-  let customerAddress = {
-    _id: mongoose.Types.ObjectId(),
-    province: 'تهران',
-    city: 'تهران',
-    street: 'مطهری'
-  };
-
-  
 
   beforeEach(async done => {
     try {
@@ -43,8 +35,28 @@ describe('POST Order - ORP', () => {
       customer.jar = res.rpJar;
 
       products = await utils.makeProducts();
-      
-       done();
+      orders = await utils.makeOrders();
+
+      let res = await models()['OrderTest'].findOneAndUpdate({
+        _id: order[0]._id
+      }, {
+          $set: {
+            tickets: [],
+            is_cart: true,
+            transaction_id: null,
+          },
+          $unset: {
+            address: 1,
+            delivery_info: 1,
+            is_collect: 1,
+            total_amount: 1,
+          }
+
+        }, {new: true});
+
+      orders[0] = JSON.parse(JSON.stringify(res));
+
+      done();
     } catch (err) {
       console.log(err);
     };
@@ -53,6 +65,32 @@ describe('POST Order - ORP', () => {
   it('senario 1 : a normal order (order 1) which central warehosue has inventory for ', async function (done) {
     try {
       this.done = done;
+      let res = await models()['OrderTest'].findOneAndUpdate({
+        _id: order[0]._id
+      }, {
+          $set: {
+            order_lines: [
+              {
+                product_price: 0,
+                paid_price: 0,
+                cancel: false,
+                product_id: products[0]._id,
+                product_instance_id: products[0].instances[0]._id,
+                tickets: []
+              },
+              {
+                product_price: 0,
+                paid_price: 0,
+                cancel: false,
+                product_id: products[0]._id,
+                product_instance_id: products[0].instances[1]._id,
+                tickets: []
+              }
+            ],
+          },
+        }, {new: true});
+
+      orders[0] = JSON.parse(JSON.stringify(res));
 
       // let PreInventory = products[0].instances[0].inventory.find(x =>
       //   x.warehouse_id.toString() === warehouses[1]._id.toString());
