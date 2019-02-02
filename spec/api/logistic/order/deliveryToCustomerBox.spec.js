@@ -65,6 +65,42 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
             
                     }
                 });
+                await models()['OrderTest'].update({
+                    _id: mongoose.Types.ObjectId(orders[4]._id),
+                }, {
+                    $set: {
+                        order_lines: [{
+                            product_id: products[0]._id,
+                            campaign_info: {
+                                _id: mongoose.Types.ObjectId(),
+                                discount_ref: 0
+                            },
+                            product_instance_id: products[0].instances[0]._id,
+                            tickets: [{
+                                is_processed: false,
+                                status: _const.ORDER_LINE_STATUS.FinalCheck,
+                                receiver_id: warehouses.find(x => x.name === 'سانا')._id,
+                                desc: null,
+                                timestamp: new Date(),
+                            }]
+                        },{
+                            product_id: products[0]._id,
+                            campaign_info: {
+                                _id: mongoose.Types.ObjectId(),
+                                discount_ref: 0
+                            },
+                            product_instance_id: products[0].instances[0]._id,
+                            tickets: [{
+                                is_processed: false,
+                                status: _const.ORDER_LINE_STATUS.FinalCheck,
+                                receiver_id: warehouses.find(x => x.name === 'سانا')._id,
+                                desc: null,
+                                timestamp: new Date(),
+                            }]
+                        }]
+            
+                    }
+                });
             done();
         } catch (err) {
             console.log(err);
@@ -95,5 +131,56 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
             lib.helpers.errorHandler.bind(this)(err)
         };
     });
+    it('should scan prduct barcode for CC delivery and change ticket from finalcheck to checked and do not change order ticket ', async function (done) {
+        try {
+            this.done = done
+            const res = await rp({
+                jar: ShopClerk.jar,
+                body: {
+                    trigger: _const.SCAN_TRIGGER.CCDelivery,
+                    orderId: orders[4]._id,
+                    barcode: '0394081341'
+                },
+                method: 'POST',
+                json: true,
+                uri: lib.helpers.apiTestURL('order/ticket/scan'),
+                resolveWithFullResponse: true
+            });
+            expect(res.statusCode).toBe(200)
+            const orderData = await models()['OrderTest'].find()
+           expect(orderData[4].order_lines[0].tickets[orderData[4].order_lines[0].tickets.length-1].status).toBe(_const.ORDER_LINE_STATUS.Checked)
+            done()
+        } catch (err) {
+            lib.helpers.errorHandler.bind(this)(err)
+        };
+    });
+    it('should scan prduct barcode for CC delivery and since all products are checked change order ticket to wait for invoice ', async function (done) {
+        try {
+            this.done = done
+            const orderData = await models()['OrderTest'].find()
+            orderData[4].order_lines[1].tickets[0].status= _const.ORDER_LINE_STATUS.Checked
+            orderData[4].save()
+            const res = await rp({
+                jar: ShopClerk.jar,
+                body: {
+                    trigger: _const.SCAN_TRIGGER.CCDelivery,
+                    orderId: orders[4]._id,
+                    barcode: '0394081341'
+                },
+                method: 'POST',
+                json: true,
+                uri: lib.helpers.apiTestURL('order/ticket/scan'),
+                resolveWithFullResponse: true
+            });
+            expect(res.statusCode).toBe(200)
+            const orderData1 = await models()['OrderTest'].find()
+            expect(orderData1[4].tickets[orderData1[4].tickets.length-1].status).toBe(_const.ORDER_STATUS.WaitForInvoice)
+           expect(orderData1[4].order_lines[0].tickets[orderData1[4].order_lines[0].tickets.length-1].status).toBe(_const.ORDER_LINE_STATUS.Checked)
+            done()
+        } catch (err) {
+            lib.helpers.errorHandler.bind(this)(err)
+        };
+    });
+
 
 });
