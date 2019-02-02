@@ -5,7 +5,6 @@ const error = require('../../../../lib/errors.list');
 const mongoose = require('mongoose');
 const _const = require('../../../../lib/const.list');
 const warehouses = require('../../../../warehouses')
-const deliveryDurationInfo = require('../../../../deliveryDurationInfo')
 const utils = require('../utils');
 
 

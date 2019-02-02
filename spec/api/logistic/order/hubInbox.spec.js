@@ -1,11 +1,9 @@
 const rp = require('request-promise');
 const lib = require('../../../../lib/index');
 const models = require('../../../../mongo/models.mongo');
-const error = require('../../../../lib/errors.list');
 const mongoose = require('mongoose');
 const _const = require('../../../../lib/const.list');
 const warehouses = require('../../../../warehouses')
-const deliveryDurationInfo = require('../../../../deliveryDurationInfo')
 const utils = require('../utils');
 
 

@@ -220,7 +220,7 @@ let makeProducts = async () => {
 let changeInventory = async (productId, productInstanceId, warehouseId, delCount, delReserved) => {
   try {
 
-    let foundProduct = await this.ProductModel.findById(mongoose.Types.ObjectId(productId)).lean()
+    let foundProduct = await models()['ProductTest'].findById(mongoose.Types.ObjectId(productId)).lean()
     if (!foundProduct)
       throw new Error('product not found');
 
@@ -258,9 +258,9 @@ let changeInventory = async (productId, productInstanceId, warehouseId, delCount
     if (!isSoldOut && foundInstance.sold_out)
       foundInstance.sold_out = false;
 
-    return this.ProductModel.update({
-      _id: mongoose.Types.ObjectId(body.id),
-      'instances._id': mongoose.Types.ObjectId(body.productInstanceId)
+    return  models()['ProductTest'].update({
+      _id: mongoose.Types.ObjectId(productId),
+      'instances._id': mongoose.Types.ObjectId(productInstanceId)
     }, {
         $set: {
           'instances.$': foundInstance
@@ -406,99 +406,6 @@ let makeOrders = async (customer) => {
     throw err;
   }
 }
-
-
-
-// let makeDeliveries = async () => {
-//   try {
-//     deliveries = await models()['DeliveryTest'].insertMany([{ // delivery 1 => external to customer
-//       to: {
-//         customer: {
-//           _id: customer[0]._id,
-//           address: customer[0].addresses[0]
-//         }
-//       },
-//       from: {
-//         warehouse_id: warehouses.find(x => x.is_hub)._id,
-
-//       },
-//       order_details: [{
-//         order_line_ids: [
-//           orders[0].order_lines[0]._id
-//         ],
-//         order_id: orders[0]._id
-//       }],
-//       start: new Date(),
-//       delivery_agent: {
-//         _id: mongoose.Types.ObjectId(),
-//       },
-//       slot: {
-//         lower_bound: 10,
-//         upper_bound: 14,
-//       },
-//       tickets: [{
-//         is_processed: false,
-//         status: _const.DELIVERY_STATUS.default,
-//         receiver_id: warehouses.find(x => x.is_hub)._id,
-//         timestamp: new Date()
-//       }],
-//     }, { // delivery 2 => internal delivery to hub
-//       to: {
-//         warehouse_id: warehouses.find(x => x.is_hub)._id
-
-//       },
-//       from: {
-//         warehouse_id: warehouses.find(x => x.name === 'سانا')._id
-
-//       },
-//       order_details: [{
-//         order_line_ids: [
-//           orders[1].order_lines[0]._id
-//         ],
-//         order_id: orders[1]._id
-//       }],
-//       start: new Date(),
-//       delivery_agent: {
-//         _id: mongoose.Types.ObjectId(),
-//       },
-//       tickets: [{
-//         is_processed: false,
-//         status: _const.DELIVERY_STATUS.default,
-//         receiver_id: warehouses.find(x => x.is_hub)._id,
-//         timestamp: new Date()
-//       }],
-//     }, { // delivery 3 => CC after recieved
-//       to: {
-//         warehouse_id: warehouses.find(x => x.name === 'سانا')._id
-//       },
-//       from: {
-//         warehouse_id: warehouses.find(x => x.is_hub)._id
-//       },
-//       order_details: [{
-//         order_line_ids: [
-//           orders[1].order_lines[0]._id
-//         ],
-//         order_id: orders[1]._id
-//       }],
-//       start: new Date(),
-//       delivery_agent: {
-//         _id: internalagent.aid
-//       },
-//       tickets: [{
-//         is_processed: false,
-//         status: _const.DELIVERY_STATUS.default,
-//         receiver_id: warehouses.find(x => x.is_hub)._id,
-//         timestamp: new Date()
-//       }],
-//     }])
-//     deliveries = JSON.parse(JSON.stringify(deliveries));
-//     return deliveries
-//   } catch (err) {
-//     console.log('-> error on makeing test deliveries', err);
-//     throw err;
-//   }
-// }
-
 module.exports = {
   makeProducts,
   makeOrders,
