@@ -4,6 +4,8 @@ const models = require('../../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 const _const = require('../../../../lib/const.list');
 const warehouses = require('../../../../warehouses');
+const utils = require('../utils');
+
 
 describe('Requset For Package-Internal Delivery', () => {
     let orders, products, deliveries;
@@ -11,13 +13,6 @@ describe('Requset For Package-Internal Delivery', () => {
         id: null,
         jar: null
     };
-
-    let colorIds = [
-        mongoose.Types.ObjectId(),
-        mongoose.Types.ObjectId(),
-        mongoose.Types.ObjectId(),
-        mongoose.Types.ObjectId()
-    ];
     beforeEach(async done => {
         try {
             await lib.dbHelpers.dropAll()
@@ -25,82 +20,8 @@ describe('Requset For Package-Internal Delivery', () => {
             agentObj.id = agent.aid;
             agentObj.jar = agent.rpJar;
             await models()['WarehouseTest'].insertMany(warehouses)
-            products = await models()['ProductTest'].insertMany([{
-                article_no: 'xy123',
-                name: 'sample 1',
-                product_type: {
-                    name: 'sample type',
-                    product_type_id: mongoose.Types.ObjectId()
-                },
-                brand: {
-                    name: 'sample brand',
-                    brand_id: mongoose.Types.ObjectId()
-                },
-                base_price: 30000,
-                desc: 'some description for this product',
-                colors: [{
-                        color_id: colorIds[0],
-                        name: 'green'
-                    },
-                    {
-                        color_id: colorIds[1],
-                        name: 'yellow'
-                    },
-                    {
-                        color_id: colorIds[2],
-                        name: 'red'
-                    }
-                ],
-                instances: [{
-                        product_color_id: colorIds[0],
-                        size: "11",
-                        price: 2000,
-                        barcode: '0394081341',
-                        inventory: [{
-                            count: 3,
-                            reserved: 1,
-                            warehouse_id: warehouses[1]._id
-                        }, {
-                            count: 2,
-                            reserved: 0,
-                            warehouse_id: warehouses[2]._id
-                        }, {
-                            count: 3,
-                            reserved: 0,
-                            warehouse_id: warehouses[3]._id
-                        }, {
-                            count: 4,
-                            reserved: 0,
-                            warehouse_id: warehouses[4]._id
-                        }]
-                    },
-                    {
-                        product_color_id: colorIds[1],
-                        size: "10",
-                        price: 4000,
-                        barcode: '19231213123',
-                        inventory: [{
-                            count: 2,
-                            reserved: 2,
-                            warehouse_id: warehouses[1]._id
-                        }, {
-                            count: 1,
-                            reserved: 0,
-                            warehouse_id: warehouses[2]._id
-                        }, {
-                            count: 4,
-                            reserved: 0,
-                            warehouse_id: warehouses[3]._id
-                        }, {
-                            count: 5,
-                            reserved: 0,
-                            warehouse_id: warehouses[4]._id
-                        }]
-                    }
-                ]
-            }]);
+            products = await utils.makeProducts();
 
-            products = JSON.parse(JSON.stringify(products));
             orders = await models()['OrderTest'].insertMany([{
                 order_time: new Date(),
                 is_cart: false,
@@ -210,13 +131,6 @@ describe('Delivery Start-Internal Delivery', () => {
         jar: null
     };
 
-    let colorIds = [
-        mongoose.Types.ObjectId(),
-        mongoose.Types.ObjectId(),
-        mongoose.Types.ObjectId(),
-        mongoose.Types.ObjectId()
-    ];
-
     beforeEach(async done => {
         try {
             await lib.dbHelpers.dropAll()
@@ -224,82 +138,8 @@ describe('Delivery Start-Internal Delivery', () => {
             agentObj.aid = agent.aid;
             agentObj.jar = agent.rpJar;
             await models()['WarehouseTest'].insertMany(warehouses)
-            products = await models()['ProductTest'].insertMany([{
-                article_no: 'xy123',
-                name: 'sample 1',
-                product_type: {
-                    name: 'sample type',
-                    product_type_id: mongoose.Types.ObjectId()
-                },
-                brand: {
-                    name: 'sample brand',
-                    brand_id: mongoose.Types.ObjectId()
-                },
-                base_price: 30000,
-                desc: 'some description for this product',
-                colors: [{
-                        color_id: colorIds[0],
-                        name: 'green'
-                    },
-                    {
-                        color_id: colorIds[1],
-                        name: 'yellow'
-                    },
-                    {
-                        color_id: colorIds[2],
-                        name: 'red'
-                    }
-                ],
-                instances: [{
-                        product_color_id: colorIds[0],
-                        size: "11",
-                        price: 2000,
-                        barcode: '0394081341',
-                        inventory: [{
-                            count: 3,
-                            reserved: 1,
-                            warehouse_id: warehouses[1]._id
-                        }, {
-                            count: 2,
-                            reserved: 0,
-                            warehouse_id: warehouses[2]._id
-                        }, {
-                            count: 3,
-                            reserved: 0,
-                            warehouse_id: warehouses[3]._id
-                        }, {
-                            count: 4,
-                            reserved: 0,
-                            warehouse_id: warehouses[4]._id
-                        }]
-                    },
-                    {
-                        product_color_id: colorIds[1],
-                        size: "10",
-                        price: 4000,
-                        barcode: '19231213123',
-                        inventory: [{
-                            count: 2,
-                            reserved: 2,
-                            warehouse_id: warehouses[1]._id
-                        }, {
-                            count: 1,
-                            reserved: 0,
-                            warehouse_id: warehouses[2]._id
-                        }, {
-                            count: 4,
-                            reserved: 0,
-                            warehouse_id: warehouses[3]._id
-                        }, {
-                            count: 5,
-                            reserved: 0,
-                            warehouse_id: warehouses[4]._id
-                        }]
-                    }
-                ]
-            }]);
+            products = await utils.makeProducts();
 
-            products = JSON.parse(JSON.stringify(products));
 
             orders = await models()['OrderTest'].insertMany([{
                 order_time: new Date(),

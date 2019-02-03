@@ -8,7 +8,7 @@ const utils = require('../utils');
 
 
 
-describe('POST Order Ticket Scan - multiple triggers', () => {
+describe('POST Order Ticket Scan - hub inbox scan', () => {
     let orders, products;
     let hubClerk = {
         aid: null,

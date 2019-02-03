@@ -8,8 +8,8 @@ const utils = require('../utils');
 
 
 
-describe('POST Order Ticket Scan - multiple triggers', () => {
-    let orders, products, deliveries, customer;
+describe('POST Order Ticket Scan - send external', () => {
+    let orders, products, customer;
 
     let hubClerk = {
         aid: null,
@@ -30,7 +30,7 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
             const agent = await lib.dbHelpers.addAndLoginAgent('hclerk', _const.ACCESS_LEVEL.HubClerk, hub._id)
             hubClerk.aid = agent.aid;
             hubClerk.jar = agent.rpJar;
-        
+
             const customerobj = await lib.dbHelpers.addAndLoginCustomer('s@s.com', '123456', {
                 first_name: 'Sareh',
                 surname: 'Salehi'
@@ -72,8 +72,8 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
                             desc: null,
                             timestamp: new Date(),
                         }]
-                    }], 
-                     delivery_info: {
+                    }],
+                    delivery_info: {
                         duration_days: 3,
                         delivery_cost: 63000,
                         delivery_discount: 0,
@@ -119,7 +119,7 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
     it('should scan product barcode for External delivery and change order ticket to waitforinvoice and OL ticket to checked', async function (done) {
         try {
             this.done = done
-           
+
             const orderData0 = await models()['OrderTest'].find()
             orderData0[1].order_lines[1].tickets[orderData0[1].order_lines[1].tickets.length - 1].status = _const.ORDER_LINE_STATUS.Checked
             await orderData0[1].save()
@@ -149,7 +149,5 @@ describe('POST Order Ticket Scan - multiple triggers', () => {
         };
 
     });
-  
+
 });
-
-

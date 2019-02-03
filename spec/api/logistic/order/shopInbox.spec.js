@@ -33,14 +33,6 @@ describe('POST onlineWarehouseResponse', () => {
         city: 'تهران',
         street: 'مطهری'
     };
-
-    let colorIds = [
-        mongoose.Types.ObjectId(),
-        mongoose.Types.ObjectId(),
-        mongoose.Types.ObjectId(),
-        mongoose.Types.ObjectId()
-    ];
-
     beforeEach(async done => {
         try {
             await lib.dbHelpers.dropAll()
