@@ -35,7 +35,7 @@ describe('POST Order - ORP', () => {
       customer.jar = res.rpJar;
 
       products = await utils.makeProducts();
-      orders = await utils.makeOrders();
+      orders = await utils.makeOrders(customer);
 
       let res = await models()['OrderTest'].findOneAndUpdate({
         _id: order[0]._id
@@ -92,36 +92,17 @@ describe('POST Order - ORP', () => {
 
       orders[0] = JSON.parse(JSON.stringify(res));
 
-      // let PreInventory = products[0].instances[0].inventory.find(x =>
-      //   x.warehouse_id.toString() === warehouses[1]._id.toString());
+      let PreInventory = products[0].instances[0].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
       let res = await rp({
         method: 'POST',
         uri: lib.helpers.apiTestURL(`checkout/true`),
         body: {
           address: customerAddress,
-          duration_id: 20,
-          used_point: 0,
-          used_balance: 0,
-          total_amount: 0,
+          duration_id: deliveryDurationInfo[0]._id,
           is_collect: false,
-          total_amount: 922000,
-          transaction_id: null,
-          used_balance: 0,
-          used_point: 0,
-          paymentType: 'cash',
-          loyalty: {
-            delivery_spent: 0,
-            shop_spent: 0,
-            delivery_value: 0,
-            shop_value: 0,
-            earn_point: 36
-          },
-          discount: 0,
-          duration_id: delivery_info[0]._id,
-          time_slot: {
-            lower_bound: 18,
-            upper_bound: 22
-          }
+          transaction_id: 'xy1',
+        
         },
         method: 'POST',
         uri: lib.helpers.apiTestURL(`checkout/true`),

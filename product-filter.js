@@ -1,6 +1,13 @@
 /**
  * Created by SSalehi on 11/07/2018.
  */
+/**
+ * What this script do?
+ * removes the products that have to images,
+ * the color of products that has no images,
+ * the instance of a product that has no image,
+ * from the database
+ */
 const Base = require('./lib/base.model');
 const error = require('./lib/errors.list');
 const rmPromise = require('rimraf-promise');
@@ -30,7 +37,7 @@ function filterProductCollection() {
       imageProd = res;
       multiColorProd = res.filter(el => el.colors.length > 1);
       multiColorProd.forEach(el => {
-        if (el.colors.filter(item => !item.image.thumbnail).length)
+        if (el.colors.filter(item => !(item.image && item.image.thumbnail)).length)
           colorWithoutImage.push(el);
       });
 
@@ -38,13 +45,13 @@ function filterProductCollection() {
 
       colorWithoutImage.forEach(item => {
         item.colors.forEach(el => {
-          if (!el.image.thumbnail) {
+          if (!(el.image && el.image.thumbnail)) {
             tempArray.push({
               product_id: item._id,
               color_id: el._id,
-            })
+            });
           }
-        })
+        });
       });
 
       colorWithoutImage.forEach(item => {
@@ -75,20 +82,23 @@ function filterProductCollection() {
         });
       return models()['Product'].remove({_id: {$nin: product_ids}})
     })
-    .then(() => {
+    .then((res) => {
+      console.log("remove products result: ", res);
       return models()['Product'].update(
         {},
-        {$pull: {instances: {_id: {$in: instance_ids}}, colors: {_id: {$in: color_ids}}}},
+        {
+          $pull: {
+            instances: {_id: {$in: instance_ids}},
+            colors: {_id: {$in: color_ids}}
+          }
+        },
         {multi: true}
       );
     })
     .then(res => {
+      console.log("update product colors and instances result: ", res);
       console.log('Filtering Products is done');
       process.exit();
-      // return Promise.resolve({
-      //   'finalArray': finalArray,
-      //   'shouldRemoveArray': shouldRemoveProd
-      // });
     })
 }
 
