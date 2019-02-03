@@ -25,7 +25,7 @@ describe('POST Search Scan Inbox', () => {
     jar: null
   };
 
-  let products, centralWarehouse, hubWarehouse ,palladiumWarehouse;
+  let products, centralWarehouse, hubWarehouse, palladiumWarehouse;
   beforeEach(async (done) => {
     try {
 
@@ -79,8 +79,7 @@ describe('POST Search Scan Inbox', () => {
     }
   }, 15000);
 
-
-  xit('should get all scan Inbox grouped by order line count', async function (done) {
+  it('should get all scan Inbox grouped by order line count', async function (done) {
     try {
       this.done = done;
 
@@ -208,167 +207,9 @@ describe('POST Search Scan Inbox', () => {
     }
   });
 
-  it('should get c&c order line which is in hub in InternalDeliveryBox ', async function (done) {
-    try {
-      this.done = done;
-
-      let orders = [];
-
-      orders.push({
-        customer_id: mongoose.Types.ObjectId(),
-        is_cart: false,
-        transaction_id: "xyz12213",
-        order_lines: [],
-        is_collect: true,
-        order_time: moment(),
-        address : {
-          _id: mongoose.Types.ObjectId(),
-          "city" : "تهران",
-          "street" : "مقدس اردبیلی",
-          "province" : "تهران",
-          "warehouse_name" : "پالادیوم",
-          "warehouse_id" : palladiumWarehouse._id,
-          "recipient_surname" : "v",
-          "recipient_national_id" : "8798789798",
-          "recipient_mobile_no" : "09124077685",
-          "recipient_title" : "m",
-        },
-      });
-
-      for (let i = 0; i < 3; i++) { // add 3 order line of first product for order 1
-        orders[0].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[0].id,
-          adding_time: moment(),
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_LINE_STATUS.Recieved,
-              desc: null,
-              receiver_id: hubWarehouse._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
-      for (let i = 0; i < 2; i++) { // add 2 order line of second product instance for order 1
-        orders[0].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[1].id,
-          adding_time: moment(),
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_LINE_STATUS.DeliverySet,
-              desc: null,
-              receiver_id: hubWarehouse._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
-
-      orders.push({
-        customer_id: mongoose.Types.ObjectId(),
-        is_cart: false,
-        transaction_id: "xyz12214",
-        order_lines: [],
-        is_collect: true,
-        order_time: moment(),
-      });
-
-      for (let i = 0; i < 2; i++) { // add 2 order line of first product instance for order 2
-        orders[1].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[0].id,
-          adding_time: moment(),
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_LINE_STATUS.FinalCheck,
-              desc: null,
-              receiver_id: hubWarehouse._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
-
-      for (let i = 0; i < 2; i++) { // add 2 order line of second product instance for order 2
-        orders[1].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[1].id,
-          adding_time: moment(),
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
-              desc: null,
-              receiver_id: hubWarehouse._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
-
-      orders = await models()['OrderTest'].insertMany(orders);
-      orders = JSON.parse(JSON.stringify(orders));
-
-      let res = await rp({
-        method: 'post',
-        uri: lib.helpers.apiTestURL(`search/Ticket`),
-        body: {
-          options: {
-            type: 'ScanInternalDelivery',
-          },
-          offset: 0,
-          limit: 10,
-          hubWarehouse
-        },
-        json: true,
-        jar: hubClerk.jar,
-        resolveWithFullResponse: true
-      });
-      expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(9);
-
-      let item1 = res.body.data.filter(x => x.instance._id.toString() === products[0].instances[0]._id.toString());
-      let item2 = res.body.data.filter(x => x.instance._id.toString() === products[0].instances[1]._id.toString());
-
-      expect(item1.length).toBe(5);
-      expect(item2.length).toBe(4);
-
-      done();
-    } catch (err) {
-      lib.helpers.errorHandler.bind(this)(err);
-    }
-  });
-
-  xit('should get c&c order line which is neither in hub or its destination ', async function (done) {
-    try {
-
-    }
-    catch (err) {
-      lib.dbHelpers.bind(this)(err);
-    }
-  });
-
-  xit('should get order line which is not in hub', async function (done) {
-    try {
-
-    }
-    catch (err) {
-      lib.dbHelpers.bind(this)(err);
-    }
-  });
-
 });
 
-xdescribe('POST onlineWarehouseResponse', () => {
+describe('POST onlineWarehouseResponse', () => {
   let adminObj = {
     aid: null,
     jar: null,
@@ -637,7 +478,7 @@ xdescribe('POST onlineWarehouseResponse', () => {
         uri: lib.helpers.apiTestURL('order/offline/onlineWarehouseResponse'),
         resolveWithFullResponse: true
       })
-      this.fail('expect error when count and reserved amounts are 0')
+      this.fail('expect error when count and reserved amounts are 0');
       done()
     } catch (err) {
       expect(err.statusCode).toBe(500);
