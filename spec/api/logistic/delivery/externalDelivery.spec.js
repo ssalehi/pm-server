@@ -17,8 +17,6 @@ describe('POST set delivery agent - External delivery', () => {
         _id: null,
         jar: null,
     }
-
-
     beforeEach(async done => {
         try {
             await lib.dbHelpers.dropAll()
@@ -70,14 +68,12 @@ describe('POST set delivery agent - External delivery', () => {
                     order_line_ids: [
                         orderData[0].order_lines[0]._id,
                     ],
-                    _id: mongoose.Types.ObjectId(),
                     order_id: orders[0]._id
 
                 }],
                 start: new Date(),
                 tickets: [{
                     is_processed: false,
-                    _id: mongoose.Types.ObjectId(),
                     status: _const.DELIVERY_STATUS.default,
                     receiver_id: agentObj.aid,
                     timestamp: new Date()
@@ -104,12 +100,9 @@ describe('POST set delivery agent - External delivery', () => {
             resolveWithFullResponse: true
         });
         expect(res.statusCode).toBe(200)
-
         const deliveryData = await models()['DeliveryTest'].find()
         expect(deliveryData[0].tickets[deliveryData[0].tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.agentSet)
         expect(deliveryData[0].delivery_agent.toString()).toBe(agentObj.aid.toString())
-
-
         done()
 
     });
@@ -149,7 +142,6 @@ describe('POST request for package - External delivery', () => {
                     order_lines: {
                         product_id: mongoose.Types.ObjectId(products[0]._id),
                         campaign_info: {
-                            _id: mongoose.Types.ObjectId(),
                             discount_ref: 0
                         },
                         product_instance_id: mongoose.Types.ObjectId(products[0].instances[0]._id),
@@ -185,14 +177,12 @@ describe('POST request for package - External delivery', () => {
                     order_line_ids: [
                         orderData[0].order_lines[0]._id,
                     ],
-                    _id: mongoose.Types.ObjectId(),
                     order_id: orders[0]._id
 
                 }],
                 start: new Date(),
                 tickets: [{
                     is_processed: false,
-                    _id: mongoose.Types.ObjectId(),
                     status: _const.DELIVERY_STATUS.agentSet,
                     receiver_id: agentObj.aid,
                     timestamp: new Date()
@@ -220,10 +210,10 @@ describe('POST request for package - External delivery', () => {
         });
         expect(res.statusCode).toBe(200)
         const orderData = await models()['OrderTest'].find()
+        order = orderData.find(o => o.order_lines)
         const deliveryData = await models()['DeliveryTest'].find()
         expect(deliveryData[0].tickets[deliveryData[0].tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.requestPackage)
-        order = orderData.find(o => o.order_lines)
-        expect(order.order_lines[0].tickets[order.order_lines[0].tickets.length-1].status).toBe(_const.ORDER_LINE_STATUS.FinalCheck)
+        expect(order.order_lines[0].tickets[order.order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.FinalCheck)
         done()
     });
 });
@@ -259,7 +249,6 @@ describe('POST start delivery- External delivery', () => {
                     order_lines: {
                         product_id: mongoose.Types.ObjectId(products[0]._id),
                         campaign_info: {
-                            _id: mongoose.Types.ObjectId(),
                             discount_ref: 0
                         },
                         product_instance_id: mongoose.Types.ObjectId(products[0].instances[0]._id),
@@ -295,14 +284,12 @@ describe('POST start delivery- External delivery', () => {
                     order_line_ids: [
                         orderData[0].order_lines[0]._id,
                     ],
-                    _id: mongoose.Types.ObjectId(),
                     order_id: orders[0]._id
 
                 }],
                 start: new Date(),
                 tickets: [{
                     is_processed: false,
-                    _id: mongoose.Types.ObjectId(),
                     status: _const.DELIVERY_STATUS.requestPackage,
                     receiver_id: agentObj.aid,
                     timestamp: new Date()
@@ -332,7 +319,7 @@ describe('POST start delivery- External delivery', () => {
         const deliveryData = await models()['DeliveryTest'].find()
         expect(deliveryData[0].tickets[deliveryData[0].tickets.length - 1].status).toBe(_const.DELIVERY_STATUS.started)
         order = orderData.find(o => o.order_lines)
-        expect(order.tickets[order.tickets.length-1].status).toBe(_const.ORDER_STATUS.OnDelivery)
+        expect(order.tickets[order.tickets.length - 1].status).toBe(_const.ORDER_STATUS.OnDelivery)
         done()
     });
 });

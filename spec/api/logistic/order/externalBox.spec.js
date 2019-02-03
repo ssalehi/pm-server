@@ -19,9 +19,6 @@ describe('POST Order Ticket Scan - send external', () => {
         _id: null,
         jar: null,
     }
-
-
-
     beforeEach(async done => {
         try {
             await lib.dbHelpers.dropAll()
@@ -30,7 +27,6 @@ describe('POST Order Ticket Scan - send external', () => {
             const agent = await lib.dbHelpers.addAndLoginAgent('hclerk', _const.ACCESS_LEVEL.HubClerk, hub._id)
             hubClerk.aid = agent.aid;
             hubClerk.jar = agent.rpJar;
-
             const customerobj = await lib.dbHelpers.addAndLoginCustomer('s@s.com', '123456', {
                 first_name: 'Sareh',
                 surname: 'Salehi'
@@ -135,7 +131,6 @@ describe('POST Order Ticket Scan - send external', () => {
                 uri: lib.helpers.apiTestURL('order/ticket/scan'),
                 resolveWithFullResponse: true
             });
-
             expect(res.statusCode).toBe(200)
             const orderData = await models()['OrderTest'].find()
             const order = orderData.find(o => o.order_lines.length)
