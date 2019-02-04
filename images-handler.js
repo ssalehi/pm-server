@@ -345,7 +345,7 @@ getProducts = async (articles) => {
 imageResizing = async (orig, dest) => {
   const lenna = await Jimp.read(orig);
   return lenna
-    .scaleToFit(144, 144)
+    .scaleToFit(220, 220)
     .write(dest);
 }
 
