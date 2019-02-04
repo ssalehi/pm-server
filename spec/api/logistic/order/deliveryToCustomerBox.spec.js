@@ -174,6 +174,4 @@ describe('POST Order Ticket Scan - C&C delivery', () => {
             lib.helpers.errorHandler.bind(this)(err)
         };
     });
-
-
 });

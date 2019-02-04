@@ -10,6 +10,89 @@ const utils = require('../utils');
 
 
 
+
+describe('POST inbox scan - new orderline', () => {
+    let orders, products
+    ShopClerk = {
+        aid: null,
+        jar: null,
+    }
+    let customer = {
+        cid: null,
+        jar: null
+    }
+    beforeEach(async done => {
+        try {
+            await lib.dbHelpers.dropAll()
+
+            await models()['WarehouseTest'].insertMany(warehouses)
+            let res = await lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
+                first_name: 'test 1',
+                surname: 'test 1',
+            });
+            customer.cid = res.cid;
+            customer.jar = res.rpJar;
+            const sclerck = await lib.dbHelpers.addAndLoginAgent('sc', _const.ACCESS_LEVEL.ShopClerk, warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id)
+            ShopClerk.aid = sclerck.aid;
+            ShopClerk.jar = sclerck.rpJar
+            products = await utils.makeProducts();
+            orders = await utils.makeOrders(customer);
+            await models()['OrderTest'].update({
+                _id: mongoose.Types.ObjectId(orders[0]._id),
+            }, {
+                $set: {
+                    order_lines: [{
+                        product_id: products[0]._id,
+                        campaign_info: {
+                            _id: mongoose.Types.ObjectId(),
+                            discount_ref: 0
+                        },
+                        product_instance_id: products[0].instances[0]._id,
+                        tickets: [{
+                            is_processed: false,
+                            _id: mongoose.Types.ObjectId(),
+                            status: _const.ORDER_LINE_STATUS.default,
+                            desc: null,
+                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
+                            timestamp: new Date(),
+                        }]
+                    }]
+                }
+            });
+            orderData = await models()['OrderTest'].find()
+            done()
+        } catch (err) {
+            console.log(err);
+        };
+    }, 15000);
+
+    it('after scan create orderlines delivery back to centralwarehouse', async function (done) {
+        this.done = done
+        const res = await rp({
+            jar: ShopClerk.jar,
+            body: {
+                trigger: _const.SCAN_TRIGGER.Inbox,
+                orderId: orders[0]._id,
+                barcode: '0394081341'
+            },
+            method: 'POST',
+            json: true,
+            uri: lib.helpers.apiTestURL('order/ticket/scan'),
+            resolveWithFullResponse: true
+        })
+        expect(res.statusCode).toBe(200)
+        NorderData = await models()['OrderTest'].find()
+        expect(NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.WaitForOnlineWarehouse)
+        done()
+    });
+});
+////////////////////////////////////////
+
+
+
+
+
+
 describe('POST onlineWarehouseResponse(verify)', () => {
     let adminObj = {
         aid: null,
@@ -43,6 +126,7 @@ describe('POST onlineWarehouseResponse(verify)', () => {
             customer.cid = res.cid;
             customer.jar = res.rpJar;
             products = await utils.makeProducts();
+            centralId = warehouses.find(x=> !x.is_hub && !x.has_customer_pickup)._id
             orders = await utils.makeOrders(customer);
             await models()['OrderTest'].update({
                 _id: mongoose.Types.ObjectId(orders[0]._id),
@@ -119,7 +203,7 @@ describe('POST onlineWarehouseResponse(verify)', () => {
             body: {
                 orderId: orders[0]._id,
                 orderLineId: orderData[0].order_lines[0]._id,
-                warehouseId: warehouses[1]._id,
+                warehouseId: centralId,
                 userId: '5c209119da8a28386c02471b',
                 barcode: '0394081341'
             },
@@ -143,7 +227,7 @@ describe('POST onlineWarehouseResponse(verify)', () => {
             body: {
                 "orderId": orders[0]._id,
                 "orderLineId": orderData[0].order_lines[0]._id,
-                "warehouseId": warehouses[1]._id,
+                "warehouseId": centralId,
                 "userId": '5c209119da8a28386c02471b',
                 "barcode": '0394081341'
             },
@@ -170,7 +254,7 @@ describe('POST onlineWarehouseResponse(verify)', () => {
             body: {
                 "orderId": orders[0]._id,
                 "orderLineId": orderData[0].order_lines[0]._id,
-                "warehouseId": warehouses[1]._id,
+                "warehouseId": centralId,
                 "userId": '5c209119da8a28386c02471b',
                 "barcode": '0394081341'
             },
@@ -197,7 +281,7 @@ describe('POST onlineWarehouseResponse(verify)', () => {
             body: {
                 "orderId": orders[0]._id,
                 "orderLineId": orderData[0].order_lines[1]._id,
-                "warehouseId": warehouses[1]._id,
+                "warehouseId": centralId,
                 "userId": '5c209119da8a28386c02471b',
                 "barcode": '0394081342'
             },
@@ -225,7 +309,7 @@ describe('POST onlineWarehouseResponse(verify)', () => {
             body: {
                 "orderId": orders[0]._id,
                 "orderLineId": orderData[0].order_lines[0]._id,
-                "warehouseId": warehouses[1]._id,
+                "warehouseId": centralId,
                 "userId": '5c209119da8a28386c02471b',
                 "barcode": '0394081341'
             },
@@ -236,8 +320,8 @@ describe('POST onlineWarehouseResponse(verify)', () => {
         });
         expect(addDelivery.statusCode).toBe(200)
         const productsData = await models()['ProductTest'].find()
-        NewCount = productsData[0].instances[0].inventory.find(inv => inv.warehouse_id = warehouses[1]._id).count
-        NewReserved = productsData[0].instances[0].inventory.find(inv => inv.warehouse_id = warehouses[1]._id).reserved
+        NewCount = productsData[0].instances[0].inventory.find(inv => inv.warehouse_id.toString() === centralId.toString()).count
+        NewReserved = productsData[0].instances[0].inventory.find(inv => inv.warehouse_id.toString() === centralId.toString()).reserved
         expect(NewCount).toBe(products[0].instances[0].inventory[0].count - 1)
         expect(NewReserved).toBe(oldReserved - 1)
         done()
@@ -252,7 +336,7 @@ describe('POST onlineWarehouseResponse(verify)', () => {
                 body: {
                     "orderId": orders[0]._id,
                     "orderLineId": orderData[0].order_lines[1]._id,
-                    "warehouseId": warehouses[1]._id,
+                    "warehouseId": centralId,
                     "userId": '5c209119da8a28386c02471b',
                     "barcode": '0394081342'
                 },
@@ -270,6 +354,98 @@ describe('POST onlineWarehouseResponse(verify)', () => {
     });
 
 });
+/////////////////////////////////////////////
+
+
+
+
+
+
+describe('POST inbox scan - canceled orderline', () => {
+    let orders, products
+    ShopClerk = {
+        aid: null,
+        jar: null,
+    }
+    let customer = {
+        cid: null,
+        jar: null
+    }
+    beforeEach(async done => {
+        try {
+            await lib.dbHelpers.dropAll()
+
+            await models()['WarehouseTest'].insertMany(warehouses)
+            let res = await lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
+                first_name: 'test 1',
+                surname: 'test 1',
+            });
+            customer.cid = res.cid;
+            customer.jar = res.rpJar;
+
+            const sclerck = await lib.dbHelpers.addAndLoginAgent('sc', _const.ACCESS_LEVEL.ShopClerk, warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id)
+            ShopClerk.aid = sclerck.aid;
+            ShopClerk.jar = sclerck.rpJar
+            products = await utils.makeProducts();
+            orders = await utils.makeOrders(customer);
+            await models()['OrderTest'].update({
+                _id: mongoose.Types.ObjectId(orders[0]._id),
+            }, {
+                $set: {
+                    order_lines: [{
+                        cancel: true,
+                        product_id: products[0]._id,
+                        campaign_info: {
+                            _id: mongoose.Types.ObjectId(),
+                            discount_ref: 0
+                        },
+                        product_instance_id: products[0].instances[0]._id,
+                        tickets: [{
+                            is_processed: false,
+                            _id: mongoose.Types.ObjectId(),
+                            status: _const.ORDER_LINE_STATUS.Delivered,
+                            desc: null,
+                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
+                            timestamp: new Date(),
+                        }]
+                    }]
+                }
+            });
+            orderData = await models()['OrderTest'].find()
+            done()
+        } catch (err) {
+            console.log(err);
+        };
+    }, 15000);
+
+    it('after scan create orderlines delivery back to centralwarehouse', async function (done) {
+        this.done = done
+        const res = await rp({
+            jar: ShopClerk.jar,
+            body: {
+                trigger: _const.SCAN_TRIGGER.Inbox,
+                orderId: orders[0]._id,
+                barcode: '0394081341'
+            },
+            method: 'POST',
+            json: true,
+            uri: lib.helpers.apiTestURL('order/ticket/scan'),
+            resolveWithFullResponse: true
+        })
+        expect(res.statusCode).toBe(200)
+        NorderData = await models()['OrderTest'].find()
+        expect(NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.WaitForOnlineWarehouseCancel)
+        done()
+    });
+});
+/////////////////////////////////////////////////
+
+
+
+
+
+
+
 
 describe('POST onlineWarehouseResponse(cancel)', () => {
     let adminObj = {
