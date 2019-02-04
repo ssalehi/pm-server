@@ -10,7 +10,7 @@ const utils = require('../utils');
 
 
 
-describe('POST onlineWarehouseResponse', () => {
+describe('POST onlineWarehouseResponse(verify)', () => {
     let adminObj = {
         aid: null,
         jar: null,
@@ -21,33 +21,24 @@ describe('POST onlineWarehouseResponse', () => {
         jar: null,
     };
 
-    let orders, products, deliveries,orderData
+    let orders, products, deliveries, orderData
     let customer = {
         cid: null,
         jar: null
     };
-
-    let customerAddress = {
-        _id: mongoose.Types.ObjectId(),
-        province: 'تهران',
-        city: 'تهران',
-        street: 'مطهری'
-    };
     beforeEach(async done => {
         try {
             await lib.dbHelpers.dropAll()
-            const admin = await lib.dbHelpers.addAndLoginAgent('OfflineSystem', _const.ACCESS_LEVEL.OfflineSystem)
             const agent = await lib.dbHelpers.addAndLoginAgent('DeliveryAgent', _const.ACCESS_LEVEL.DeliveryAgent)
             agentObj.aid = agent.aid;
             agentObj.jar = agent.rpJar;
+            const admin = await lib.dbHelpers.addAndLoginAgent('OfflineSystem', _const.ACCESS_LEVEL.OfflineSystem)
             adminObj.aid = admin.aid;
             adminObj.jar = admin.rpJar;
-
             await models()['WarehouseTest'].insertMany(warehouses)
             let res = await lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
                 first_name: 'test 1',
                 surname: 'test 1',
-                address: customerAddress
             });
             customer.cid = res.cid;
             customer.jar = res.rpJar;
@@ -57,7 +48,7 @@ describe('POST onlineWarehouseResponse', () => {
                 _id: mongoose.Types.ObjectId(orders[0]._id),
             }, {
                 $set: {
-                    order_lines:  [{
+                    order_lines: [{
                         product_id: products[0]._id,
                         campaign_info: {
                             _id: mongoose.Types.ObjectId(),
@@ -88,7 +79,7 @@ describe('POST onlineWarehouseResponse', () => {
                     }]
                 }
             });
-             orderData = await models()['OrderTest'].find()
+            orderData = await models()['OrderTest'].find()
             deliveries = await models()['DeliveryTest'].insertMany([{
                 to: {
                     warehouse_id: warehouses.find(x => x.is_hub)._id
@@ -120,7 +111,7 @@ describe('POST onlineWarehouseResponse', () => {
             console.log(err);
         };
     }, 15000);
-    it('new delivery created and orderline ticket is changed to deliveryset', async function (done) {
+    it('after online ware house verification new delivery created and orderline ticket is changed to deliveryset', async function (done) {
         this.done = done;
         await models()['DeliveryTest'].deleteMany({});
         const res = await rp({
@@ -145,7 +136,7 @@ describe('POST onlineWarehouseResponse', () => {
         expect(lastTicket).toBe(_const.ORDER_LINE_STATUS.DeliverySet)
         done()
     });
-    it('should check the orderline is added to an existing delivery that is being started today ', async function (done) {
+    it('after online ware house verification should check the orderline is added to an existing delivery that is being started today ', async function (done) {
         this.done = done
         const res = await rp({
             jar: adminObj.jar,
@@ -169,7 +160,7 @@ describe('POST onlineWarehouseResponse', () => {
         expect(deliveryData[0].to.warehouse_id.toString()).toBe(warehouses.find(x => x.is_hub)._id.toString())
         done()
     });
-    it('should add the delivery to an existing one that has started few days ago', async function (done) {
+    it('after online ware house verification should add the delivery to an existing one that has started few days ago', async function (done) {
         this.done = done;
         const deliveryData = await models()['DeliveryTest'].find()
         deliveryData[0].start = (new Date()).setDate(new Date().getDate() - 3);
@@ -195,7 +186,7 @@ describe('POST onlineWarehouseResponse', () => {
         expect(deliveryData1.length).toBe(1)
         done()
     });
-    it('should check when the existing delivery is started creates a new delivery for new orderlines', async function (done) {
+    it('after online ware house verification should check when the existing delivery is started creates a new delivery for new orderlines', async function (done) {
         this.done = done
         const deliveryData = await models()['DeliveryTest'].find()
         deliveryData[0].tickets[0].status = _const.DELIVERY_STATUS.started
@@ -225,10 +216,10 @@ describe('POST onlineWarehouseResponse', () => {
     });
     it('should check after onlinewarehouseverification the reserved and count of an inventory are reduced by 1', async function (done) {
         this.done = done
-        await utils.changeInventory(products[0]._id,products[0].instances[0]._id,warehouses[1]._id,0,1)
-        
+        await utils.changeInventory(products[0]._id, products[0].instances[0]._id, warehouses[1]._id, 0, 1)
+
         oldProducts = await models()['ProductTest'].find()
-        oldReserved=  oldProducts[0].instances[0].inventory.find(inv => inv.warehouse_id = warehouses[1]._id).reserved
+        oldReserved = oldProducts[0].instances[0].inventory.find(inv => inv.warehouse_id = warehouses[1]._id).reserved
         const addDelivery = await rp({
             jar: adminObj.jar,
             body: {
@@ -278,4 +269,89 @@ describe('POST onlineWarehouseResponse', () => {
         };
     });
 
+});
+
+describe('POST onlineWarehouseResponse(cancel)', () => {
+    let adminObj = {
+        aid: null,
+        jar: null,
+    };
+
+    let orders, products, orderData
+    let customer = {
+        cid: null,
+        jar: null
+    }
+    beforeEach(async done => {
+        try {
+            await lib.dbHelpers.dropAll()
+            const admin = await lib.dbHelpers.addAndLoginAgent('OfflineSystem', _const.ACCESS_LEVEL.OfflineSystem)
+            adminObj.aid = admin.aid;
+            adminObj.jar = admin.rpJar;
+            await models()['WarehouseTest'].insertMany(warehouses)
+            let res = await lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
+                first_name: 'test 1',
+                surname: 'test 1',
+            });
+            customer.cid = res.cid;
+            customer.jar = res.rpJar;
+            products = await utils.makeProducts();
+            orders = await utils.makeOrders(customer);
+
+            await models()['OrderTest'].update({
+                _id: mongoose.Types.ObjectId(orders[0]._id),
+            }, {
+                $set: {
+                    order_lines: [{
+                        cancel: true,
+                        product_id: products[0]._id,
+                        campaign_info: {
+                            _id: mongoose.Types.ObjectId(),
+                            discount_ref: 0
+                        },
+                        product_instance_id: products[0].instances[0]._id,
+                        tickets: [{
+                            is_processed: false,
+                            _id: mongoose.Types.ObjectId(),
+                            status: _const.ORDER_LINE_STATUS.WaitForOnlineWarehouseCancel,
+                            desc: null,
+                            timestamp: new Date(),
+                        }]
+                    }]
+                }
+            });
+            orderData = await models()['OrderTest'].find()
+            done()
+        } catch (err) {
+            console.log(err);
+        };
+    }, 15000);
+
+    it('after online warehouse cancel should check orderline ticket to be canceled', async function (done) {
+        this.done = done
+        sanaId = warehouses.find(x => x.name === 'سانا')._id.toString()
+        const canceled = await rp({
+            jar: adminObj.jar,
+            body: {
+                userId: adminObj.aid,
+                orderId: orders[0]._id,
+                orderLineId: orderData[0].order_lines[0]._id,
+                warehouseId: sanaId,
+                barcode: '0394081341',
+                reverse: true,
+            },
+            method: 'POST',
+            json: true,
+            uri: lib.helpers.apiTestURL('order/offline/onlineWarehouseResponse'),
+            resolveWithFullResponse: true
+        })
+        expect(canceled.statusCode).toBe(200)
+        NorderData = await models()['OrderTest'].find()
+        expect(NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Canceled)
+        const NproductsData = await models()['ProductTest'].find()
+        NewCount = NproductsData[0].instances[0].inventory.find(inv => inv.warehouse_id.toString() === sanaId).count
+        prevCount = products[0].instances[0].inventory.find(inv => inv.warehouse_id.toString() === sanaId).count
+        expect(NewCount).toBe(prevCount + 1)
+        done()
+    });
 });

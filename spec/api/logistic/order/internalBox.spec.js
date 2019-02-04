@@ -7,7 +7,7 @@ const warehouses = require('../../../../warehouses')
 const utils = require('../utils');
 
 
-describe('POST Order Ticket Scan - send internal', () => {
+describe('POST Order Ticket Scan performed by hub and shop clerk- send internal', () => {
     let orders, products, customer;
     ShopClerk = {
         aid: null,
@@ -178,7 +178,7 @@ describe('POST Order Ticket Scan - send internal', () => {
             lib.helpers.errorHandler.bind(this)(err)
         };
     });
-    it('should scan product in hub barcode for internal send and change OL ticket to ReadyToDeliver', async function (done) {
+    it('should scan product in hub barcode for internal send (C&C mostly) and change OL ticket to ReadyToDeliver', async function (done) {
         try {
             this.done = done
 

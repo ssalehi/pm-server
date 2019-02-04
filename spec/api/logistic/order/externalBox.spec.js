@@ -8,7 +8,7 @@ const utils = require('../utils');
 
 
 
-describe('POST Order Ticket Scan - send external', () => {
+describe('POST Order Ticket Scan performed by hubclerck - send external', () => {
     let orders, products, customer;
 
     let hubClerk = {
