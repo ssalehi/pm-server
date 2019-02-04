@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const _const = require('../../../../lib/const.list');
 const warehouses = require('../../../../warehouses');
 const moment = require('moment');
+const utils = require('../utils');
 
 
 
@@ -20,7 +21,7 @@ describe('POST onlineWarehouseResponse', () => {
         jar: null,
     };
 
-    let orders, products, deliveries;
+    let orders, products, deliveries,orderData
     let customer = {
         cid: null,
         jar: null
@@ -56,122 +57,46 @@ describe('POST onlineWarehouseResponse', () => {
                 surname: 'test 1',
                 address: customerAddress
             });
-
             customer.cid = res.cid;
             customer.jar = res.rpJar;
-            products = await models()['ProductTest'].insertMany([{
-                article_no: 'xy123',
-                name: 'sample 1',
-                product_type: {
-                    name: 'sample type',
-                    product_type_id: mongoose.Types.ObjectId()
-                },
-                brand: {
-                    name: 'sample brand',
-                    brand_id: mongoose.Types.ObjectId()
-                },
-                base_price: 30000,
-                desc: 'some description for this product',
-                colors: [{
-                        color_id: colorIds[0],
-                        name: 'green'
-                    },
-                    {
-                        color_id: colorIds[1],
-                        name: 'yellow'
-                    },
-                    {
-                        color_id: colorIds[2],
-                        name: 'red'
-                    }
-                ],
-                instances: [{
-                        product_color_id: colorIds[0],
-                        size: "11",
-                        price: 2000,
-                        barcode: '0394081341',
-                        inventory: [{
-                            count: 3,
-                            reserved: 2,
-                            warehouse_id: warehouses[1]._id
-                        }, {
-                            count: 2,
-                            reserved: 0,
-                            warehouse_id: warehouses[2]._id
-                        }, {
-                            count: 3,
-                            reserved: 0,
-                            warehouse_id: warehouses[3]._id
-                        }, {
-                            count: 4,
-                            reserved: 0,
-                            warehouse_id: warehouses[4]._id
+            products = await utils.makeProducts();
+            orders = await utils.makeOrders(customer);
+            await models()['OrderTest'].update({
+                _id: mongoose.Types.ObjectId(orders[0]._id),
+            }, {
+                $set: {
+                    order_lines:  [{
+                        product_id: products[0]._id,
+                        campaign_info: {
+                            _id: mongoose.Types.ObjectId(),
+                            discount_ref: 0
+                        },
+                        product_instance_id: products[0].instances[0]._id,
+                        tickets: [{
+                            is_processed: false,
+                            _id: mongoose.Types.ObjectId(),
+                            status: _const.ORDER_LINE_STATUS.WaitForOnlineWarehouse,
+                            desc: null,
+                            timestamp: new Date(),
                         }]
-                    },
-                    {
-                        product_color_id: colorIds[1],
-                        size: "10",
-                        price: 4000,
-                        barcode: '19231213123',
-                        inventory: [{
-                            count: 0,
-                            reserved: 0,
-                            warehouse_id: warehouses[1]._id
-                        }, {
-                            count: 0,
-                            reserved: 0,
-                            warehouse_id: warehouses[2]._id
-                        }, {
-                            count: 0,
-                            reserved: 0,
-                            warehouse_id: warehouses[3]._id
-                        }, {
-                            count: 0,
-                            reserved: 0,
-                            warehouse_id: warehouses[4]._id
+                    }, {
+                        product_id: products[0],
+                        campaign_info: {
+                            _id: mongoose.Types.ObjectId(),
+                            discount_ref: 0
+                        },
+                        product_instance_id: products[0].instances[1]._id,
+                        tickets: [{
+                            is_processed: false,
+                            _id: mongoose.Types.ObjectId(),
+                            status: _const.ORDER_LINE_STATUS.WaitForOnlineWarehouse,
+                            desc: null,
+                            timestamp: new Date(),
                         }]
-                    }
-                ]
-            }]);
-
-            products = JSON.parse(JSON.stringify(products));
-            orders = await models()['OrderTest'].insertMany([{ // order 1 => a normal order which central warehosue has inventory for
-                customer_id: customer.cid,
-                order_time: new Date(),
-                is_cart: false,
-                order_lines: [{
-                    product_id: products[0]._id,
-                    campaign_info: {
-                        _id: mongoose.Types.ObjectId(),
-                        discount_ref: 0
-                    },
-                    product_instance_id: products[0].instances[0]._id,
-                    tickets: [{
-                        is_processed: false,
-                        _id: mongoose.Types.ObjectId(),
-                        status: _const.ORDER_LINE_STATUS.WaitForOnlineWarehouse,
-                        desc: null,
-                        timestamp: new Date(),
                     }]
-                }, {
-                    product_id: products[0],
-                    campaign_info: {
-                        _id: mongoose.Types.ObjectId(),
-                        discount_ref: 0
-                    },
-                    product_instance_id: products[0].instances[1]._id,
-                    tickets: [{
-                        is_processed: false,
-                        _id: mongoose.Types.ObjectId(),
-                        status: _const.ORDER_LINE_STATUS.WaitForOnlineWarehouse,
-                        desc: null,
-                        timestamp: new Date(),
-                    }]
-                }]
-            }]);
-
-            orders = JSON.parse(JSON.stringify(orders));
-
+                }
+            });
+             orderData = await models()['OrderTest'].find()
             deliveries = await models()['DeliveryTest'].insertMany([{
                 to: {
                     warehouse_id: warehouses.find(x => x.is_hub)._id
@@ -182,10 +107,10 @@ describe('POST onlineWarehouseResponse', () => {
                 },
                 order_details: [{
                     order_line_ids: [
-                        orders[0].order_lines[1]._id,
+                        orderData[0].order_lines[1]._id,
                     ],
                     _id: mongoose.Types.ObjectId(),
-                    order_id: orders[0]._id
+                    order_id: orderData[0]._id
                 }],
                 start: new Date(),
                 tickets: [{
@@ -209,11 +134,11 @@ describe('POST onlineWarehouseResponse', () => {
         const res = await rp({
             jar: adminObj.jar,
             body: {
-                "orderId": orders[0]._id,
-                "orderLineId": orders[0].order_lines[0]._id,
-                "warehouseId": warehouses[1]._id,
-                "userId": '5c209119da8a28386c02471b',
-                "barcode": '0394081341'
+                orderId: orders[0]._id,
+                orderLineId: orderData[0].order_lines[0]._id,
+                warehouseId: warehouses[1]._id,
+                userId: '5c209119da8a28386c02471b',
+                barcode: '0394081341'
             },
             method: 'POST',
             json: true,
@@ -234,7 +159,7 @@ describe('POST onlineWarehouseResponse', () => {
             jar: adminObj.jar,
             body: {
                 "orderId": orders[0]._id,
-                "orderLineId": orders[0].order_lines[0]._id,
+                "orderLineId": orderData[0].order_lines[0]._id,
                 "warehouseId": warehouses[1]._id,
                 "userId": '5c209119da8a28386c02471b',
                 "barcode": '0394081341'
@@ -247,7 +172,7 @@ describe('POST onlineWarehouseResponse', () => {
         expect(res.statusCode).toBe(200)
         const deliveryData = await models()['DeliveryTest'].find()
         expect(deliveryData.length).toBe(1)
-        isExist = deliveryData[0].order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
+        isExist = deliveryData[0].order_details[0].order_line_ids.map(id => id.toString()).includes(orderData[0].order_lines[0]._id.toString())
         expect(isExist).toBe(true)
         expect(deliveryData[0].to.warehouse_id.toString()).toBe(warehouses.find(x => x.is_hub)._id.toString())
         done()
@@ -261,7 +186,7 @@ describe('POST onlineWarehouseResponse', () => {
             jar: adminObj.jar,
             body: {
                 "orderId": orders[0]._id,
-                "orderLineId": orders[0].order_lines[0]._id,
+                "orderLineId": orderData[0].order_lines[0]._id,
                 "warehouseId": warehouses[1]._id,
                 "userId": '5c209119da8a28386c02471b',
                 "barcode": '0394081341'
@@ -272,13 +197,12 @@ describe('POST onlineWarehouseResponse', () => {
             resolveWithFullResponse: true
         });
         const deliveryData1 = await models()['DeliveryTest'].find()
-        isExist = deliveryData1[0].order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
+        isExist = deliveryData1[0].order_details[0].order_line_ids.map(id => id.toString()).includes(orderData[0].order_lines[0]._id.toString())
         expect(isExist).toBe(true)
         expect(deliveryData1[0].start.getDate()).not.toEqual(new Date().getDate())
         expect(deliveryData1.length).toBe(1)
         done()
     });
-
     it('should check when the existing delivery is started creates a new delivery for new orderlines', async function (done) {
         this.done = done
         const deliveryData = await models()['DeliveryTest'].find()
@@ -289,10 +213,10 @@ describe('POST onlineWarehouseResponse', () => {
             jar: adminObj.jar,
             body: {
                 "orderId": orders[0]._id,
-                "orderLineId": orders[0].order_lines[1]._id,
+                "orderLineId": orderData[0].order_lines[1]._id,
                 "warehouseId": warehouses[1]._id,
                 "userId": '5c209119da8a28386c02471b',
-                "barcode": '0394081341'
+                "barcode": '0394081342'
             },
             method: 'POST',
             json: true,
@@ -309,11 +233,15 @@ describe('POST onlineWarehouseResponse', () => {
     });
     it('should check after onlinewarehouseverification the reserved and count of an inventory are reduced by 1', async function (done) {
         this.done = done
+        await utils.changeInventory(products[0]._id,products[0].instances[0]._id,warehouses[1]._id,0,1)
+        
+        oldProducts = await models()['ProductTest'].find()
+        oldReserved=  oldProducts[0].instances[0].inventory.find(inv => inv.warehouse_id = warehouses[1]._id).reserved
         const addDelivery = await rp({
             jar: adminObj.jar,
             body: {
                 "orderId": orders[0]._id,
-                "orderLineId": orders[0].order_lines[0]._id,
+                "orderLineId": orderData[0].order_lines[0]._id,
                 "warehouseId": warehouses[1]._id,
                 "userId": '5c209119da8a28386c02471b',
                 "barcode": '0394081341'
@@ -328,7 +256,7 @@ describe('POST onlineWarehouseResponse', () => {
         NewCount = productsData[0].instances[0].inventory.find(inv => inv.warehouse_id = warehouses[1]._id).count
         NewReserved = productsData[0].instances[0].inventory.find(inv => inv.warehouse_id = warehouses[1]._id).reserved
         expect(NewCount).toBe(products[0].instances[0].inventory[0].count - 1)
-        expect(NewReserved).toBe(products[0].instances[0].inventory[0].reserved - 1)
+        expect(NewReserved).toBe(oldReserved - 1)
         done()
     });
     it('should check if an inventory count and reserved are 0 gets error', async function (done) {
@@ -340,10 +268,10 @@ describe('POST onlineWarehouseResponse', () => {
                 jar: adminObj.jar,
                 body: {
                     "orderId": orders[0]._id,
-                    "orderLineId": orders[0].order_lines[1]._id,
+                    "orderLineId": orderData[0].order_lines[1]._id,
                     "warehouseId": warehouses[1]._id,
                     "userId": '5c209119da8a28386c02471b',
-                    "barcode": '0394081341'
+                    "barcode": '0394081342'
                 },
                 method: 'POST',
                 json: true,

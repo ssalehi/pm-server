@@ -220,7 +220,7 @@ let makeProducts = async () => {
 let changeInventory = async (productId, productInstanceId, warehouseId, delCount, delReserved) => {
   try {
 
-    let foundProduct = await this.ProductModel.findById(mongoose.Types.ObjectId(productId)).lean()
+    let foundProduct = await models()['ProductTest'].findById(mongoose.Types.ObjectId(productId)).lean()
     if (!foundProduct)
       throw new Error('product not found');
 
@@ -258,9 +258,9 @@ let changeInventory = async (productId, productInstanceId, warehouseId, delCount
     if (!isSoldOut && foundInstance.sold_out)
       foundInstance.sold_out = false;
 
-    return this.ProductModel.update({
-      _id: mongoose.Types.ObjectId(body.id),
-      'instances._id': mongoose.Types.ObjectId(body.productInstanceId)
+    return  models()['ProductTest'].update({
+      _id: mongoose.Types.ObjectId(productId),
+      'instances._id': mongoose.Types.ObjectId(productInstanceId)
     }, {
         $set: {
           'instances.$': foundInstance
@@ -296,7 +296,6 @@ let checkSoldOutStatus = async (productId, initialInstance, changedInstance) => 
 
 let makeOrders = async (customer) => {
   try {
-
     let defaultTicket = {
         is_processed: false,
         status: _const.ORDER_STATUS.WaitForAggregation,
@@ -331,7 +330,7 @@ let makeOrders = async (customer) => {
         order_time: new Date(),
         is_cart: false,
         transaction_id: 'xyz45301',
-        customer_id: custoemr._id,
+        customer_id: customer._id,
         address: loggedInCustomerAddress,
         delivery_info: {
           time_slot: {
@@ -344,8 +343,27 @@ let makeOrders = async (customer) => {
         is_collect: false,
         total_amount: 30000,
         order_lines: []
+      }, { //order 3 => C&C order of logged in customer 
+        order_time: new Date(),
+        is_cart: false,
+        coupon_code: 'xy1234',
+        coupon_discount: 15,
+        transaction_id: 'xyz45301',
+        customer_id: customer._id,
+        address: warehouses.find(x => x.name === 'سانا').address,
+        delivery_info: {
+          time_slot: {
+            lower_bound: 10,
+            upper_bound: 18
+          },
+          delivery_cost: 30000
+        },
+        tickets: [defaultTicket],
+        is_collect: true,
+        total_amount: 30000,
+        order_lines: []
       },
-      { //order 2  => order of guest customer
+      { //order 4  => order of guest customer
         order_time: new Date(),
         is_cart: false,
         transaction_id: 'xyz45302',
@@ -358,10 +376,27 @@ let makeOrders = async (customer) => {
           delivery_cost: 30000
         },
         tickets: [defaultTicket],
+        is_collect: false,
+        total_amount: 30000,
+        order_lines: []
+      },
+      { //order 5 => C&C order of guest customer 
+        order_time: new Date(),
+        is_cart: false,
+        transaction_id: 'xyz45302',
+        address: warehouses.find(x => x.name === 'سانا').address,
+        delivery_info: {
+          time_slot: {
+            lower_bound: 10,
+            upper_bound: 18
+          },
+          delivery_cost: 30000
+        },
+        tickets: [defaultTicket],
         is_collect: true,
         total_amount: 30000,
         order_lines: []
-      }
+      },
 
     ]);
     orders = JSON.parse(JSON.stringify(orders));
@@ -371,179 +406,8 @@ let makeOrders = async (customer) => {
     throw err;
   }
 }
-
-
-
-let makeDeliveries = async () => {
-  try {
-    deliveries = await models()['DeliveryTest'].insertMany([{ // delivery 1 => external to customer
-      to: {
-        customer: {
-          _id: customer[0]._id,
-          address: customer[0].addresses[0]
-        }
-      },
-      from: {
-        warehouse_id: warehouses.find(x => x.is_hub)._id,
-
-      },
-      order_details: [{
-        order_line_ids: [
-          orders[0].order_lines[0]._id
-        ],
-        order_id: orders[0]._id
-      }],
-      start: new Date(),
-      delivery_agent: {
-        _id: mongoose.Types.ObjectId(),
-      },
-      slot: {
-        lower_bound: 10,
-        upper_bound: 14,
-      },
-      tickets: [{
-        is_processed: false,
-        status: _const.DELIVERY_STATUS.default,
-        receiver_id: warehouses.find(x => x.is_hub)._id,
-        timestamp: new Date()
-      }],
-    }, { // delivery 2 => internal delivery to hub
-      to: {
-        warehouse_id: warehouses.find(x => x.is_hub)._id
-
-      },
-      from: {
-        warehouse_id: warehouses.find(x => x.name === 'سانا')._id
-
-      },
-      order_details: [{
-        order_line_ids: [
-          orders[1].order_lines[0]._id
-        ],
-        order_id: orders[1]._id
-      }],
-      start: new Date(),
-      delivery_agent: {
-        _id: mongoose.Types.ObjectId(),
-      },
-      tickets: [{
-        is_processed: false,
-        status: _const.DELIVERY_STATUS.default,
-        receiver_id: warehouses.find(x => x.is_hub)._id,
-        timestamp: new Date()
-      }],
-    }, { // delivery 3 => CC after recieved
-      to: {
-        warehouse_id: warehouses.find(x => x.name === 'سانا')._id
-      },
-      from: {
-        warehouse_id: warehouses.find(x => x.is_hub)._id
-      },
-      order_details: [{
-        order_line_ids: [
-          orders[1].order_lines[0]._id
-        ],
-        order_id: orders[1]._id
-      }],
-      start: new Date(),
-      delivery_agent: {
-        _id: internalagent.aid
-      },
-      tickets: [{
-        is_processed: false,
-        status: _const.DELIVERY_STATUS.default,
-        receiver_id: warehouses.find(x => x.is_hub)._id,
-        timestamp: new Date()
-      }],
-    }])
-    deliveries = JSON.parse(JSON.stringify(deliveries));
-    return deliveries
-  } catch (err) {
-    console.log('-> error on makeing test deliveries', err);
-    throw err;
-  }
-}
-
-
-
-
-
-
-
-
-
-
-let makeCustomer = async () => {
-  try {
-    customer = await models()['CustomerTest'].insertMany([{ // customer 1 : is_guest = false
-      id: mongoose.Types.ObjectId(),
-      addresses: {
-        _id: mongoose.Types.ObjectId(),
-        province: "تهران",
-        city: "تهران",
-        street: "دوم شرقی",
-        unit: "6",
-        no: "4",
-        district: "چاردیواری",
-        recipient_title: "m",
-        recipient_name: "احسان",
-        recipient_surname: "انصاری بصیر",
-        recipient_national_id: "0010684281",
-        recipient_mobile_no: "0912658369",
-        postal_code: "9",
-        loc: {
-          long: 51.379926,
-          lat: 35.696491
-        }
-      },
-      is_guest: false,
-      active: true,
-      username: "ehsanansari@gmail.com",
-      first_name: "ehsan",
-      surname: "ansari",
-      mobile_no: "0912658369",
-      gender: "m",
-    },
-    { // customer 2: is_guest = true
-      addresses: {
-        _id: mongoose.Types.ObjectId(),
-        province: "گیلان",
-        city: "رشت",
-        street: "شمالی",
-        unit: "3",
-        no: "7",
-        district: "هفت",
-        recipient_title: "m",
-        recipient_name: "غزل",
-        recipient_surname: "جلیلیان",
-        recipient_national_id: "0010684281",
-        recipient_mobile_no: "09308329772",
-        postal_code: "11",
-        loc: {
-          long: 51.379926,
-          lat: 35.696491
-        }
-      },
-      is_guest: true,
-      active: true,
-      username: "qazaljl@gmail.com",
-      first_name: "qazal",
-      surname: "jalilian",
-      mobile_no: "09308329772",
-      gender: "m",
-    }
-    ])
-    customer = JSON.parse(JSON.stringify(customer));
-    return customer
-  } catch (err) {
-    console.log('-> error on makeing test customers', err);
-    throw err;
-  }
-}
 module.exports = {
   makeProducts,
   makeOrders,
-  makeDeliveries,
-  makeCustomer,
   changeInventory
 }
