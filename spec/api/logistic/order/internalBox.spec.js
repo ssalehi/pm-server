@@ -79,7 +79,7 @@ describe('POST Search ScanInternalDeliveryBox', () => {
     }
   }, 15000);
 
-  it('should get c&c order line which is in InternalDeliveryBox in hub', async function (done) {
+  it('should get c&c order line which is in InternalDeliveryBox in hub and should go to palladium', async function (done) {
     try {
       this.done = done;
 
@@ -232,7 +232,7 @@ describe('POST Search ScanInternalDeliveryBox', () => {
     }
   });
 
-  it('should get c&c order line which is neither in hub or its destination ', async function (done) {
+  it('should get c&c order line which is neither in hub or its destination (from palladium to centralWarehouse) ', async function (done) {
     try {
       this.done = done;
 
@@ -385,7 +385,7 @@ describe('POST Search ScanInternalDeliveryBox', () => {
     }
   });
 
-  it('should get order line which is not in hub and is not c&c', async function (done) {
+  it('should get order line which is not in hub and is not c&c (palladium)' , async function (done) {
     try {
       this.done = done;
 

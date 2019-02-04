@@ -3,7 +3,7 @@ const lib = require('../../../../lib/index');
 const models = require('../../../../mongo/models.mongo');
 const mongoose = require('mongoose');
 const _const = require('../../../../lib/const.list');
-const warehouses = require('../../../../warehouses')
+const warehouses = require('../../../../warehouses');
 const utils = require('../utils');
 
 
