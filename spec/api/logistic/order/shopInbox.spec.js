@@ -208,7 +208,7 @@ describe('POST Search Scan Inbox', () => {
 
 });
 
-xdescribe('POST onlineWarehouseResponse', () => {
+describe('POST onlineWarehouseResponse', () => {
   let adminObj = {
     aid: null,
     jar: null,

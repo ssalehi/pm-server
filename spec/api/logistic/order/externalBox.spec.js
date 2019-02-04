@@ -7,7 +7,7 @@ const warehouses = require('../../../../warehouses');
 const utils = require('../utils');
 const moment = require('moment');
 
-describe('POST Search searchScanExternalDeliveryBox', () => {
+describe('POST Search ScanExternalDeliveryBox', () => {
 
   let CWClerk = { // central warehouse clerk
     aid: null,
@@ -78,7 +78,7 @@ describe('POST Search searchScanExternalDeliveryBox', () => {
     }
   }, 15000);
 
-  it('should get cc order line which is in its destination', async function (done) {
+  it('should get cc order line which is in its destination (palladium warehouse which two order lines had canceled)', async function (done) {
     try {
       this.done = done;
 
@@ -185,7 +185,7 @@ describe('POST Search searchScanExternalDeliveryBox', () => {
           product_id: products[0].id,
           product_instance_id: products[0].instances[0].id,
           adding_time: moment(),
-          cancel: false,
+          cancel: true,
           tickets: [
             {
               is_processed: false,
@@ -208,7 +208,7 @@ describe('POST Search searchScanExternalDeliveryBox', () => {
           tickets: [
             {
               is_processed: false,
-              status: _const.ORDER_LINE_STATUS.checked,
+              status: _const.ORDER_LINE_STATUS.Checked,
               desc: null,
               receiver_id: palladiumWarehouse._id,
               timestamp: moment()
@@ -237,9 +237,9 @@ describe('POST Search searchScanExternalDeliveryBox', () => {
       });
       expect(res.statusCode).toBe(200);
       expect(res.body.data.length).toBe(2);
-      expect(res.body.data[0].total_order_lines).toBe(4);
+      expect(res.body.data[0].total_order_lines).toBe(2);
       expect(res.body.data[1].total_order_lines).toBe(5);
-
+      console.log(res.body.data);
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
@@ -388,7 +388,6 @@ describe('POST Search searchScanExternalDeliveryBox', () => {
       lib.helpers.errorHandler.bind(this)(err);
     }
   });
-
 
 });
 
