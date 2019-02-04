@@ -1,3 +1,15 @@
+/**
+ * What this script do?
+ * it looks up every folders in BASE_TEMP with this format: <article_no>/<color_code>/<Images[]>
+ * and copy them all both in BASE_DEST (<product_id>/<product_instance_id>/<Images[]>) and in db
+ * 
+ * the first image of each folder is counted as thumbnail and is prefixed by THUMBNAIL_PREFIX
+ * and is resized to scale in 144x144 image, and is also added in main images of that product
+ * 
+ * finally it produces a report showing that which articles were joint, which weren't in db,
+ * which color codes were in db but not here, and which color codes were here but not in db.
+ */
+
 const db = require('./mongo/index');
 const models = require('./mongo/models.mongo');
 // const fs = require('fs');
@@ -6,11 +18,12 @@ const path = require('path');
 const Jimp = require("jimp");
 const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
-const BASE_TEMP = './public/images/temp'
-const BASE_DEST = './public/images/product-image'
-const REPORT_PATH = './public/report'
+const BASE_TEMP = './public/images/temp';
+const BASE_DEST = './public/images/product-image';
+const REPORT_PATH = './public/report';
+const THUMBNAIL_PREFIX = "thmbnl_";
 const rimraf = require('rimraf');
-const fs = require('fs-extra')
+const fs = require('fs-extra');
 
 let products;
 
@@ -118,7 +131,7 @@ main = async () => {
 
                           // check if it was thumbnail, add to thumbnail and also resize the image
                           if (k === 0) {
-                            image = "thmbnl_" + image;
+                            image = THUMBNAIL_PREFIX + image;
                             imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
                             await imageResizing(imageOrig, imageDest);
                             await updateProductImages(product._id, color._id, image, true);
@@ -332,7 +345,7 @@ getProducts = async (articles) => {
 imageResizing = async (orig, dest) => {
   const lenna = await Jimp.read(orig);
   return lenna
-    .scaleToFit(144, 144)
+    .scaleToFit(220, 220)
     .write(dest);
 }
 
