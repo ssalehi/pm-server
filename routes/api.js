@@ -73,9 +73,10 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
 
           let isStaticFunction = typeof lib[className][functionName] === 'function';
 
-          session = await connection.startSession();
-          session.startTransaction();
-          let model = isStaticFunction ? lib[className] : new lib[className](req.test, session);
+          // session = await connection.startSession();
+          // session.startTransaction();
+          // let model = isStaticFunction ? lib[className] : new lib[className](req.test, session);
+          let model = isStaticFunction ? lib[className] : new lib[className](req.test);
           return model[functionName].apply(isStaticFunction ? null : model, allArgs);
         }
       })
@@ -91,8 +92,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
       })
       .catch(async err => {
         try {
-
-          await session.abortTransaction();
+          // await session.abortTransaction();
         } catch (err) {
           console.log('-> ', err);
         }
@@ -555,7 +555,7 @@ router.get('/refund/get_balance', apiResponse('Refund', 'getBalanceAndStatus', f
 router.get('/daily_sales_report', apiResponse('Order', 'getDailySalesReport', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 
 // SM Message
-router.post('/sm/assignToReturn', apiResponse('SMMessage', 'assignToReturn', true, ['body', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/sm/assignToReturn', apiResponse('SMMessage', 'assignToReturn', true, ['body.id', 'body.preCheck', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/sm/close', apiResponse('SMMessage', 'close', true, ['body.id', 'body.report', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 
 
