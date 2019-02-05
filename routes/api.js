@@ -73,9 +73,10 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
 
           let isStaticFunction = typeof lib[className][functionName] === 'function';
 
-          session = await connection.startSession();
-          session.startTransaction();
-          let model = isStaticFunction ? lib[className] : new lib[className](req.test, session);
+          // session = await connection.startSession();
+          // session.startTransaction();
+          // let model = isStaticFunction ? lib[className] : new lib[className](req.test, session);
+          let model = isStaticFunction ? lib[className] : new lib[className](req.test);
           return model[functionName].apply(isStaticFunction ? null : model, allArgs);
         }
       })
@@ -91,8 +92,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
       })
       .catch(async err => {
         try {
-
-          await session.abortTransaction();
+          // await session.abortTransaction();
         } catch (err) {
           console.log('-> ', err);
         }

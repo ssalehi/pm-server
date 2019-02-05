@@ -64,6 +64,125 @@ describe('POST Order - ORP', () => {
     };
   }, 15000);
 
+  it('login user not cc checkout ', async function (done) {
+    try {
+      this.done = done;
+      let res = await models()['OrderTest'].findOneAndUpdate({
+        _id: orders[0]._id
+      }, {
+          $set: {
+            order_lines: [
+              {
+                product_price: 0,
+                paid_price: 0,
+                cancel: false,
+                product_id: products[0]._id,
+                product_instance_id: products[0].instances[0]._id,
+                tickets: []
+              },
+              {
+                product_price: 0,
+                paid_price: 0,
+                cancel: false,
+                product_id: products[0]._id,
+                product_instance_id: products[0].instances[0]._id,
+                tickets: []
+              },
+              {
+                product_price: 0,
+                paid_price: 0,
+                cancel: false,
+                product_id: products[0]._id,
+                product_instance_id: products[0].instances[1]._id,
+                tickets: []
+              }
+            ],
+          },
+        }, {new: true});
+
+      orders[0] = JSON.parse(JSON.stringify(res));
+      let PreInventory1 = products[0].instances[0].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
+
+      let PreInventory2 = products[0].instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
+
+      res = await rp({
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`checkout/true`),
+        body: {
+          order_id: orders[0]._id,
+          address: utils.loggedInCustomerAddress,
+          duration_id: deliveryDurationInfo[0]._id,
+          is_collect: false,
+          time_slot: {
+            lower_bound: 10,
+            upper_bound: 18
+          },
+
+        },
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`checkout/true`),
+        jar: customer.jar,
+        json: true,
+        resolveWithFullResponse: true,
+      });
+      expect(res.statusCode).toBe(200);
+      let foundOrder = await models()['OrderTest'].findById(orders[0]._id);
+
+      expect(foundOrder.tickets.length).toBe(1);
+      expect(foundOrder.tickets[0].status).toBe(_const.ORDER_STATUS.WaitForAggregation);
+      expect(foundOrder.tickets[0].receiver_id).toBeUndefined();
+
+
+      expect(foundOrder.transaction_id).not.toBeUndefined();
+      expect(foundOrder.is_collect).toBe(false);
+      expect(foundOrder.is_cart).toBeFalsy();
+      expect(foundOrder.address._id.toString()).toBe(utils.loggedInCustomerAddress._id.toString());
+
+      let foundProduct = await models()['ProductTest'].findById(products[0]._id).lean();
+
+      let newInventory1 = foundProduct.instances[0].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
+      let newInventory2 = foundProduct.instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
+
+      expect(newInventory1.count).toBe(PreInventory1.count);
+      expect(newInventory2.count).toBe(PreInventory2.count);
+
+      expect(newInventory1.reserved).toBe(PreInventory1.reserved + 2);
+      expect(newInventory2.reserved).toBe(PreInventory2.reserved + 1);
+
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    };
+  });
+
+  it('login user cc checkout ', async function (done) {
+    try {
+
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    }
+  });
+
+  it('guest user cc checkout ', async function (done) {
+    try {
+
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    }
+  });
+
+  it('guest user not cc checkout ', async function (done) {
+    try {
+
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    }
+  });
+
   it('senario 1 : a normal order (order 1) which central warehosue has inventory for ', async function (done) {
     try {
       this.done = done;
@@ -149,7 +268,7 @@ describe('POST Order - ORP', () => {
 
       expect(newInventory1.count).toBe(PreInventory1.count);
       expect(newInventory2.count).toBe(PreInventory2.count);
-      
+
       expect(newInventory1.reserved).toBe(PreInventory1.reserved + 2);
       expect(newInventory2.reserved).toBe(PreInventory2.reserved + 1);
 
@@ -159,54 +278,72 @@ describe('POST Order - ORP', () => {
     };
   });
 
-  xit('senario 2 : a normal order (order 2) which central warehouse does\'nt have inventory for', async function (done) {
+  it('senario 2 : a normal order (order 2) which central warehouse does\'nt have inventory for', async function (done) {
     try {
       this.done = done;
+      let orderLines = [];
+      for (let i = 0; i < 5; i++) {
+        orderLines.push({
+          product_price: 0,
+          paid_price: 0,
+          cancel: false,
+          product_id: products[0]._id,
+          product_instance_id: products[0].instances[0]._id,
+          tickets: []
+        })
+      }
+      let res = await models()['OrderTest'].findOneAndUpdate({
+        _id: orders[0]._id
+      }, {
+          $set: {
+            order_lines
+          },
+        }, {new: true});
 
-      let PreCentralInventory = products[0].instances[1].inventory.find(x =>
+      orders[0] = JSON.parse(JSON.stringify(res));
+      let preInventory1 = products[0].instances[0].inventory.find(x =>
         x.warehouse_id.toString() === warehouses[1]._id.toString());
 
-      let PrePaladiumInventory = products[0].instances[1].inventory.find(x =>
+      let preInventory2 = products[0].instances[0].inventory.find(x =>
         x.warehouse_id.toString() === warehouses[2]._id.toString());
 
-      let transaction_id = mongoose.Types.ObjectId();
-      let res = await rp({
+      let preInventory3 = products[0].instances[0].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[3]._id.toString());
+
+      res = await rp({
         method: 'POST',
-        uri: lib.helpers.apiTestURL(`checkoutDemo`),
+        uri: lib.helpers.apiTestURL(`checkout/true`),
         body: {
-          order_id: orders[1]._id,
-          address: customerAddress,
-          transaction_id,
-          used_point: 0,
-          used_balance: 0,
-          total_amount: 0,
+          order_id: orders[0]._id,
+          address: utils.loggedInCustomerAddress,
+          duration_id: deliveryDurationInfo[0]._id,
           is_collect: false,
           time_slot: {
-            lower_bound: 18,
-            upper_bound: 22
+            lower_bound: 10,
+            upper_bound: 18
           },
-          delivery_info: {duration_days: 3},
-          paymentType: 1
+
         },
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`checkout/true`),
+        jar: customer.jar,
         json: true,
         resolveWithFullResponse: true,
-        jar: customer.jar
       });
       expect(res.statusCode).toBe(200);
 
       let foundProduct = await models()['ProductTest'].findById(products[0]._id).lean();
 
-      let newCentralInventory = foundProduct.instances[1].inventory.find(x =>
+      let newInventory1 = foundProduct.instances[0].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
+      let newInventory2 = foundProduct.instances[1].inventory.find(x =>
         x.warehouse_id.toString() === warehouses[1]._id.toString());
 
-      let newPaladiumInventory = foundProduct.instances[1].inventory.find(x =>
-        x.warehouse_id.toString() === warehouses[2]._id.toString());
+      expect(newInventory1.count).toBe(PreInventory1.count);
+      expect(newInventory2.count).toBe(PreInventory2.count);
 
-      expect(newCentralInventory.count).toBe(PreCentralInventory.count);
-      expect(newCentralInventory.reserved).toBe(PreCentralInventory.reserved);
-
-      expect(newPaladiumInventory.count).toBe(PrePaladiumInventory.count);
-      expect(newPaladiumInventory.reserved).toBe(PrePaladiumInventory.reserved + 1);
+      expect(newInventory1.reserved).toBe(PreInventory1.reserved + 2);
+      expect(newInventory2.reserved).toBe(PreInventory2.reserved + 1);
 
       done();
     } catch (err) {
