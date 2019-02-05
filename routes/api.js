@@ -82,7 +82,7 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
       })
       .then(async data => {
         try {
-          await session.commitTransaction();
+          // await session.commitTransaction();
         } catch (err) {
           console.log('-> erron on commiting transcation', err);
           throw err;
