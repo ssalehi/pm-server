@@ -37,8 +37,8 @@ describe('POST Order - ORP', () => {
       products = await utils.makeProducts();
       orders = await utils.makeOrders(customer);
 
-      let res = await models()['OrderTest'].findOneAndUpdate({
-        _id: order[0]._id
+      for(let i=0; i< '')
+      let res = await models()['OrderTest'].update({
       }, {
           $set: {
             tickets: [],
@@ -54,7 +54,7 @@ describe('POST Order - ORP', () => {
 
         }, {new: true});
 
-      orders[0] = JSON.parse(JSON.stringify(res));
+      orders = JSON.parse(JSON.stringify(res));
 
       done();
     } catch (err) {
@@ -102,7 +102,7 @@ describe('POST Order - ORP', () => {
           duration_id: deliveryDurationInfo[0]._id,
           is_collect: false,
           transaction_id: 'xy1',
-        
+
         },
         method: 'POST',
         uri: lib.helpers.apiTestURL(`checkout/true`),

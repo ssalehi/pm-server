@@ -217,7 +217,7 @@ let makeProducts = async () => {
   }
 }
 
-let changeInventory = async (productId, productInstanceId, warehouseId, delCount, delReserved) => {
+const changeInventory = async (productId, productInstanceId, warehouseId, delCount, delReserved) => {
   try {
 
     let foundProduct = await models()['ProductTest'].findById(mongoose.Types.ObjectId(productId)).lean()
@@ -258,7 +258,7 @@ let changeInventory = async (productId, productInstanceId, warehouseId, delCount
     if (!isSoldOut && foundInstance.sold_out)
       foundInstance.sold_out = false;
 
-    return  models()['ProductTest'].update({
+    return models()['ProductTest'].update({
       _id: mongoose.Types.ObjectId(productId),
       'instances._id': mongoose.Types.ObjectId(productInstanceId)
     }, {
@@ -273,18 +273,18 @@ let changeInventory = async (productId, productInstanceId, warehouseId, delCount
   }
 }
 
-let checkSoldOutStatus = async (productId, initialInstance, changedInstance) => {
+const checkSoldOutStatus = async (productId, initialInstance, changedInstance) => {
 
   try {
     const totalInitialCount = initialInstance.inventory.map(x => x.count).reduce((x, y) => x + y);
     const totalChangedCount = changedInstance.inventory.map(x => x.count).reduce((x, y) => x + y);
     if (totalChangedCount === 0) {
       // when the product counts becomes 0, the product is added to soldout list (not when count - reserved == 0)
-      await new SoldOutModel(Product.test).insertProductInstance(productId, initialInstance._id.toString());
+      await insertProductInstance(productId, initialInstance._id.toString());
       return true;
     }
     else if (totalInitialCount === 0 && totalChangedCount > 0) {
-      await new SoldOutModel(Product.test).removeProductInstance(productId, initialInstance._id.toString());
+      await removeProductInstance(productId, initialInstance._id.toString());
       return false;
     }
   } catch (err) {
@@ -294,14 +294,29 @@ let checkSoldOutStatus = async (productId, initialInstance, changedInstance) => 
 
 }
 
-let makeOrders = async (customer) => {
+const insertProductInstance = (productId, productInstanceId) => {
+  const soldOut = models()['SoldOutTest']({
+    product_id: mongoose.Types.ObjectId(productId),
+    product_instance_id: mongoose.Types.ObjectId(productInstanceId)
+  });
+  return soldOut.save();
+}
+
+const removeProductInstance = (productId, productInstanceId) => {
+  return models()['SoldOutTest'].find({
+    product_id: mongoose.Types.ObjectId(productId),
+    product_instance_id: mongoose.Types.ObjectId(productInstanceId)
+  }).remove();
+}
+
+const makeOrders = async (customer) => {
   try {
     let defaultTicket = {
-        is_processed: false,
-        status: _const.ORDER_STATUS.WaitForAggregation,
-        desc: null,
-        receiver_id: mongoose.Types.ObjectId(),
-        timestamp: new Date()
+      is_processed: false,
+      status: _const.ORDER_STATUS.WaitForAggregation,
+      desc: null,
+      receiver_id: mongoose.Types.ObjectId(),
+      timestamp: new Date()
     }
 
     let orders = await models()['OrderTest'].insertMany([
