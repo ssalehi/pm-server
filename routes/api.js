@@ -43,9 +43,9 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
 
   return (function (req, res) {
 
-    let db = require('../mongo');
-    let connection = db.connection(req.test);
-    let session;
+    // let db = require('../mongo');
+    // let connection = db.connection(req.test);
+    // let session;
 
     (req.jwtToken ?
       personModel.jwtStrategy(req, adminOnly)
@@ -81,21 +81,21 @@ function apiResponse(className, functionName, adminOnly = false, reqFuncs = [], 
         }
       })
       .then(async data => {
-        try {
-          // await session.commitTransaction();
-        } catch (err) {
-          console.log('-> erron on commiting transcation', err);
-          throw err;
-        }
+        // try {
+        //   await session.commitTransaction();
+        // } catch (err) {
+        //   console.log('-> erron on commiting transcation', err);
+        //   throw err;
+        // }
         res.status(200)
           .json(data);
       })
       .catch(async err => {
-        try {
-          // await session.abortTransaction();
-        } catch (err) {
-          console.log('-> ', err);
-        }
+        // try {
+        //   await session.abortTransaction();
+        // } catch (err) {
+        //   console.log('-> ', err);
+        // }
         console.log(`${className}/${functionName}: `, req.app.get('env') === 'development' ? err : err.message);
         res.status(err.status || 500)
           .send(err.message || err);
