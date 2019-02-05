@@ -514,61 +514,6 @@ describe('Internal Assigned Delivery for App', () => {
 
   });
 
-  xit('should start a delivery with one orderline ready and one on finalcheck from shop to hub => the left one should be put back on prev state in shop', async function (done) {
-    this.done = done;
-    const deliveryData1 = await models()['DeliveryTest'].find()
-    deliveryData1[0].order_details[0].order_line_ids = [orders[0].order_lines[0]._id, orders[0].order_lines[1]._id]
-    await deliveryData1[0].save()
-    const res = await rp({
-      jar: agentObj.jar,
-      body: {
-        deliveryId: deliveries[0]._id,
-        preCheck: false,
-      },
-      method: 'POST',
-      json: true,
-      uri: lib.helpers.apiTestURL('delivery/start'),
-      resolveWithFullResponse: true
-    });
-    expect(res.statusCode).toBe(200)
-
-    const orderData = await models()['OrderTest'].find()
-    lastTicket = orderData[0].order_lines[0].tickets[orderData[0].order_lines[0].tickets.length - 1]
-    expect(lastTicket.status).toBe(_const.ORDER_LINE_STATUS.OnDelivery)
-    lastTicket2 = orderData[0].order_lines[1].tickets[orderData[0].order_lines[1].tickets.length - 1]
-    expect(lastTicket2.status).toBe(_const.ORDER_LINE_STATUS.OnlineWarehouseVerified)
-    const deliveryData = await models()['DeliveryTest'].find()
-    isExist = deliveryData[0].order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
-    expect(isExist).toBe(true)
-    done()
-  });
-  xit('should start a delivery with one orderline ready and one on finalcheck from hub to shop => => the left one should be put back on prev state on hub', async function (done) {
-    this.done = done;
-
-    const res = await rp({
-      jar: agentObj.jar,
-      body: {
-        deliveryId: deliveries[1]._id,
-        preCheck: false,
-      },
-      method: 'POST',
-      json: true,
-      uri: lib.helpers.apiTestURL('delivery/start'),
-      resolveWithFullResponse: true
-    });
-    expect(res.statusCode).toBe(200)
-    const orderData = await models()['OrderTest'].find()
-    lastTicket = orderData[0].order_lines[0].tickets[orderData[0].order_lines[0].tickets.length - 1]
-    expect(lastTicket.status).toBe(_const.ORDER_LINE_STATUS.OnDelivery)
-    lastTicket2 = orderData[0].order_lines[1].tickets[orderData[0].order_lines[1].tickets.length - 1]
-    expect(lastTicket2.status).toBe(_const.ORDER_LINE_STATUS.Delivered)
-    expect(lastTicket2.receiver_id.toString()).toBe(warehouses.find(x => x.is_hub)._id.toString())
-    const deliveryData = await models()['DeliveryTest'].find()
-    isExist = deliveryData[1].order_details[0].order_line_ids.map(id => id.toString()).includes(orders[0].order_lines[0]._id.toString())
-    expect(deliveryData[1].order_details.length).toBe(1)
-    expect(isExist).toBe(true)
-    done()
-  });
 });
 
 xdescribe('End Delivery-Internal Delivery', () => {
