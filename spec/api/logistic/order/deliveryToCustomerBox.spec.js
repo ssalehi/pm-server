@@ -237,8 +237,6 @@ describe('POST Search searchScanToCustomerDelivery', () => {
       });
       expect(res.statusCode).toBe(200);
       expect(res.body.data.length).toBe(2);
-      expect(res.body.data[0].total_order_lines).toBe(4);
-      expect(res.body.data[1].total_order_lines).toBe(5);
 
       done();
     } catch (err) {
@@ -352,7 +350,7 @@ describe('POST Search searchScanToCustomerDelivery', () => {
           tickets: [
             {
               is_processed: false,
-              status: _const.ORDER_LINE_STATUS.checked,
+              status: _const.ORDER_LINE_STATUS.Checked,
               desc: null,
               receiver_id: palladiumWarehouse._id,
               timestamp: moment()

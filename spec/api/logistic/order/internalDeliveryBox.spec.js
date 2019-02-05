@@ -295,7 +295,7 @@ describe('Internal Assigned Delivery for App', () => {
 
   beforeEach(async done => {
     try {
-      await lib.dbHelpers.dropAll()
+      await lib.dbHelpers.dropAll();
       const agent = await lib.dbHelpers.addAndLoginAgent('IDelivery Agent', _const.ACCESS_LEVEL.InternalDeliveryAgent)
       agentObj.aid = agent.aid;
       agentObj.jar = agent.rpJar;
@@ -509,7 +509,6 @@ describe('Internal Assigned Delivery for App', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    console.log('res',res.body);
     expect(res.body.data.length).toBe(2);
     done();
 
