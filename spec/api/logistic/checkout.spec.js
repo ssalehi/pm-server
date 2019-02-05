@@ -21,14 +21,13 @@ describe('POST Order - ORP', () => {
 
       await lib.dbHelpers.dropAll()
 
-
       await models()['DeliveryDurationInfoTest'].insertMany(deliveryDurationInfo)
       await models()['WarehouseTest'].insertMany(warehouses)
 
       let res = await lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
         first_name: 'test 1',
         surname: 'test 1',
-        address: customerAddress
+        address: utils.loggedInCustomerAddress
       });
 
       customer.cid = res.cid;
@@ -37,24 +36,27 @@ describe('POST Order - ORP', () => {
       products = await utils.makeProducts();
       orders = await utils.makeOrders(customer);
 
-      for(let i=0; i< '')
-      let res = await models()['OrderTest'].update({
-      }, {
-          $set: {
-            tickets: [],
-            is_cart: true,
-            transaction_id: null,
-          },
-          $unset: {
-            address: 1,
-            delivery_info: 1,
-            is_collect: 1,
-            total_amount: 1,
-          }
+      for (let i = 0; i < orders.length; i++) {
 
-        }, {new: true});
+        let res = await models()['OrderTest'].findOneAndUpdate({
+          _id: orders[i]._id
+        }, {
+            $set: {
+              tickets: [],
+              is_cart: true,
+              transaction_id: null,
+            },
+            $unset: {
+              address: 1,
+              delivery_info: 1,
+              is_collect: 1,
+              total_amount: 1,
+            }
 
-      orders = JSON.parse(JSON.stringify(res));
+          }, {new: true});
+
+        orders[i] = JSON.parse(JSON.stringify(res));
+      }
 
       done();
     } catch (err) {
@@ -66,10 +68,18 @@ describe('POST Order - ORP', () => {
     try {
       this.done = done;
       let res = await models()['OrderTest'].findOneAndUpdate({
-        _id: order[0]._id
+        _id: orders[0]._id
       }, {
           $set: {
             order_lines: [
+              {
+                product_price: 0,
+                paid_price: 0,
+                cancel: false,
+                product_id: products[0]._id,
+                product_instance_id: products[0].instances[0]._id,
+                tickets: []
+              },
               {
                 product_price: 0,
                 paid_price: 0,
@@ -91,21 +101,29 @@ describe('POST Order - ORP', () => {
         }, {new: true});
 
       orders[0] = JSON.parse(JSON.stringify(res));
-
-      let PreInventory = products[0].instances[0].inventory.find(x =>
+      let PreInventory1 = products[0].instances[0].inventory.find(x =>
         x.warehouse_id.toString() === warehouses[1]._id.toString());
-      let res = await rp({
+
+      let PreInventory2 = products[0].instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
+
+      res = await rp({
         method: 'POST',
         uri: lib.helpers.apiTestURL(`checkout/true`),
         body: {
-          address: customerAddress,
+          order_id: orders[0]._id,
+          address: utils.loggedInCustomerAddress,
           duration_id: deliveryDurationInfo[0]._id,
           is_collect: false,
-          transaction_id: 'xy1',
+          time_slot: {
+            lower_bound: 10,
+            upper_bound: 18
+          },
 
         },
         method: 'POST',
         uri: lib.helpers.apiTestURL(`checkout/true`),
+        jar: customer.jar,
         json: true,
         resolveWithFullResponse: true,
       });
@@ -117,17 +135,23 @@ describe('POST Order - ORP', () => {
       expect(foundOrder.tickets[0].receiver_id).toBeUndefined();
 
 
-      expect(foundOrder.transaction_id.toString()).toBe(transaction_id.toString());
+      expect(foundOrder.transaction_id).not.toBeUndefined();
       expect(foundOrder.is_collect).toBe(false);
       expect(foundOrder.is_cart).toBeFalsy();
-      expect(foundOrder.address._id.toString()).toBe(customerAddress._id.toString());
+      expect(foundOrder.address._id.toString()).toBe(utils.loggedInCustomerAddress._id.toString());
 
       let foundProduct = await models()['ProductTest'].findById(products[0]._id).lean();
 
-      let newInventory = foundProduct.instances[0].inventory.find(x =>
+      let newInventory1 = foundProduct.instances[0].inventory.find(x =>
         x.warehouse_id.toString() === warehouses[1]._id.toString());
-      expect(newInventory.count).toBe(PreInventory.count);
-      expect(newInventory.reserved).toBe(PreInventory.reserved + 2);
+      let newInventory2 = foundProduct.instances[1].inventory.find(x =>
+        x.warehouse_id.toString() === warehouses[1]._id.toString());
+
+      expect(newInventory1.count).toBe(PreInventory1.count);
+      expect(newInventory2.count).toBe(PreInventory2.count);
+      
+      expect(newInventory1.reserved).toBe(PreInventory1.reserved + 2);
+      expect(newInventory2.reserved).toBe(PreInventory2.reserved + 1);
 
       done();
     } catch (err) {

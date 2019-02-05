@@ -424,5 +424,7 @@ const makeOrders = async (customer) => {
 module.exports = {
   makeProducts,
   makeOrders,
-  changeInventory
+  changeInventory,
+  loggedInCustomerAddress,
+  guestAddress
 }
