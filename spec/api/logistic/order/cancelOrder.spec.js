@@ -46,7 +46,7 @@ describe('POST Order Cancel', () => {
             await models()['OrderTest'].update({
                 _id: mongoose.Types.ObjectId(orders[0]._id),
             }, {
-                $set: {
+                $set: { //order 1 which its ticket is suposed to become delivered
                     order_lines: [{
                         product_id: mongoose.Types.ObjectId(products[0]._id),
                         campaign_info: {
@@ -55,9 +55,15 @@ describe('POST Order Cancel', () => {
                         },
                         product_instance_id: mongoose.Types.ObjectId(products[0].instances[0]._id),
                         tickets: [{
-                            is_processed: false,
+                            is_processed: true,
                             status: _const.ORDER_LINE_STATUS.Delivered,
                             receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
+                            desc: null,
+                            timestamp: new Date(),
+                        }, {
+                            is_processed: false,
+                            status: _const.ORDER_LINE_STATUS.Recieved,
+                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
                             desc: null,
                             timestamp: new Date(),
                         }]
@@ -69,16 +75,115 @@ describe('POST Order Cancel', () => {
                         },
                         product_instance_id: mongoose.Types.ObjectId(products[0].instances[0]._id),
                         tickets: [{
-                            is_processed: false,
-                            status: _const.ORDER_LINE_STATUS.OnlineWarehouseVerified,
+                            is_processed: true,
+                            status: _const.ORDER_LINE_STATUS.Delivered,
                             receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
+                            desc: null,
+                            timestamp: new Date(),
+                        }, {
+                            is_processed: false,
+                            status: _const.ORDER_LINE_STATUS.FinalCheck,
+                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
+                            desc: null,
+                            timestamp: new Date(),
+                        }]
+                    },{
+                        product_id: mongoose.Types.ObjectId(products[0]._id),
+                        campaign_info: {
+                            _id: mongoose.Types.ObjectId(),
+                            discount_ref: 0
+                        },
+                        product_instance_id: mongoose.Types.ObjectId(products[0].instances[0]._id),
+                        tickets: [{
+                            is_processed: true,
+                            status: _const.ORDER_LINE_STATUS.Delivered,
+                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
+                            desc: null,
+                            timestamp: new Date(),
+                        }, {
+                            is_processed: false,
+                            status: _const.ORDER_LINE_STATUS.Checked,
+                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
                             desc: null,
                             timestamp: new Date(),
                         }]
                     }]
                 }
             });
+            await models()['OrderTest'].update({
+                _id: mongoose.Types.ObjectId(orders[1]._id),
+            }, {
+                $set: { //order 2 which its ticket is suposed to become online warehouse verified
+                    order_lines: [{
+                        product_id: mongoose.Types.ObjectId(products[0]._id),
+                        campaign_info: {
+                            _id: mongoose.Types.ObjectId(),
+                            discount_ref: 0
+                        },
+                        product_instance_id: mongoose.Types.ObjectId(products[0].instances[0]._id),
+                        tickets: [{
+                            is_processed: true,
+                            status: _const.ORDER_LINE_STATUS.OnlineWarehouseVerified,
+                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
+                            desc: null,
+                            timestamp: new Date(),
+                        }, {
+                            is_processed: false,
+                            status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
+                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
+                            desc: null,
+                            timestamp: new Date(),
+                        }]
+                    }, {
+                        product_id: mongoose.Types.ObjectId(products[0]._id),
+                        campaign_info: {
+                            _id: mongoose.Types.ObjectId(),
+                            discount_ref: 0
+                        },
+                        product_instance_id: mongoose.Types.ObjectId(products[0].instances[0]._id),
+                        tickets: [{
+                            is_processed: true,
+                            status: _const.ORDER_LINE_STATUS.OnlineWarehouseVerified,
+                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
+                            desc: null,
+                            timestamp: new Date(),
+                        }, {
+                            is_processed: false,
+                            status: _const.ORDER_LINE_STATUS.DeliverySet,
+                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
+                            desc: null,
+                            timestamp: new Date(),
+                        }]
+                    }]
+                }
+            });
+
             orderData = await models()['OrderTest'].find()
+            deliveries = await models()['DeliveryTest'].insertMany([{
+                to: {
+                    warehouse_id: warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id
+                },
+                from: {
+                    warehouse_id: warehouses.find(x => x.is_hub)._id
+                },
+                order_details: [{
+                    order_line_ids: [
+                        orderData[0].order_lines[0]._id,
+                    ],
+                    _id: mongoose.Types.ObjectId(),
+                    order_id: orderData[0]._id
+
+                }],
+                start: new Date(),
+                tickets: [{
+                    is_processed: false,
+                    _id: mongoose.Types.ObjectId(),
+                    status: _const.DELIVERY_STATUS.requestPackage,
+                    receiver_id: warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id,
+                    timestamp: new Date()
+                }]
+            }])
+
             done()
         } catch (err) {
             console.log(err);
@@ -102,6 +207,8 @@ describe('POST Order Cancel', () => {
             const NorderData = await models()['OrderTest'].find()
             expect(NorderData[0].order_lines[0].cancel).toBe(true)
             expect(NorderData[0].order_lines[1].cancel).toBe(false)
+            expect(NorderData[0].order_lines[2].cancel).toBe(false)
+            expect(NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Delivered)
             expect(NorderData[0].tickets[NorderData[0].tickets.length - 1].status).toBe(_const.ORDER_STATUS.WaitForAggregation)
             done()
         } catch (err) {
@@ -125,6 +232,7 @@ describe('POST Order Cancel', () => {
             const NorderData = await models()['OrderTest'].find()
             NorderData[0].order_lines.forEach(OL => {
                 expect(OL.cancel).toBe(true)
+                expect(OL.tickets[OL.tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Delivered)
             });
             done()
         } catch (err) {
@@ -137,16 +245,19 @@ describe('POST Order Cancel', () => {
             const res = await rp({
                 jar: customer.jar,
                 body: {
-                    orderId: orders[0]._id,
-                    orderLineId: orderData[0].order_lines[0]._id
+                    orderId: orders[1]._id,
+                    orderLineId: orderData[1].order_lines[0]._id
                 },
                 method: 'POST',
                 json: true,
                 uri: lib.helpers.apiTestURL('order/cancel'),
                 resolveWithFullResponse: true
             });
-            expect(res.statusCode).toBe(200)
             const NorderData = await models()['OrderTest'].find()
+            expect(NorderData[1].order_lines[0].cancel).toBe(true)
+            expect(NorderData[1].order_lines[1].cancel).toBe(false)
+            expect(NorderData[1].order_lines[0].tickets[NorderData[1].order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.OnlineWarehouseVerified)
+            expect(NorderData[1].tickets[NorderData[0].tickets.length - 1].status).toBe(_const.ORDER_STATUS.WaitForAggregation)
             done()
         } catch (err) {
             lib.helpers.errorHandler.bind(this)(err)
@@ -158,7 +269,7 @@ describe('POST Order Cancel', () => {
             const res = await rp({
                 jar: customer.jar,
                 body: {
-                    orderId: orders[0]._id,
+                    orderId: orders[1]._id,
                 },
                 method: 'POST',
                 json: true,
@@ -167,6 +278,10 @@ describe('POST Order Cancel', () => {
             });
             expect(res.statusCode).toBe(200)
             const NorderData = await models()['OrderTest'].find()
+            NorderData[1].order_lines.forEach(OL => {
+                expect(OL.cancel).toBe(true)
+                expect(OL.tickets[OL.tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.OnlineWarehouseVerified)
+            });
             done()
         } catch (err) {
             lib.helpers.errorHandler.bind(this)(err)
