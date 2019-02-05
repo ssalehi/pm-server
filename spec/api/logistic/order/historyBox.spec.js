@@ -19,7 +19,7 @@ describe('POST Search OrderHistory', () => {
     jar: null
   };
 
-  let products, centralWarehouse, hubWarehouse, palladiumWarehouse;
+  let products, centralWarehouse, hubWarehouse;
   beforeEach(async (done) => {
     try {
 
@@ -28,13 +28,9 @@ describe('POST Search OrderHistory', () => {
       let warehouse = await models()['WarehouseTest'].insertMany(warehouses);
       warehouse = JSON.parse(JSON.stringify(warehouse));
 
-      centralWarehouse = warehouse.find(x => !x.is_hub && !x.has_customer_pickup);
-
       hubWarehouse = warehouse.find(x => x.is_hub && !x.has_customer_pickup);
 
-      palladiumWarehouse = warehouse.find(x => !x.is_hub && x.priority === 1);
-
-      let res1 = await lib.dbHelpers.addAndLoginAgent('salesManager', _const.ACCESS_LEVEL.SalesManager, hubWarehouse._id);
+      let res1 = await lib.dbHelpers.addAndLoginAgent('salesManager', _const.ACCESS_LEVEL.SalesManager, salesManager._id);
       salesManager.aid = res1.aid;
       salesManager.jar = res1.rpJar;
 
@@ -61,7 +57,6 @@ describe('POST Search OrderHistory', () => {
           ]
         }
       ]);
-
       done()
     }
     catch (err) {
