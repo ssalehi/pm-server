@@ -239,7 +239,6 @@ describe('POST Search ScanExternalDeliveryBox', () => {
       expect(res.body.data.length).toBe(2);
       expect(res.body.data[0].total_order_lines).toBe(2);
       expect(res.body.data[1].total_order_lines).toBe(5);
-      console.log(res.body.data);
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
