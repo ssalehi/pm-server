@@ -43,7 +43,7 @@ describe('POST Search on Delivery Items', () => {
 
       let hubWarehouse = warehouses.find(x => x.is_hub && !x.has_customer_pickup);
       let centralWarehouse = warehouses.find(x => !x.is_hub && !x.has_customer_pickup);
-      let palladiumWarehouse = warehouse.find(x => !x.is_hub && x.priority === 1);
+      let palladiumWarehouse = warehouses.find(x => !x.is_hub && x.priority === 1);
 
       let res1 = await lib.dbHelpers.addAndLoginAgent('salesManager', _const.ACCESS_LEVEL.SalesManager, centralWarehouse._id);
       salesManager.aid = res1.aid;
@@ -124,7 +124,7 @@ describe('POST Search on Delivery Items', () => {
             }
           },
           from: {
-            warehouse_id: warehouses.find(x => x.is_hub)._id
+            warehouse_id: hubWarehouse._id
           },
           order_details: [{
             order_line_ids: [
@@ -148,20 +148,17 @@ describe('POST Search on Delivery Items', () => {
         },
         {
           to: {
-            customer: {
-              _id: orderData[0].customer_id,
-              address: orderData[0].address
-            }
+              warehouse_id: hubWarehouse._id
           },
           from: {
-            warehouse_id: warehouses.find(x => x.is_hub)._id
+            warehouse_id: palladiumWarehouse._id
           },
           order_details: [{
             order_line_ids: [
-              orderData[0].order_lines[0]._id,
+              orderData[1].order_lines[0]._id,
             ],
             _id: mongoose.Types.ObjectId(),
-            order_id: orders[0]._id
+            order_id: orders[1]._id
 
           }],
           start: new Date(),
@@ -177,13 +174,13 @@ describe('POST Search on Delivery Items', () => {
           delivery_end: moment().add(1, 'd').toDate()
         },
         {
-          to: {
+          from: {
             customer: {
               _id: orderData[0].customer_id,
               address: orderData[0].address
             }
           },
-          from: {
+          to: {
             warehouse_id: warehouses.find(x => x.is_hub)._id
           },
           order_details: [{
@@ -212,8 +209,7 @@ describe('POST Search on Delivery Items', () => {
       done();
     } catch (err) {
       console.log(err);
-    }
-    ;
+    };
   }, 15000);
 
   it('sales manager should see all deliveries history', async function (done) {
@@ -235,7 +231,7 @@ describe('POST Search on Delivery Items', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.data.length).toBe(1);
+    expect(res.body.data.length).toBe(3);
     done();
 
   });
