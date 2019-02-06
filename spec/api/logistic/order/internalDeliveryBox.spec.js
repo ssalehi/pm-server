@@ -32,7 +32,8 @@ xdescribe('InternalUnAssigned Delivery', () => {
       await lib.dbHelpers.dropAll();
 
       let warehouse = await models()['WarehouseTest'].insertMany(warehouses);
-      // warehouse = JSON.parse(JSON.stringify(warehouse));
+      warehouse = JSON.parse(JSON.stringify(warehouse));
+
       hubWarehouse = warehouse.find(x => x.is_hub && !x.has_customer_pickup);
 
       palladiumWarehouse = warehouse.find(x => !x.is_hub && x.priority === 1);

@@ -10,7 +10,17 @@ const moment = require('moment');
 describe('POST Search on Delivery Items', () => {
 
   let orders, products, deliveries;
+  let salesManager = {
+    aid: null,
+    jar: null
+  };
+
   let hubClerk = {
+    aid: null,
+    jar: null
+  };
+
+  let palladiumClerk = {
     aid: null,
     jar: null
   };
@@ -32,10 +42,20 @@ describe('POST Search on Delivery Items', () => {
       await models()['WarehouseTest'].insertMany(warehouses);
 
       let hubWarehouse = warehouses.find(x => x.is_hub && !x.has_customer_pickup);
+      let centralWarehouse = warehouses.find(x => !x.is_hub && !x.has_customer_pickup);
+      let palladiumWarehouse = warehouse.find(x => !x.is_hub && x.priority === 1);
+
+      let res1 = await lib.dbHelpers.addAndLoginAgent('salesManager', _const.ACCESS_LEVEL.SalesManager, centralWarehouse._id);
+      salesManager.aid = res1.aid;
+      salesManager.jar = res1.rpJar;
 
       const hub = await lib.dbHelpers.addAndLoginAgent('hclerk', _const.ACCESS_LEVEL.HubClerk, hubWarehouse._id);
       hubClerk.aid = hub.aid;
       hubClerk.jar = hub.rpJar;
+
+      let res2 = await lib.dbHelpers.addAndLoginAgent('pclerk', _const.ACCESS_LEVEL.ShopClerk, palladiumWarehouse._id);
+      palladiumClerk.aid = res2.aid;
+      palladiumClerk.jar = res2.rpJar;
 
       const agent = await lib.dbHelpers.addAndLoginAgent('IDelivery Agent', _const.ACCESS_LEVEL.InternalDeliveryAgent);
       agentObj.aid = agent.aid;
@@ -122,20 +142,81 @@ describe('POST Search on Delivery Items', () => {
             receiver_id: hubWarehouse._id,
             timestamp: new Date()
           }],
-          shelf_code: 'A',
           delivery_agent: agentObj.aid,
           delivery_start: moment().toDate(),
           delivery_end: moment().add(1, 'd').toDate()
         },
+        {
+          to: {
+            customer: {
+              _id: orderData[0].customer_id,
+              address: orderData[0].address
+            }
+          },
+          from: {
+            warehouse_id: warehouses.find(x => x.is_hub)._id
+          },
+          order_details: [{
+            order_line_ids: [
+              orderData[0].order_lines[0]._id,
+            ],
+            _id: mongoose.Types.ObjectId(),
+            order_id: orders[0]._id
+
+          }],
+          start: new Date(),
+          tickets: [{
+            is_processed: false,
+            _id: mongoose.Types.ObjectId(),
+            status: _const.DELIVERY_STATUS.default,
+            receiver_id: hubWarehouse._id,
+            timestamp: new Date()
+          }],
+          delivery_agent: agentObj.aid,
+          delivery_start: moment().toDate(),
+          delivery_end: moment().add(1, 'd').toDate()
+        },
+        {
+          to: {
+            customer: {
+              _id: orderData[0].customer_id,
+              address: orderData[0].address
+            }
+          },
+          from: {
+            warehouse_id: warehouses.find(x => x.is_hub)._id
+          },
+          order_details: [{
+            order_line_ids: [
+              orderData[0].order_lines[0]._id,
+            ],
+            _id: mongoose.Types.ObjectId(),
+            order_id: orders[0]._id
+
+          }],
+          start: new Date(),
+          tickets: [{
+            is_processed: false,
+            _id: mongoose.Types.ObjectId(),
+            status: _const.DELIVERY_STATUS.default,
+            receiver_id: hubWarehouse._id,
+            timestamp: new Date()
+          }],
+          delivery_agent: agentObj.aid,
+          delivery_start: moment().toDate(),
+          delivery_end: moment().add(1, 'd').toDate()
+        },
+
       ]);
       deliveries = JSON.parse(JSON.stringify(deliveries));
       done();
     } catch (err) {
       console.log(err);
-    };
+    }
+    ;
   }, 15000);
 
-  it('should see order in shelf code', async function (done) {
+  it('sales manager should see all deliveries history', async function (done) {
     this.done = done;
 
     const res = await rp({
@@ -143,13 +224,13 @@ describe('POST Search on Delivery Items', () => {
       method: 'POST',
       body: {
         options: {
-          type: 'ShelvesList'
+          type: 'DeliveryHistory'
         },
         offset: 0,
         limit: 10
       },
       json: true,
-      jar: hubClerk.jar,
+      jar: salesManager.jar,
       resolveWithFullResponse: true
     });
 
