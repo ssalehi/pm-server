@@ -29,8 +29,9 @@ describe('POST Search OrderHistory', () => {
       warehouse = JSON.parse(JSON.stringify(warehouse));
 
       hubWarehouse = warehouse.find(x => x.is_hub && !x.has_customer_pickup);
+      centralWarehouse = warehouse.find(x => !x.is_hub && !x.has_customer_pickup);
 
-      let res1 = await lib.dbHelpers.addAndLoginAgent('salesManager', _const.ACCESS_LEVEL.SalesManager, salesManager._id);
+      let res1 = await lib.dbHelpers.addAndLoginAgent('salesManager', _const.ACCESS_LEVEL.SalesManager, centralWarehouse._id);
       salesManager.aid = res1.aid;
       salesManager.jar = res1.rpJar;
 
@@ -57,6 +58,7 @@ describe('POST Search OrderHistory', () => {
           ]
         }
       ]);
+
       done()
     }
     catch (err) {
