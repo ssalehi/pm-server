@@ -18,7 +18,7 @@ let pKeys = [];
 let _hash;
 
 db.dbIsReady()
-  .then(() => {
+  .then(async () => {
     try {
       await modelIsReady();
       copydir.sync('assets', 'public/assets');

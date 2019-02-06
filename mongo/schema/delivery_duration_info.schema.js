@@ -27,8 +27,7 @@ loyalty_template = {
     required: true
   },
   discount: {
-    type: Number,
-    required: true,
+    type: Number
   }
 };
 
