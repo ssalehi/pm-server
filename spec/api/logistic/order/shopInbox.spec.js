@@ -290,8 +290,8 @@ describe('POST onlineWarehouseResponse(verify)', () => {
         const deliveryData2 = await models()['DeliveryTest'].find()
         expect(deliveryData2.length).toBe(2)
         newDelivery = deliveryData2.find(delivery => delivery.tickets[0].status === _const.DELIVERY_STATUS.default)
-        let nextDay = moment(moment().add('d', 1)).format('YYYY-MM-DD');
-        expect(moment(newDelivery.start).format('YYYY-MM-DD')).toBe(nextDay)
+        let currentDay = moment().format('YYYY-MM-DD');
+        expect(moment(newDelivery.start).format('YYYY-MM-DD')).toBe(currentDay)
         done()
     });
     it('should check after onlinewarehouseverification the reserved and count of an inventory are reduced by 1', async function (done) {
