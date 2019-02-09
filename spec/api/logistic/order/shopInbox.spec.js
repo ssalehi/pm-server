@@ -7,10 +7,6 @@ const warehouses = require('../../../../warehouses');
 const moment = require('moment');
 const utils = require('../utils');
 
-
-
-
-
 describe('POST inbox scan - new orderline', () => {
     let orders, products
     ShopClerk = {
