@@ -556,8 +556,8 @@ router.get('/refund/get_balance', apiResponse('Refund', 'getBalanceAndStatus', f
 router.get('/daily_sales_report', apiResponse('Order', 'getDailySalesReport', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 
 // SM Message
-router.post('/sm/cancel', apiResponse('SMMessage', 'cancelNotExistOrder', true, ['body.id', 'body.cancelAll', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
-router.post('/sm/renew', apiResponse('SMMessage', 'renewNotExistOrderline', true, ['body.id', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/sm/cancelNotExist', apiResponse('SMMessage', 'cancelNotExistOrder', true, ['body.id', 'body.cancelAll', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/sm/renewNotExist', apiResponse('SMMessage', 'renewNotExistOrderline', true, ['body.id', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/sm/assignToReturn', apiResponse('SMMessage', 'assignToReturn', true, ['body.id', 'body.preCheck', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/sm/close', apiResponse('SMMessage', 'close', true, ['body.id', 'body.report', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 
