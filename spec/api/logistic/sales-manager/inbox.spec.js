@@ -177,7 +177,7 @@ describe('Sales Manager Inbox - not existing order line', () => {
 
       res = await rp({
         method: 'POST',
-        uri: lib.helpers.apiTestURL(`sm/cancel`),
+        uri: lib.helpers.apiTestURL(`sm/cancelNotExist`),
         body: {
           id: message._id,
           cancelAll: false
@@ -271,7 +271,7 @@ describe('Sales Manager Inbox - not existing order line', () => {
 
       res = await rp({
         method: 'POST',
-        uri: lib.helpers.apiTestURL(`sm/cancel`),
+        uri: lib.helpers.apiTestURL(`sm/cancelNotExist`),
         body: {
           id: message._id,
           cancelAll: true
@@ -350,7 +350,7 @@ describe('Sales Manager Inbox - not existing order line', () => {
 
       res = await rp({
         method: 'POST',
-        uri: lib.helpers.apiTestURL(`sm/renew`),
+        uri: lib.helpers.apiTestURL(`sm/renewNotExist`),
         body: {
           id: message._id,
         },
@@ -368,7 +368,7 @@ describe('Sales Manager Inbox - not existing order line', () => {
       expect(foundOrder.order_lines[0].tickets.length).toBe(2);
       expect(foundOrder.order_lines[0].tickets[1].status).toBe(_const.ORDER_LINE_STATUS.Renew);
       expect(foundOrder.order_lines[0].tickets[1].receiver_id.toString()).toBe(warehouses[1]._id.toString());
-      
+
       let updatedMessage = await models()['SMMessageTest'].findOne({});
       expect(updatedMessage.is_processed).toBeTruthy();
 
@@ -377,5 +377,99 @@ describe('Sales Manager Inbox - not existing order line', () => {
       lib.helpers.errorHandler.bind(this)(err)
     };
   });
+
+  it('makes another not exist message for sales manager if he renew order line before increasing inventory', async function (done) {
+    try {
+      this.done = done;
+
+      // clear all inventories for product 0 instance 0
+      for (let i = 1; i < warehouses.length; i++) {
+        await utils.changeInventory(products[0]._id, products[0].instances[0]._id, warehouses[i]._id, -2, 0);
+      }
+      
+      orders[0] = await models()['OrderTest'].findOneAndUpdate({
+        _id: orders[0]._id
+      }, {
+          $set: {
+            delivery_info: {
+              time_slot: {
+                lower_bound: 18,
+                upper_bound: 22
+              },
+              delivery_cost: 15000
+            },
+            order_lines: [
+              {
+                product_price: 0,
+                paid_price: 0,
+                cancel: false,
+                product_id: products[0]._id,
+                product_instance_id: products[0].instances[0]._id,
+                tickets: [
+                  {
+                    is_processed: false,
+                    status: 13,
+                    desc: null,
+                    receiver_id: salesManager.aid,
+                  }
+                ]
+              }
+            ]
+          }
+
+        }, {new: true});
+
+      let message = await models()['SMMessageTest'].create({
+        is_processed: false,
+        is_closed: false,
+        type: 2,
+        order_id: orders[0]._id,
+        order_line_id: orders[0].order_lines[0]._id,
+        extra: {
+          hasMoreOrderLines: true
+        },
+      })
+
+
+      res = await rp({
+        method: 'POST',
+        uri: lib.helpers.apiTestURL(`sm/renewNotExist`),
+        body: {
+          id: message._id,
+        },
+        method: 'POST',
+        jar: salesManager.jar,
+        json: true,
+        resolveWithFullResponse: true,
+      });
+      expect(res.statusCode).toBe(200);
+
+      let foundOrder = await models()['OrderTest'].findOne({
+        _id: orders[0]._id
+      });
+
+      expect(foundOrder.order_lines[0].tickets.length).toBe(1);
+      expect(foundOrder.order_lines[0].tickets[0].status).toBe(_const.ORDER_LINE_STATUS.NotExists);
+      expect(foundOrder.order_lines[0].tickets[0].receiver_id.toString()).toBe(salesManager.aid.toString());
+
+
+
+
+      let messages = await models()['SMMessageTest'].find({});
+      expect(messages.length).toBe(2);
+
+      messages.forEach(x => {
+        expect(x.type).toBe(_const.SM_MESSAGE.NotExists);
+      })
+      expect(messages[0].is_processed).toBeTruthy();
+      expect(messages[1].is_processed).toBeFalsy();
+      
+
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    };
+  });
+
 });
 
