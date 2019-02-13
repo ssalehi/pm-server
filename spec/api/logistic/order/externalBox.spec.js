@@ -113,7 +113,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
           tickets: [
             {
               is_processed: false,
-              status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
+              status: _const.ORDER_LINE_STATUS.FinalCheck,
               desc: null,
               receiver_id: palladiumWarehouse._id,
               timestamp: moment()
@@ -130,7 +130,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
           tickets: [
             {
               is_processed: false,
-              status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
+              status: _const.ORDER_LINE_STATUS.Recieved,
               desc: null,
               receiver_id: palladiumWarehouse._id,
               timestamp: moment()
