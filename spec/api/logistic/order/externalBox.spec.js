@@ -237,8 +237,6 @@ describe('POST Search ScanExternalDeliveryBox', () => {
       });
       expect(res.statusCode).toBe(200);
       expect(res.body.data.length).toBe(2);
-      expect(res.body.data[0].total_order_lines).toBe(2);
-      expect(res.body.data[1].total_order_lines).toBe(5);
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
@@ -261,7 +259,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
         tickets: [
           {
             is_processed: false,
-            status: _const.ORDER_STATUS.WaitForAggregation,
+            status: _const.ORDER_STATUS.WaitForInvoice,
             desc: null,
             receiver_id: hubWarehouse._id,
             timestamp: moment()
@@ -278,7 +276,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
           tickets: [
             {
               is_processed: false,
-              status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
+              status: _const.ORDER_LINE_STATUS.Recieved,
               desc: null,
               receiver_id: hubWarehouse._id,
               timestamp: moment()
@@ -295,7 +293,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
           tickets: [
             {
               is_processed: false,
-              status: _const.ORDER_LINE_STATUS.Recieved,
+              status: _const.ORDER_LINE_STATUS.FinalCheck,
               desc: null,
               receiver_id: hubWarehouse._id,
               timestamp: moment()
@@ -314,9 +312,9 @@ describe('POST Search ScanExternalDeliveryBox', () => {
         tickets: [
           {
             is_processed: false,
-            status: _const.ORDER_STATUS.WaitForInvoice,
+            status: _const.ORDER_STATUS.InvoiceVerified,
             desc: null,
-            receiver_id: hubWarehouse._id,
+            receiver_id: palladiumWarehouse._id,
             timestamp: moment()
           }
         ]
@@ -390,7 +388,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
 });
 
 
-describe('POST Order Ticket Scan performed by hubclerck - send external', () => {
+xdescribe('POST Order Ticket Scan performed by hubclerck - send external', () => {
     let orders, products, customer;
 
     let hubClerk = {
