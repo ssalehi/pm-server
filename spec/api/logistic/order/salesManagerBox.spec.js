@@ -7,7 +7,7 @@ const warehouses = require('../../../../warehouses');
 const utils = require('../utils');
 const moment = require('moment');
 
-xdescribe('POST Search on Delivery Items', () => {
+describe('POST Search on Delivery Items', () => {
 
   let orders, products, deliveries;
   let salesManager = {
