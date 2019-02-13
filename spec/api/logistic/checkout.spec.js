@@ -124,7 +124,7 @@ describe('POST Order - ORP', () => {
     };
   });
 
-  it('login user, cc checkout ', async function (done) {
+  it('tests for login user, cc checkout ', async function (done) {
     try {
 
       this.done = done;
@@ -194,7 +194,7 @@ describe('POST Order - ORP', () => {
     }
   });
 
-  it('guest user, not cc checkout ', async function (done) {
+  it('tests for guest user, not cc checkout ', async function (done) {
     try {
       this.done = done;
 
@@ -262,7 +262,7 @@ describe('POST Order - ORP', () => {
     }
   });
 
-  it('guest user, cc checkout ', async function (done) {
+  it('tests for guest user, cc checkout ', async function (done) {
     try {
       this.done = done;
 
@@ -319,7 +319,7 @@ describe('POST Order - ORP', () => {
   });
 
 
-  it('change inventory count and reserve for a single warehouse where it can afford an order ', async function (done) {
+  it('tests for change inventory count and reserve for a single warehouse where it can afford an order ', async function (done) {
     try {
       this.done = done;
       let res = await models()['OrderTest'].findOneAndUpdate({
