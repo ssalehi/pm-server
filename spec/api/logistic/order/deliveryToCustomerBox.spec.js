@@ -388,7 +388,7 @@ describe('POST Search searchScanToCustomerDelivery', () => {
 });
 
 
-xdescribe('POST Order Ticket Scan - C&C delivery', () => {
+describe('POST Order Ticket Scan - C&C delivery', () => {
     let orders, products;
     ShopClerk = {
         aid: null,

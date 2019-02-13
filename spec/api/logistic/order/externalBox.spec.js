@@ -372,7 +372,6 @@ describe('POST Search ScanExternalDeliveryBox', () => {
           },
           offset: 0,
           limit: 10,
-          hubWarehouse
         },
         json: true,
         jar: hubClerk.jar,
