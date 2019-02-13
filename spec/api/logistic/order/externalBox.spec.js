@@ -9,11 +9,6 @@ const moment = require('moment');
 
 describe('POST Search ScanExternalDeliveryBox', () => {
 
-  let CWClerk = { // central warehouse clerk
-    aid: null,
-    jar: null,
-  };
-
   let palladiumClerk = {
     aid: null,
     jar: null
@@ -24,7 +19,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
     jar: null
   };
 
-  let products, centralWarehouse, hubWarehouse, palladiumWarehouse;
+  let products, hubWarehouse, palladiumWarehouse;
   beforeEach(async (done) => {
     try {
 
@@ -33,14 +28,9 @@ describe('POST Search ScanExternalDeliveryBox', () => {
       let warehouse = await models()['WarehouseTest'].insertMany(warehouses);
       warehouse = JSON.parse(JSON.stringify(warehouse));
 
-      centralWarehouse = warehouse.find(x => !x.is_hub && !x.has_customer_pickup);
       hubWarehouse = warehouse.find(x => x.is_hub && !x.has_customer_pickup);
 
       palladiumWarehouse = warehouse.find(x => !x.is_hub && x.priority === 1);
-
-      let res = await lib.dbHelpers.addAndLoginAgent('cwclerk', _const.ACCESS_LEVEL.ShopClerk, centralWarehouse._id);
-      CWClerk.aid = res.aid;
-      CWClerk.jar = res.rpJar;
 
       let res1 = await lib.dbHelpers.addAndLoginAgent('hubclerk', _const.ACCESS_LEVEL.HubClerk, hubWarehouse._id);
       hubClerk.aid = res1.aid;
@@ -78,7 +68,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
     }
   }, 15000);
 
-  it('should get cc order line which is in its destination (palladium warehouse which two order lines had canceled)', async function (done) {
+  it('should get cc order lines which is in its destination', async function (done) {
     try {
       this.done = done;
 
@@ -106,7 +96,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
         tickets: [
           {
             is_processed: false,
-            status: _const.ORDER_STATUS.WaitForAggregation,
+            status: _const.ORDER_STATUS.ReadyToDeliver,
             desc: null,
             receiver_id: palladiumWarehouse._id,
             timestamp: moment()
@@ -140,7 +130,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
           tickets: [
             {
               is_processed: false,
-              status: _const.ORDER_LINE_STATUS.Recieved,
+              status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
               desc: null,
               receiver_id: palladiumWarehouse._id,
               timestamp: moment()
@@ -171,7 +161,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
         tickets: [
           {
             is_processed: false,
-            status: _const.ORDER_STATUS.WaitForInvoice,
+            status: _const.ORDER_STATUS.WaitForAggregation,
             desc: null,
             receiver_id: palladiumWarehouse._id,
             timestamp: moment()
@@ -189,7 +179,7 @@ describe('POST Search ScanExternalDeliveryBox', () => {
           tickets: [
             {
               is_processed: false,
-              status: _const.ORDER_LINE_STATUS.FinalCheck,
+              status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
               desc: null,
               receiver_id: palladiumWarehouse._id,
               timestamp: moment()
@@ -204,11 +194,10 @@ describe('POST Search ScanExternalDeliveryBox', () => {
           product_id: products[0].id,
           product_instance_id: products[0].instances[1].id,
           adding_time: moment(),
-          cancel: false,
           tickets: [
             {
               is_processed: false,
-              status: _const.ORDER_LINE_STATUS.Checked,
+              status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
               desc: null,
               receiver_id: palladiumWarehouse._id,
               timestamp: moment()
@@ -225,11 +214,10 @@ describe('POST Search ScanExternalDeliveryBox', () => {
         uri: lib.helpers.apiTestURL(`search/Ticket`),
         body: {
           options: {
-            type: 'ScanExternalDelivery',
+            type: 'ScanToCustomerDelivery',
           },
           offset: 0,
           limit: 10,
-          hubWarehouse
         },
         json: true,
         jar: palladiumClerk.jar,
