@@ -123,9 +123,6 @@ describe('POST Search on Shelve List', () => {
             timestamp: new Date()
           }],
           shelf_code: 'A',
-          delivery_agent: agentObj.aid,
-          delivery_start: moment().toDate(),
-          delivery_end: moment().add(1, 'd').toDate()
         },
       ]);
       deliveries = JSON.parse(JSON.stringify(deliveries));

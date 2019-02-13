@@ -100,25 +100,6 @@ describe('POST Search OrderHistory', () => {
           ]
         })
       }
-      for (let i = 0; i < 2; i++) { // add 2 order line of second product instance for order 1
-        orders[0].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[1].id,
-          adding_time: moment(),
-          cancel: true,
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_LINE_STATUS.FinalCheck,
-              desc: null,
-              receiver_id: hubWarehouse._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
-
 
       orders = await models()['OrderTest'].insertMany(orders);
       orders = JSON.parse(JSON.stringify(orders));
@@ -134,13 +115,13 @@ describe('POST Search OrderHistory', () => {
           limit: 10,
         },
         json: true,
-        jar: hubClerk.jar,
+        // jar:
         resolveWithFullResponse: true
       });
       this.fail('only sales manager can see history box');
       done()
     } catch (err) {
-      expect(err.statusCode).toBe(500);
+      expect(err.statusCode).toBe(403);
       done()
     };
   });
