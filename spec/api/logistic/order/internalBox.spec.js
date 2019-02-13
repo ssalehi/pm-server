@@ -7,6 +7,7 @@ const warehouses = require('../../../../warehouses')
 const moment = require('moment');
 const utils = require('../utils');
 
+
 describe('POST Search ScanInternalDeliveryBox', () => {
 
   let CWClerk = { // central warehouse clerk
@@ -514,9 +515,7 @@ describe('POST Search ScanInternalDeliveryBox', () => {
     }
   });
 
-
 });
-
 
 describe('POST Order Ticket Scan performed by hub and shop clerk- send internal', () => {
     let orders, products, customer;

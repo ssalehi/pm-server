@@ -228,8 +228,7 @@ describe('POST Search searchScanToCustomerDelivery', () => {
             type: 'ScanToCustomerDelivery',
           },
           offset: 0,
-          limit: 10,
-          hubWarehouse
+          limit: 10
         },
         json: true,
         jar: palladiumClerk.jar,
@@ -371,7 +370,6 @@ describe('POST Search searchScanToCustomerDelivery', () => {
           },
           offset: 0,
           limit: 10,
-          hubWarehouse
         },
         json: true,
         jar: hubClerk.jar,
@@ -380,7 +378,7 @@ describe('POST Search searchScanToCustomerDelivery', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.data.length).toBe(1);
       expect(res.body.data[0].total_order_lines).toBe(5);
-
+      
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
