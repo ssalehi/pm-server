@@ -273,7 +273,7 @@ router.post('/order/invoice', apiResponse('Offline', 'manualRequestInvoice', tru
 router.post('/order/return', apiResponse('TicketAction', 'requestReturn', false, ['body', 'user']));
 router.post('/order/cancel', apiResponse('TicketAction', 'requestCancel', false, ['body', 'user']));
 router.post('/order/mismatch', apiResponse('TicketAction', 'mismatchReport', true, ['body.trigger', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.post('/order/damage', apiResponse('TicketAction', 'damageInformed', true, ['body.orderId','body.orderLineId', 'user'], [_const.ACCESS_LEVEL.HubClerk]));
+router.post('/order/damage', apiResponse('TicketAction', 'damageInformed', true, ['body.orderId', 'body.orderLineId', 'user'], [_const.ACCESS_LEVEL.HubClerk]));
 
 
 // Order => api's used by offline system
@@ -312,7 +312,7 @@ router.get('/product/instance/:id/:piid', apiResponse('Product', 'getInstance', 
 router.put('/product/instance/:id', apiResponse('Product', 'setInstance', true, ['body', 'params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product/instance/:id/:pid', apiResponse('Product', 'setInstance', true, ['body', 'params.id', 'params.pid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/product/instance/:id/:productColorId', apiResponse('Product', 'deleteInstance', true, ['params.id', 'params.productColorId'], [_const.ACCESS_LEVEL.ContentManager]));
-router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/product/instance/inventory', apiResponse('Product', 'setInventory', true, ['body.id', 'body.instanceId', 'body.warehouseId', 'body.count', 'body.delCount', 'body.delReserved', 'body.price'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/product/instance/inventory/:id/:productColorId/:warehouseId', apiResponse('Product', 'deleteInventory', true, ['params.id', 'params.productColorId', 'params.warehouseId'], [_const.ACCESS_LEVEL.ContentManager]));
 
 // product review
@@ -477,6 +477,7 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 
 router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
 router.post('/checkout/:demo', apiResponse('Order', 'checkout', false, ['user', 'body', 'params.demo']));
+router.post('/demoVerifyPayment', apiResponse('Order', 'demoVerifyPayment', false, ['body.orderId']));
 router.post('/payResult', apiResponse('Order', 'readPayResult', false, ['user', 'body']));
 
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
@@ -555,6 +556,8 @@ router.get('/refund/get_balance', apiResponse('Refund', 'getBalanceAndStatus', f
 router.get('/daily_sales_report', apiResponse('Order', 'getDailySalesReport', true, [], [_const.ACCESS_LEVEL.SalesManager]));
 
 // SM Message
+router.post('/sm/cancelNotExist', apiResponse('SMMessage', 'cancelNotExistOrder', true, ['body.id', 'body.cancelAll', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
+router.post('/sm/renewNotExist', apiResponse('SMMessage', 'renewNotExistOrderline', true, ['body.id', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/sm/assignToReturn', apiResponse('SMMessage', 'assignToReturn', true, ['body.id', 'body.preCheck', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/sm/close', apiResponse('SMMessage', 'close', true, ['body.id', 'body.report', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 
