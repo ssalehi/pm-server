@@ -101,8 +101,6 @@ describe('POST Order - ORP', () => {
           },
 
         },
-        method: 'POST',
-        uri: lib.helpers.apiTestURL(`checkout/true`),
         jar: customer.jar,
         json: true,
         resolveWithFullResponse: true,

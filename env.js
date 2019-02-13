@@ -78,7 +78,6 @@ const redirect_address = getEnvValue(process.env.REDIRECT_ADDRESS);
 const check_transaction_result_url = getEnvValue(process.env.CHECK_TRANSACTION_RESULT_URL);
 const verify_payment_url = getEnvValue(process.env.VERIFY_PAYMENT_URL);
 const private_key = getEnvValue(process.env.PRIVATE_KEY);
-const rsa_private_key = getEnvValue(process.env.RSA_PRIVATE_KEY);
 
 const free_delivery_amount = getEnvValue(process.env.FREE_DELIVERY_AMOUNT);
 
@@ -188,7 +187,6 @@ module.exports = {
   check_transaction_result_url,
   verify_payment_url,
   private_key,
-  rsa_private_key,
   free_delivery_amount,
   validPassedDaysForReturn,
   rounding_factor

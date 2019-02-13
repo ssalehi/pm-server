@@ -284,12 +284,6 @@ describe('POST inbox scan - new orderline', () => {
         done()
     });
 });
-////////////////////////////////////////
-
-
-
-
-
 
 describe('POST onlineWarehouseResponse(verify)', () => {
     let adminObj = {
@@ -524,40 +518,8 @@ describe('POST onlineWarehouseResponse(verify)', () => {
         expect(NewReserved).toBe(oldReserved - 1)
         done()
     });
-    it('should check if an inventory count and reserved are 0 gets error', async function (done) {
-
-        try {
-            this.done = done
-            await models()['DeliveryTest'].deleteMany({});
-            await rp({
-                jar: adminObj.jar,
-                body: {
-                    "orderId": orders[0]._id,
-                    "orderLineId": orderData[0].order_lines[1]._id,
-                    "warehouseId": centralId,
-                    "userId": '5c209119da8a28386c02471b',
-                    "barcode": '0394081342'
-                },
-                method: 'POST',
-                json: true,
-                uri: lib.helpers.apiTestURL('order/offline/onlineWarehouseResponse'),
-                resolveWithFullResponse: true
-            })
-            this.fail('expect error when count and reserved amounts are 0')
-            done()
-        } catch (err) {
-            expect(err.statusCode).toBe(500);
-            done()
-        };
-    });
-
+  
 });
-/////////////////////////////////////////////
-
-
-
-
-
 
 describe('POST inbox scan - canceled orderline', () => {
     let orders, products
@@ -636,14 +598,6 @@ describe('POST inbox scan - canceled orderline', () => {
         done()
     });
 });
-/////////////////////////////////////////////////
-
-
-
-
-
-
-
 
 describe('POST onlineWarehouseResponse(cancel)', () => {
     let adminObj = {
