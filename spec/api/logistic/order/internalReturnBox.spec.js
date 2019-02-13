@@ -9,8 +9,8 @@ const utils = require('../utils');
 
 describe('POST Search ScanInternalReturnBox', () => {
 
-  let CWClerk = { // central warehouse clerk
-    aid: null,
+  let customer = {
+    _id: null,
     jar: null,
   };
 
@@ -33,14 +33,16 @@ describe('POST Search ScanInternalReturnBox', () => {
       let warehouse = await models()['WarehouseTest'].insertMany(warehouses);
       warehouse = JSON.parse(JSON.stringify(warehouse));
 
-      centralWarehouse = warehouse.find(x => !x.is_hub && !x.has_customer_pickup);
+      const customerobj = await lib.dbHelpers.addAndLoginCustomer('s@s.com', '123456', {
+        first_name: 'S',
+        surname: 'V'
+      });
+      customer._id = customerobj.cid;
+      customer.jar = customerobj.jar;
+
       hubWarehouse = warehouse.find(x => x.is_hub && !x.has_customer_pickup);
 
       palladiumWarehouse = warehouse.find(x => !x.is_hub && x.priority === 1);
-
-      let res = await lib.dbHelpers.addAndLoginAgent('cwclerk', _const.ACCESS_LEVEL.ShopClerk, centralWarehouse._id);
-      CWClerk.aid = res.aid;
-      CWClerk.jar = res.rpJar;
 
       let res1 = await lib.dbHelpers.addAndLoginAgent('hubclerk', _const.ACCESS_LEVEL.HubClerk, hubWarehouse._id);
       hubClerk.aid = res1.aid;
@@ -153,7 +155,7 @@ describe('POST Search ScanInternalReturnBox', () => {
             is_processed: false,
             status: _const.ORDER_LINE_STATUS.ReturnRequested,
             desc: null,
-            receiver_id: palladiumWarehouse._id,
+            receiver_id: customer.jar,
             timestamp: moment()
           },
           {
