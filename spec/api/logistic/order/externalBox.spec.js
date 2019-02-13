@@ -139,73 +139,6 @@ describe('POST Search ScanExternalDeliveryBox', () => {
         })
       }
 
-      orders.push({
-        customer_id: mongoose.Types.ObjectId(),
-        is_cart: false,
-        transaction_id: "xyz12214",
-        order_lines: [],
-        is_collect: true,
-        order_time: moment(),
-        address: {
-          _id: mongoose.Types.ObjectId(),
-          city: "تهران",
-          street: "مقدس اردبیلی",
-          province: "تهران",
-          warehouse_name: "پالادیوم",
-          warehouse_id: palladiumWarehouse._id,
-          recipient_first_name: "s",
-          recipient_surname: "v",
-          recipient_national_id: "8798789798",
-          recipient_mobile_no: "09124077685",
-        },
-        tickets: [
-          {
-            is_processed: false,
-            status: _const.ORDER_STATUS.WaitForAggregation,
-            desc: null,
-            receiver_id: palladiumWarehouse._id,
-            timestamp: moment()
-          }
-        ]
-      });
-
-      for (let i = 0; i < 2; i++) { // add 2 order line of first product instance for order 2
-        orders[1].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[0].id,
-          adding_time: moment(),
-          cancel: true,
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
-              desc: null,
-              receiver_id: palladiumWarehouse._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
-
-      for (let i = 0; i < 2; i++) { // add 2 order line of second product instance for order 2
-        orders[1].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[1].id,
-          adding_time: moment(),
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
-              desc: null,
-              receiver_id: palladiumWarehouse._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
-
       orders = await models()['OrderTest'].insertMany(orders);
       orders = JSON.parse(JSON.stringify(orders));
 
@@ -224,7 +157,8 @@ describe('POST Search ScanExternalDeliveryBox', () => {
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(2);
+      expect(res.body.data.length).toBe(1);
+      expect(res.body.data[0].total_order_lines).toBe(5);
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
