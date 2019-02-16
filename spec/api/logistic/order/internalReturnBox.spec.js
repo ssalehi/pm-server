@@ -5,14 +5,8 @@ const mongoose = require('mongoose');
 const _const = require('../../../../lib/const.list');
 const warehouses = require('../../../../warehouses');
 const moment = require('moment');
-const utils = require('../utils');
 
 describe('POST Search ScanInternalReturnBox', () => {
-
-  let customer = {
-    _id: null,
-    jar: null,
-  };
 
   let palladiumClerk = {
     aid: null,
@@ -32,13 +26,6 @@ describe('POST Search ScanInternalReturnBox', () => {
 
       let warehouse = await models()['WarehouseTest'].insertMany(warehouses);
       warehouse = JSON.parse(JSON.stringify(warehouse));
-
-      const customerobj = await lib.dbHelpers.addAndLoginCustomer('s@s.com', '123456', {
-        first_name: 'S',
-        surname: 'V'
-      });
-      customer._id = customerobj.cid;
-      customer.jar = customerobj.jar;
 
       hubWarehouse = warehouse.find(x => x.is_hub && !x.has_customer_pickup);
 
@@ -80,8 +67,7 @@ describe('POST Search ScanInternalReturnBox', () => {
     }
   }, 15000);
 
-
-  it('should get order lines which have canceled or returned', async function (done) {
+  it('should get order line(s) which have returned', async function (done) {
     try {
       this.done = done;
 
@@ -96,7 +82,7 @@ describe('POST Search ScanInternalReturnBox', () => {
         order_time: moment(),
       });
 
-      for (let i = 0; i < 3; i++) { // add 3 order line of first product for order 1
+      for (let i = 0; i < 2; i++) { // add 2 order line of first product for order 1
         orders[0].order_lines.push({
           paid_price: 0,
           product_id: products[0].id,
@@ -104,6 +90,13 @@ describe('POST Search ScanInternalReturnBox', () => {
           adding_time: moment(),
           cancel: false,
           tickets: [
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.ReturnRequested,
+              desc: null,
+              receiver_id: hubWarehouse._id,
+              timestamp: moment()
+            },
             {
               is_processed: false,
               status: _const.ORDER_LINE_STATUS.DeliverySet,
@@ -114,61 +107,6 @@ describe('POST Search ScanInternalReturnBox', () => {
           ]
         })
       }
-      for (let i = 0; i < 2; i++) { // add 2 order line of second product instance for order 1
-        orders[0].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[1].id,
-          adding_time: moment(),
-          cancel: true,
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_LINE_STATUS.FinalCheck,
-              desc: null,
-              receiver_id: hubWarehouse._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
-
-      orders.push({
-        customer_id: mongoose.Types.ObjectId(),
-        is_cart: false,
-        transaction_id: "xyz12214",
-        order_lines: [],
-        is_collect: true,
-        order_time: moment(),
-      });
-
-      for (let i = 0; i < 2; i++) { // add 2 order line of first product instance for order 2
-        orders[1].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[0].id,
-          adding_time: moment(),
-          cancel: false,
-          tickets:
-        [
-          {
-            is_processed: false,
-            status: _const.ORDER_LINE_STATUS.ReturnRequested,
-            desc: null,
-            receiver_id: customer.jar,
-            timestamp: moment()
-          },
-          {
-            is_processed: false,
-            status: _const.ORDER_LINE_STATUS.ReadyToDeliver,
-            desc: null,
-            receiver_id: hubWarehouse._id,
-            timestamp: moment()
-          }
-        ]
-      })
-      }
-
 
       orders = await models()['OrderTest'].insertMany(orders);
       orders = JSON.parse(JSON.stringify(orders));
@@ -188,17 +126,11 @@ describe('POST Search ScanInternalReturnBox', () => {
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(4);
+      expect(res.body.data.length).toBe(2);
 
-      let item1 = res.body.data.filter(x => x.instance._id.toString() === products[0].instances[0]._id.toString());
-      let item2 = res.body.data.filter(x => x.instance._id.toString() === products[0].instances[1]._id.toString());
-
-      expect(item1.length).toBe(2);
-      expect(item2.length).toBe(2);
       done();
     } catch (err) {
       lib.helpers.errorHandler.bind(this)(err);
     }
   });
-
 });
