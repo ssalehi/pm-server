@@ -111,23 +111,6 @@ describe('POST Search Scan Inbox', () => {
           ]
         })
       }
-      for (let i = 0; i < 2; i++) { // add 2 order line of second product instance for order 1
-        orders[0].order_lines.push({
-          paid_price: 0,
-          product_id: products[0].id,
-          product_instance_id: products[0].instances[1].id,
-          adding_time: moment(),
-          tickets: [
-            {
-              is_processed: false,
-              status: _const.ORDER_LINE_STATUS.Renew,
-              desc: null,
-              receiver_id: centralWarehouse._id,
-              timestamp: moment()
-            }
-          ]
-        })
-      }
 
       orders.push({
         customer_id: mongoose.Types.ObjectId(),
@@ -198,7 +181,7 @@ describe('POST Search Scan Inbox', () => {
       let item2 = res.body.data.find(x => x.instance._id.toString() === products[0].instances[1]._id.toString());
 
       expect(item1.count).toBe(5);
-      expect(item2.count).toBe(4);
+      expect(item2.count).toBe(2);
 
       done();
     } catch (err) {
@@ -207,7 +190,6 @@ describe('POST Search Scan Inbox', () => {
   });
 
 });
-
 
 xdescribe('POST inbox scan - new orderline', () => {
     let orders, products
