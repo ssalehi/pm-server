@@ -79,7 +79,7 @@ describe('POST Search ScanInternalDeliveryBox', () => {
     }
   }, 15000);
 
-  xit('should get c&c order line which is in hub and should go to warehouse (palladium)', async function (done) {
+  it('should get c&c order line which is in hub and should go to warehouse (palladium)', async function (done) {
     try {
       this.done = done;
 
@@ -149,7 +149,7 @@ describe('POST Search ScanInternalDeliveryBox', () => {
     }
   });
 
-  xit('should get c&c order line which is neither in hub or its destination (order lines are in centralWarehouse, destination is palladium)', async function (done) {
+  it('should get c&c order line which is neither in hub or its destination (order lines are in centralWarehouse, destination is palladium)', async function (done) {
     try {
       this.done = done;
 
@@ -221,7 +221,7 @@ describe('POST Search ScanInternalDeliveryBox', () => {
     }
   });
 
-  it('should get order line which is not in hub and is not c&c (in palladium warehouse and 2 order lines canceled)', async function (done) {
+  it('should get order lines which is not in hub and is not c&c (in palladium warehouse and 2 order lines canceled)', async function (done) {
     try {
       this.done = done;
 
@@ -246,7 +246,7 @@ describe('POST Search ScanInternalDeliveryBox', () => {
           tickets: [
             {
               is_processed: false,
-              status: _const.ORDER_LINE_STATUS.Recieved,
+              status: _const.ORDER_LINE_STATUS.DeliverySet,
               desc: null,
               receiver_id: palladiumWarehouse._id,
               timestamp: moment()
@@ -260,10 +260,18 @@ describe('POST Search ScanInternalDeliveryBox', () => {
           product_id: products[0].id,
           product_instance_id: products[0].instances[1].id,
           adding_time: moment(),
+          cancel: true,
           tickets: [
             {
               is_processed: false,
               status: _const.ORDER_LINE_STATUS.DeliverySet,
+              desc: null,
+              receiver_id: palladiumWarehouse._id,
+              timestamp: moment()
+            },
+            {
+              is_processed: false,
+              status: _const.ORDER_LINE_STATUS.OnlineWarehouseVerified,
               desc: null,
               receiver_id: palladiumWarehouse._id,
               timestamp: moment()
@@ -337,7 +345,7 @@ describe('POST Search ScanInternalDeliveryBox', () => {
         resolveWithFullResponse: true
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.data.length).toBe(4);
+      expect(res.body.data.length).toBe(3);
 
       done();
     } catch (err) {
@@ -347,7 +355,7 @@ describe('POST Search ScanInternalDeliveryBox', () => {
 
 });
 
-xdescribe('POST Order Ticket Scan performed by hub and shop clerk- send internal', () => {
+describe('POST Order Ticket Scan performed by hub and shop clerk- send internal', () => {
   let orders, products, customer;
   ShopClerk = {
     aid: null,
@@ -550,7 +558,7 @@ xdescribe('POST Order Ticket Scan performed by hub and shop clerk- send internal
     ;
   });
 });
-xdescribe('POST scan for return delivery', () => {
+describe('POST scan for return delivery', () => {
   let orders, products
   let hubClerk = {
     aid: null,
