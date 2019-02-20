@@ -29,7 +29,7 @@ describe('PUT Upload', () => {
       })
   });
 
-  xit('should error when req.file not valid', function (done) {
+  it('should error when req.file not valid', function (done) {
     this.done = done;
     rp({
       method: 'POST',

@@ -9,7 +9,7 @@ const utils = require('../utils');
 const deliveryDurationInfo = require('../../../../deliveryDurationInfo')
 
 
-describe('POST inbox scan - new orderline', () => {
+xdescribe('POST inbox scan - new orderline', () => {
     let orders, products
     ShopClerk = {
         aid: null,
@@ -85,7 +85,7 @@ describe('POST inbox scan - new orderline', () => {
     });
 });
 
-xdescribe('POST transferResponse(verify)', () => {
+describe('POST transferResponse(verify)', () => {
     let adminObj = {
         aid: null,
         jar: null,
@@ -187,32 +187,38 @@ xdescribe('POST transferResponse(verify)', () => {
             console.log(err);
         };
     }, 15000);
+
     it('should create new delivery  and orderline ticket is changed to deliveryset after verification', async function (done) {
-        this.done = done;
-        await models()['DeliveryTest'].deleteMany({});
-        const res = await rp({
-            jar: adminObj.jar,
-            body: {
-                orderId: orders[0]._id,
-                orderLineId: orderData[0].order_lines[0]._id,
-                warehouseId: centralId,
-                userId: '5c209119da8a28386c02471b',
-                barcode: '0394081341'
-            },
-            method: 'POST',
-            json: true,
-            uri: lib.helpers.apiTestURL('order/offline/transferResponse'),
-            resolveWithFullResponse: true
-        });
-        expect(res.statusCode).toBe(200)
-        const deliveries = await models()['DeliveryTest'].find();
-        expect(deliveries.length).toBe(1)
-        const res1 = await models()['OrderTest'].find()
-        let lastTicket = res1[0].order_lines[0].tickets[res1[0].order_lines[0].tickets.length - 1].status;
-        expect(lastTicket).toBe(_const.ORDER_LINE_STATUS.DeliverySet)
-        done()
+        try {
+            this.done = done;
+            await models()['DeliveryTest'].deleteMany({});
+
+            const res = await rp({
+                jar: adminObj.jar,
+                body: {
+                    orderId: orders[0]._id,
+                    orderLineId: orderData[0].order_lines[0]._id,
+                    warehouseId: centralId,
+                    userId: '5c209119da8a28386c02471b',
+                    barcode: '0394081341'
+                },
+                method: 'POST',
+                json: true,
+                uri: lib.helpers.apiTestURL('order/offline/transferResponse'),
+                resolveWithFullResponse: true
+            });
+            expect(res.statusCode).toBe(200)
+            const deliveries = await models()['DeliveryTest'].find();
+            expect(deliveries.length).toBe(1)
+            const res1 = await models()['OrderTest'].find()
+            let lastTicket = res1[0].order_lines[0].tickets[res1[0].order_lines[0].tickets.length - 1].status;
+            expect(lastTicket).toBe(_const.ORDER_LINE_STATUS.DeliverySet)
+            done()
+        } catch (err) {
+            lib.helpers.errorHandler.bind(this)(err)
+        }
     });
-    it('should check the orderline is added to an existing delivery that is being started today', async function (done) {
+    xit('should check the orderline is added to an existing delivery that is being started today', async function (done) {
         this.done = done
         const res = await rp({
             jar: adminObj.jar,
@@ -236,7 +242,7 @@ xdescribe('POST transferResponse(verify)', () => {
         expect(deliveryData[0].to.warehouse_id.toString()).toBe(warehouses.find(x => x.is_hub)._id.toString())
         done()
     });
-    it('should add the delivery to an existing one that has started few days ago', async function (done) {
+    xit('should add the delivery to an existing one that has started few days ago', async function (done) {
         this.done = done;
         const deliveryData = await models()['DeliveryTest'].find()
         deliveryData[0].start = (new Date()).setDate(new Date().getDate() - 3);
@@ -262,7 +268,7 @@ xdescribe('POST transferResponse(verify)', () => {
         expect(deliveryData1.length).toBe(1)
         done()
     });
-    it('should check when the existing delivery is started creates a new delivery for new orderlines', async function (done) {
+    xit('should check when the existing delivery is started creates a new delivery for new orderlines', async function (done) {
         this.done = done
         const deliveryData = await models()['DeliveryTest'].find()
         deliveryData[0].tickets[0].status = _const.DELIVERY_STATUS.started
@@ -290,7 +296,7 @@ xdescribe('POST transferResponse(verify)', () => {
         expect(moment(newDelivery.start).format('YYYY-MM-DD')).toBe(currentDay)
         done()
     });
-    it('should check after onlinewarehouseverification the reserved and count of an inventory are reduced by 1', async function (done) {
+    xit('should check after onlinewarehouseverification the reserved and count of an inventory are reduced by 1', async function (done) {
         this.done = done
         await utils.changeInventory(products[0]._id, products[0].instances[0]._id, warehouses[1]._id, 0, 1)
 
@@ -320,7 +326,7 @@ xdescribe('POST transferResponse(verify)', () => {
     });
 
 });
-describe('POST inbox scan - canceled orderline', () => {
+xdescribe('POST inbox scan - canceled orderline', () => {
     let orders, products
     ShopClerk = {
         aid: null,
@@ -483,7 +489,7 @@ xdescribe('POST transferResponse(cancel)', () => {
         done()
     });
 });
-describe('POST inbox scan - returned orderline', () => {
+xdescribe('POST inbox scan - returned orderline', () => {
     let orders, products
     ShopClerk = {
         aid: null,
@@ -513,33 +519,33 @@ describe('POST inbox scan - returned orderline', () => {
             await models()['OrderTest'].update({
                 _id: mongoose.Types.ObjectId(orders[0]._id),
             }, {
-                $set: {
-                    order_lines: [{
-                        cancel: true,
-                        product_id: products[0]._id,
-                        campaign_info: {
-                            _id: mongoose.Types.ObjectId(),
-                            discount_ref: 0
-                        },
-                        product_instance_id: products[0].instances[0]._id,
-                        tickets: [{
-                            is_processed: true,
-                            _id: mongoose.Types.ObjectId(),
-                            status: _const.ORDER_LINE_STATUS.ReturnRequested,
-                            desc: null,
-                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
-                            timestamp: new Date(),
-                        },{
-                            is_processed: false,
-                            _id: mongoose.Types.ObjectId(),
-                            status: _const.ORDER_LINE_STATUS.Delivered,
-                            desc: null,
-                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
-                            timestamp: new Date(),
+                    $set: {
+                        order_lines: [{
+                            cancel: true,
+                            product_id: products[0]._id,
+                            campaign_info: {
+                                _id: mongoose.Types.ObjectId(),
+                                discount_ref: 0
+                            },
+                            product_instance_id: products[0].instances[0]._id,
+                            tickets: [{
+                                is_processed: true,
+                                _id: mongoose.Types.ObjectId(),
+                                status: _const.ORDER_LINE_STATUS.ReturnRequested,
+                                desc: null,
+                                receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
+                                timestamp: new Date(),
+                            }, {
+                                is_processed: false,
+                                _id: mongoose.Types.ObjectId(),
+                                status: _const.ORDER_LINE_STATUS.Delivered,
+                                desc: null,
+                                receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
+                                timestamp: new Date(),
+                            }]
                         }]
-                    }]
-                }
-            });
+                    }
+                });
             orderData = await models()['OrderTest'].find()
             done()
         } catch (err) {
@@ -562,12 +568,12 @@ describe('POST inbox scan - returned orderline', () => {
         })
         expect(res.statusCode).toBe(200)
         NorderData = await models()['OrderTest'].find()
-        const NorderlineTicket = NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length-1].status
+        const NorderlineTicket = NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length - 1].status
         expect(NorderlineTicket).toBe(_const.ORDER_LINE_STATUS.WaitForOnlineWarehouseCancel)
         done()
     });
-});  
-describe('lost report', () => {
+});
+xdescribe('lost report', () => {
     let orders, products;
     let customer = {
         _id: null,
@@ -618,7 +624,7 @@ describe('lost report', () => {
         };
     }, 15000);
 
-    xit('tests lost report of an order line which is not still added to online warehouse and checks for sales manager message', async function (done) {
+    it('tests lost report of an order line which is not still added to online warehouse and checks for sales manager message', async function (done) {
         try {
             this.done = done;
 
