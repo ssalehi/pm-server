@@ -9,7 +9,7 @@ const utils = require('../utils');
 describe('Sales Manager Inbox - not existing order line', () => {
   let orders, products;
   let customer = {
-    cid: null,
+    _id: null,
     jar: null
   };
 
@@ -29,10 +29,10 @@ describe('Sales Manager Inbox - not existing order line', () => {
       let res = await lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
         first_name: 'test 1',
         surname: 'test 1',
-        address: utils.loggedInCustomerAddress
+        addresses: utils.loggedInCustomerAddress
       });
 
-      customer.cid = res.cid;
+      customer._id = res.cid;
       customer.jar = res.rpJar;
 
       res = await lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager);
@@ -55,28 +55,29 @@ describe('Sales Manager Inbox - not existing order line', () => {
       orders[0] = await models()['OrderTest'].findOneAndUpdate({
         _id: orders[0]._id
       }, {
-          $set: {
-            order_lines: [
-              {
-                product_price: 0,
-                paid_price: 0,
-                cancel: false,
-                product_id: products[0]._id,
-                product_instance_id: products[0].instances[0]._id,
-                tickets: []
-              },
-              {
-                product_price: 0,
-                paid_price: 0,
-                cancel: false,
-                product_id: products[0]._id,
-                product_instance_id: products[0].instances[1]._id,
-                tickets: []
-              }
-            ]
-          }
+        $set: {
+          order_lines: [{
+              product_price: 0,
+              paid_price: 0,
+              cancel: false,
+              product_id: products[0]._id,
+              product_instance_id: products[0].instances[0]._id,
+              tickets: []
+            },
+            {
+              product_price: 0,
+              paid_price: 0,
+              cancel: false,
+              product_id: products[0]._id,
+              product_instance_id: products[0].instances[1]._id,
+              tickets: []
+            }
+          ]
+        }
 
-        }, {new: true});
+      }, {
+        new: true
+      });
 
 
       // clear all inventories for product 0 instance 0
@@ -127,41 +128,39 @@ describe('Sales Manager Inbox - not existing order line', () => {
       orders[0] = await models()['OrderTest'].findOneAndUpdate({
         _id: orders[0]._id
       }, {
-          $set: {
-            order_lines: [
-              {
-                product_price: 0,
-                paid_price: 0,
-                cancel: false,
-                product_id: products[0]._id,
-                product_instance_id: products[0].instances[0]._id,
-                tickets: [
-                  {
-                    is_processed: false,
-                    status: 13,
-                    desc: null,
-                    receiver_id: salesManager.aid,
-                  }
-                ]
-              },
-              {
-                product_price: 0,
-                paid_price: 0,
-                cancel: false,
-                product_id: products[0]._id,
-                product_instance_id: products[0].instances[1]._id,
-                tickets: [
-                  {
-                    is_processed: false,
-                    status: 13,
-                    desc: null,
-                    receiver_id: salesManager.aid,
-                  }]
-              }
-            ]
-          }
+        $set: {
+          order_lines: [{
+              product_price: 0,
+              paid_price: 0,
+              cancel: false,
+              product_id: products[0]._id,
+              product_instance_id: products[0].instances[0]._id,
+              tickets: [{
+                is_processed: false,
+                status: 13,
+                desc: null,
+                receiver_id: salesManager.aid,
+              }]
+            },
+            {
+              product_price: 0,
+              paid_price: 0,
+              cancel: false,
+              product_id: products[0]._id,
+              product_instance_id: products[0].instances[1]._id,
+              tickets: [{
+                is_processed: false,
+                status: 13,
+                desc: null,
+                receiver_id: salesManager.aid,
+              }]
+            }
+          ]
+        }
 
-        }, {new: true});
+      }, {
+        new: true
+      });
 
       let message = await models()['SMMessageTest'].create({
         is_processed: false,
@@ -214,48 +213,46 @@ describe('Sales Manager Inbox - not existing order line', () => {
       orders[0] = await models()['OrderTest'].findOneAndUpdate({
         _id: orders[0]._id
       }, {
-          $set: {
-            delivery_info: {
-              time_slot: {
-                lower_bound: 18,
-                upper_bound: 22
-              },
-              delivery_cost: 15000
+        $set: {
+          delivery_info: {
+            time_slot: {
+              lower_bound: 18,
+              upper_bound: 22
             },
-            order_lines: [
-              {
-                product_price: 0,
-                paid_price: 0,
-                cancel: false,
-                product_id: products[0]._id,
-                product_instance_id: products[0].instances[0]._id,
-                tickets: [
-                  {
-                    is_processed: false,
-                    status: 13,
-                    desc: null,
-                    receiver_id: salesManager.aid,
-                  }
-                ]
-              },
-              {
-                product_price: 0,
-                paid_price: 0,
-                cancel: false,
-                product_id: products[0]._id,
-                product_instance_id: products[0].instances[1]._id,
-                tickets: [
-                  {
-                    is_processed: false,
-                    status: 13,
-                    desc: null,
-                    receiver_id: salesManager.aid,
-                  }]
-              }
-            ]
-          }
+            delivery_cost: 15000
+          },
+          order_lines: [{
+              product_price: 0,
+              paid_price: 0,
+              cancel: false,
+              product_id: products[0]._id,
+              product_instance_id: products[0].instances[0]._id,
+              tickets: [{
+                is_processed: false,
+                status: 13,
+                desc: null,
+                receiver_id: salesManager.aid,
+              }]
+            },
+            {
+              product_price: 0,
+              paid_price: 0,
+              cancel: false,
+              product_id: products[0]._id,
+              product_instance_id: products[0].instances[1]._id,
+              tickets: [{
+                is_processed: false,
+                status: 13,
+                desc: null,
+                receiver_id: salesManager.aid,
+              }]
+            }
+          ]
+        }
 
-        }, {new: true});
+      }, {
+        new: true
+      });
 
       let message = await models()['SMMessageTest'].create({
         is_processed: false,
@@ -307,34 +304,32 @@ describe('Sales Manager Inbox - not existing order line', () => {
       orders[0] = await models()['OrderTest'].findOneAndUpdate({
         _id: orders[0]._id
       }, {
-          $set: {
-            delivery_info: {
-              time_slot: {
-                lower_bound: 18,
-                upper_bound: 22
-              },
-              delivery_cost: 15000
+        $set: {
+          delivery_info: {
+            time_slot: {
+              lower_bound: 18,
+              upper_bound: 22
             },
-            order_lines: [
-              {
-                product_price: 0,
-                paid_price: 0,
-                cancel: false,
-                product_id: products[0]._id,
-                product_instance_id: products[0].instances[0]._id,
-                tickets: [
-                  {
-                    is_processed: false,
-                    status: 13,
-                    desc: null,
-                    receiver_id: salesManager.aid,
-                  }
-                ]
-              }
-            ]
-          }
+            delivery_cost: 15000
+          },
+          order_lines: [{
+            product_price: 0,
+            paid_price: 0,
+            cancel: false,
+            product_id: products[0]._id,
+            product_instance_id: products[0].instances[0]._id,
+            tickets: [{
+              is_processed: false,
+              status: 13,
+              desc: null,
+              receiver_id: salesManager.aid,
+            }]
+          }]
+        }
 
-        }, {new: true});
+      }, {
+        new: true
+      });
 
       let message = await models()['SMMessageTest'].create({
         is_processed: false,
@@ -386,38 +381,36 @@ describe('Sales Manager Inbox - not existing order line', () => {
       for (let i = 1; i < warehouses.length; i++) {
         await utils.changeInventory(products[0]._id, products[0].instances[0]._id, warehouses[i]._id, -2, 0);
       }
-      
+
       orders[0] = await models()['OrderTest'].findOneAndUpdate({
         _id: orders[0]._id
       }, {
-          $set: {
-            delivery_info: {
-              time_slot: {
-                lower_bound: 18,
-                upper_bound: 22
-              },
-              delivery_cost: 15000
+        $set: {
+          delivery_info: {
+            time_slot: {
+              lower_bound: 18,
+              upper_bound: 22
             },
-            order_lines: [
-              {
-                product_price: 0,
-                paid_price: 0,
-                cancel: false,
-                product_id: products[0]._id,
-                product_instance_id: products[0].instances[0]._id,
-                tickets: [
-                  {
-                    is_processed: false,
-                    status: 13,
-                    desc: null,
-                    receiver_id: salesManager.aid,
-                  }
-                ]
-              }
-            ]
-          }
+            delivery_cost: 15000
+          },
+          order_lines: [{
+            product_price: 0,
+            paid_price: 0,
+            cancel: false,
+            product_id: products[0]._id,
+            product_instance_id: products[0].instances[0]._id,
+            tickets: [{
+              is_processed: false,
+              status: 13,
+              desc: null,
+              receiver_id: salesManager.aid,
+            }]
+          }]
+        }
 
-        }, {new: true});
+      }, {
+        new: true
+      });
 
       let message = await models()['SMMessageTest'].create({
         is_processed: false,
@@ -463,7 +456,7 @@ describe('Sales Manager Inbox - not existing order line', () => {
       })
       expect(messages[0].is_processed).toBeTruthy();
       expect(messages[1].is_processed).toBeFalsy();
-      
+
 
       done();
     } catch (err) {
@@ -472,4 +465,122 @@ describe('Sales Manager Inbox - not existing order line', () => {
   });
 
 });
+describe('Sales Manager Inbox - return requested orderline', () => {
+  let orders, products;
+  let customer = {
+    _id: null,
+    jar: null
+  };
 
+  let salesManager = {
+    aid: null,
+    jar: null
+  }
+
+  beforeEach(async done => {
+    try {
+
+      await lib.dbHelpers.dropAll()
+
+      await models()['DeliveryDurationInfoTest'].insertMany(deliveryDurationInfo)
+      await models()['WarehouseTest'].insertMany(warehouses)
+
+      let res = await lib.dbHelpers.addAndLoginCustomer('customer1', '123456', {
+        first_name: 'test 1',
+        surname: 'test 1',
+        addresses: utils.loggedInCustomerAddress
+      });
+
+      customer._id = res.cid;
+      customer.jar = res.rpJar;
+
+      res = await lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager);
+      salesManager.aid = res.aid;
+      salesManager.jar = res.rpJar;
+
+      products = await utils.makeProducts();
+      orders = await utils.makeOrders(customer);
+
+      done();
+    } catch (err) {
+      console.log(err);
+    };
+  }, 15000);
+
+
+  it('should creat delivery to hub for return requested orderline', async function (done) {
+    try {
+      this.done = done;
+
+      orders[0] = await models()['OrderTest'].findOneAndUpdate({
+        _id: orders[0]._id
+      }, {
+        $set: {
+          order_lines: [{
+              product_price: 0,
+              paid_price: 0,
+              cancel: false,
+              product_id: products[0]._id,
+              product_instance_id: products[0].instances[0]._id,
+              tickets: [{
+                is_processed: false,
+                status: _const.ORDER_LINE_STATUS.ReturnRequested,
+                desc: null,
+                receiver_id: salesManager.aid,
+              }]
+            },
+            {
+              product_price: 0,
+              paid_price: 0,
+              cancel: false,
+              product_id: products[0]._id,
+              product_instance_id: products[0].instances[1]._id,
+              tickets: [{
+                is_processed: false,
+                status: _const.ORDER_LINE_STATUS.ReturnRequested,
+                desc: null,
+                receiver_id: salesManager.aid,
+              }]
+            }
+          ]
+        }
+
+      }, {
+        new: true
+      });
+
+      let message = await models()['SMMessageTest'].create({
+        is_processed: false,
+        is_closed: false,
+        type: 1,
+        order_id: orders[0]._id,
+        order_line_id: orders[0].order_lines[0]._id,
+        extra: {
+          address_id: orders[0].address._id
+        },
+        publish_date: new Date(),
+        __v: 0
+      })
+      res = await rp({
+        method: 'POST',
+        jar: salesManager.jar,
+        uri: lib.helpers.apiTestURL(`sm/assignToReturn`),
+        body: {
+          id: message._id,
+        },
+        json: true,
+        resolveWithFullResponse: true,
+      });
+      expect(res.statusCode).toBe(200);
+      let deliveries = await models()['DeliveryTest'].find()
+      expect(deliveries.length).toBe(1)
+      expect(deliveries[0].to.warehouse_id.toString()).toBe(warehouses.find(x => x.is_hub)._id.toString())
+      expect(deliveries[0].order_details[0].order_line_ids[0].toString()).toBe(orders[0].order_lines[0]._id.toString())
+      done();
+    } catch (err) {
+      lib.helpers.errorHandler.bind(this)(err)
+    };
+  });
+
+
+});
