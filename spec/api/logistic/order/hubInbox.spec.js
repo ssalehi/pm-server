@@ -295,7 +295,7 @@ describe('POST Order Ticket Scan - hub inbox scan', () => {
         };
     });
 });
-describe('POST inbox scan - cancel: true', () => {
+describe('POST transferResponse(cancel)', () => {
     let orders, products
     let hubClerk = {
         aid: null,

@@ -7,7 +7,7 @@ const _const = require('../../../lib/const.list');
 const warehouses = require('../../../warehouses');
 
 
-xdescribe('POST Order (New Order)', () => {
+describe('POST Order (New Order)', () => {
 
   let customerObj = {
     cid: null,
@@ -222,7 +222,7 @@ xdescribe('POST Order (New Order)', () => {
   });
 });
 
-xdescribe('POST Order (Already-exist Order)', () => {
+describe('POST Order (Already-exist Order)', () => {
 
   let customerObj = {
     cid: null,
@@ -414,7 +414,7 @@ xdescribe('POST Order (Already-exist Order)', () => {
 
 });
 
-xdescribe('POST Order (Fetch cart details)', () => {
+describe('POST Order (Fetch cart details)', () => {
   let product1, product2;
   let type1, type2, brand1, brand2, color1, color2, tagGroup1, tag1, tag2;
   let order1, order2;
@@ -812,7 +812,7 @@ xdescribe('POST Order (Fetch cart details)', () => {
   });
 });
 
-xdescribe('POST Order (Delete Order lines)', () => {
+describe('POST Order (Delete Order lines)', () => {
 
   let customerObj = {
     cid: null,
@@ -1045,7 +1045,7 @@ xdescribe('POST Order (Delete Order lines)', () => {
   });
 });
 
-xdescribe('POST Order - (Set Ticket)', () => {
+describe('POST Order - (Set Ticket)', () => {
 
   let SMAgent = {
     cid: null,
@@ -1669,7 +1669,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
       .then(res => {
         return rp({
           method: 'POST',
-          uri: lib.helpers.apiTestURL(`order/ticket/offline/requestInvoice`),
+          uri: lib.helpers.apiTestURL(`order/ticket/offline/invoiceRequest`),
           body: {
             orderId: res._id,
             orderLineId: res.order_lines[0]._id,
@@ -1716,7 +1716,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
       .then(res => {
         return rp({
           method: 'POST',
-          uri: lib.helpers.apiTestURL(`order/ticket/offline/requestInvoice`),
+          uri: lib.helpers.apiTestURL(`order/ticket/offline/invoiceRequest`),
           body: {
             orderId: res._id,
             orderLineId: res.order_lines[0]._id,
@@ -1860,7 +1860,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
       .then(res =>
         rp({
           method: 'POST',
-          uri: lib.helpers.apiTestURL(`order/ticket/verifyInvoice`),
+          uri: lib.helpers.apiTestURL(`order/ticket/invoiceResponse`),
           body: {
             orderId: orders[0]._id,
             orderLineId: orders[0].order_lines[2]._id,
@@ -1952,7 +1952,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
       .then(res => {
         return rp({
           method: 'POST',
-          uri: lib.helpers.apiTestURL(`order/ticket/verifyInvoice`),
+          uri: lib.helpers.apiTestURL(`order/ticket/invoiceResponse`),
           body: {
             orderId: res._id,
             orderLineId: res.order_lines[0]._id,

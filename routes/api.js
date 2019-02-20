@@ -278,8 +278,8 @@ router.post('/order/lost', apiResponse('TicketAction', 'lostReport', true, ['bod
 
 
 // Order => api's used by offline system
-router.post('/order/offline/verifyInvoice', apiResponse('Offline', 'verifyInvoice', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
-router.post('/order/offline/onlineWarehouseResponse', apiResponse('Offline', 'onlineWarehouseResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
+router.post('/order/offline/invoiceResponse', apiResponse('Offline', 'invoiceResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
+router.post('/order/offline/transferResponse', apiResponse('Offline', 'transferResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
 
 // offline reset order
 router.get('/order/offline/reset/:id', apiResponse('Offline', 'makeTestOrder', true, ['params.id'], [_const.ACCESS_LEVEL.OfflineSystem]));
