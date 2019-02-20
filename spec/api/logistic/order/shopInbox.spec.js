@@ -186,30 +186,36 @@ describe('POST transferResponse(verify)', () => {
             console.log(err);
         };
     }, 15000);
+
     it('should create new delivery  and orderline ticket is changed to deliveryset after verification', async function (done) {
-        this.done = done;
-        await models()['DeliveryTest'].deleteMany({});
-        const res = await rp({
-            jar: adminObj.jar,
-            body: {
-                orderId: orders[0]._id,
-                orderLineId: orderData[0].order_lines[0]._id,
-                warehouseId: centralId,
-                userId: '5c209119da8a28386c02471b',
-                barcode: '0394081341'
-            },
-            method: 'POST',
-            json: true,
-            uri: lib.helpers.apiTestURL('order/offline/transferResponse'),
-            resolveWithFullResponse: true
-        });
-        expect(res.statusCode).toBe(200)
-        const deliveries = await models()['DeliveryTest'].find();
-        expect(deliveries.length).toBe(1)
-        const res1 = await models()['OrderTest'].find()
-        let lastTicket = res1[0].order_lines[0].tickets[res1[0].order_lines[0].tickets.length - 1].status;
-        expect(lastTicket).toBe(_const.ORDER_LINE_STATUS.DeliverySet)
-        done()
+        try {
+            this.done = done;
+            await models()['DeliveryTest'].deleteMany({});
+
+            const res = await rp({
+                jar: adminObj.jar,
+                body: {
+                    orderId: orders[0]._id,
+                    orderLineId: orderData[0].order_lines[0]._id,
+                    warehouseId: centralId,
+                    userId: '5c209119da8a28386c02471b',
+                    barcode: '0394081341'
+                },
+                method: 'POST',
+                json: true,
+                uri: lib.helpers.apiTestURL('order/offline/transferResponse'),
+                resolveWithFullResponse: true
+            });
+            expect(res.statusCode).toBe(200)
+            const deliveries = await models()['DeliveryTest'].find();
+            expect(deliveries.length).toBe(1)
+            const res1 = await models()['OrderTest'].find()
+            let lastTicket = res1[0].order_lines[0].tickets[res1[0].order_lines[0].tickets.length - 1].status;
+            expect(lastTicket).toBe(_const.ORDER_LINE_STATUS.DeliverySet)
+            done()
+        } catch (err) {
+            lib.helpers.errorHandler.bind(this)(err)
+        }
     });
     xit('should check the orderline is added to an existing delivery that is being started today', async function (done) {
         this.done = done
@@ -511,33 +517,33 @@ xdescribe('POST inbox scan - returned orderline', () => {
             await models()['OrderTest'].update({
                 _id: mongoose.Types.ObjectId(orders[0]._id),
             }, {
-                $set: {
-                    order_lines: [{
-                        cancel: true,
-                        product_id: products[0]._id,
-                        campaign_info: {
-                            _id: mongoose.Types.ObjectId(),
-                            discount_ref: 0
-                        },
-                        product_instance_id: products[0].instances[0]._id,
-                        tickets: [{
-                            is_processed: true,
-                            _id: mongoose.Types.ObjectId(),
-                            status: _const.ORDER_LINE_STATUS.ReturnRequested,
-                            desc: null,
-                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
-                            timestamp: new Date(),
-                        },{
-                            is_processed: false,
-                            _id: mongoose.Types.ObjectId(),
-                            status: _const.ORDER_LINE_STATUS.Delivered,
-                            desc: null,
-                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
-                            timestamp: new Date(),
+                    $set: {
+                        order_lines: [{
+                            cancel: true,
+                            product_id: products[0]._id,
+                            campaign_info: {
+                                _id: mongoose.Types.ObjectId(),
+                                discount_ref: 0
+                            },
+                            product_instance_id: products[0].instances[0]._id,
+                            tickets: [{
+                                is_processed: true,
+                                _id: mongoose.Types.ObjectId(),
+                                status: _const.ORDER_LINE_STATUS.ReturnRequested,
+                                desc: null,
+                                receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
+                                timestamp: new Date(),
+                            }, {
+                                is_processed: false,
+                                _id: mongoose.Types.ObjectId(),
+                                status: _const.ORDER_LINE_STATUS.Delivered,
+                                desc: null,
+                                receiver_id: mongoose.Types.ObjectId(warehouses.find(x => !x.is_hub && !x.has_customer_pickup)._id),
+                                timestamp: new Date(),
+                            }]
                         }]
-                    }]
-                }
-            });
+                    }
+                });
             orderData = await models()['OrderTest'].find()
             done()
         } catch (err) {
@@ -560,11 +566,11 @@ xdescribe('POST inbox scan - returned orderline', () => {
         })
         expect(res.statusCode).toBe(200)
         NorderData = await models()['OrderTest'].find()
-        const NorderlineTicket = NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length-1].status
+        const NorderlineTicket = NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length - 1].status
         expect(NorderlineTicket).toBe(_const.ORDER_LINE_STATUS.WaitForOnlineWarehouseCancel)
         done()
     });
-});  
+});
 xdescribe('lost report', () => {
     let orders, products;
     let customer = {
