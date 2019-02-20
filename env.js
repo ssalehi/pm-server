@@ -118,8 +118,10 @@ uploadExcelPath = "public/excel/";
 /**
  * offline system api
  */
-const onlineWarehouseAPI = getEnvValue(process.env.ONLINE_WAREHOUSE_API);
-const invoiceAPI = getEnvValue(process.env.INVOICE_API);
+const serviceAddress = getEnvValue(process.env.SERVICE_ADDRESS);
+const serviceTransferAPI = getEnvValue(process.env.SERVICE_TRANSFER_API);
+const serviceReceiveAPI = getEnvValue(process.env.SERVICE_RECEIVE_API);
+const servcieInvoiceAPI = getEnvValue(process.env.SERVICE_INVOICE_API);
 
 /**
  *  in some cases .env var name which is declared in ..env file is not compatible with server .env var in production mode.
@@ -173,8 +175,6 @@ module.exports = {
     clientSecret: googleAuth_clientSecret,
     callBackURL: googleAuth_callbackUrl,
   },
-  onlineWarehouseAPI,
-  invoiceAPI,
   mailConfig,
   token_url,
   api_key,
@@ -189,7 +189,11 @@ module.exports = {
   private_key,
   free_delivery_amount,
   validPassedDaysForReturn,
-  rounding_factor
+  rounding_factor,
+  serviceAddress,
+  serviceTransferAPI,
+  serviceReceiveAPI,
+  servcieInvoiceAPI
 };
 
 
