@@ -84,8 +84,7 @@ describe('POST inbox scan - new orderline', () => {
         done()
     });
 });
-
-xdescribe('POST transferResponse(verify)', () => {
+describe('POST transferResponse(verify)', () => {
     let adminObj = {
         aid: null,
         jar: null,
@@ -397,8 +396,7 @@ describe('POST inbox scan - canceled orderline', () => {
         done()
     });
 });
-
-xdescribe('POST transferResponse(cancel)', () => {
+describe('POST transferResponse(cancel)', () => {
     let adminObj = {
         aid: null,
         jar: null,
@@ -618,7 +616,7 @@ describe('lost report', () => {
         };
     }, 15000);
 
-    xit('tests lost report of an order line which is not still added to online warehouse and checks for sales manager message', async function (done) {
+    it('tests lost report of an order line which is not still added to online warehouse and checks for sales manager message', async function (done) {
         try {
             this.done = done;
 
