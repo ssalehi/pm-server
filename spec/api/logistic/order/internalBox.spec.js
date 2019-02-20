@@ -298,7 +298,7 @@ describe('POST scan for return delivery', () => {
         };
     }, 15000);
 
-    it('after scan create orderlines delivery back to centralwarehouse', async function (done) {
+    it('should create orderlines delivery back to centralwarehouse after scan', async function (done) {
         this.done = done
         const res = await rp({
             jar: hubClerk.jar,
