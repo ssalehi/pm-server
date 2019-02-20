@@ -1669,7 +1669,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
       .then(res => {
         return rp({
           method: 'POST',
-          uri: lib.helpers.apiTestURL(`order/ticket/offline/requestInvoice`),
+          uri: lib.helpers.apiTestURL(`order/ticket/offline/invoiceRequest`),
           body: {
             orderId: res._id,
             orderLineId: res.order_lines[0]._id,
@@ -1716,7 +1716,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
       .then(res => {
         return rp({
           method: 'POST',
-          uri: lib.helpers.apiTestURL(`order/ticket/offline/requestInvoice`),
+          uri: lib.helpers.apiTestURL(`order/ticket/offline/invoiceRequest`),
           body: {
             orderId: res._id,
             orderLineId: res.order_lines[0]._id,
@@ -1860,7 +1860,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
       .then(res =>
         rp({
           method: 'POST',
-          uri: lib.helpers.apiTestURL(`order/ticket/verifyInvoice`),
+          uri: lib.helpers.apiTestURL(`order/ticket/invoiceResponse`),
           body: {
             orderId: orders[0]._id,
             orderLineId: orders[0].order_lines[2]._id,
@@ -1952,7 +1952,7 @@ xdescribe('POST Order - (Set Ticket)', () => {
       .then(res => {
         return rp({
           method: 'POST',
-          uri: lib.helpers.apiTestURL(`order/ticket/verifyInvoice`),
+          uri: lib.helpers.apiTestURL(`order/ticket/invoiceResponse`),
           body: {
             orderId: res._id,
             orderLineId: res.order_lines[0]._id,
