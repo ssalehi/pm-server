@@ -9,7 +9,7 @@ const utils = require('../utils');
 const deliveryDurationInfo = require('../../../../deliveryDurationInfo')
 
 
-xdescribe('POST inbox scan - new orderline', () => {
+describe('POST inbox scan - new orderline', () => {
     let orders, products
     ShopClerk = {
         aid: null,
@@ -199,7 +199,8 @@ describe('POST transferResponse(verify)', () => {
                     orderLineId: orderData[0].order_lines[0]._id,
                     warehouseId: centralId,
                     userId: '5c209119da8a28386c02471b',
-                    barcode: '0394081341'
+                    barcode: '0394081341',
+                    type: _const.TRANSFER_TYPE.WarehouseToOnline
                 },
                 method: 'POST',
                 json: true,
@@ -217,7 +218,7 @@ describe('POST transferResponse(verify)', () => {
             lib.helpers.errorHandler.bind(this)(err)
         }
     });
-    xit('should check the orderline is added to an existing delivery that is being started today', async function (done) {
+    it('should check the orderline is added to an existing delivery that is being started today', async function (done) {
         this.done = done
         const res = await rp({
             jar: adminObj.jar,
@@ -226,7 +227,8 @@ describe('POST transferResponse(verify)', () => {
                 "orderLineId": orderData[0].order_lines[0]._id,
                 "warehouseId": centralId,
                 "userId": '5c209119da8a28386c02471b',
-                "barcode": '0394081341'
+                "barcode": '0394081341',
+                type: _const.TRANSFER_TYPE.WarehouseToOnline
             },
             method: 'POST',
             json: true,
@@ -241,7 +243,7 @@ describe('POST transferResponse(verify)', () => {
         expect(deliveryData[0].to.warehouse_id.toString()).toBe(warehouses.find(x => x.is_hub)._id.toString())
         done()
     });
-    xit('should add the delivery to an existing one that has started few days ago', async function (done) {
+    it('should add the delivery to an existing one that has started few days ago', async function (done) {
         this.done = done;
         const deliveryData = await models()['DeliveryTest'].find()
         deliveryData[0].start = (new Date()).setDate(new Date().getDate() - 3);
@@ -253,7 +255,8 @@ describe('POST transferResponse(verify)', () => {
                 "orderLineId": orderData[0].order_lines[0]._id,
                 "warehouseId": centralId,
                 "userId": '5c209119da8a28386c02471b',
-                "barcode": '0394081341'
+                "barcode": '0394081341',
+                type: _const.TRANSFER_TYPE.WarehouseToOnline
             },
             method: 'POST',
             json: true,
@@ -267,7 +270,7 @@ describe('POST transferResponse(verify)', () => {
         expect(deliveryData1.length).toBe(1)
         done()
     });
-    xit('should check when the existing delivery is started creates a new delivery for new orderlines', async function (done) {
+    it('should check when the existing delivery is started creates a new delivery for new orderlines', async function (done) {
         this.done = done
         const deliveryData = await models()['DeliveryTest'].find()
         deliveryData[0].tickets[0].status = _const.DELIVERY_STATUS.started
@@ -280,7 +283,8 @@ describe('POST transferResponse(verify)', () => {
                 "orderLineId": orderData[0].order_lines[1]._id,
                 "warehouseId": centralId,
                 "userId": '5c209119da8a28386c02471b',
-                "barcode": '0394081342'
+                "barcode": '0394081342',
+                type: _const.TRANSFER_TYPE.WarehouseToOnline
             },
             method: 'POST',
             json: true,
@@ -295,7 +299,7 @@ describe('POST transferResponse(verify)', () => {
         expect(moment(newDelivery.start).format('YYYY-MM-DD')).toBe(currentDay)
         done()
     });
-    xit('should check after onlinewarehouseverification the reserved and count of an inventory are reduced by 1', async function (done) {
+    it('should check after onlinewarehouseverification the reserved and count of an inventory are reduced by 1', async function (done) {
         this.done = done
         await utils.changeInventory(products[0]._id, products[0].instances[0]._id, warehouses[1]._id, 0, 1)
 
@@ -308,7 +312,8 @@ describe('POST transferResponse(verify)', () => {
                 "orderLineId": orderData[0].order_lines[0]._id,
                 "warehouseId": centralId,
                 "userId": '5c209119da8a28386c02471b',
-                "barcode": '0394081341'
+                "barcode": '0394081341',
+                type: _const.TRANSFER_TYPE.WarehouseToOnline
             },
             method: 'POST',
             json: true,
@@ -325,7 +330,7 @@ describe('POST transferResponse(verify)', () => {
     });
 
 });
-xdescribe('POST inbox scan - canceled orderline', () => {
+describe('POST inbox scan - canceled orderline', () => {
     let orders, products
     ShopClerk = {
         aid: null,
@@ -402,7 +407,7 @@ xdescribe('POST inbox scan - canceled orderline', () => {
         done()
     });
 });
-xdescribe('POST transferResponse(cancel)', () => {
+describe('POST transferResponse(cancel)', () => {
     let adminObj = {
         aid: null,
         jar: null,
@@ -470,6 +475,7 @@ xdescribe('POST transferResponse(cancel)', () => {
                 warehouseId: sanaId,
                 barcode: '0394081341',
                 reverse: true,
+                type: _const.TRANSFER_TYPE.OnlineToWarehouse
             },
             method: 'POST',
             json: true,
@@ -487,7 +493,7 @@ xdescribe('POST transferResponse(cancel)', () => {
         done()
     });
 });
-xdescribe('POST inbox scan - returned orderline', () => {
+describe('POST inbox scan - returned orderline', () => {
     let orders, products
     ShopClerk = {
         aid: null,
@@ -571,7 +577,7 @@ xdescribe('POST inbox scan - returned orderline', () => {
         done()
     });
 });
-xdescribe('lost report', () => {
+describe('lost report', () => {
     let orders, products;
     let customer = {
         _id: null,
