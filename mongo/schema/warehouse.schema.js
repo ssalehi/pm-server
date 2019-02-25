@@ -31,12 +31,19 @@ let schema_obj = {
     unique: true,
     min: 0
   },
-  ip_address: String,
+  branch_code: {
+    type: String,
+    trim: true,
+  },
+  inventory_code: {
+    type: String,
+    trim: true,
+  },
   is_active: {
     type: Boolean,
-    required: true,
     default: true
   }
+
 };
 
 

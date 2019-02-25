@@ -9,6 +9,7 @@ const fs = require('fs');
 const appPages = {feed: true, my_shop: true};
 const copydir = require('copy-dir');
 const warehouses = require('./warehouses');
+const offlineWarehouses = require('./offlineWarehouses');
 const deliveryDurationInfo = require('./deliveryDurationInfo');
 
 
@@ -27,6 +28,12 @@ db.dbIsReady()
       if (!res || res.length === 0) {
         await models()['Warehouse'].insertMany(warehouses);
         console.log('-> ', 'warehouses are added');
+      }
+      
+      res = await models()['OfflineWarehouse'].find().lean();
+      if (!res || res.length === 0) {
+        await models()['OfflineWarehouse'].insertMany(offlineWarehouses);
+        console.log('-> ', 'offline warehouses are added');
       }
 
       res = await models()['DeliveryDurationInfo'].find().lean();
