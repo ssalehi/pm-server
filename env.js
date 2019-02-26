@@ -114,6 +114,7 @@ uploadProductImagePath = "public/images/product-image";
 uploadPlacementImagePath = "public/images/placements";
 uploadDeliveryEvidencePath = "public/images/delivery";
 uploadExcelPath = "public/excel/";
+uploadMusicPath = "public/musics/";
 
 /**
  * offline system api
@@ -170,6 +171,7 @@ module.exports = {
   uploadPlacementImagePath,
   uploadDeliveryEvidencePath,
   uploadExcelPath,
+  uploadMusicPath,
   googleAuth: {
     clientID: googleAuth_clientId,
     clientSecret: googleAuth_clientSecret,

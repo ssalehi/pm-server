@@ -562,6 +562,41 @@ router.post('/sm/renewNotExist', apiResponse('SMMessage', 'renewNotExistOrderlin
 router.post('/sm/assignToReturn', apiResponse('SMMessage', 'assignToReturn', true, ['body.id', 'body.preCheck', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/sm/close', apiResponse('SMMessage', 'close', true, ['body.id', 'body.report', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 
+// app trackList
+router.use('/trackList/:artistName/:trackName', function (req, res, next) {
+
+  let destination;
+  if (req.test)
+    destination = env.uploadMusicPath + path.sep + 'test' + path.sep + req.params.artistName + path.sep + req.params.trackName;
+  else
+    destination = env.uploadMusicPath + path.sep + req.params.artistName + path.sep + req.params.trackName;
+
+
+  let musicStorage = multer.diskStorage({
+    destination,
+    filename: (req, file, cb) => {
+
+      const parts = file.originalname.split('.');
+
+      if (!parts || parts.length !== 2) {
+
+        cb(new Error('count not read file extension'));
+      }
+      else {
+        cb(null, parts[0] + '-' + Date.now() + '.' + parts[1]);
+      }
+    }
+  });
+  let musicUpload = multer({storage: musicStorage});
+
+  musicUpload.single('file')(req, res, err => {
+    if (!err)
+      next()
+  });
+
+});
+router.post('/trackList/:artistName/:trackName', apiResponse('Tracklist', 'addTrack', true, ['params.artistName', 'params.trackName'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/trackList/:artistName/:trackName', apiResponse('Tracklist', 'removeTrack', true, ['params.artistName', 'params.trackName'], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 
