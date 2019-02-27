@@ -174,13 +174,13 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
           .update({username: req.user.username}, {
             is_verified: _const.VERIFICATION.emailVerified,
           }).then(data => {
-            // redirect client to the setMobile page
-            res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
-            res.end();
-          }).catch(err => {
-            console.error('error in changing verification level: ', err);
-            res.end();
-          });
+          // redirect client to the setMobile page
+          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
+          res.end();
+        }).catch(err => {
+          console.error('error in changing verification level: ', err);
+          res.end();
+        });
       } else { // if mobile is already verified
         if (obj['is_preferences_set'])
           res.writeHead(302, {'Location': `${ClientAddress}`});
@@ -283,7 +283,6 @@ router.post('/order/offline/transferResponse', apiResponse('Offline', 'transferR
 
 // offline reset order
 router.get('/order/offline/reset/:id', apiResponse('Offline', 'makeTestOrder', true, ['params.id'], [_const.ACCESS_LEVEL.OfflineSystem]));
-
 
 
 // Wish List
@@ -424,9 +423,9 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-      console.error("error in rmPromise: ", err);
-      next(err);
-    });
+    console.error("error in rmPromise: ", err);
+    next(err);
+  });
 });
 
 router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
@@ -563,41 +562,43 @@ router.post('/sm/assignToReturn', apiResponse('SMMessage', 'assignToReturn', tru
 router.post('/sm/close', apiResponse('SMMessage', 'close', true, ['body.id', 'body.report', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 
 // app trackList
-router.use('/trackList/:artistName/:trackName', function (req, res, next) {
+router.use('/trackList', function (req, res, next) {
+
+  // const id = new mongoose.Types.ObjectId();
 
   let destination;
-  if (req.test)
-    destination = env.uploadMusicPath + path.sep + 'test' + path.sep + req.params.artistName + path.sep + req.params.trackName;
-  else
-    destination = env.uploadMusicPath + path.sep + req.params.artistName + path.sep + req.params.trackName;
 
+  if (req.test) {
+    destination = env.uploadMusicPath + (req.test ? path.sep + 'test' : '') + path.sep
+  }
+  else
+    destination = env.uploadMusicPath + path.sep
+
+  // req.track_id = id;
 
   let musicStorage = multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
-
-      const parts = file.originalname.split('.');
-
-      if (!parts || parts.length !== 2) {
-
-        cb(new Error('count not read file extension'));
-      }
-      else {
-        cb(null, parts[0] + '-' + Date.now() + '.' + parts[1]);
-      }
+      cb(null, file.originalname);
     }
   });
-  let musicUpload = multer({storage: musicStorage});
 
+  let musicUpload = multer({storage: musicStorage});
   musicUpload.single('file')(req, res, err => {
-    if (!err)
-      next()
+    if (!err) {
+      next();
+    } else {
+      res.status(500)
+        .send(err);
+    }
   });
 
 });
-router.post('/trackList/:artistName/:trackName', apiResponse('Tracklist', 'addTrack', true, ['params.artistName', 'params.trackName'], [_const.ACCESS_LEVEL.ContentManager]));
-router.post('/trackList/:artistName/:trackName', apiResponse('Tracklist', 'removeTrack', true, ['params.artistName', 'params.trackName'], [_const.ACCESS_LEVEL.ContentManager]));
 
+router.post('/trackList', apiResponse('AppTracklist', 'addTracks', true, ['body', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.delete('/trackList/:trackListId', apiResponse('AppTracklist', 'removeTrack', true, ['params.trackListId'], [_const.ACCESS_LEVEL.ContentManager]));
+router.get('/trackList', apiResponse('AppTracklist', 'getTracklist', true, [], [_const.ACCESS_LEVEL.ContentManager]));
+// router.post('/trackList/:trackListId', apiResponse('AppTracklist', 'updateTrackList', true, ['params.trackListId', 'body'], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 module.exports = router;

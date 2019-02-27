@@ -8,8 +8,8 @@ let schema_obj = {
   },
   priority: {
     type: Number,
-    required: true,
-    unique: true,
+    // required: true,
+    // unique: true,
     min: 1
   },
   trackName: {
