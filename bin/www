@@ -10,7 +10,7 @@ const http = require('http');
 const fs = require('fs');
 const env = require('../env');
 const socket = require('../socket');
-const port = normalizePort(process.env.SECURE_PORT || env.port || '3000');
+const port = normalizePort(env.port || '3000');
 const {initTokenRequest, getToken} = require('../lib/updateToken.model');
 
 /**
@@ -19,29 +19,13 @@ const {initTokenRequest, getToken} = require('../lib/updateToken.model');
 
 let app, server, server2;
 appWaiter = setInterval(() => {
-  if(require('../app').isReady()) {
+  if (require('../app').isReady()) {
     console.log('App is set up');
     clearInterval(appWaiter);
     app = require('../app').get();
     app.set('port', port);
 
-    /*
-     * Create Https Server
-     */
-    const certPath = {
-      key: '/cert/lithium.style.key',
-      cert: '/cert/lithium.style.crt',
-    };
-
-    if (process.env.SECURE_PORT && fs.existsSync(certPath.key) && fs.existsSync(certPath.cert)) {
-      server = https.createServer({
-        key: fs.readFileSync(certPath.key),
-        cert: fs.readFileSync(certPath.cert)
-      }, app);
-      server2 = http.createServer(app).listen(normalizePort(env.port || '3000'));
-    } else {
-      server = http.createServer(app);
-    }
+    server = http.createServer(app);
 
     /*
     * Listen on provided port, on all network interface.
@@ -49,10 +33,6 @@ appWaiter = setInterval(() => {
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
-    if (server2) {
-      server2.on('error', onError);
-      server2.on('listening', onListening);
-    }
     socket.setup(server);
   } else {
     console.log('App is being set up ...');
