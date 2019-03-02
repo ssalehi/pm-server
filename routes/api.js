@@ -564,7 +564,7 @@ router.post('/sm/close', apiResponse('SMMessage', 'close', true, ['body.id', 'bo
 // app trackList
 router.use('/trackList', function (req, res, next) {
 
-  // const id = new mongoose.Types.ObjectId();
+  const id = new mongoose.Types.ObjectId();
 
   let destination;
 
@@ -574,7 +574,7 @@ router.use('/trackList', function (req, res, next) {
   else
     destination = env.uploadMusicPath + path.sep
 
-  // req.track_id = id;
+  req.track_id = id;
 
   let musicStorage = multer.diskStorage({
     destination,
@@ -597,8 +597,8 @@ router.use('/trackList', function (req, res, next) {
 
 router.post('/trackList', apiResponse('AppTracklist', 'addTracks', true, ['body', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
 router.delete('/trackList/:trackListId', apiResponse('AppTracklist', 'removeTrack', true, ['params.trackListId'], [_const.ACCESS_LEVEL.ContentManager]));
-router.get('/trackList', apiResponse('AppTracklist', 'getTracklist', true, [], [_const.ACCESS_LEVEL.ContentManager]));
-// router.post('/trackList/:trackListId', apiResponse('AppTracklist', 'updateTrackList', true, ['params.trackListId', 'body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.get('/trackList/2get_tracklist', apiResponse('AppTracklist', 'getTracklist', false, [], []));
+router.put('/trackList/update_tracklist', apiResponse('AppTracklist', 'updateTrackList', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 module.exports = router;

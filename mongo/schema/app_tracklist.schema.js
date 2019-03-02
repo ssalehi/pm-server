@@ -8,9 +8,9 @@ let schema_obj = {
   },
   priority: {
     type: Number,
-    // required: true,
-    // unique: true,
-    min: 1
+    required: true,
+    unique: true,
+    min: 0
   },
   trackName: {
     type: String,
