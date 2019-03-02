@@ -39,45 +39,45 @@ describe('POST Order Ticket Scan - hub inbox scan', () => {
             await models()['OrderTest'].update({
                 _id: mongoose.Types.ObjectId(orders[0]._id),
             }, {
-                $set: {
-                    order_lines: {
-                        product_id: mongoose.Types.ObjectId(products[0]._id),
-                        campaign_info: {
-                            _id: mongoose.Types.ObjectId(),
-                            discount_ref: 0
-                        },
-                        product_instance_id: mongoose.Types.ObjectId(products[0].instances[0]._id),
-                        tickets: [{
-                            is_processed: false,
-                            status: _const.ORDER_LINE_STATUS.Delivered,
-                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
-                            desc: null,
-                            timestamp: new Date(),
-                        }]
+                    $set: {
+                        order_lines: {
+                            product_id: mongoose.Types.ObjectId(products[0]._id),
+                            campaign_info: {
+                                _id: mongoose.Types.ObjectId(),
+                                discount_ref: 0
+                            },
+                            product_instance_id: mongoose.Types.ObjectId(products[0].instances[0]._id),
+                            tickets: [{
+                                is_processed: false,
+                                status: _const.ORDER_LINE_STATUS.Delivered,
+                                receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
+                                desc: null,
+                                timestamp: new Date(),
+                            }]
+                        }
                     }
-                }
-            });
+                });
             await models()['OrderTest'].update({
                 _id: mongoose.Types.ObjectId(orders[3]._id),
             }, {
-                $set: {
-                    order_lines: {
-                        product_id: mongoose.Types.ObjectId(products[0]._id),
-                        campaign_info: {
-                            _id: mongoose.Types.ObjectId(),
-                            discount_ref: 0
-                        },
-                        product_instance_id: mongoose.Types.ObjectId(products[0].instances[1]._id),
-                        tickets: [{
-                            is_processed: false,
-                            status: _const.ORDER_LINE_STATUS.Delivered,
-                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
-                            desc: null,
-                            timestamp: new Date(),
-                        }]
+                    $set: {
+                        order_lines: {
+                            product_id: mongoose.Types.ObjectId(products[0]._id),
+                            campaign_info: {
+                                _id: mongoose.Types.ObjectId(),
+                                discount_ref: 0
+                            },
+                            product_instance_id: mongoose.Types.ObjectId(products[0].instances[1]._id),
+                            tickets: [{
+                                is_processed: false,
+                                status: _const.ORDER_LINE_STATUS.Delivered,
+                                receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
+                                desc: null,
+                                timestamp: new Date(),
+                            }]
+                        }
                     }
-                }
-            });
+                });
             done()
         } catch (err) {
             console.log(err);
@@ -175,26 +175,26 @@ describe('POST transferResponse(cancel)', () => {
             await models()['OrderTest'].update({
                 _id: mongoose.Types.ObjectId(orders[0]._id),
             }, {
-                $set: {
-                    order_lines: [{
-                        cancel: true,
-                        product_id: products[0]._id,
-                        campaign_info: {
-                            _id: mongoose.Types.ObjectId(),
-                            discount_ref: 0
-                        },
-                        product_instance_id: products[0].instances[0]._id,
-                        tickets: [{
-                            is_processed: false,
-                            _id: mongoose.Types.ObjectId(),
-                            status: _const.ORDER_LINE_STATUS.Delivered,
-                            desc: null,
-                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
-                            timestamp: new Date(),
+                    $set: {
+                        order_lines: [{
+                            cancel: true,
+                            product_id: products[0]._id,
+                            campaign_info: {
+                                _id: mongoose.Types.ObjectId(),
+                                discount_ref: 0
+                            },
+                            product_instance_id: products[0].instances[0]._id,
+                            tickets: [{
+                                is_processed: false,
+                                _id: mongoose.Types.ObjectId(),
+                                status: _const.ORDER_LINE_STATUS.Delivered,
+                                desc: null,
+                                receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
+                                timestamp: new Date(),
+                            }]
                         }]
-                    }]
-                }
-            });
+                    }
+                });
             orderData = await models()['OrderTest'].find()
             done()
         } catch (err) {
@@ -255,34 +255,34 @@ describe('POST inbox scan - return', () => {
             await models()['OrderTest'].update({
                 _id: mongoose.Types.ObjectId(orders[1]._id),
             }, {
-                $set: {
-                    order_lines: [{
-                        cancel: false,
-                        paid_price: 58000,
-                        product_id: products[0]._id,
-                        campaign_info: {
-                            _id: mongoose.Types.ObjectId(),
-                            discount_ref: 0
-                        },
-                        product_instance_id: products[0].instances[0]._id,
-                        tickets: [{
-                            is_processed: true,
-                            _id: mongoose.Types.ObjectId(),
-                            status: _const.ORDER_LINE_STATUS.ReturnRequested,
-                            desc: null,
-                            receiver_id: mongoose.Types.ObjectId(),
-                            timestamp: new Date(),
-                        }, {
-                            is_processed: false,
-                            _id: mongoose.Types.ObjectId(),
-                            status: _const.ORDER_LINE_STATUS.Delivered,
-                            desc: null,
-                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
-                            timestamp: new Date(),
+                    $set: {
+                        order_lines: [{
+                            cancel: false,
+                            paid_price: 58000,
+                            product_id: products[0]._id,
+                            campaign_info: {
+                                _id: mongoose.Types.ObjectId(),
+                                discount_ref: 0
+                            },
+                            product_instance_id: products[0].instances[0]._id,
+                            tickets: [{
+                                is_processed: true,
+                                _id: mongoose.Types.ObjectId(),
+                                status: _const.ORDER_LINE_STATUS.ReturnRequested,
+                                desc: null,
+                                receiver_id: mongoose.Types.ObjectId(),
+                                timestamp: new Date(),
+                            }, {
+                                is_processed: false,
+                                _id: mongoose.Types.ObjectId(),
+                                status: _const.ORDER_LINE_STATUS.Delivered,
+                                desc: null,
+                                receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
+                                timestamp: new Date(),
+                            }]
                         }]
-                    }]
-                }
-            });
+                    }
+                });
             orderData = await models()['OrderTest'].find()
             done()
         } catch (err) {
@@ -343,31 +343,31 @@ describe('POST order damage- when returned', () => {
             await lib.dbHelpers.addAndLoginAgent('sm', _const.ACCESS_LEVEL.SalesManager);
             products = await utils.makeProducts();
             orders = await utils.makeOrders(customer);
-          orders[0] =  await models()['OrderTest'].findOneAndUpdate({
-            _id: orders[0]._id
+            orders[0] = await models()['OrderTest'].findOneAndUpdate({
+                _id: orders[0]._id
             }, {
-                $set: {
-                    order_lines: [{
-                        cancel: true,
-                        product_id: products[0]._id,
-                        campaign_info: {
-                            _id: mongoose.Types.ObjectId(),
-                            discount_ref: 0
-                        },
-                        product_instance_id: products[0].instances[0]._id,
-                        tickets: [{
-                            is_processed: false,
-                            _id: mongoose.Types.ObjectId(),
-                            status: _const.ORDER_LINE_STATUS.Delivered,
-                            desc: null,
-                            receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
-                            timestamp: new Date(),
+                    $set: {
+                        order_lines: [{
+                            cancel: true,
+                            product_id: products[0]._id,
+                            campaign_info: {
+                                _id: mongoose.Types.ObjectId(),
+                                discount_ref: 0
+                            },
+                            product_instance_id: products[0].instances[0]._id,
+                            tickets: [{
+                                is_processed: false,
+                                _id: mongoose.Types.ObjectId(),
+                                status: _const.ORDER_LINE_STATUS.Delivered,
+                                desc: null,
+                                receiver_id: mongoose.Types.ObjectId(warehouses.find(x => x.is_hub)._id),
+                                timestamp: new Date(),
+                            }]
                         }]
-                    }]
-                }
-            },{
-                new: true
-              });
+                    }
+                }, {
+                    new: true
+                });
 
             done()
         } catch (err) {
@@ -376,24 +376,31 @@ describe('POST order damage- when returned', () => {
     }, 15000);
 
     it('should check when product is damaged after return no balance is added to customer', async function (done) {
-        this.done = done
-        const res = await rp({
-            jar: hubClerk.jar,
-            body: {
-                orderId: orders[0]._id,
-                orderLineId: orders[0].order_lines[0]._id
-            },
-            method: 'POST',
-            json: true,
-            uri: lib.helpers.apiTestURL('order/damage'),
-            resolveWithFullResponse: true
-        })
-        expect(res.statusCode).toBe(200)
-        NorderData = await models()['OrderTest'].find()
-        expect(NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.Damaged)
-        let message = await models()['SMMessageTest'].find()
-        expect(message.length).toBe(1)
-        expect(message[0].type).toBe(_const.SM_MESSAGE.Damage)
-        done()
+        try {
+
+            this.done = done
+            const res = await rp({
+                jar: hubClerk.jar,
+                body: {
+                    orderId: orders[0]._id,
+                    orderLineId: orders[0].order_lines[0]._id,
+                    type: _const.RECEIVE_TYPE.DamageWithRefund
+                },
+                method: 'POST',
+                json: true,
+                uri: lib.helpers.apiTestURL('order/damage'),
+                resolveWithFullResponse: true
+            })
+            expect(res.statusCode).toBe(200)
+            NorderData = await models()['OrderTest'].find()
+            expect(NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.WaitForDamageWithRefund)
+            let message = await models()['SMMessageTest'].find()
+            expect(message.length).toBe(1)
+            expect(message[0].type).toBe(_const.SM_MESSAGE.DamageWithRefund)
+            done();
+        } catch (err) {
+            lib.helpers.errorHandler.bind(this)(err)
+        }
+
     });
 });
