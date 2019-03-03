@@ -596,9 +596,9 @@ router.use('/trackList', function (req, res, next) {
 });
 
 router.post('/trackList', apiResponse('AppTracklist', 'addTracks', true, ['body', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
-router.delete('/trackList/:trackListId', apiResponse('AppTracklist', 'removeTrack', true, ['params.trackListId'], [_const.ACCESS_LEVEL.ContentManager]));
-router.get('/trackList/2get_tracklist', apiResponse('AppTracklist', 'getTracklist', false, [], []));
+router.get('/trackList/get_tracklist', apiResponse('AppTracklist', 'getTracklist', false, [], []));
 router.put('/trackList/update_tracklist', apiResponse('AppTracklist', 'updateTrackList', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/trackList/delete_track', apiResponse('AppTracklist', 'deleteTrack', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 module.exports = router;
