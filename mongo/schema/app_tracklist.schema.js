@@ -4,6 +4,7 @@ const Schema = require('mongoose').Schema;
 let schema_obj = {
   path: {
     type: String,
+    require: true
   },
   priority: {
     type: Number,
