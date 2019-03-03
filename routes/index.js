@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
-const IPG = require('../public/IPG')
+// const IPG = require('../public/IPG')
 const orderModel = require('../lib/order.model')
 
 
@@ -36,7 +36,7 @@ router.all("*", function (req, res, next) {
 
 router.get('/IPG/transfer/:order_id', async function (req, res, next) {
   order_id = req.params.order_id
-  let result = await IPG.loadpug(order_id)
+  let result = await IPG.loadpug(order_id);
   res.render('IPG', {
     IdArray: result,
     title: 'IPG'
