@@ -121,7 +121,8 @@ uploadMusicPath = "public/musics";
  */
 const serviceAddress = getEnvValue(process.env.SERVICE_ADDRESS);
 const serviceTransferAPI = getEnvValue(process.env.SERVICE_TRANSFER_API);
-const serviceReceiveAPI = getEnvValue(process.env.SERVICE_RECEIVE_API);
+const serviceReturnAPI = getEnvValue(process.env.SERVICE_RECEIVE_API);
+const serviceEnterAPI = getEnvValue(process.env.SERVICE_RECEIVE_API);
 const servcieInvoiceAPI = getEnvValue(process.env.SERVICE_INVOICE_API);
 
 /**
@@ -194,7 +195,8 @@ module.exports = {
   rounding_factor,
   serviceAddress,
   serviceTransferAPI,
-  serviceReceiveAPI,
+  serviceEnterAPI,
+  serviceReturnAPI,
   servcieInvoiceAPI
 };
 

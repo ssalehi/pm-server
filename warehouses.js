@@ -23,7 +23,7 @@ let warehouses = [
     is_hub: true,
     has_customer_pickup: false,
     priority: 4,
-    is_active:true
+    is_active:true,
   },
   {
     _id: mongoose.Types.ObjectId(),
@@ -34,8 +34,8 @@ let warehouses = [
     has_customer_pickup: false,
     priority: 0,
     is_active:true,
-    ip_address: 'localhost:3001'
-
+    branch_code: '001',
+    inventory_code: '001'
   },
   {
     _id: mongoose.Types.ObjectId(),
@@ -52,8 +52,8 @@ let warehouses = [
     is_active:true,
     is_hub: false,
     has_customer_pickup: true,
-    ip_address: 'localhost:3001'
-
+    branch_code: '002',
+    inventory_code: '001'
   },
   {
     _id: mongoose.Types.ObjectId(),
@@ -70,8 +70,8 @@ let warehouses = [
     is_active:true,
     is_hub: false,
     has_customer_pickup: true,
-    ip_address: 'localhost:3001'
-
+    branch_code: '003',
+    inventory_code: '001'
   },
   {
     _id: mongoose.Types.ObjectId(),
@@ -88,8 +88,8 @@ let warehouses = [
     is_active:true,
     is_hub: false,
     has_customer_pickup: true,
-    ip_address: 'localhost:3001'
-
+    branch_code: '004',
+    inventory_code: '001'
   }
 ];
 
