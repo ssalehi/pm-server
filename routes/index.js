@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
-const IPG = require('../public/IPG')
+const IPG = require('../IPG')
 const orderModel = require('../lib/order.model')
 
 
