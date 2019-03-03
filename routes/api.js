@@ -271,7 +271,8 @@ router.post('/order/ticket/scan', apiResponse('TicketAction', 'newScan', true, [
 router.post('/order/ticket', apiResponse('Ticket', 'getTickets', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/order/invoice', apiResponse('Offline', 'manualRequestInvoice', true, ['body.orderId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
 router.post('/order/return', apiResponse('TicketAction', 'requestReturn', false, ['body', 'user']));
-router.post('/order/cancel', apiResponse('TicketAction', 'requestCancel', false, ['body', 'user']));
+router.post('/order/cancel', apiResponse('Ticke' +
+  'tAction', 'requestCancel', false, ['body', 'user']));
 router.post('/order/mismatch', apiResponse('TicketAction', 'mismatchReport', true, ['body.trigger', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
 router.post('/order/damage', apiResponse('TicketAction', 'damageInformed', true, ['body.orderId', 'body.orderLineId', 'body.type', 'user'], [_const.ACCESS_LEVEL.HubClerk]));
 router.post('/order/lost', apiResponse('TicketAction', 'lostReport', true, ['body.orderId', 'body.orderLineId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
@@ -388,8 +389,10 @@ router.delete('/campaign/:cid', apiResponse('Campaign', 'endCampaign', true, ['p
 router.get('/page/:id', apiResponse('Page', 'getPage', false, ['params.id']));
 router.put('/page', apiResponse('Page', 'setPage', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.id'], [_const.ACCESS_LEVEL.ContentManager]));
+
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body', () => false]));
+
 router.post('/page/cm/preview', apiResponse('Page', 'getPageByAddress', true, ['body', () => true], [_const.ACCESS_LEVEL.ContentManager]));
 
 
