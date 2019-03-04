@@ -1,10 +1,8 @@
 const models = require('./mongo/models.mongo');
-const db = require('./mongo/index');
 const mongoose = require('mongoose');
 const env = require('./env');
 const moment = require('moment');
 const orderModel = require('./lib/order.model')
-var express = require('express');
 
 
 
