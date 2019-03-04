@@ -1,0 +1,27 @@
+
+html
+head
+    title Shop Results
+body
+if  anyThingWorng
+h1 = 'نتیجه تراکنش'
+h1 =' شماره فاکتور' #{verifiedResult.invoiceNumber}
+h1 ='تاریخ فاکتور' #{verifiedResult.invoiceDate}
+h1 ='شماره پیگیری' #{verifiedResult.traceNumber[0]}
+h1=' شماره ارجاع' #{verifiedResult.referenceNumber}
+h1=' شماره ترمینال' #{verifiedResult.terminalCode[0]}
+h1 ='شماره فروشگاه' #{verifiedResult.merchantCode[0]}
+h1 ='مبلغ فاکتور' #{verifiedResult.amount[0]}
+button(type="button" onclick='return()')  بازگشت به اپ
+else 
+h1 = 'خرید ناموفق'
+button(type="button" onclick='return()')  بازگشت به اپ
+
+script.
+      function return(){
+         window.open('lithiumstyle://a.com','_blank')
+    }
+    
+   if( verifiedResult && !verifiedResult.error && verifiedResult.action[0] !=== 'NOTRANSACTON' && verifiedResult.action[0] !=== 'NOINVOICE'){
+   let anyThingWorng = false;
+   }

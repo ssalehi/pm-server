@@ -28,7 +28,7 @@ const loadpug = async (order_id) => {
             orderdata.IPG_data.invoice_number,
             orderdata.IPG_data.invoice_date,
             orderdata.IPG_data.amount,
-            env.aap_redirect_address,
+            env.app_redirect_address,
             orderdata.IPG_data.action,
             time,
             ""
