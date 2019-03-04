@@ -174,13 +174,13 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
           .update({username: req.user.username}, {
             is_verified: _const.VERIFICATION.emailVerified,
           }).then(data => {
-            // redirect client to the setMobile page
-            res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
-            res.end();
-          }).catch(err => {
-            console.error('error in changing verification level: ', err);
-            res.end();
-          });
+          // redirect client to the setMobile page
+          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
+          res.end();
+        }).catch(err => {
+          console.error('error in changing verification level: ', err);
+          res.end();
+        });
       } else { // if mobile is already verified
         if (obj['is_preferences_set'])
           res.writeHead(302, {'Location': `${ClientAddress}`});
@@ -271,19 +271,20 @@ router.post('/order/ticket/scan', apiResponse('TicketAction', 'newScan', true, [
 router.post('/order/ticket', apiResponse('Ticket', 'getTickets', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/order/invoice', apiResponse('Offline', 'manualRequestInvoice', true, ['body.orderId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
 router.post('/order/return', apiResponse('TicketAction', 'requestReturn', false, ['body', 'user']));
-router.post('/order/cancel', apiResponse('TicketAction', 'requestCancel', false, ['body', 'user']));
+router.post('/order/cancel', apiResponse('Ticke' +
+  'tAction', 'requestCancel', false, ['body', 'user']));
 router.post('/order/mismatch', apiResponse('TicketAction', 'mismatchReport', true, ['body.trigger', 'user'], [_const.ACCESS_LEVEL.ShopClerk, _const.ACCESS_LEVEL.HubClerk]));
-router.post('/order/damage', apiResponse('TicketAction', 'damageInformed', true, ['body.orderId', 'body.orderLineId', 'user'], [_const.ACCESS_LEVEL.HubClerk]));
+router.post('/order/damage', apiResponse('TicketAction', 'damageInformed', true, ['body.orderId', 'body.orderLineId', 'body.type', 'user'], [_const.ACCESS_LEVEL.HubClerk]));
 router.post('/order/lost', apiResponse('TicketAction', 'lostReport', true, ['body.orderId', 'body.orderLineId', 'user'], [_const.ACCESS_LEVEL.HubClerk, _const.ACCESS_LEVEL.ShopClerk]));
 
 
 // Order => api's used by offline system
 router.post('/order/offline/invoiceResponse', apiResponse('Offline', 'invoiceResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
 router.post('/order/offline/transferResponse', apiResponse('Offline', 'transferResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
+router.post('/order/offline/receiveResponse', apiResponse('Offline', 'receiveResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
 
 // offline reset order
 router.get('/order/offline/reset/:id', apiResponse('Offline', 'makeTestOrder', true, ['params.id'], [_const.ACCESS_LEVEL.OfflineSystem]));
-
 
 
 // Wish List
@@ -388,8 +389,10 @@ router.delete('/campaign/:cid', apiResponse('Campaign', 'endCampaign', true, ['p
 router.get('/page/:id', apiResponse('Page', 'getPage', false, ['params.id']));
 router.put('/page', apiResponse('Page', 'setPage', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/page/:id', apiResponse('Page', 'setPage', true, ['body', 'params.id'], [_const.ACCESS_LEVEL.ContentManager]));
+
 router.delete('/page/:id', apiResponse('Page', 'deletePage', true, ['params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/page', apiResponse('Page', 'getPageByAddress', false, ['body', () => false]));
+
 router.post('/page/cm/preview', apiResponse('Page', 'getPageByAddress', true, ['body', () => true], [_const.ACCESS_LEVEL.ContentManager]));
 
 
@@ -424,9 +427,9 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-      console.error("error in rmPromise: ", err);
-      next(err);
-    });
+    console.error("error in rmPromise: ", err);
+    next(err);
+  });
 });
 
 router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
@@ -562,7 +565,45 @@ router.post('/sm/renewNotExist', apiResponse('SMMessage', 'renewNotExistOrderlin
 router.post('/sm/assignToReturn', apiResponse('SMMessage', 'assignToReturn', true, ['body.id', 'body.preCheck', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 router.post('/sm/close', apiResponse('SMMessage', 'close', true, ['body.id', 'body.report', 'user'], [_const.ACCESS_LEVEL.SalesManager]));
 
+// app trackList
+router.use('/trackList', function (req, res, next) {
 
+  const id = new mongoose.Types.ObjectId();
+
+  let destination;
+
+  if (req.test) {
+    destination = env.uploadMusicPath + (req.test ? path.sep + 'test' : '') + path.sep
+  }
+  else
+    destination = env.uploadMusicPath + path.sep
+
+  req.track_id = id;
+
+  let musicStorage = multer.diskStorage({
+    destination,
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    }
+  });
+
+  let musicUpload = multer({storage: musicStorage});
+  musicUpload.single('file')(req, res, err => {
+    if (!err) {
+      next();
+    } else {
+      res.status(500)
+        .send(err);
+    }
+  });
+
+});
+
+// Application trackList
+router.post('/trackList', apiResponse('AppTracklist', 'addTracks', true, ['body', 'file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.get('/trackList/get_tracklist', apiResponse('AppTracklist', 'getTracklist', false, []));
+router.put('/trackList/update_tracklist', apiResponse('AppTracklist', 'updateTrackList', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/trackList/delete_track', apiResponse('AppTracklist', 'deleteTrack', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
 
 module.exports = router;

@@ -114,13 +114,15 @@ uploadProductImagePath = "public/images/product-image";
 uploadPlacementImagePath = "public/images/placements";
 uploadDeliveryEvidencePath = "public/images/delivery";
 uploadExcelPath = "public/excel/";
+uploadMusicPath = "public/musics";
 
 /**
  * offline system api
  */
 const serviceAddress = getEnvValue(process.env.SERVICE_ADDRESS);
 const serviceTransferAPI = getEnvValue(process.env.SERVICE_TRANSFER_API);
-const serviceReceiveAPI = getEnvValue(process.env.SERVICE_RECEIVE_API);
+const serviceReturnAPI = getEnvValue(process.env.SERVICE_RECEIVE_API);
+const serviceEnterAPI = getEnvValue(process.env.SERVICE_RECEIVE_API);
 const servcieInvoiceAPI = getEnvValue(process.env.SERVICE_INVOICE_API);
 
 /**
@@ -170,6 +172,7 @@ module.exports = {
   uploadPlacementImagePath,
   uploadDeliveryEvidencePath,
   uploadExcelPath,
+  uploadMusicPath,
   googleAuth: {
     clientID: googleAuth_clientId,
     clientSecret: googleAuth_clientSecret,
@@ -192,7 +195,8 @@ module.exports = {
   rounding_factor,
   serviceAddress,
   serviceTransferAPI,
-  serviceReceiveAPI,
+  serviceEnterAPI,
+  serviceReturnAPI,
   servcieInvoiceAPI
 };
 

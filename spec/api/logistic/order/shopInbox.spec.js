@@ -865,7 +865,7 @@ describe('lost report', () => {
             expect(foundOrder.order_lines[0].tickets.length).toBe(2);
 
             let waitForLost = foundOrder.order_lines[0].tickets[1];
-            expect(waitForLost.status).toBe(_const.ORDER_LINE_STATUS.WaitForLostWarehouse);
+            expect(waitForLost.status).toBe(_const.ORDER_LINE_STATUS.WaitForLost);
             expect(waitForLost.receiver_id.toString()).toBe(warehouses[1]._id.toString());
 
             done();
@@ -929,7 +929,7 @@ describe('lost report', () => {
             expect(foundOrder.order_lines[0].tickets.length).toBe(2);
 
             let waitForLost = foundOrder.order_lines[0].tickets[1];
-            expect(waitForLost.status).toBe(_const.ORDER_LINE_STATUS.WaitForLostWarehouse);
+            expect(waitForLost.status).toBe(_const.ORDER_LINE_STATUS.WaitForLost);
             expect(waitForLost.receiver_id.toString()).toBe(warehouses[1]._id.toString());
 
             done();
