@@ -78,7 +78,7 @@ const redirect_address = getEnvValue(process.env.REDIRECT_ADDRESS);
 const check_transaction_result_url = getEnvValue(process.env.CHECK_TRANSACTION_RESULT_URL);
 const verify_payment_url = getEnvValue(process.env.VERIFY_PAYMENT_URL);
 const private_key = getEnvValue(process.env.PRIVATE_KEY);
-
+const app_redirect_address = getEnvValue(process.env.APP_REDIRECT_ADDRESS)
 const free_delivery_amount = getEnvValue(process.env.FREE_DELIVERY_AMOUNT);
 
 
@@ -179,6 +179,7 @@ module.exports = {
     callBackURL: googleAuth_callbackUrl,
   },
   mailConfig,
+  app_redirect_address,
   token_url,
   api_key,
   secret_key,
