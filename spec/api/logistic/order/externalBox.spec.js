@@ -6,8 +6,6 @@ const _const = require('../../../../lib/const.list');
 const warehouses = require('../../../../warehouses');
 const utils = require('../utils');
 
-
-
 describe('POST Order Ticket Scan performed by hubclerck - send external', () => {
     let orders, products, customer;
 
