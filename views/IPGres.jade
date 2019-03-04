@@ -3,7 +3,7 @@ html
 head
     title Shop Results
 body
-if  anyThingWorng
+if  anyThingWrong
 h1 = 'نتیجه تراکنش'
 h1 =' شماره فاکتور' #{verifiedResult.invoiceNumber}
 h1 ='تاریخ فاکتور' #{verifiedResult.invoiceDate}
@@ -23,5 +23,5 @@ script.
     }
     
    if( verifiedResult && !verifiedResult.error && verifiedResult.action[0] !=== 'NOTRANSACTON' && verifiedResult.action[0] !=== 'NOINVOICE'){
-   let anyThingWorng = false;
+   let anyThingWrong = false;
    }
