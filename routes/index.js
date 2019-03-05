@@ -43,7 +43,7 @@ router.get('/IPG/transfer/:order_id', async function (req, res, next) {
   });
 });
 
-router.get('/IPG/results/:tref/:iN/:iD', async function (req, res) {
+router.get('/IPG/results', async function (req, res) {
   let bankData = {
     tref: req.query.tref,
     invoiceNumber: req.query.iN,
