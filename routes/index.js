@@ -50,10 +50,15 @@ router.get('/IPG/results', async function (req, res) {
     invoiceDate: req.query.iD
   }
   console.log('bank data', bankData);
-  
-  let verifiedResult = await new orderModel().readPayResult(bankData);
+  let verifiedResult;
+  try {
+     verifiedResult = await new orderModel().readPayResult(bankData);
+ 
+  } catch (error) {
+    
+  }
   res.render('IPGres', {
-    verifiedResult: verifiedResult.xmlToNodeReadRes,
+    verifiedResult: verifiedResult ? verifiedResult.xmlToNodeReadRes : 'somethingWentWrong',
     title: 'IPGres'
   });
 });
