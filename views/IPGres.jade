@@ -9,10 +9,9 @@ else
 
 
 script.
- 
- if( verifiedResult !=== 'somethingWentWrong' &&& verifiedResult && !verifiedResult.error && verifiedResult.action[0] !=== 'NOTRANSACTON' && verifiedResult.action[0] !=== 'NOINVOICE'){
-     var nothingWrong = true;
-
+ var nothingWrong
+    if(verifiedResult !== 'somethingWentWrong' && verifiedResult && !verifiedResult.error && verifiedResult.action[0] !== 'NOTRANSACTON' && verifiedResult.action[0] !== 'NOINVOICE'){
+     nothingWrong = true;
    }else{
-       nothingWrong = false;
+     nothingWrong = false;
    }
