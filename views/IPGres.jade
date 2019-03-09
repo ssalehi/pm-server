@@ -1,13 +1,12 @@
 
- 
+
 if nothingWrong
  h1 خرید موفق 
  a(href='lithiumstyle://a.com')  بازگشت به لیتیم
 else 
  h1  خرید ناموفق
  a(href='lithiumstyle://a.com')  بازگشت به لیتیم
-
-
+ 
 script.
  var nothingWrong
     if(verifiedResult !== 'somethingWentWrong' && verifiedResult && !verifiedResult.error && verifiedResult.action[0] !== 'NOTRANSACTON' && verifiedResult.action[0] !== 'NOINVOICE'){
@@ -15,3 +14,23 @@ script.
    }else{
      nothingWrong = false;
    }
+style.
+ a {
+     font-size : 170px;
+     text-decoration : none;
+     color : grey;
+     text-align : right;
+     border-style : solid;
+     border-radius : 20px;
+     border-color: black;
+     border-width : 3px;
+     margin : 30px;
+     padding : 20px;
+ }
+ h1{
+    font-size : 200px;
+     text-decoration : none;
+     color : black;
+     text-align : center;
+ }
+ 
