@@ -51,7 +51,7 @@ router.get('/IPG/results', async function (req, res) {
   }
   let verifiedResult = await new orderModel().readPayResult(bankData);
   res.render('IPGres', {
-    verifiedResult: verifiedResult,
+    verifiedResult: verifiedResult.xmlToNodeReadRes,
     title: 'IPGres'
   });
 });
