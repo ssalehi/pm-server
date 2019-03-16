@@ -7,6 +7,7 @@ let schema_obj = {
     type: String,
     required: true,
     trim: true,
+    unique: true
   },
   is_app: {
     type: Boolean,
@@ -18,5 +19,4 @@ let schema_obj = {
 
 
 let PageSchema = new Schema(schema_obj, {collection: 'page', strict: true});
-PageSchema.index({ address: 1, is_app: 1}, { unique: true });
 module.exports = PageSchema;
