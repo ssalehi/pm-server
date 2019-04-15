@@ -121,8 +121,8 @@ uploadMusicPath = "public/musics";
  */
 const serviceAddress = getEnvValue(process.env.SERVICE_ADDRESS);
 const serviceTransferAPI = getEnvValue(process.env.SERVICE_TRANSFER_API);
-const serviceReturnAPI = getEnvValue(process.env.SERVICE_RECEIVE_API);
-const serviceEnterAPI = getEnvValue(process.env.SERVICE_RECEIVE_API);
+const serviceReturnAPI = getEnvValue(process.env.SERVICE_RETURN_API);
+const serviceEnterAPI = getEnvValue(process.env.SERVICE_ENTER_API);
 const servcieInvoiceAPI = getEnvValue(process.env.SERVICE_INVOICE_API);
 
 /**
