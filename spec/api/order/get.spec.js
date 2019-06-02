@@ -8,7 +8,7 @@ const env = require('../../../env');
 const moment = require('moment');
 const dailyReportHour = env.dailyReportHour;
 
-xdescribe('Get User All Orders', () => {
+describe('Get User All Orders', () => {
   let customerObj = {
     cid: null,
     jar: null

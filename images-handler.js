@@ -1,3 +1,15 @@
+/**
+ * What this script do?
+ * it looks up every folders in BASE_TEMP with this format: <article_no>/<color_code>/<Images[]>
+ * and copy them all both in BASE_DEST (<product_id>/<product_instance_id>/<Images[]>) and in db
+ * 
+ * the first image of each folder is counted as thumbnail and is prefixed by THUMBNAIL_PREFIX
+ * and is resized to scale in 144x144 image, and is also added in main images of that product
+ * 
+ * finally it produces a report showing that which articles were joint, which weren't in db,
+ * which color codes were in db but not here, and which color codes were here but not in db.
+ */
+
 const db = require('./mongo/index');
 const models = require('./mongo/models.mongo');
 // const fs = require('fs');
@@ -6,11 +18,12 @@ const path = require('path');
 const Jimp = require("jimp");
 const jsonexport = require('jsonexport');
 const dateTime = require('node-datetime');
-const BASE_TEMP = './public/images/temp'
-const BASE_DEST = './public/images/product-image'
-const REPORT_PATH = './public/report'
+const BASE_TEMP = './public/images/temp';
+const BASE_DEST = './public/images/product-image';
+const REPORT_PATH = './public/report';
+const THUMBNAIL_PREFIX = "thmbnl_";
 const rimraf = require('rimraf');
-const fs = require('fs-extra')
+const fs = require('fs-extra');
 
 let products;
 
@@ -72,7 +85,6 @@ main = async () => {
       })
 
       if (dirInfo && dirInfo.length) {
-
         products = await getProducts(dirArticles);
 
         console.log('-> ', ` ${products.length} related product exists in database`);
@@ -108,24 +120,25 @@ main = async () => {
                       }
 
                       for (let k = 0; k < foundDirCode.images.length; k++) {
-                        const image = foundDirCode.images[k];
+                        let image = foundDirCode.images[k];
                         const imageOrig = path.join(BASE_TEMP, foundDir.article, foundDirCode.no, image);
-                        const imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
+                        let imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
 
                         try {
-                          await fs.copy(imageOrig, imageDest)  
-                          // fs.createReadStream(imageOrig).pipe(fs.createWriteStream(imageDest));
+                          // add to angles
+                          await fs.copy(imageOrig, imageDest)
+                          await updateProductImages(product._id, color._id, image, false);
+
+                          // check if it was thumbnail, add to thumbnail and also resize the image
                           if (k === 0) {
-                            // await imageResizing(imageOrig, imageDest)
+                            image = THUMBNAIL_PREFIX + image;
+                            imageDest = path.join(BASE_DEST, product._id.toString(), color._id.toString(), image);
+                            await imageResizing(imageOrig, imageDest);
                             await updateProductImages(product._id, color._id, image, true);
-                            if (foundDirCode.images.length === 1)
-                              await updateProductImages(product._id, color._id, image, false);
-                          } else {
-                            await updateProductImages(product._id, color._id, image, false);
                           }
                           console.log('-> ', `${image} is succesfuly added to path: ${path.join(product._id.toString(), color._id.toString())} ${k === 0 ? 'as thumbnail' : ''} `);
                         } catch (err) {
-                          console.log('-> ', `error on copying file ${image} from temp folder to destination ${k === 0 ? 'as thumbnail' : ''}`);
+                          console.log('-> ', `error on copying file ${image} from temp folder to destination ${k === 0 ? 'as thumbnail' : ''} => ${err}`);
                         }
 
                       }
@@ -330,20 +343,12 @@ getProducts = async (articles) => {
 
 
 imageResizing = async (orig, dest) => {
-
-  return new Promise((resolve, reject) => {
-
-    Jimp.read(orig).then(function (lenna) {
-      lenna.resize(144, 144)            // resize
-        .write(dest); // save
-      resolve();
-    }).catch(function (err) {
-      reject(err);
-    });
-  })
-
-
+  const lenna = await Jimp.read(orig);
+  return lenna
+    .scaleToFit(220, 220)
+    .write(dest);
 }
+
 modelIsReady = async () => {
   return new Promise((resolve, reject) => {
 

@@ -78,8 +78,7 @@ const redirect_address = getEnvValue(process.env.REDIRECT_ADDRESS);
 const check_transaction_result_url = getEnvValue(process.env.CHECK_TRANSACTION_RESULT_URL);
 const verify_payment_url = getEnvValue(process.env.VERIFY_PAYMENT_URL);
 const private_key = getEnvValue(process.env.PRIVATE_KEY);
-const rsa_private_key = getEnvValue(process.env.RSA_PRIVATE_KEY);
-
+const app_redirect_address = getEnvValue(process.env.APP_REDIRECT_ADDRESS)
 const free_delivery_amount = getEnvValue(process.env.FREE_DELIVERY_AMOUNT);
 
 
@@ -115,12 +114,16 @@ uploadProductImagePath = "public/images/product-image";
 uploadPlacementImagePath = "public/images/placements";
 uploadDeliveryEvidencePath = "public/images/delivery";
 uploadExcelPath = "public/excel/";
+uploadMusicPath = "public/musics";
 
 /**
  * offline system api
  */
-const onlineWarehouseAPI = getEnvValue(process.env.ONLINE_WAREHOUSE_API);
-const invoiceAPI = getEnvValue(process.env.INVOICE_API);
+const serviceAddress = getEnvValue(process.env.SERVICE_ADDRESS);
+const serviceTransferAPI = getEnvValue(process.env.SERVICE_TRANSFER_API);
+const serviceReturnAPI = getEnvValue(process.env.SERVICE_RETURN_API);
+const serviceEnterAPI = getEnvValue(process.env.SERVICE_ENTER_API);
+const servcieInvoiceAPI = getEnvValue(process.env.SERVICE_INVOICE_API);
 
 /**
  *  in some cases .env var name which is declared in ..env file is not compatible with server .env var in production mode.
@@ -169,14 +172,14 @@ module.exports = {
   uploadPlacementImagePath,
   uploadDeliveryEvidencePath,
   uploadExcelPath,
+  uploadMusicPath,
   googleAuth: {
     clientID: googleAuth_clientId,
     clientSecret: googleAuth_clientSecret,
     callBackURL: googleAuth_callbackUrl,
   },
-  onlineWarehouseAPI,
-  invoiceAPI,
   mailConfig,
+  app_redirect_address,
   token_url,
   api_key,
   secret_key,
@@ -188,10 +191,14 @@ module.exports = {
   check_transaction_result_url,
   verify_payment_url,
   private_key,
-  rsa_private_key,
   free_delivery_amount,
   validPassedDaysForReturn,
-  rounding_factor
+  rounding_factor,
+  serviceAddress,
+  serviceTransferAPI,
+  serviceEnterAPI,
+  serviceReturnAPI,
+  servcieInvoiceAPI
 };
 
 

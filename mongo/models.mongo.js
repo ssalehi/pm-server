@@ -27,6 +27,8 @@ let schemas = {
   FreeDeliveryOptionSchema: require('./schema/free_delivery_option.sehcma'),
   RefundSchema: require('./schema/refund.schema'),
   SMMessageSchema: require('./schema/sm_message.schema'),
+  OfflineWarehouseSchema: require('./schema/offline_warehouse.schema'),
+  AppTracklistSchema: require('./schema/app_tracklist.schema'),
 };
 
 

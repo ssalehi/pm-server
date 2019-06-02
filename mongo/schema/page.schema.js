@@ -18,6 +18,5 @@ let schema_obj = {
 };
 
 
-
 let PageSchema = new Schema(schema_obj, {collection: 'page', strict: true});
 module.exports = PageSchema;
