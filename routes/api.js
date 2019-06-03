@@ -108,23 +108,6 @@ router.get('/', function (req, res) {
   res.send('respond with a resource');
 });
 
-router.get('/outTest', function (req, res) {
-  const helpers = require('../lib/helpers');
-
-
-  return helpers.httpPost('http://httpbin.org/post', {})
-    .then(res => {
-      return helpers.httpPost('http://mock:3001/test', {})
-    })
-    .then(result => {
-      res.json(result);
-    })
-    .catch(err => {
-      console.error('-> ', err);
-      res.send(err);
-    })
-});
-
 // Login API
 router.post('/agent/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user', () => true]));
 router.post('/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user']));
