@@ -417,7 +417,8 @@ router.use('/uploadData', function (req, res, next) {
     });
 });
 
-router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/uploadData', apiResponse('Upload', 'start', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.get('/upload/progress', apiResponse('Upload', 'getProgress', true, [], [_const.ACCESS_LEVEL.ContentManager]));
 
 // Cart
 router.get('/cart/items', apiResponse('Order', 'getCartItems', false, ['user']));
