@@ -108,22 +108,6 @@ router.get('/', function (req, res) {
   res.send('respond with a resource');
 });
 
-router.get('/outTest', function (req, res) {
-  const helpers = require('../lib/helpers');
-
-
-  return helpers.httpPost('http://httpbin.org/post', {})
-    .then(res => {
-      return helpers.httpPost('http://mock:3001/test', {})
-    })
-    .then(result => {
-      res.json(result);
-    })
-    .catch(err => {
-      console.error('-> ', err);
-      res.send(err);
-    })
-});
 
 // Login API
 router.post('/agent/login', passport.authenticate('local', {}), apiResponse('Person', 'afterLogin', false, ['user', () => true]));
@@ -174,13 +158,13 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
           .update({username: req.user.username}, {
             is_verified: _const.VERIFICATION.emailVerified,
           }).then(data => {
-          // redirect client to the setMobile page
-          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
-          res.end();
-        }).catch(err => {
-          console.error('error in changing verification level: ', err);
-          res.end();
-        });
+            // redirect client to the setMobile page
+            res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
+            res.end();
+          }).catch(err => {
+            console.error('error in changing verification level: ', err);
+            res.end();
+          });
       } else { // if mobile is already verified
         if (obj['is_preferences_set'])
           res.writeHead(302, {'Location': `${ClientAddress}`});
@@ -294,6 +278,7 @@ router.delete('/wishlist/delete/:wishItemId', apiResponse('Customer', 'removeFro
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
+router.get('/product/full/:id', apiResponse('Product', 'getFullProductInfo', true, ['params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.put('/product', apiResponse('Product', 'setProduct', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product', apiResponse('Product', 'setProduct', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product/getMultiple', apiResponse('Product', 'getProducts', false, ['body.productIds', 'undefined', 'undefined', 'undefined', 'true']));
@@ -427,9 +412,9 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-    console.error("error in rmPromise: ", err);
-    next(err);
-  });
+      console.error("error in rmPromise: ", err);
+      next(err);
+    });
 });
 
 router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
