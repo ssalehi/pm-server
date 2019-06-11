@@ -468,7 +468,7 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
 router.post('/checkout/:demo', apiResponse('Order', 'checkout', false, ['user', 'body', 'params.demo']));
 router.post('/demoVerifyPayment', apiResponse('Order', 'demoVerifyPayment', false, ['body.orderId']));
-router.post('/payResult', apiResponse('Order', 'readPayResult', false, ['user', 'body']));
+router.post('/payResult', apiResponse('Order', 'readPayResult', false, ['body']));
 
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
