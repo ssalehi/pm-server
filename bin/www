@@ -11,15 +11,17 @@ const fs = require('fs');
 const env = require('../env');
 const socket = require('../socket');
 const port = normalizePort(process.env.SECURE_PORT || env.port || '3000');
-const {initTokenRequest, getToken} = require('../lib/updateToken.model');
+require('../lib/updateToken.model');
 
 /**
  * Get port from environment and store in Express.
  */
 
 let app, server, server2;
+
+
 appWaiter = setInterval(() => {
-  if(require('../app').isReady()) {
+  if (require('../app').isReady()) {
     console.log('App is set up');
     clearInterval(appWaiter);
     app = require('../app').get();
