@@ -11,9 +11,8 @@ const copydir = require('copy-dir');
 const warehouses = require('./warehouses');
 const offlineWarehouses = require('./offlineWarehouses');
 const deliveryDurationInfo = require('./deliveryDurationInfo');
+const helpers = require('./lib/helpers')
 
-
-SALT_WORK_FACTOR = 10;
 let PLACEMENTS = null;
 let pKeys = [];
 let _hash;
@@ -42,26 +41,15 @@ db.dbIsReady()
         console.log('-> ', 'delivery duaraion info are added');
       }
 
-      return Promise.resolve();
+      const defulatPassHash = await helpers.makeHash('admin@123');
+
+      return Promise.resolve(defulatPassHash);
+
     } catch (err) {
       console.log('-> ', err);
       process.exit();
     }
 
-  })
-  .then(() => {
-
-    return new Promise((resolve, reject) => {
-      env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
-        if (err) return next(err);
-
-        env.bcrypt.hash('admin@123', salt, null, function (err, hash) {
-          if (err) reject(err);
-
-          resolve(hash)
-        });
-      });
-    })
   })
   .then(hash => {
     _hash = hash;

@@ -1,5 +1,6 @@
 const db = require('./index');
 const env = require('../env');
+const bcrypt = require('bcrypt-nodejs')
 
 let schemas = {
   AgentSchema: require('./schema/agent.schema'),
@@ -45,11 +46,11 @@ preSaveFunction = function (next) {
   if (!agent.isModified('secret')) return next();
 
   // generate a salt
-  env.bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
+  bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
     if (err) return next(err);
 
     // hash the password using our new salt
-    env.bcrypt.hash(agent.secret, salt, null, function (err, hash) {
+    bcrypt.hash(agent.secret, salt, null, function (err, hash) {
       if (err) return next(err);
 
       // override the clear text secret with the hashed one
@@ -75,7 +76,7 @@ soldOutPreSaveFunction = function (next) {
 
 
 compareFunction = function (candidatePassword, cb) {
-  env.bcrypt.compare(candidatePassword, this.secret, function (err, isMatch) {
+  bcrypt.compare(candidatePassword, this.secret, function (err, isMatch) {
     if (err) return cb(err);
     cb(null, isMatch);
   });

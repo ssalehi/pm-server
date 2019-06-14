@@ -11,7 +11,7 @@ const fs = require('fs');
 const env = require('../env');
 const socket = require('../socket');
 const port = normalizePort(process.env.SECURE_PORT || env.port || '3000');
-require('../lib/updateToken.model');
+require('../lib/smsSender.model');
 
 /**
  * Get port from environment and store in Express.

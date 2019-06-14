@@ -66,7 +66,7 @@ let schema_obj = {
   preferred_size: {type: String},
   orders: [{type: Schema.Types.ObjectId, ref: 'Order'}],
   addresses: [addressSchema],
-  active: { // wether user can system (?!) or not
+  active: { // wether user can system use (?!) or not
     type: Boolean,
     default: true,
     required: true

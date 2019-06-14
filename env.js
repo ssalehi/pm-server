@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt-nodejs');
 const app = require('express')();
 let env = app.get('env');
 if (env === 'test')
@@ -151,7 +150,6 @@ const validPassedDaysForReturn = getEnvValue(process.env.VALID_PASSED_DAYS_FOR_R
 const rounding_factor = parseInt(getEnvValue(process.env.ROUNDING_FACTOR));
 
 module.exports = {
-  bcrypt,
   isProd: isProd,
   isDev: isDev,
   appAddress,
