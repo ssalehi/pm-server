@@ -46,10 +46,15 @@ let schema_obj = {
   activation_link: {
     type: String,
   },
-  is_verified: { // 0: unverified | 1: mobile | 2: email | 3: both
-    type: Number,
+  mobile_verified: {
+    type: Boolean,
     required: true,
-    default: 0,
+    default: false,
+  },
+  email_verified: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
   shoesType: {
     type: String,

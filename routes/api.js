@@ -138,7 +138,7 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
    * verified, we set it to unverified, and show the setting mobile page in the client to enter their mobile
    *
    * the necessity of being logged in at this point is that we need the logged in user object in order to
-   * change (in here, set) their mobile number in the database and not letting some random person comes and
+   * change (in here, set) their mobile number in the database and not letting some random person fgbhgrcomes and
    * changes the mobile of any unverified user!
    */
   if (!req.user) {
