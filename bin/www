@@ -12,6 +12,7 @@ const env = require('../env');
 const socket = require('../socket');
 const port = normalizePort(process.env.SECURE_PORT || env.port || '3000');
 const {initTokenRequest, getToken} = require('../lib/updateToken.model');
+require('../lib/offline.connector');
 
 /**
  * Get port from environment and store in Express.

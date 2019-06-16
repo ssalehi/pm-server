@@ -124,6 +124,10 @@ const serviceTransferAPI = getEnvValue(process.env.SERVICE_TRANSFER_API);
 const serviceReturnAPI = getEnvValue(process.env.SERVICE_RETURN_API);
 const serviceEnterAPI = getEnvValue(process.env.SERVICE_ENTER_API);
 const servcieInvoiceAPI = getEnvValue(process.env.SERVICE_INVOICE_API);
+const servcieTokenAPI = getEnvValue(process.env.SERVICE_TOKEN_API);
+const offlineServiceUsername = getEnvValue(process.env.OFFLINE_SERVICE_USERNAME);
+const offlineServicePassword = getEnvValue(process.env.OFFLINE_SERVICE_PASS);
+const offlineServiceGrantType = getEnvValue(process.env.OFFLINE_SERVICE_GRANT_TYPE);
 
 /**
  *  in some cases .env var name which is declared in ..env file is not compatible with server .env var in production mode.
@@ -198,7 +202,11 @@ module.exports = {
   serviceTransferAPI,
   serviceEnterAPI,
   serviceReturnAPI,
-  servcieInvoiceAPI
+  servcieInvoiceAPI,
+  servcieTokenAPI,
+  offlineServiceUsername,
+  offlineServicePassword,
+  offlineServiceGrantType
 };
 
 
