@@ -49,7 +49,6 @@ router.get('/IPG/results', async function (req, res) {
     invoiceNumber: req.query.iN,
     invoiceDate: req.query.iD
   }
-  console.log('bank data', bankData);
   let verifiedResult;
   try {
      verifiedResult = await new orderModel().readPayResult(bankData);

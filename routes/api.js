@@ -157,13 +157,13 @@ router.get('/login/google/callback', passport.authenticate('google', {}), functi
           .update({username: req.user.username}, {
             is_verified: _const.VERIFICATION.emailVerified,
           }).then(data => {
-          // redirect client to the setMobile page
-          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
-          res.end();
-        }).catch(err => {
-          console.error('error in changing verification level: ', err);
-          res.end();
-        });
+            // redirect client to the setMobile page
+            res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
+            res.end();
+          }).catch(err => {
+            console.error('error in changing verification level: ', err);
+            res.end();
+          });
       } else { // if mobile is already verified
         if (obj['is_preferences_set'])
           res.writeHead(302, {'Location': `${ClientAddress}`});
@@ -277,6 +277,7 @@ router.delete('/wishlist/delete/:wishItemId', apiResponse('Customer', 'removeFro
 
 // product
 router.get('/product/:id', apiResponse('Product', 'getProduct', false, ['params.id']));
+router.get('/product/full/:id', apiResponse('Product', 'getFullProductInfo', true, ['params.id'], [_const.ACCESS_LEVEL.ContentManager]));
 router.put('/product', apiResponse('Product', 'setProduct', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product', apiResponse('Product', 'setProduct', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/product/getMultiple', apiResponse('Product', 'getProducts', false, ['body.productIds', 'undefined', 'undefined', 'undefined', 'true']));
@@ -410,12 +411,13 @@ router.use('/uploadData', function (req, res, next) {
           next()
       });
     }).catch(err => {
-    console.error("error in rmPromise: ", err);
-    next(err);
-  });
+      console.error("error in rmPromise: ", err);
+      next(err);
+    });
 });
 
-router.post('/uploadData', apiResponse('Upload', 'excel', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/uploadData', apiResponse('Upload', 'start', true, ['file'], [_const.ACCESS_LEVEL.ContentManager]));
+router.get('/upload/progress', apiResponse('Upload', 'getProgress', true, [], [_const.ACCESS_LEVEL.ContentManager]));
 
 // Cart
 router.get('/cart/items', apiResponse('Order', 'getCartItems', false, ['user']));
@@ -465,7 +467,7 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
 router.post('/checkout/:demo', apiResponse('Order', 'checkout', false, ['user', 'body', 'params.demo']));
 router.post('/demoVerifyPayment', apiResponse('Order', 'demoVerifyPayment', false, ['body.orderId']));
-router.post('/payResult', apiResponse('Order', 'readPayResult', false, ['user', 'body']));
+router.post('/payResult', apiResponse('Order', 'readPayResult', false, ['body']));
 
 router.post('/finalCheck', apiResponse('Order', 'finalCheck', false, ['body']));
 
