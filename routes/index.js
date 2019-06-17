@@ -3,17 +3,13 @@ const router = express.Router();
 const path = require('path');
 const IPG = require('../IPG')
 const orderModel = require('../lib/order.model')
+const env = require('../env');
 
-
-
-var app = express();
-app.set("view engine", "pug");
-app.set("views", path.join(__dirname, "../public/views"));
 
 
 // Test request identifier
-router.use(function(req, res, next) {
-  req.test = req.app.get('env') === 'development' ? req.query.test==='tEsT': false;
+router.use(function (req, res, next) {
+  req.test = req.app.get('env') === 'development' ? req.query.test === 'tEsT' : false;
   next();
 });
 
@@ -23,9 +19,10 @@ router.use(function(req, res, next) {
 router.all("*", function (req, res, next) {
   if (req.originalUrl.includes('IPG')) {
     next();
-  } else if 
+  } else if
     (req.originalUrl.indexOf('api') === -1) {
-    console.log('[TRACE] Server 404 request: ' + req.originalUrl);
+    if (!env.isDev)
+      console.log('[TRACE] Server 404 request: ' + req.originalUrl);
     const p = path.join(__dirname, '../public', 'index.html').replace(/\/routes\//, '/');
     res.status(200).sendFile(p);
   }
@@ -51,10 +48,10 @@ router.get('/IPG/results', async function (req, res) {
   }
   let verifiedResult;
   try {
-     verifiedResult = await new orderModel().readPayResult(bankData);
- 
+    verifiedResult = await new orderModel().readPayResult(bankData);
+
   } catch (error) {
-    
+
   }
   res.render('IPGres', {
     verifiedResult: verifiedResult ? verifiedResult.xmlToNodeReadRes : 'somethingWentWrong',
@@ -63,8 +60,8 @@ router.get('/IPG/results', async function (req, res) {
 });
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', function (req, res, next) {
+  res.render('index', {title: 'Express'});
 });
 
 module.exports = router;

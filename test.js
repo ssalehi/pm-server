@@ -1,7 +1,16 @@
 
 const moment = require('moment');
 
-var main = async () => {
+class Hello {
+
+  static async test(){
+
+    return 'hello';
+  }
+
+}
+
+var main =  async () => {
 
 
   let m1 = moment();
@@ -20,6 +29,8 @@ var main = async () => {
   }catch(err){
    console.log('-> out of its scope',  err); 
   }
+
+  console.log('-> ', await Hello.test());
 }
 
 let prom = () => {

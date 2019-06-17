@@ -130,54 +130,47 @@ router.get('/validUser', apiResponse('Person', 'afterLogin', false, ['user']));
 
 // Open Authentication API
 router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'profile', 'email']}));
-router.get('/login/google/callback', passport.authenticate('google', {}), function (req, res) {
-  /*
-   * The logic behind this is that when a user logs in with google, we set its verification to both email and mobile,
-   * so the system accepts their login, but then when he's logged in, we check its mobile verification and if it wasn't
-   * verified, we set it to unverified, and show the setting mobile page in the client to enter their mobile
-   *
-   * the necessity of being logged in at this point is that we need the logged in user object in order to
-   * change (in here, set) their mobile number in the database and not letting some random person fgbhgrcomes and
-   * changes the mobile of any unverified user!
-   */
-  if (!req.user) {
-    console.error(error.noUser);
-    res.end();
-  }
+router.get('/login/google/callback', passport.authenticate('google', {}), async function (req, res) {
 
   let ClientAddress = env.oauthAddress;
   let ClientSetMobileRoute = '/login/oauth/setMobile';
   let ClientSetPreferences = '/login/oauth/setPreferences';
 
-  model()['Customer' + (personModel.isTest(req) ? 'Test' : '')]
-    .findOne({username: req.user.username})
-    .then(obj => {
-      if (!obj.mobile_no || (obj.mobile_no && obj.is_verified !== _const.VERIFICATION.bothVerified)) {
-        model()['Customer' + (personModel.isTest(req) ? 'Test' : '')]
-          .update({username: req.user.username}, {
-            is_verified: _const.VERIFICATION.emailVerified,
-          }).then(data => {
-            // redirect client to the setMobile page
-            res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
-            res.end();
-          }).catch(err => {
-            console.error('error in changing verification level: ', err);
-            res.end();
-          });
-      } else { // if mobile is already verified
-        if (obj['is_preferences_set'])
-          res.writeHead(302, {'Location': `${ClientAddress}`});
-        else
-          res.writeHead(302, {'Location': `${ClientAddress}${ClientSetPreferences}`});
-        res.end();
-      }
-    })
-    .catch(err => {
-      console.error("error occurred: ", err);
-      res.writeHead(302, {'Location': `${ClientAddress}`});
+  try {
+
+    if (!req.user) {
+      console.error(error.noUser);
       res.end();
-    });
+    }
+
+    const foundCustomer = await model()['Customer' + (personModel.isTest(req) ? 'Test' : '')].findOne({username: req.user.username});
+    if (!foundCustomer.email_verified) {
+      await model()['Customer' + (personModel.isTest(req) ? 'Test' : '')]
+        .findOneAndUpdate(
+          {
+            username: req.user.username
+          },
+          {
+            email_verified: true,
+          }, {new: true});
+      // redirect client to the setMobile page
+    }
+
+    if (!foundCustomer.mobile_no || (foundCustomer. mobile_no && !foundCustomer.mobile_verified)) {
+      res.writeHead(302, {'Location': `${ClientAddress}${ClientSetMobileRoute}`});
+    } else if (!foundCustomer.is_preferences_set) {
+      res.writeHead(302, {'Location': `${ClientAddress}${ClientSetPreferences}`});
+    } else {
+      res.writeHead(302, {'Location': `${ClientAddress}`});
+    }
+
+  } catch (err) {
+    res.writeHead(302, {'Location': `${ClientAddress}`});
+    console.log('-> error on oAuth call back: ', err);
+  }
+  res.end();
 });
+
 router.post('/login/google/app', apiResponse('Person', 'appOauthLogin', false, ['body']));
 // Person (Customer/Agent) API
 router.put('/register', apiResponse('Customer', 'registration', false, ['body']));
