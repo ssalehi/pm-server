@@ -58,7 +58,7 @@ let schema_obj = {
   },
   shoesType: {
     type: String,
-    default: "US",
+    default: "EU",
   },
   is_preferences_set: {
     type: Boolean,

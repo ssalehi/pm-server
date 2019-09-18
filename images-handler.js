@@ -22,7 +22,7 @@ const BASE_TEMP = './public/images/temp';
 const BASE_DEST = './public/images/product-image';
 const REPORT_PATH = './public/report';
 const THUMBNAIL_PREFIX = "thmbnl_";
-const rimraf = require('rimraf'); 
+const rimraf = require('rimraf');
 const fs = require('fs-extra');
 
 let products;

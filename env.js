@@ -85,17 +85,12 @@ const free_delivery_amount = getEnvValue(process.env.FREE_DELIVERY_AMOUNT);
 /**
  * Mail Config
  */
-const mailConfig = {
-  tls: {rejectUnauthorized: false},
-  host: isDev ? "smtp.mailgun.org" : process.env.MAIL_HOST,
-  port: isDev ? "465" : process.env.MAIL_HOST_PORT,
-  secure: isDev,
-  auth: {
-    user: getEnvValue(isDev ? process.env.EMAIL_USERNAME_DEV : process.env.EMAIL_USERNAME),
-    pass: getEnvValue(isDev ? process.env.EMAIL_PASSWORD_DEV : process.env.EMAIL_PASSWORD)
-  },
-  from: `Bank of Style <${getEnvValue(isDev ? process.env.EMAIL_USERNAME_DEV : process.env.EMAIL_USERNAME)}>`
-};
+
+const emailFrom = getEnvValue(process.env.EMAIL_FROM);
+const emailDomain = getEnvValue(process.env.EMAIL_DOMAIN);
+const emailAPIKey = getEnvValue(process.env.EMAIL_API_KEY);
+const emailTemplateVerification = getEnvValue(process.env.EMAIL_TEMPLATE_VERIFICATION);
+
 
 /**
  * Redis
@@ -121,9 +116,9 @@ uploadMusicPath = "public/musics";
 const serviceAddress = getEnvValue(process.env.SERVICE_ADDRESS);
 const serviceTransferAPI = getEnvValue(process.env.SERVICE_TRANSFER_API);
 const serviceReturnAPI = getEnvValue(process.env.SERVICE_RETURN_API);
-const serviceEnterAPI = getEnvValue(process.env.SERVICE_ENTER_API);
 const servcieInvoiceAPI = getEnvValue(process.env.SERVICE_INVOICE_API);
 const servcieTokenAPI = getEnvValue(process.env.SERVICE_TOKEN_API);
+const servcieLoyaltyAPI = getEnvValue(process.env.SERVICE_LOYALTY_API);
 const offlineServiceUsername = getEnvValue(process.env.OFFLINE_SERVICE_USERNAME);
 const offlineServicePassword = getEnvValue(process.env.OFFLINE_SERVICE_PASS);
 const offlineServiceGrantType = getEnvValue(process.env.OFFLINE_SERVICE_GRANT_TYPE);
@@ -180,7 +175,6 @@ module.exports = {
     clientSecret: googleAuth_clientSecret,
     callBackURL: googleAuth_callbackUrl,
   },
-  mailConfig,
   app_redirect_address,
   token_url,
   api_key,
@@ -198,13 +192,17 @@ module.exports = {
   rounding_factor,
   serviceAddress,
   serviceTransferAPI,
-  serviceEnterAPI,
   serviceReturnAPI,
   servcieInvoiceAPI,
   servcieTokenAPI,
+  servcieLoyaltyAPI,
   offlineServiceUsername,
   offlineServicePassword,
-  offlineServiceGrantType
+  offlineServiceGrantType,
+  emailFrom,
+  emailDomain,
+  emailAPIKey,
+  emailTemplateVerification
 };
 
 

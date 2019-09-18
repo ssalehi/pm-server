@@ -34,6 +34,7 @@
     "jsonexport": "^2.2.0",
     "jsonwebtoken": "8.1.1",
     "lodash": "^4.17.11",
+    "mailgun-js": "^0.22.0",
     "moment": "^2.22.1",
     "moment-timezone": "^0.5.15",
     "mongoose": "^5.4.6",

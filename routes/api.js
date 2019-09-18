@@ -184,7 +184,7 @@ router.post('/user/guest/address', apiResponse('Customer', 'addGuestCustomer', f
 router.get('/user/activate/link/:link', apiResponse('Customer', 'checkActiveLink', false, ['params.link']));
 router.post('/user/email/isExist', apiResponse('Person', 'emailIsExist', false, ['body']));
 // router.post('/user/auth/local/:link', apiResponse('Person', 'completeAuth', false, ['params.link', 'body']));
-router.post('/user/auth/link', apiResponse('Customer', 'sendActivationMail', false, ['body.username', 'body.is_forgot_mail']));
+router.post('/user/auth/link', apiResponse('Customer', 'sendActivationMail', false, ['body.username']));
 router.post('/profile/image/:pid', upload.single('image'), apiResponse('Person', 'setProfileImage', false, ['user.pid', 'params.pid', 'file']));
 router.post('/profile/image/:username/:pid', upload.single('image'), apiResponse('Person', 'setProfileImage', true, ['user.pid', 'params.pid', 'file']));
 router.get('/profile/image/:pid', apiResponse('Person', 'getProfileImage', false, ['params.pid']));
@@ -341,12 +341,14 @@ router.get('/collection/product/manual/:cid', apiResponse('Collection', 'getColl
 router.get('/collection/product/:cid', apiResponse('Collection', 'getCollectionProducts', false, ['params.cid']));
 router.get('/collection/tag/:cid', apiResponse('Collection', 'getCollectionTags', true, ['params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.get('/collection/type/:cid', apiResponse('Collection', 'getCollectionTypes', true, ['params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
+router.get('/collection/filter_option_list/:cid', apiResponse('Collection', 'getCollectionFilterOptionList', false, ['params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
 
 router.put('/collection', apiResponse('Collection', 'setCollection', true, ['body'], [_const.ACCESS_LEVEL.ContentManager]));
 
 router.post('/collection/:cid', apiResponse('Collection', 'setCollection', true, ['body', 'params.cid'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/collection/product/:cid', apiResponse('Collection', 'setProductToCollection', true, ['params.cid', 'body.productId'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/collection/tag/:cid', apiResponse('Collection', 'setTagToCollection', true, ['params.cid', 'body.tagId'], [_const.ACCESS_LEVEL.ContentManager]));
+router.post('/collection/filter_option_list/:cid', apiResponse('Collection', 'setFilterOptionListToCollection', true, ['params.cid', 'body.filter_option_list'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/collection/type/:cid', apiResponse('Collection', 'setTypeToCollection', true, ['params.cid', 'body.typeId'], [_const.ACCESS_LEVEL.ContentManager]));
 router.post('/collection/app/products', apiResponse('Collection', 'getProductsByPageAddress', false, ['body.address']));
 
@@ -458,7 +460,7 @@ router.post('/placement/image/:pageId/:placementId', apiResponse('Page', 'addIma
 // checkout
 
 router.post('', apiResponse('Order', 'finalCheck', false, ['body']));
-router.post('/checkout/:demo', apiResponse('Order', 'checkout', false, ['user', 'body', 'params.demo']));
+router.post('/checkout', apiResponse('Order', 'checkout', false, ['user', 'body']));
 router.post('/demoVerifyPayment', apiResponse('Order', 'demoVerifyPayment', false, ['body.orderId']));
 router.post('/payResult', apiResponse('Order', 'readPayResult', false, ['body']));
 

@@ -1,4 +1,5 @@
 const Schema = require('mongoose').Schema;
+const filterOptionListSchema = require('./filter_option_list.schema');
 
 let schema_obj = {
   name: {
@@ -17,7 +18,8 @@ let schema_obj = {
   typeIds: [{type: Schema.Types.ObjectId, ref: 'ProductType'}],
   tagIds: [{type: Schema.Types.ObjectId, ref: 'Tag'}],
   brandIds: [{type: Schema.Types.ObjectId, ref: 'Brand'}],
-  parent_id: Schema.Types.ObjectId
+  parent_id: Schema.Types.ObjectId,
+  filter_options: [filterOptionListSchema]
 };
 
 
