@@ -257,7 +257,7 @@ router.post('/order/lost', apiResponse('TicketAction', 'lostReport', true, ['bod
 // Order => api's used by offline system
 router.post('/order/offline/invoiceResponse', apiResponse('Offline', 'invoiceResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
 router.post('/order/offline/transferResponse', apiResponse('Offline', 'transferResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
-router.post('/order/offline/receiveResponse', apiResponse('Offline', 'receiveResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
+router.post('/order/offline/returnResponse', apiResponse('Offline', 'returnResponse', true, ['body'], [_const.ACCESS_LEVEL.OfflineSystem]));
 
 // offline reset order
 router.get('/order/offline/reset/:id', apiResponse('Offline', 'makeTestOrder', true, ['params.id'], [_const.ACCESS_LEVEL.OfflineSystem]));
@@ -522,7 +522,7 @@ router.post('/delivery/cost/free', apiResponse('Delivery', 'upsertFreeDeliveryOp
 router.post('/delivery/cost/free/delete', apiResponse('Delivery', 'deleteFreeDeliveryOption', true, ['body'], [_const.ACCESS_LEVEL.SalesManager]));
 
 // Customer Delivery Selected
-router.post('/calculate/order/price', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body.duration_id', 'body.customer_id']));
+router.post('/calculate/delivery/discount', apiResponse('DeliveryDurationInfo', 'calculateDeliveryDiscount', false, ['body.duration_id', 'body.customer_id']));
 
 // Internal Delivery
 router.get('/internal_delivery/get_agents', apiResponse('InternalDelivery', 'getInternalAgents', true, [], [_const.ACCESS_LEVEL.SalesManager]));

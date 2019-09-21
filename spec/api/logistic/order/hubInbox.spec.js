@@ -543,7 +543,7 @@ describe('POST order damage- when returned', () => {
             })
             expect(res.statusCode).toBe(200)
             NorderData = await models()['OrderTest'].find()
-            expect(NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.WaitForDamageWithRefund)
+            expect(NorderData[0].order_lines[0].tickets[NorderData[0].order_lines[0].tickets.length - 1].status).toBe(_const.ORDER_LINE_STATUS.DamageWithRefund)
             let message = await models()['SMMessageTest'].find()
             expect(message.length).toBe(1)
             expect(message[0].type).toBe(_const.SM_MESSAGE.DamageWithRefund)

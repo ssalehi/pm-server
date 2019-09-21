@@ -9,6 +9,9 @@ let campaignInfo_template = {
   },
   discount_ref: {
     type: Number,
+  },
+  discount:{
+    type: Number
   }
 };
 

@@ -147,6 +147,7 @@ const validPassedDaysForReturn = getEnvValue(process.env.VALID_PASSED_DAYS_FOR_R
  *  pricing
  */
 const rounding_factor = parseInt(getEnvValue(process.env.ROUNDING_FACTOR));
+const loyalty_value = parseInt(getEnvValue(process.env.LOYALTY_VALUE));
 
 module.exports = {
   isProd: isProd,
@@ -202,7 +203,8 @@ module.exports = {
   emailFrom,
   emailDomain,
   emailAPIKey,
-  emailTemplateVerification
+  emailTemplateVerification,
+  loyalty_value
 };
 
 

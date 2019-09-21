@@ -124,17 +124,17 @@ let schema_obj = {
     default: false,
     required: true
   },
-  
+
   coupon_code: String,
   coupon_discount: Number,
-  
+
   is_cart: {
     type: Boolean,
     default: false,
   },
-  
+
   order_lines: [OrderLineSchema],
-  
+
   is_offline: {
     type: Boolean,
     required: true,
@@ -143,9 +143,18 @@ let schema_obj = {
 
   delivery_info: delivery_template,
 
+  loyalty_discount: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   
-  loyalty: loyalty_template,
-  
+  loyalty_points: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+
   tickets: {
     type: [TicketSchema],
     default: []
@@ -157,6 +166,6 @@ let schema_obj = {
 };
 
 
-let OrderSchema = new Schema(schema_obj, {collection: 'order', strict: true});
+let OrderSchema = new Schema(schema_obj, { collection: 'order', strict: true });
 
 module.exports = OrderSchema;
